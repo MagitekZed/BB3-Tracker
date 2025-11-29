@@ -1,0 +1,9 @@
+name = "bb3-tracker-api"
+main = "src/worker.js"
+compatibility_date = "2025-11-28"
+
+[vars]
+GITHUB_OWNER = "MagitekZed"
+GITHUB_REPO = "BB3-Tracker"
+GITHUB_FILE_PATH = "data/league.json"
+GITHUB_BRANCH = "main"
