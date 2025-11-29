@@ -1,1 +1,50 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BB3 Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+    button {
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    #status {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Blood Bowl 3 Tracker</h1>
+
+  <p>
+    This is the minimal JSON editor for your league data. Later you can replace
+    this with a proper UI (teams, matches, standings).
+  </p>
+
+  <div>
+    <button id="loadBtn">Load league.json</button>
+    <button id="saveBtn">Save league.json</button>
+  </div>
+
+  <p id="status"></p>
+
+  <textarea id="leagueTextarea" placeholder="League JSON will appear here..."></textarea>
+
+  <script src="app.js"></script>
+</body>
+</html>
