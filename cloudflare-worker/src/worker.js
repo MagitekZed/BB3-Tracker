@@ -4,7 +4,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // CORS support
+    // CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
@@ -14,8 +14,10 @@ export default {
 
     if (url.pathname === '/api/league') {
       if (request.method === 'GET') {
+        // Anyone can read
         return handleGetLeague(env);
       } else if (request.method === 'POST') {
+        // Only allowed with correct edit key
         return handlePostLeague(request, env);
       }
     }
@@ -26,10 +28,25 @@ export default {
 
 function corsHeaders() {
   return {
-    'Access-Control-Allow-Origin': '*', // or your GitHub Pages domain later if you want
+    'Access-Control-Allow-Origin': '*', // later you can restrict to your GitHub Pages origin
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Edit-Key',
   };
+}
+
+function isAuthorized(request, env) {
+  const clientKey = request.headers.get('X-Edit-Key');
+  const serverKey = env.EDIT_KEY;
+
+  // No key configured or mismatch
+  if (!serverKey) {
+    // If EDIT_KEY is not set, we can choose to deny everything to be safe
+    return false;
+  }
+
+  if (!clientKey) return false;
+
+  return clientKey === serverKey;
 }
 
 async function handleGetLeague(env) {
@@ -66,6 +83,14 @@ async function handleGetLeague(env) {
 }
 
 async function handlePostLeague(request, env) {
+  // 🔒 Check edit key
+  if (!isAuthorized(request, env)) {
+    return new Response('Unauthorized: invalid edit key', {
+      status: 401,
+      headers: corsHeaders(),
+    });
+  }
+
   const { GITHUB_OWNER, GITHUB_REPO, GITHUB_FILE_PATH, GITHUB_BRANCH, GITHUB_TOKEN } = env;
 
   let body;
