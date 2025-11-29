@@ -1,7 +1,7 @@
 // app.js
 
 // Replace with your Worker URL:
-const API_BASE = 'https://bb3-tracker-api.YOURSUBDOMAIN.workers.dev';
+const API_BASE = 'https://bb3-tracker-api.zedt-ninja.workers.dev';
 
 const loadBtn = document.getElementById('loadBtn');
 const saveBtn = document.getElementById('saveBtn');
