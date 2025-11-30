@@ -450,6 +450,49 @@
           "notes": ""
         }
       ]
+    },
+    {
+      "id": "league_2",
+      "name": "Test League 2",
+      "season": 1,
+      "status": "active",
+      "settings": {
+        "pointsWin": 3,
+        "pointsDraw": 1,
+        "pointsLoss": 0,
+        "tiebreakers": [
+          "points",
+          "tdDiff",
+          "casDiff"
+        ],
+        "maxTeams": 8,
+        "lockTeams": true
+      },
+      "teams": [
+        {
+          "id": "team_1764473750044",
+          "name": "New Team",
+          "race": "",
+          "coachName": "",
+          "treasury": 0,
+          "rerolls": 0,
+          "dedicatedFans": 0,
+          "teamValue": null,
+          "players": []
+        },
+        {
+          "id": "team_1764473753869",
+          "name": "New Team",
+          "race": "",
+          "coachName": "",
+          "treasury": 0,
+          "rerolls": 0,
+          "dedicatedFans": 0,
+          "teamValue": null,
+          "players": []
+        }
+      ],
+      "matches": []
     }
   ]
 }
