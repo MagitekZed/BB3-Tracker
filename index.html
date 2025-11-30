@@ -21,6 +21,18 @@
 
   <!-- League View -->
   <section id="leagueViewSection">
+    <!-- League selector -->
+    <div id="leagueSelectContainer" class="card">
+      <div class="card-header">
+        <h3>Leagues</h3>
+        <div class="small">Select which league to view. For now you probably only have one.</div>
+      </div>
+      <div>
+        <label for="leagueSelect">Current league:</label>
+        <select id="leagueSelect"></select>
+      </div>
+    </div>
+
     <div id="leagueHeader"></div>
 
     <section id="leagueTeamsSection">
@@ -51,6 +63,58 @@
     <section id="teamRosterSection">
       <h3>Roster</h3>
       <div id="teamRosterContainer"></div>
+    </section>
+  </section>
+
+  <!-- Match Detail View -->
+  <section id="matchViewSection" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <h2 id="matchHeader">Match Detail</h2>
+        <button id="matchBackBtn">← Back to League</button>
+      </div>
+      <div id="matchSummary" class="small"></div>
+    </div>
+
+    <section id="matchInfoSection">
+      <h3>Match Info</h3>
+      <div id="matchInfoContainer"></div>
+    </section>
+
+    <section id="matchSPPSection">
+      <h3>SPP & Highlights</h3>
+      <div id="matchSPPContainer"></div>
+    </section>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Game Session / Scoreboard</h3>
+        <button id="openScoreboardBtn">Open Scoreboard View</button>
+      </div>
+      <div class="small">
+        This will eventually become the live in-game view (half, turn, ready/done, etc.).
+      </div>
+    </div>
+  </section>
+
+  <!-- Scoreboard / Game Session View -->
+  <section id="scoreboardViewSection" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <h2 id="scoreboardHeader">Scoreboard</h2>
+        <button id="scoreboardBackBtn">← Back to Match</button>
+      </div>
+      <div id="scoreboardSummary" class="small"></div>
+    </div>
+
+    <section id="scoreboardCoreSection">
+      <h3>Game State</h3>
+      <div id="scoreboardCore"></div>
+    </section>
+
+    <section id="scoreboardPlayersSection">
+      <h3>Player Status (Live State)</h3>
+      <div id="scoreboardPlayers"></div>
     </section>
   </section>
 
