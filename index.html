@@ -15,25 +15,29 @@
   <div id="globalStatus" class="status"></div>
 
   <div class="nav">
-    <button id="navLeague" class="active">League View</button>
+    <button id="navLeague" class="active">Leagues</button>
     <button id="navAdmin">Admin / Raw JSON</button>
   </div>
 
-  <!-- League View -->
-  <section id="leagueViewSection">
-    <!-- League selector -->
-    <div id="leagueSelectContainer" class="card">
-      <div class="card-header">
-        <h3>Leagues</h3>
-        <div class="small">Select which league to view. For now you probably only have one.</div>
-      </div>
-      <div>
-        <label for="leagueSelect">Current league:</label>
-        <select id="leagueSelect"></select>
-      </div>
+  <!-- League List View -->
+  <section id="leagueListSection">
+    <h2>Leagues</h2>
+    <div class="small">
+      Select a league to view standings, teams, and matches.
     </div>
+    <div id="leagueListContainer"></div>
+  </section>
 
-    <div id="leagueHeader"></div>
+  <!-- League Detail View -->
+  <section id="leagueViewSection" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <button id="leagueBackBtn">← Back to Leagues</button>
+        </div>
+      </div>
+      <div id="leagueHeader"></div>
+    </div>
 
     <section id="leagueTeamsSection">
       <h2>Teams & Standings</h2>
@@ -76,46 +80,42 @@
       <div id="matchSummary" class="small"></div>
     </div>
 
-    <section id="matchInfoSection">
-      <h3>Match Info</h3>
-      <div id="matchInfoContainer"></div>
-    </section>
-
-    <section id="matchSPPSection">
-      <h3>SPP & Highlights</h3>
-      <div id="matchSPPContainer"></div>
-    </section>
-
     <div class="card">
       <div class="card-header">
-        <h3>Game Session / Scoreboard</h3>
-        <button id="openScoreboardBtn">Open Scoreboard View</button>
+        <h3>Overview</h3>
+        <button id="matchOpenScoreboardBtn">Open Scoreboard View</button>
       </div>
-      <div class="small">
-        This will eventually become the live in-game view (half, turn, ready/done, etc.).
-      </div>
+      <div id="matchOverviewContainer"></div>
     </div>
+
+    <section>
+      <h3>SPP Log</h3>
+      <div id="matchSppContainer"></div>
+    </section>
   </section>
 
-  <!-- Scoreboard / Game Session View -->
-  <section id="scoreboardViewSection" class="hidden">
+  <!-- Scoreboard / Game Session View (read-only skeleton) -->
+  <section id="scoreboardSection" class="hidden">
     <div class="card">
       <div class="card-header">
         <h2 id="scoreboardHeader">Scoreboard</h2>
-        <button id="scoreboardBackBtn">← Back to Match</button>
+        <div>
+          <button id="scoreboardBackToMatchBtn">← Back to Match</button>
+        </div>
       </div>
-      <div id="scoreboardSummary" class="small"></div>
+      <div id="scoreboardMeta" class="small"></div>
     </div>
 
-    <section id="scoreboardCoreSection">
-      <h3>Game State</h3>
-      <div id="scoreboardCore"></div>
-    </section>
-
-    <section id="scoreboardPlayersSection">
-      <h3>Player Status (Live State)</h3>
-      <div id="scoreboardPlayers"></div>
-    </section>
+    <div id="scoreboardContent" class="card">
+      <div class="scoreboard-layout">
+        <div id="scoreboardHomeRoster"></div>
+        <div class="scoreboard-score">
+          <div id="scoreboardScoreMain" class="scoreboard-score-main"></div>
+          <div id="scoreboardScoreMeta" class="scoreboard-score-meta"></div>
+        </div>
+        <div id="scoreboardAwayRoster"></div>
+      </div>
+    </div>
   </section>
 
   <!-- Admin / Raw JSON -->
