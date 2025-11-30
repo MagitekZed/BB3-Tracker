@@ -238,3 +238,29 @@ button {
   padding: 0.25rem 0.35rem;
   font-size: 0.9rem;
 }
+
+/* NEW: roster quick view tiles on league page */
+
+.roster-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.roster-tile {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  background: #fafafa;
+}
+
+.roster-tile-title {
+  font-weight: 600;
+}
+
+.roster-tile-meta {
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 0.15rem;
+}
