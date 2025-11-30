@@ -91,11 +91,6 @@
       font-size: 0.8rem;
       color: #666;
     }
-    .flex-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
     .card {
       border: 1px solid #ddd;
       border-radius: 6px;
@@ -132,6 +127,19 @@
     button {
       cursor: pointer;
     }
+    .team-link {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      color: #0645ad;
+      text-decoration: underline;
+      cursor: pointer;
+      font: inherit;
+    }
+    .team-meta {
+      margin-top: 0.25rem;
+    }
   </style>
 </head>
 <body>
@@ -154,7 +162,7 @@
     <section id="leagueTeamsSection">
       <h2>Teams & Standings</h2>
       <div class="small">
-        Standings are calculated from completed matches only.
+        Standings are calculated from completed matches only. Click a team name to view its roster.
       </div>
       <div id="standingsContainer"></div>
     </section>
@@ -163,6 +171,22 @@
       <h2>Matches</h2>
       <div id="inProgressContainer"></div>
       <div id="matchesContainer"></div>
+    </section>
+  </section>
+
+  <!-- Team Detail View -->
+  <section id="teamViewSection" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <h2 id="teamHeader">Team Detail</h2>
+        <button id="teamBackBtn">← Back to League</button>
+      </div>
+      <div id="teamSummary" class="small"></div>
+    </div>
+
+    <section id="teamRosterSection">
+      <h3>Roster</h3>
+      <div id="teamRosterContainer"></div>
     </section>
   </section>
 
