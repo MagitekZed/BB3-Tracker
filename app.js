@@ -89,8 +89,7 @@ const state = {
   selectedTeamId: null,
   selectedMatchId: null,
   editingLeagueId: null,
-  editingTeamId: null,
-  editingPlayerId: null
+  editingTeamId: null
 };
 
 // ---- Utility status helpers ----
@@ -211,7 +210,6 @@ navLeagueBtn.addEventListener('click', () => {
   state.selectedMatchId = null;
   state.editingLeagueId = null;
   state.editingTeamId = null;
-  state.editingPlayerId = null;
   showLeagueListView();
   renderLeagueList();
 });
@@ -484,7 +482,6 @@ function renderLeagueList() {
 function openLeagueManage(leagueIdOrNull) {
   state.editingLeagueId = leagueIdOrNull || null;
   state.editingTeamId = null;
-  state.editingPlayerId = null;
 
   const isNew = !leagueIdOrNull;
   let league;
@@ -582,7 +579,6 @@ function renderLeagueManageTeamsList(league) {
     btn.addEventListener('click', () => {
       const teamId = btn.getAttribute('data-team-id');
       state.editingTeamId = teamId;
-      state.editingPlayerId = null;
       renderLeagueManageTeamEditor(teamId);
     });
   });
@@ -604,7 +600,6 @@ function removeTeamFromEditingLeague(teamId) {
   league.teams.splice(idx, 1);
   if (state.editingTeamId === teamId) {
     state.editingTeamId = null;
-    state.editingPlayerId = null;
     renderLeagueManageTeamEditor(null);
   }
   renderLeagueManageTeamsList(league);
@@ -628,8 +623,6 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
     leagueManageTeamEditor.innerHTML = `<div class="small">Team not found.</div>`;
     return;
   }
-
-  team.players = team.players || [];
 
   leagueManageTeamEditor.innerHTML = `
     <h3>Edit Team</h3>
@@ -668,13 +661,8 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
         <input type="number" id="teamEditDfInput" value="${team.dedicatedFans != null ? team.dedicatedFans : 0}" />
       </div>
     </div>
-    <div class="card-subsection">
-      <div class="card-header">
-        <h4>Players</h4>
-        <button id="teamAddPlayerBtn">+ Add Player</button>
-      </div>
-      <div id="teamPlayersList"></div>
-      <div id="teamPlayerEditor" class="player-editor"></div>
+    <div class="small" style="margin-top: 0.5rem;">
+      Player rosters will be editable in a separate view later; this is team-level meta only.
     </div>
   `;
 
@@ -705,233 +693,6 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
       renderLeagueManageTeamsList(league); // update ID/name in the list as you type
     });
   });
-
-  // Player roster editing
-  const playersListEl = document.getElementById('teamPlayersList');
-  const playerEditorEl = document.getElementById('teamPlayerEditor');
-  const addPlayerBtn = document.getElementById('teamAddPlayerBtn');
-
-  if (!state.editingPlayerId || !team.players.some(p => p.id === state.editingPlayerId)) {
-    state.editingPlayerId = null;
-  }
-
-  function renderPlayersList() {
-    if (!team.players || !team.players.length) {
-      playersListEl.innerHTML = '<div class="small">No players on this roster yet.</div>';
-      return;
-    }
-
-    const rows = team.players
-      .slice()
-      .sort((a, b) => (a.number || 0) - (b.number || 0) || (a.name || '').localeCompare(b.name || ''))
-      .map(p => `
-        <tr>
-          <td>${p.number != null ? p.number : ''}</td>
-          <td>${p.name || ''}</td>
-          <td>${p.position || ''}</td>
-          <td>${p.spp != null ? p.spp : 0}</td>
-          <td>${p.level != null ? p.level : 1}</td>
-          <td>
-            <button class="link-button team-player-edit-btn" data-player-id="${p.id}">Edit</button>
-            &nbsp;|&nbsp;
-            <button class="link-button team-player-remove-btn" data-player-id="${p.id}">Remove</button>
-          </td>
-        </tr>
-      `).join('');
-
-    playersListEl.innerHTML = `
-      <table class="roster-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Position</th>
-            <th>SPP</th>
-            <th>Level</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows}
-        </tbody>
-      </table>
-    `;
-
-    playersListEl.querySelectorAll('.team-player-edit-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.editingPlayerId = btn.getAttribute('data-player-id');
-        renderPlayerEditor();
-      });
-    });
-
-    playersListEl.querySelectorAll('.team-player-remove-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const playerId = btn.getAttribute('data-player-id');
-        const idx = team.players.findIndex(p => p.id === playerId);
-        if (idx !== -1) {
-          team.players.splice(idx, 1);
-          if (state.editingPlayerId === playerId) {
-            state.editingPlayerId = null;
-          }
-          renderPlayersList();
-          renderPlayerEditor();
-          setLeagueManageStatus(`Removed player ${playerId} (not saved yet).`, 'info');
-        }
-      });
-    });
-  }
-
-  function renderPlayerEditor() {
-    if (!state.editingPlayerId) {
-      playerEditorEl.innerHTML = '<div class="small">Select a player to edit, or add a new player.</div>';
-      return;
-    }
-
-    const player = team.players.find(p => p.id === state.editingPlayerId);
-    if (!player) {
-      playerEditorEl.innerHTML = '<div class="small">Player not found.</div>';
-      return;
-    }
-
-    player.status = player.status || { mng: false, dead: false, retired: false };
-    player.skills = player.skills || [];
-    player.injuries = player.injuries || [];
-
-    playerEditorEl.innerHTML = `
-      <div class="form-grid player-form-grid">
-        <div class="form-field">
-          <label>Player ID</label>
-          <input type="text" id="playerEditIdInput" value="${player.id || ''}" />
-        </div>
-        <div class="form-field">
-          <label>Number</label>
-          <input type="number" id="playerEditNumberInput" value="${player.number != null ? player.number : ''}" />
-        </div>
-        <div class="form-field">
-          <label>Name</label>
-          <input type="text" id="playerEditNameInput" value="${player.name || ''}" />
-        </div>
-        <div class="form-field">
-          <label>Position</label>
-          <input type="text" id="playerEditPositionInput" value="${player.position || ''}" />
-        </div>
-        <div class="form-field">
-          <label>MA</label>
-          <input type="number" id="playerEditMaInput" value="${player.ma != null ? player.ma : ''}" />
-        </div>
-        <div class="form-field">
-          <label>ST</label>
-          <input type="number" id="playerEditStInput" value="${player.st != null ? player.st : ''}" />
-        </div>
-        <div class="form-field">
-          <label>AG</label>
-          <input type="number" id="playerEditAgInput" value="${player.ag != null ? player.ag : ''}" />
-        </div>
-        <div class="form-field">
-          <label>PA</label>
-          <input type="number" id="playerEditPaInput" value="${player.pa != null ? player.pa : ''}" />
-        </div>
-        <div class="form-field">
-          <label>AV</label>
-          <input type="number" id="playerEditAvInput" value="${player.av != null ? player.av : ''}" />
-        </div>
-        <div class="form-field">
-          <label>SPP</label>
-          <input type="number" id="playerEditSppInput" value="${player.spp != null ? player.spp : 0}" />
-        </div>
-        <div class="form-field">
-          <label>Level</label>
-          <input type="number" id="playerEditLevelInput" value="${player.level != null ? player.level : 1}" />
-        </div>
-        <div class="form-field">
-          <label>Skills (comma separated)</label>
-          <input type="text" id="playerEditSkillsInput" value="${player.skills.join(', ')}" />
-        </div>
-        <div class="form-field">
-          <label>Injuries (comma separated)</label>
-          <input type="text" id="playerEditInjuriesInput" value="${player.injuries.join(', ')}" />
-        </div>
-      </div>
-      <div class="player-status-flags">
-        <label><input type="checkbox" id="playerEditMngInput" ${player.status.mng ? 'checked' : ''}/> MNG</label>
-        <label><input type="checkbox" id="playerEditDeadInput" ${player.status.dead ? 'checked' : ''}/> Dead</label>
-        <label><input type="checkbox" id="playerEditRetiredInput" ${player.status.retired ? 'checked' : ''}/> Retired</label>
-      </div>
-    `;
-
-    const idEl = document.getElementById('playerEditIdInput');
-    const numberEl = document.getElementById('playerEditNumberInput');
-    const nameEl = document.getElementById('playerEditNameInput');
-    const posEl = document.getElementById('playerEditPositionInput');
-    const maEl = document.getElementById('playerEditMaInput');
-    const stEl = document.getElementById('playerEditStInput');
-    const agEl = document.getElementById('playerEditAgInput');
-    const paEl = document.getElementById('playerEditPaInput');
-    const avEl = document.getElementById('playerEditAvInput');
-    const sppEl = document.getElementById('playerEditSppInput');
-    const levelEl = document.getElementById('playerEditLevelInput');
-    const skillsEl = document.getElementById('playerEditSkillsInput');
-    const injuriesEl = document.getElementById('playerEditInjuriesInput');
-    const mngEl = document.getElementById('playerEditMngInput');
-    const deadEl = document.getElementById('playerEditDeadInput');
-    const retiredEl = document.getElementById('playerEditRetiredInput');
-
-    function applyPlayerChanges() {
-      player.id = idEl.value.trim() || player.id;
-      player.number = numberEl.value ? parseInt(numberEl.value, 10) : null;
-      player.name = nameEl.value.trim();
-      player.position = posEl.value.trim();
-      player.ma = maEl.value ? parseInt(maEl.value, 10) : null;
-      player.st = stEl.value ? parseInt(stEl.value, 10) : null;
-      player.ag = agEl.value ? parseInt(agEl.value, 10) : null;
-      player.pa = paEl.value ? parseInt(paEl.value, 10) : null;
-      player.av = avEl.value ? parseInt(avEl.value, 10) : null;
-      player.spp = sppEl.value ? parseInt(sppEl.value, 10) : 0;
-      player.level = levelEl.value ? parseInt(levelEl.value, 10) : 1;
-      player.skills = skillsEl.value.split(',').map(s => s.trim()).filter(Boolean);
-      player.injuries = injuriesEl.value.split(',').map(s => s.trim()).filter(Boolean);
-      player.status.mng = !!mngEl.checked;
-      player.status.dead = !!deadEl.checked;
-      player.status.retired = !!retiredEl.checked;
-      state.editingPlayerId = player.id;
-      renderPlayersList();
-    }
-
-    [idEl, numberEl, nameEl, posEl, maEl, stEl, agEl, paEl, avEl, sppEl, levelEl, skillsEl, injuriesEl].forEach(input => {
-      input.addEventListener('input', applyPlayerChanges);
-    });
-    [mngEl, deadEl, retiredEl].forEach(box => box.addEventListener('change', applyPlayerChanges));
-  }
-
-  renderPlayersList();
-  renderPlayerEditor();
-
-  if (addPlayerBtn) {
-    addPlayerBtn.addEventListener('click', () => {
-      const newPlayerId = `${team.id || 'player'}_${Date.now()}`;
-      const newPlayer = {
-        id: newPlayerId,
-        number: team.players.length + 1,
-        name: 'New Player',
-        position: '',
-        ma: null,
-        st: null,
-        ag: null,
-        pa: null,
-        av: null,
-        skills: [],
-        injuries: [],
-        status: { mng: false, dead: false, retired: false },
-        spp: 0,
-        level: 1
-      };
-      team.players.push(newPlayer);
-      state.editingPlayerId = newPlayerId;
-      renderPlayersList();
-      renderPlayerEditor();
-      setLeagueManageStatus(`Added new player ${newPlayerId} (not saved yet).`, 'info');
-    });
-  }
 }
 
 // Add new team
