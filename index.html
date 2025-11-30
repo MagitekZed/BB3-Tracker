@@ -23,7 +23,10 @@
   <section id="leagueListSection">
     <h2>Leagues</h2>
     <div class="small">
-      Select a league to view standings, teams, and matches.
+      Select a league to view standings, or manage leagues below.
+    </div>
+    <div style="margin: 0.5rem 0 1rem;">
+      <button id="leagueCreateBtn">+ Create New League</button>
     </div>
     <div id="leagueListContainer"></div>
   </section>
@@ -52,6 +55,84 @@
       <div id="inProgressContainer"></div>
       <div id="matchesContainer"></div>
     </section>
+  </section>
+
+  <!-- League Management View -->
+  <section id="leagueManageSection" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <h2 id="leagueManageHeader">Manage League</h2>
+        <button id="leagueManageBackBtn">← Back to Leagues</button>
+      </div>
+      <div id="leagueManageStatus" class="small"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>League Info</h3>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="leagueManageIdInput">League ID</label>
+          <input id="leagueManageIdInput" type="text" placeholder="league_1" />
+          <div class="small">For internal use; must be unique.</div>
+        </div>
+        <div class="form-field">
+          <label for="leagueManageNameInput">Name</label>
+          <input id="leagueManageNameInput" type="text" placeholder="Local League" />
+        </div>
+        <div class="form-field">
+          <label for="leagueManageSeasonInput">Season</label>
+          <input id="leagueManageSeasonInput" type="number" min="1" />
+        </div>
+        <div class="form-field">
+          <label for="leagueManageStatusSelect">Status</label>
+          <select id="leagueManageStatusSelect">
+            <option value="active">active</option>
+            <option value="upcoming">upcoming</option>
+            <option value="completed">completed</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="leagueManagePointsWinInput">Points for Win</label>
+          <input id="leagueManagePointsWinInput" type="number" />
+        </div>
+        <div class="form-field">
+          <label for="leagueManagePointsDrawInput">Points for Draw</label>
+          <input id="leagueManagePointsDrawInput" type="number" />
+        </div>
+        <div class="form-field">
+          <label for="leagueManagePointsLossInput">Points for Loss</label>
+          <input id="leagueManagePointsLossInput" type="number" />
+        </div>
+        <div class="form-field">
+          <label for="leagueManageMaxTeamsInput">Max Teams</label>
+          <input id="leagueManageMaxTeamsInput" type="number" min="2" />
+        </div>
+        <div class="form-field">
+          <label>
+            <input id="leagueManageLockTeamsInput" type="checkbox" />
+            Lock teams (no new teams can join)
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Teams in League</h3>
+        <button id="leagueManageAddNewTeamBtn">+ Add New Team</button>
+      </div>
+      <div id="leagueManageTeamsList"></div>
+      <div id="leagueManageTeamEditor"></div>
+    </div>
+
+    <div class="card">
+      <button id="leagueManageSaveBtn">Save League Changes</button>
+      <div class="small">
+        Changes are saved to GitHub and apply to all users once committed.
+      </div>
+    </div>
   </section>
 
   <!-- Team Detail View -->
