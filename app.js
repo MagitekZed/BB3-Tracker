@@ -29,13 +29,12 @@ const leagueHeaderEl = document.getElementById('leagueHeader');
 const standingsContainer = document.getElementById('standingsContainer');
 const matchesContainer = document.getElementById('matchesContainer');
 const inProgressContainer = document.getElementById('inProgressContainer');
+const rosterQuickViewContainer = document.getElementById('rosterQuickViewContainer');
 
 // League manage elements
 const leagueManageHeader = document.getElementById('leagueManageHeader');
 const leagueManageBackBtn = document.getElementById('leagueManageBackBtn');
 const leagueManageStatusEl = document.getElementById('leagueManageStatus');
-
-const leagueInfoCard = document.getElementById('leagueInfoCard');
 
 const leagueManageIdInput = document.getElementById('leagueManageIdInput');
 const leagueManageNameInput = document.getElementById('leagueManageNameInput');
@@ -55,9 +54,9 @@ const leagueManageSaveBtn = document.getElementById('leagueManageSaveBtn');
 // Team view elements
 const teamBackBtn = document.getElementById('teamBackBtn');
 const teamHeaderEl = document.getElementById('teamHeader');
-const teamManageBtn = document.getElementById('teamManageBtn');
 const teamSummaryEl = document.getElementById('teamSummary');
 const teamRosterContainer = document.getElementById('teamRosterContainer');
+const teamManageBtn = document.getElementById('teamManageBtn');
 
 // Match view elements
 const matchBackBtn = document.getElementById('matchBackBtn');
@@ -92,8 +91,7 @@ const state = {
   selectedTeamId: null,
   selectedMatchId: null,
   editingLeagueId: null,
-  editingTeamId: null,
-  gameData: null
+  editingTeamId: null
 };
 
 // ---- Utility status helpers ----
@@ -121,6 +119,15 @@ function setLeagueManageStatus(msg, type = 'info') {
   if (type === 'error') leagueManageStatusEl.style.color = 'red';
   else if (type === 'ok') leagueManageStatusEl.style.color = '#0a0';
   else leagueManageStatusEl.style.color = '#666';
+}
+
+// simple helper for comma-separated lists
+function parseCommaList(value) {
+  if (!value) return [];
+  return value
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
 }
 
 // ---- Helpers to get current objects ----
@@ -250,23 +257,6 @@ if (teamBackBtn) {
   });
 }
 
-if (teamManageBtn) {
-  teamManageBtn.addEventListener('click', () => {
-    const league = getCurrentLeague();
-    if (!league || !state.selectedTeamId) return;
-
-    state.editingLeagueId = league.id;
-    state._editingLeagueLocal = league;
-    state.editingTeamId = state.selectedTeamId;
-
-    leagueManageHeader.textContent = 'Manage Team';
-    showLeagueManageView();
-    renderLeagueManageTeamsList(league);
-    renderLeagueManageTeamEditor(state.selectedTeamId);
-    setLeagueManageStatus(`Editing team ${state.selectedTeamId}. Changes are not saved until you save the league.`, 'info');
-  });
-}
-
 if (matchBackBtn) {
   matchBackBtn.addEventListener('click', () => {
     state.selectedMatchId = null;
@@ -279,6 +269,25 @@ if (scoreboardBackToMatchBtn) {
   scoreboardBackToMatchBtn.addEventListener('click', () => {
     showMatchView();
     renderMatchView();
+  });
+}
+
+// NEW: from team detail into manage view for that team
+if (teamManageBtn) {
+  teamManageBtn.addEventListener('click', () => {
+    const leagueId = state.currentLeagueId;
+    const teamId = state.selectedTeamId;
+    if (!leagueId || !teamId) return;
+
+    openLeagueManage(leagueId);
+    state.editingTeamId = teamId;
+
+    const league = state._editingLeagueLocal;
+    if (league) {
+      renderLeagueManageTeamsList(league);
+      renderLeagueManageTeamEditor(teamId);
+      setLeagueManageStatus(`Editing team ${teamId} (roster + meta, not saved yet).`, 'info');
+    }
   });
 }
 
@@ -312,19 +321,6 @@ async function fetchLeagueData() {
     throw new Error(`Failed to load league.json: HTTP ${res.status} - ${text}`);
   }
   return res.json();
-}
-
-async function fetchGameData() {
-  try {
-    const res = await fetch('data/gameData.json');
-    if (!res.ok) {
-      throw new Error(`Failed to load gameData.json: HTTP ${res.status}`);
-    }
-    return await res.json();
-  } catch (err) {
-    console.error('Error loading gameData.json', err);
-    return null;
-  }
 }
 
 async function saveLeagueJSON(jsonText, editKey) {
@@ -545,6 +541,7 @@ function openLeagueManage(leagueIdOrNull) {
     }
   }
 
+  // If new, we only hold it in form until Save; if existing, we edit in place
   state._editingLeagueLocal = isNew ? league : league;
 
   populateLeagueManageForm(league);
@@ -642,57 +639,62 @@ function removeTeamFromEditingLeague(teamId) {
 function renderLeagueManageTeamEditor(teamIdOrNull) {
   const league = state._editingLeagueLocal;
   if (!league) {
-    if (leagueInfoCard) leagueInfoCard.style.display = '';
     leagueManageTeamEditor.innerHTML = '';
     return;
   }
 
-  // If no specific team is selected, show a helper message and keep league info visible
   if (!teamIdOrNull) {
-    if (leagueInfoCard) leagueInfoCard.style.display = '';
     leagueManageTeamEditor.innerHTML = `<div class="small">Select a team to edit, or add a new team.</div>`;
     return;
   }
 
   const team = league.teams.find(t => t.id === teamIdOrNull);
   if (!team) {
-    if (leagueInfoCard) leagueInfoCard.style.display = '';
     leagueManageTeamEditor.innerHTML = `<div class="small">Team not found.</div>`;
     return;
   }
 
-  // When actively editing a team, hide the league-level edit block so this view is "about the team only"
-  if (leagueInfoCard) leagueInfoCard.style.display = 'none';
+  team.players = team.players || [];
 
-  const gameData = state.gameData || {};
-  const races = Array.isArray(gameData.races) ? gameData.races : [];
-
-  // Race field can be either a dropdown (if gameData is available) or a free text input as a fallback
-  let raceFieldHtml;
-  if (races.length) {
-    let options = races
-      .map(r => `<option value="${r}" ${r === (team.race || '') ? 'selected' : ''}>${r}</option>`)
-      .join('');
-    if (team.race && !races.includes(team.race)) {
-      options += `<option value="${team.race}" selected>${team.race} (custom)</option>`;
-    }
-    raceFieldHtml = `
-      <div class="form-field">
-        <label>Race</label>
-        <select id="teamEditRaceSelect">
-          <option value="">-- Select race --</option>
-          ${options}
-        </select>
-      </div>
+  const rosterRows = team.players.length
+    ? team.players
+        .slice()
+        .sort((a, b) => (a.number || 0) - (b.number || 0))
+        .map(p => {
+          const skills = (p.skills || []).join(', ');
+          const injuries = (p.injuries || []).join(', ');
+          const status = p.status || {};
+          return `
+            <tr data-player-id="${p.id}">
+              <td><input type="number" class="player-field" data-field="number" data-player-id="${p.id}" value="${p.number != null ? p.number : ''}" /></td>
+              <td><input type="text" class="player-field" data-field="name" data-player-id="${p.id}" value="${p.name || ''}" /></td>
+              <td><input type="text" class="player-field" data-field="position" data-player-id="${p.id}" value="${p.position || ''}" /></td>
+              <td><input type="number" class="player-field" data-field="ma" data-player-id="${p.id}" value="${p.ma != null ? p.ma : ''}" /></td>
+              <td><input type="number" class="player-field" data-field="st" data-player-id="${p.id}" value="${p.st != null ? p.st : ''}" /></td>
+              <td><input type="number" class="player-field" data-field="ag" data-player-id="${p.id}" value="${p.ag != null ? p.ag : ''}" /></td>
+              <td><input type="number" class="player-field" data-field="pa" data-player-id="${p.id}" value="${p.pa != null ? p.pa : ''}" /></td>
+              <td><input type="number" class="player-field" data-field="av" data-player-id="${p.id}" value="${p.av != null ? p.av : ''}" /></td>
+              <td><input type="text" class="player-field" data-field="skills" data-player-id="${p.id}" value="${skills}" /></td>
+              <td><input type="number" class="player-field" data-field="spp" data-player-id="${p.id}" value="${p.spp != null ? p.spp : 0}" /></td>
+              <td><input type="number" class="player-field" data-field="level" data-player-id="${p.id}" value="${p.level != null ? p.level : ''}" /></td>
+              <td><input type="text" class="player-field" data-field="injuries" data-player-id="${p.id}" value="${injuries}" /></td>
+              <td>
+                <label><input type="checkbox" class="player-status-input" data-status-field="mng" data-player-id="${p.id}" ${status.mng ? 'checked' : ''} /> MNG</label><br/>
+                <label><input type="checkbox" class="player-status-input" data-status-field="dead" data-player-id="${p.id}" ${status.dead ? 'checked' : ''} /> Dead</label><br/>
+                <label><input type="checkbox" class="player-status-input" data-status-field="retired" data-player-id="${p.id}" ${status.retired ? 'checked' : ''} /> Retired</label>
+              </td>
+              <td>
+                <button type="button" class="link-button player-remove-btn" data-player-id="${p.id}">Remove</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join('')
+    : `
+      <tr>
+        <td colspan="14" class="small">No players on this team yet. Use "Add Player" below.</td>
+      </tr>
     `;
-  } else {
-    raceFieldHtml = `
-      <div class="form-field">
-        <label>Race</label>
-        <input type="text" id="teamEditRaceInput" value="${team.race || ''}" />
-      </div>
-    `;
-  }
 
   leagueManageTeamEditor.innerHTML = `
     <h3>Edit Team</h3>
@@ -706,7 +708,10 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
         <label>Team Name</label>
         <input type="text" id="teamEditNameInput" value="${team.name || ''}" />
       </div>
-      ${raceFieldHtml}
+      <div class="form-field">
+        <label>Race</label>
+        <input type="text" id="teamEditRaceInput" value="${team.race || ''}" />
+      </div>
       <div class="form-field">
         <label>Coach Name</label>
         <input type="text" id="teamEditCoachInput" value="${team.coachName || ''}" />
@@ -728,30 +733,55 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
         <input type="number" id="teamEditDfInput" value="${team.dedicatedFans != null ? team.dedicatedFans : 0}" />
       </div>
     </div>
-    <div class="small" style="margin-top: 0.5rem;">
-      Player rosters will be editable in a separate view later; this is team-level meta only.
+
+    <div style="margin-top: 1rem;">
+      <h4>Roster (editable)</h4>
+      <div class="small">
+        Edit player stats below. Skills and injuries are comma-separated lists. Changes are local until you save the league.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Pos</th>
+            <th>MA</th>
+            <th>ST</th>
+            <th>AG</th>
+            <th>PA</th>
+            <th>AV</th>
+            <th>Skills</th>
+            <th>SPP</th>
+            <th>Lvl</th>
+            <th>Injuries</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="teamEditRosterBody">
+          ${rosterRows}
+        </tbody>
+      </table>
+      <div style="margin-top: 0.5rem;">
+        <button type="button" id="teamAddPlayerBtn">+ Add Player</button>
+      </div>
     </div>
   `;
 
-  // Wire input change -> update team object in memory
+  // Wire input change -> update team object in memory (meta)
   const idInput = document.getElementById('teamEditIdInput');
   const nameInput = document.getElementById('teamEditNameInput');
   const raceInput = document.getElementById('teamEditRaceInput');
-  const raceSelect = document.getElementById('teamEditRaceSelect');
   const coachInput = document.getElementById('teamEditCoachInput');
   const tvInput = document.getElementById('teamEditTvInput');
   const treasuryInput = document.getElementById('teamEditTreasuryInput');
   const rerollsInput = document.getElementById('teamEditRerollsInput');
   const dfInput = document.getElementById('teamEditDfInput');
 
-  function apply() {
+  function applyMeta() {
     team.id = idInput.value.trim();
     team.name = nameInput.value.trim();
-    if (raceSelect) {
-      team.race = raceSelect.value || '';
-    } else if (raceInput) {
-      team.race = raceInput.value.trim();
-    }
+    team.race = raceInput.value.trim();
     team.coachName = coachInput.value.trim();
     team.teamValue = tvInput.value ? parseInt(tvInput.value, 10) : null;
     team.treasury = treasuryInput.value ? parseInt(treasuryInput.value, 10) : 0;
@@ -759,14 +789,101 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
     team.dedicatedFans = dfInput.value ? parseInt(dfInput.value, 10) : 0;
   }
 
-  [idInput, nameInput, raceInput, raceSelect, coachInput, tvInput, treasuryInput, rerollsInput, dfInput]
-    .filter(Boolean)
-    .forEach(input => {
-      input.addEventListener('input', () => {
-        apply();
-        renderLeagueManageTeamsList(league); // update ID/name in the list as you type
-      });
+  [idInput, nameInput, raceInput, coachInput, tvInput, treasuryInput, rerollsInput, dfInput].forEach(input => {
+    input.addEventListener('input', () => {
+      applyMeta();
+      renderLeagueManageTeamsList(league); // update ID/name in the list as you type
     });
+  });
+
+  // Roster editing wiring
+  const addPlayerBtn = document.getElementById('teamAddPlayerBtn');
+
+  if (addPlayerBtn) {
+    addPlayerBtn.addEventListener('click', () => {
+      const newPlayerId = `${team.id || 'team'}_p${Date.now()}`;
+      const newPlayer = {
+        id: newPlayerId,
+        number: team.players.length + 1,
+        name: 'New Player',
+        position: '',
+        ma: null,
+        st: null,
+        ag: null,
+        pa: null,
+        av: null,
+        skills: [],
+        primarySkillAccess: [],
+        secondarySkillAccess: [],
+        spp: 0,
+        level: 1,
+        advancements: [],
+        status: {
+          mng: false,
+          dead: false,
+          retired: false
+        },
+        injuries: []
+      };
+
+      team.players.push(newPlayer);
+      setLeagueManageStatus(`Added new player to ${team.name} (not saved yet).`, 'info');
+      renderLeagueManageTeamEditor(team.id);
+    });
+  }
+
+  const numericFields = ['number', 'ma', 'st', 'ag', 'pa', 'av', 'spp', 'level'];
+
+  const fieldInputs = leagueManageTeamEditor.querySelectorAll('.player-field');
+  fieldInputs.forEach(input => {
+    input.addEventListener('input', () => {
+      const playerId = input.getAttribute('data-player-id');
+      const field = input.getAttribute('data-field');
+      const player = team.players.find(p => p.id === playerId);
+      if (!player) return;
+
+      let value = input.value;
+
+      if (field === 'skills') {
+        player.skills = parseCommaList(value);
+      } else if (field === 'injuries') {
+        player.injuries = parseCommaList(value);
+      } else if (numericFields.includes(field)) {
+        if (value === '') {
+          player[field] = null;
+        } else {
+          const n = parseInt(value, 10);
+          player[field] = Number.isNaN(n) ? null : n;
+        }
+      } else {
+        player[field] = value;
+      }
+    });
+  });
+
+  const statusInputs = leagueManageTeamEditor.querySelectorAll('.player-status-input');
+  statusInputs.forEach(input => {
+    input.addEventListener('change', () => {
+      const playerId = input.getAttribute('data-player-id');
+      const statusField = input.getAttribute('data-status-field');
+      const player = team.players.find(p => p.id === playerId);
+      if (!player) return;
+      player.status = player.status || { mng: false, dead: false, retired: false };
+      player.status[statusField] = !!input.checked;
+    });
+  });
+
+  const removeButtons = leagueManageTeamEditor.querySelectorAll('.player-remove-btn');
+  removeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const playerId = btn.getAttribute('data-player-id');
+      const idx = team.players.findIndex(p => p.id === playerId);
+      if (idx === -1) return;
+      const removed = team.players.splice(idx, 1)[0];
+      setLeagueManageStatus(`Removed player ${removed.name || playerId} from ${team.name} (not saved yet).`, 'info');
+      renderLeagueManageTeamEditor(team.id);
+    });
+  });
 }
 
 // Add new team
@@ -813,6 +930,7 @@ if (leagueManageSaveBtn) {
         return;
       }
 
+      // Apply form fields to league object
       const newId = leagueManageIdInput.value.trim();
       if (!newId) {
         setLeagueManageStatus('League ID is required.', 'error');
@@ -831,13 +949,17 @@ if (leagueManageSaveBtn) {
       league.settings.maxTeams = leagueManageMaxTeamsInput.value ? parseInt(leagueManageMaxTeamsInput.value, 10) : 16;
       league.settings.lockTeams = !!leagueManageLockTeamsInput.checked;
 
+      // If this is a new league, push into global list
       if (!state.editingLeagueId) {
+        // Check for duplicate ID
         if (state.leagues.some(l => l.id === newId)) {
           setLeagueManageStatus('A league with that ID already exists. Choose a different ID.', 'error');
           return;
         }
         state.leagues.push(league);
       } else {
+        // Existing league already mutated in place
+        // But we must ensure we didn't change ID to collide
         const other = state.leagues.find(l => l.id === newId && l !== league);
         if (other) {
           setLeagueManageStatus('Another league already has that ID. Choose a different ID.', 'error');
@@ -845,6 +967,7 @@ if (leagueManageSaveBtn) {
         }
       }
 
+      // Sync state.rawData
       state.rawData = state.rawData || {};
       state.rawData.leagues = state.leagues;
 
@@ -853,10 +976,12 @@ if (leagueManageSaveBtn) {
       const result = await saveLeagueJSON(JSON.stringify(state.rawData, null, 2), key);
       console.log(result);
 
+      // Refresh from server to be safe
       const data = await fetchLeagueData();
       state.rawData = data;
       state.leagues = data.leagues || [];
 
+      // Keep currentLeagueId = new/edited league
       state.currentLeagueId = newId;
       state.editingLeagueId = newId;
 
@@ -905,6 +1030,7 @@ function openTeamView(teamId) {
   renderTeamView();
 }
 
+// updated: can attach to standings table and quick-view tiles
 function attachTeamLinks(rootEl) {
   if (!rootEl) return;
   const links = rootEl.querySelectorAll('.team-link');
@@ -914,6 +1040,77 @@ function attachTeamLinks(rootEl) {
       if (teamId) openTeamView(teamId);
     });
   });
+}
+
+// helper: record map for roster quick view
+function getTeamRecordMap(league) {
+  const standingsArr = computeStandings(league);
+  const map = new Map();
+  standingsArr.forEach(s => map.set(s.teamId, s));
+
+  // ensure every team has an entry, even with no games
+  league.teams.forEach(team => {
+    if (!map.has(team.id)) {
+      map.set(team.id, {
+        teamId: team.id,
+        name: team.name,
+        coachName: team.coachName || '',
+        played: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0
+      });
+    }
+  });
+
+  return map;
+}
+
+// NEW: roster quick view tiles above standings
+function renderRosterQuickView(league) {
+  if (!rosterQuickViewContainer) return;
+
+  if (!league.teams || !league.teams.length) {
+    rosterQuickViewContainer.innerHTML = `
+      <div class="small">No teams in this league yet.</div>
+    `;
+    return;
+  }
+
+  const recordMap = getTeamRecordMap(league);
+
+  const tiles = league.teams.map(team => {
+    const rec = recordMap.get(team.id);
+    const wins = rec ? rec.wins : 0;
+    const draws = rec ? rec.draws : 0;
+    const losses = rec ? rec.losses : 0;
+    const played = rec ? rec.played : 0;
+    const recordText = `${wins}-${draws}-${losses}`;
+
+    return `
+      <div class="roster-tile">
+        <div class="roster-tile-title">
+          <button class="team-link" data-team-id="${team.id}">
+            ${team.name}
+          </button>
+        </div>
+        <div class="roster-tile-meta">
+          Coach: ${team.coachName || 'Unknown'}
+        </div>
+        <div class="roster-tile-meta">
+          Record: ${recordText} (G: ${played})
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  rosterQuickViewContainer.innerHTML = `
+    <div class="roster-tiles">
+      ${tiles}
+    </div>
+  `;
+
+  attachTeamLinks(rosterQuickViewContainer);
 }
 
 function renderStandings(league) {
@@ -1088,10 +1285,12 @@ function renderLeagueView() {
     leagueHeaderEl.innerHTML = '<div class="small">No league selected.</div>';
     standingsContainer.innerHTML = '';
     matchesContainer.innerHTML = '';
+    if (rosterQuickViewContainer) rosterQuickViewContainer.innerHTML = '';
     return;
   }
 
   renderLeagueHeader(league);
+  renderRosterQuickView(league); // NEW: quick tile view
   renderStandings(league);
   renderMatches(league);
 }
@@ -1287,6 +1486,7 @@ function renderMatchView() {
     </table>
   `;
 
+  // SPP table
   if (!match.sppLog || !match.sppLog.length) {
     matchSppContainer.innerHTML = `<div class="small">No SPP log recorded for this match.</div>`;
   } else {
@@ -1447,6 +1647,7 @@ if (saveBtn) {
       console.log(result);
       setAdminStatus('Saved league.json (new commit created).', 'ok');
 
+      // Refresh in-memory state after save
       const data = await fetchLeagueData();
       state.rawData = data;
       state.leagues = data.leagues || [];
@@ -1466,15 +1667,10 @@ if (saveBtn) {
 (async function init() {
   try {
     setGlobalStatus('Loading league data...');
-    const [leagueData, gameData] = await Promise.all([
-      fetchLeagueData(),
-      fetchGameData()
-    ]);
-
-    state.rawData = leagueData;
-    state.leagues = leagueData.leagues || [];
+    const data = await fetchLeagueData();
+    state.rawData = data;
+    state.leagues = data.leagues || [];
     state.currentLeagueId = state.leagues[0] ? state.leagues[0].id : null;
-    state.gameData = gameData;
 
     renderLeagueList();
     showLeagueListView();
@@ -1483,4 +1679,4 @@ if (saveBtn) {
     console.error(err);
     setGlobalStatus(err.message, 'error');
   }
-})()
+})();
