@@ -1,5 +1,3 @@
-Here’s a README you can drop straight into `README.md` in the repo and tweak however you like:
-
 ````markdown
 # Blood Bowl 3 League Tracker
 
