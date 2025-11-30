@@ -1,28 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BB3 League Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem 4rem;
+    }
+    h1, h2, h3 {
+      margin-bottom: 0.25rem;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #555;
+      margin-bottom: 1rem;
+    }
+    .status {
+      font-size: 0.9rem;
+      margin: 0.5rem 0 1rem;
+    }
+    .status.error {
+      color: red;
+    }
+    .status.ok {
+      color: #0a0;
+    }
+    .nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .nav button {
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      cursor: pointer;
+    }
+    .nav button.active {
+      background: #333;
+      color: #fff;
+      border-color: #333;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 0.5rem;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.35rem 0.5rem;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      border: 1px solid #ccc;
+      margin-left: 0.25rem;
+    }
+    .tag.completed {
+      border-color: #0a0;
+      color: #0a0;
+    }
+    .tag.scheduled {
+      border-color: #555;
+      color: #555;
+    }
+    .tag.in_progress {
+      border-color: #06c;
+      color: #06c;
+    }
+    .small {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .card-header h3 {
+      margin: 0;
+    }
+    .hidden {
+      display: none;
+    }
+    textarea {
+      width: 100%;
+      height: 260px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+    .inline-input {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .inline-input input {
+      padding: 0.2rem 0.4rem;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
 <body>
-  <h1>Blood Bowl 3 Tracker</h1>
-
-  <p>
-    This is the minimal JSON editor for your league data. Later you can replace
-    this with a proper UI (teams, matches, standings).
-  </p>
-
-  <!-- 🔒 Edit key UI -->
-  <div>
-    <label>
-      Edit key:
-      <input type="password" id="editKeyInput" placeholder="Enter edit key" />
-    </label>
-    <button id="rememberKeyBtn">Remember on this device</button>
+  <h1>Blood Bowl 3 League Tracker</h1>
+  <div class="subtitle">
+    Simple online tracker for in-person leagues. Data stored in GitHub via Cloudflare Worker.
   </div>
 
-  <div style="margin-top: 1rem;">
-    <button id="loadBtn">Load league.json</button>
-    <button id="saveBtn">Save league.json</button>
+  <div id="globalStatus" class="status"></div>
+
+  <div class="nav">
+    <button id="navLeague" class="active">League View</button>
+    <button id="navAdmin">Admin / Raw JSON</button>
   </div>
 
-  <p id="status"></p>
+  <!-- League View -->
+  <section id="leagueViewSection">
+    <div id="leagueHeader"></div>
 
-  <textarea id="leagueTextarea" placeholder="League JSON will appear here..."></textarea>
+    <section id="leagueTeamsSection">
+      <h2>Teams & Standings</h2>
+      <div class="small">
+        Standings are calculated from completed matches only.
+      </div>
+      <div id="standingsContainer"></div>
+    </section>
+
+    <section id="leagueMatchesSection">
+      <h2>Matches</h2>
+      <div id="inProgressContainer"></div>
+      <div id="matchesContainer"></div>
+    </section>
+  </section>
+
+  <!-- Admin / Raw JSON -->
+  <section id="adminSection" class="hidden">
+    <h2>Admin / Raw JSON Editor</h2>
+    <p class="small">
+      Use this to inspect or manually fix data. Changes require the edit key and will create a commit in the GitHub repo.
+    </p>
+    <div class="card">
+      <div class="card-header">
+        <h3>Authentication</h3>
+      </div>
+      <div class="inline-input">
+        <label for="editKeyInput">Edit key:</label>
+        <input type="password" id="editKeyInput" placeholder="Enter edit key" />
+        <button id="rememberKeyBtn">Remember on this device</button>
+      </div>
+      <div class="small">
+        The edit key is only needed for saving; loading is read-only.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>league.json</h3>
+        <div>
+          <button id="loadBtn">Load league.json</button>
+          <button id="saveBtn">Save league.json</button>
+        </div>
+      </div>
+      <p id="adminStatus" class="status"></p>
+      <textarea id="leagueTextarea" placeholder="League JSON will appear here..."></textarea>
+    </div>
+  </section>
 
   <script src="app.js"></script>
 </body>
+</html>
