@@ -13,6 +13,7 @@ const navAdminBtn = document.getElementById('navAdmin');
 // Sections
 const leagueListSection = document.getElementById('leagueListSection');
 const leagueViewSection = document.getElementById('leagueViewSection');
+const leagueManageSection = document.getElementById('leagueManageSection');
 const teamViewSection = document.getElementById('teamViewSection');
 const matchViewSection = document.getElementById('matchViewSection');
 const scoreboardSection = document.getElementById('scoreboardSection');
@@ -20,6 +21,7 @@ const adminSection = document.getElementById('adminSection');
 
 // League list elements
 const leagueListContainer = document.getElementById('leagueListContainer');
+const leagueCreateBtn = document.getElementById('leagueCreateBtn');
 
 // League detail elements
 const leagueBackBtn = document.getElementById('leagueBackBtn');
@@ -27,6 +29,26 @@ const leagueHeaderEl = document.getElementById('leagueHeader');
 const standingsContainer = document.getElementById('standingsContainer');
 const matchesContainer = document.getElementById('matchesContainer');
 const inProgressContainer = document.getElementById('inProgressContainer');
+
+// League manage elements
+const leagueManageHeader = document.getElementById('leagueManageHeader');
+const leagueManageBackBtn = document.getElementById('leagueManageBackBtn');
+const leagueManageStatusEl = document.getElementById('leagueManageStatus');
+
+const leagueManageIdInput = document.getElementById('leagueManageIdInput');
+const leagueManageNameInput = document.getElementById('leagueManageNameInput');
+const leagueManageSeasonInput = document.getElementById('leagueManageSeasonInput');
+const leagueManageStatusSelect = document.getElementById('leagueManageStatusSelect');
+const leagueManagePointsWinInput = document.getElementById('leagueManagePointsWinInput');
+const leagueManagePointsDrawInput = document.getElementById('leagueManagePointsDrawInput');
+const leagueManagePointsLossInput = document.getElementById('leagueManagePointsLossInput');
+const leagueManageMaxTeamsInput = document.getElementById('leagueManageMaxTeamsInput');
+const leagueManageLockTeamsInput = document.getElementById('leagueManageLockTeamsInput');
+
+const leagueManageTeamsList = document.getElementById('leagueManageTeamsList');
+const leagueManageTeamEditor = document.getElementById('leagueManageTeamEditor');
+const leagueManageAddNewTeamBtn = document.getElementById('leagueManageAddNewTeamBtn');
+const leagueManageSaveBtn = document.getElementById('leagueManageSaveBtn');
 
 // Team view elements
 const teamBackBtn = document.getElementById('teamBackBtn');
@@ -65,7 +87,9 @@ const state = {
   leagues: [],
   currentLeagueId: null,
   selectedTeamId: null,
-  selectedMatchId: null
+  selectedMatchId: null,
+  editingLeagueId: null,
+  editingTeamId: null
 };
 
 // ---- Utility status helpers ----
@@ -86,10 +110,23 @@ function setAdminStatus(msg, type = 'info') {
   if (type === 'ok') adminStatusEl.classList.add('ok');
 }
 
+function setLeagueManageStatus(msg, type = 'info') {
+  if (!leagueManageStatusEl) return;
+  leagueManageStatusEl.textContent = msg || '';
+  leagueManageStatusEl.className = 'small';
+  if (type === 'error') leagueManageStatusEl.style.color = 'red';
+  else if (type === 'ok') leagueManageStatusEl.style.color = '#0a0';
+  else leagueManageStatusEl.style.color = '#666';
+}
+
 // ---- Helpers to get current objects ----
 
+function getLeagueById(id) {
+  return state.leagues.find(l => l.id === id) || null;
+}
+
 function getCurrentLeague() {
-  return state.leagues.find(l => l.id === state.currentLeagueId) || null;
+  return getLeagueById(state.currentLeagueId);
 }
 
 function getTeamById(league, teamId) {
@@ -105,6 +142,7 @@ function getMatchById(league, matchId) {
 function hideAllMainSections() {
   leagueListSection.classList.add('hidden');
   leagueViewSection.classList.add('hidden');
+  leagueManageSection.classList.add('hidden');
   teamViewSection.classList.add('hidden');
   matchViewSection.classList.add('hidden');
   scoreboardSection.classList.add('hidden');
@@ -124,6 +162,7 @@ function showAdminShell() {
 
   leagueListSection.classList.add('hidden');
   leagueViewSection.classList.add('hidden');
+  leagueManageSection.classList.add('hidden');
   teamViewSection.classList.add('hidden');
   matchViewSection.classList.add('hidden');
   scoreboardSection.classList.add('hidden');
@@ -139,6 +178,12 @@ function showLeagueView() {
   showLeagueShell();
   hideAllMainSections();
   leagueViewSection.classList.remove('hidden');
+}
+
+function showLeagueManageView() {
+  showLeagueShell();
+  hideAllMainSections();
+  leagueManageSection.classList.remove('hidden');
 }
 
 function showTeamView() {
@@ -159,9 +204,12 @@ function showScoreboardView() {
   scoreboardSection.classList.remove('hidden');
 }
 
+// Nav click handlers
 navLeagueBtn.addEventListener('click', () => {
   state.selectedTeamId = null;
   state.selectedMatchId = null;
+  state.editingLeagueId = null;
+  state.editingTeamId = null;
   showLeagueListView();
   renderLeagueList();
 });
@@ -176,6 +224,15 @@ if (leagueBackBtn) {
     state.currentLeagueId = null;
     state.selectedTeamId = null;
     state.selectedMatchId = null;
+    showLeagueListView();
+    renderLeagueList();
+  });
+}
+
+if (leagueManageBackBtn) {
+  leagueManageBackBtn.addEventListener('click', () => {
+    state.editingLeagueId = null;
+    state.editingTeamId = null;
     showLeagueListView();
     renderLeagueList();
   });
@@ -368,7 +425,7 @@ function renderLeagueList() {
 
   if (!leagues.length) {
     leagueListContainer.innerHTML = `
-      <div class="small">No leagues defined yet. Use the Admin view to add one in league.json.</div>
+      <div class="small">No leagues defined yet. Use "Create New League" or the Admin view to add one.</div>
     `;
     return;
   }
@@ -382,14 +439,16 @@ function renderLeagueList() {
         <div class="league-card-main">
           <div class="league-card-title">${l.name}</div>
           <div class="small">
-            Season ${l.season} &mdash; Status: ${l.status}<br/>
+            ID: ${l.id} &mdash; Season ${l.season} &mdash; Status: ${l.status}<br/>
             Teams: ${l.teams.length} | Completed: ${completed} | Scheduled: ${scheduled}${
               inProgress ? ` | In progress: ${inProgress}` : ''
             }
           </div>
         </div>
         <div>
-          <button class="link-button" data-league-id="${l.id}">Open</button>
+          <button class="link-button league-open-btn" data-league-id="${l.id}">Open</button>
+          &nbsp;|&nbsp;
+          <button class="link-button league-manage-btn" data-league-id="${l.id}">Manage</button>
         </div>
       </div>
     `;
@@ -397,8 +456,7 @@ function renderLeagueList() {
 
   leagueListContainer.innerHTML = cards;
 
-  // Attach click handlers
-  leagueListContainer.querySelectorAll('.link-button').forEach(btn => {
+  leagueListContainer.querySelectorAll('.league-open-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-league-id');
       if (!id) return;
@@ -408,6 +466,350 @@ function renderLeagueList() {
       showLeagueView();
       renderLeagueView();
     });
+  });
+
+  leagueListContainer.querySelectorAll('.league-manage-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-league-id');
+      if (!id) return;
+      openLeagueManage(id);
+    });
+  });
+}
+
+// ---- League Manage: helpers ----
+
+function openLeagueManage(leagueIdOrNull) {
+  state.editingLeagueId = leagueIdOrNull || null;
+  state.editingTeamId = null;
+
+  const isNew = !leagueIdOrNull;
+  let league;
+
+  if (isNew) {
+    league = {
+      id: '',
+      name: '',
+      season: 1,
+      status: 'upcoming',
+      settings: {
+        pointsWin: 3,
+        pointsDraw: 1,
+        pointsLoss: 0,
+        tiebreakers: ['points', 'tdDiff', 'casDiff'],
+        maxTeams: 16,
+        lockTeams: false
+      },
+      teams: [],
+      matches: []
+    };
+  } else {
+    league = getLeagueById(leagueIdOrNull);
+    if (!league) {
+      setGlobalStatus('League not found for management.', 'error');
+      return;
+    }
+  }
+
+  // If new, we only hold it in form until Save; if existing, we edit in place
+  state._editingLeagueLocal = isNew ? league : league;
+
+  populateLeagueManageForm(league);
+  renderLeagueManageTeamsList(league);
+  renderLeagueManageTeamEditor(null);
+
+  leagueManageHeader.textContent = isNew ? 'Create New League' : `Manage League: ${league.name}`;
+  setLeagueManageStatus(isNew ? 'Fill out the fields to create a new league.' : 'Editing existing league.', 'info');
+
+  showLeagueManageView();
+}
+
+function populateLeagueManageForm(league) {
+  leagueManageIdInput.value = league.id || '';
+  leagueManageNameInput.value = league.name || '';
+  leagueManageSeasonInput.value = league.season != null ? league.season : 1;
+  leagueManageStatusSelect.value = league.status || 'active';
+
+  const s = league.settings || {};
+  leagueManagePointsWinInput.value = s.pointsWin != null ? s.pointsWin : 3;
+  leagueManagePointsDrawInput.value = s.pointsDraw != null ? s.pointsDraw : 1;
+  leagueManagePointsLossInput.value = s.pointsLoss != null ? s.pointsLoss : 0;
+  leagueManageMaxTeamsInput.value = s.maxTeams != null ? s.maxTeams : 16;
+  leagueManageLockTeamsInput.checked = !!s.lockTeams;
+}
+
+function renderLeagueManageTeamsList(league) {
+  if (!league.teams || !league.teams.length) {
+    leagueManageTeamsList.innerHTML = `<div class="small">No teams in this league yet.</div>`;
+    return;
+  }
+
+  const rows = league.teams.map(t => `
+    <tr>
+      <td>${t.id}</td>
+      <td>${t.name}</td>
+      <td>${t.race || ''}</td>
+      <td>${t.coachName || ''}</td>
+      <td>
+        <button class="link-button league-team-edit-btn" data-team-id="${t.id}">Edit</button>
+        &nbsp;|&nbsp;
+        <button class="link-button league-team-remove-btn" data-team-id="${t.id}">Remove</button>
+      </td>
+    </tr>
+  `).join('');
+
+  leagueManageTeamsList.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Race</th>
+          <th>Coach</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+
+  leagueManageTeamsList.querySelectorAll('.league-team-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const teamId = btn.getAttribute('data-team-id');
+      state.editingTeamId = teamId;
+      renderLeagueManageTeamEditor(teamId);
+    });
+  });
+
+  leagueManageTeamsList.querySelectorAll('.league-team-remove-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const teamId = btn.getAttribute('data-team-id');
+      removeTeamFromEditingLeague(teamId);
+    });
+  });
+}
+
+function removeTeamFromEditingLeague(teamId) {
+  const league = state._editingLeagueLocal;
+  if (!league) return;
+  const idx = league.teams.findIndex(t => t.id === teamId);
+  if (idx === -1) return;
+
+  league.teams.splice(idx, 1);
+  if (state.editingTeamId === teamId) {
+    state.editingTeamId = null;
+    renderLeagueManageTeamEditor(null);
+  }
+  renderLeagueManageTeamsList(league);
+  setLeagueManageStatus(`Removed team ${teamId} from league (not saved yet).`, 'info');
+}
+
+function renderLeagueManageTeamEditor(teamIdOrNull) {
+  const league = state._editingLeagueLocal;
+  if (!league) {
+    leagueManageTeamEditor.innerHTML = '';
+    return;
+  }
+
+  if (!teamIdOrNull) {
+    leagueManageTeamEditor.innerHTML = `<div class="small">Select a team to edit, or add a new team.</div>`;
+    return;
+  }
+
+  const team = league.teams.find(t => t.id === teamIdOrNull);
+  if (!team) {
+    leagueManageTeamEditor.innerHTML = `<div class="small">Team not found.</div>`;
+    return;
+  }
+
+  leagueManageTeamEditor.innerHTML = `
+    <h3>Edit Team</h3>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Team ID</label>
+        <input type="text" id="teamEditIdInput" value="${team.id}" />
+        <div class="small">Internal ID; must be unique in this league.</div>
+      </div>
+      <div class="form-field">
+        <label>Team Name</label>
+        <input type="text" id="teamEditNameInput" value="${team.name || ''}" />
+      </div>
+      <div class="form-field">
+        <label>Race</label>
+        <input type="text" id="teamEditRaceInput" value="${team.race || ''}" />
+      </div>
+      <div class="form-field">
+        <label>Coach Name</label>
+        <input type="text" id="teamEditCoachInput" value="${team.coachName || ''}" />
+      </div>
+      <div class="form-field">
+        <label>Team Value (TV)</label>
+        <input type="number" id="teamEditTvInput" value="${team.teamValue != null ? team.teamValue : ''}" />
+      </div>
+      <div class="form-field">
+        <label>Treasury</label>
+        <input type="number" id="teamEditTreasuryInput" value="${team.treasury != null ? team.treasury : 0}" />
+      </div>
+      <div class="form-field">
+        <label>Rerolls</label>
+        <input type="number" id="teamEditRerollsInput" value="${team.rerolls != null ? team.rerolls : 0}" />
+      </div>
+      <div class="form-field">
+        <label>Dedicated Fans</label>
+        <input type="number" id="teamEditDfInput" value="${team.dedicatedFans != null ? team.dedicatedFans : 0}" />
+      </div>
+    </div>
+    <div class="small" style="margin-top: 0.5rem;">
+      Player rosters will be editable in a separate view later; this is team-level meta only.
+    </div>
+  `;
+
+  // Wire input change -> update team object in memory
+  const idInput = document.getElementById('teamEditIdInput');
+  const nameInput = document.getElementById('teamEditNameInput');
+  const raceInput = document.getElementById('teamEditRaceInput');
+  const coachInput = document.getElementById('teamEditCoachInput');
+  const tvInput = document.getElementById('teamEditTvInput');
+  const treasuryInput = document.getElementById('teamEditTreasuryInput');
+  const rerollsInput = document.getElementById('teamEditRerollsInput');
+  const dfInput = document.getElementById('teamEditDfInput');
+
+  function apply() {
+    team.id = idInput.value.trim();
+    team.name = nameInput.value.trim();
+    team.race = raceInput.value.trim();
+    team.coachName = coachInput.value.trim();
+    team.teamValue = tvInput.value ? parseInt(tvInput.value, 10) : null;
+    team.treasury = treasuryInput.value ? parseInt(treasuryInput.value, 10) : 0;
+    team.rerolls = rerollsInput.value ? parseInt(rerollsInput.value, 10) : 0;
+    team.dedicatedFans = dfInput.value ? parseInt(dfInput.value, 10) : 0;
+  }
+
+  [idInput, nameInput, raceInput, coachInput, tvInput, treasuryInput, rerollsInput, dfInput].forEach(input => {
+    input.addEventListener('input', () => {
+      apply();
+      renderLeagueManageTeamsList(league); // update ID/name in the list as you type
+    });
+  });
+}
+
+// Add new team
+if (leagueManageAddNewTeamBtn) {
+  leagueManageAddNewTeamBtn.addEventListener('click', () => {
+    const league = state._editingLeagueLocal;
+    if (!league) return;
+
+    const newId = `team_${Date.now()}`;
+    const newTeam = {
+      id: newId,
+      name: 'New Team',
+      race: '',
+      coachName: '',
+      treasury: 0,
+      rerolls: 0,
+      dedicatedFans: 0,
+      teamValue: null,
+      players: []
+    };
+
+    league.teams.push(newTeam);
+    state.editingTeamId = newId;
+
+    renderLeagueManageTeamsList(league);
+    renderLeagueManageTeamEditor(newId);
+    setLeagueManageStatus(`Added new team ${newId} (not saved yet).`, 'info');
+  });
+}
+
+// Save League Changes
+if (leagueManageSaveBtn) {
+  leagueManageSaveBtn.addEventListener('click', async () => {
+    try {
+      const key = (editKeyInput.value || '').trim();
+      if (!key) {
+        setLeagueManageStatus('Edit key is required to save. Enter it in the Admin section.', 'error');
+        return;
+      }
+
+      let league = state._editingLeagueLocal;
+      if (!league) {
+        setLeagueManageStatus('No league loaded for editing.', 'error');
+        return;
+      }
+
+      // Apply form fields to league object
+      const newId = leagueManageIdInput.value.trim();
+      if (!newId) {
+        setLeagueManageStatus('League ID is required.', 'error');
+        return;
+      }
+
+      league.id = newId;
+      league.name = leagueManageNameInput.value.trim() || 'Unnamed League';
+      league.season = leagueManageSeasonInput.value ? parseInt(leagueManageSeasonInput.value, 10) : 1;
+      league.status = leagueManageStatusSelect.value || 'active';
+
+      league.settings = league.settings || {};
+      league.settings.pointsWin = leagueManagePointsWinInput.value ? parseInt(leagueManagePointsWinInput.value, 10) : 3;
+      league.settings.pointsDraw = leagueManagePointsDrawInput.value ? parseInt(leagueManagePointsDrawInput.value, 10) : 1;
+      league.settings.pointsLoss = leagueManagePointsLossInput.value ? parseInt(leagueManagePointsLossInput.value, 10) : 0;
+      league.settings.maxTeams = leagueManageMaxTeamsInput.value ? parseInt(leagueManageMaxTeamsInput.value, 10) : 16;
+      league.settings.lockTeams = !!leagueManageLockTeamsInput.checked;
+
+      // If this is a new league, push into global list
+      if (!state.editingLeagueId) {
+        // Check for duplicate ID
+        if (state.leagues.some(l => l.id === newId)) {
+          setLeagueManageStatus('A league with that ID already exists. Choose a different ID.', 'error');
+          return;
+        }
+        state.leagues.push(league);
+      } else {
+        // Existing league already mutated in place
+        // But we must ensure we didn't change ID to collide
+        const other = state.leagues.find(l => l.id === newId && l !== league);
+        if (other) {
+          setLeagueManageStatus('Another league already has that ID. Choose a different ID.', 'error');
+          return;
+        }
+      }
+
+      // Sync state.rawData
+      state.rawData = state.rawData || {};
+      state.rawData.leagues = state.leagues;
+
+      setLeagueManageStatus('Saving league changes to GitHub...', 'info');
+
+      const result = await saveLeagueJSON(JSON.stringify(state.rawData, null, 2), key);
+      console.log(result);
+
+      // Refresh from server to be safe
+      const data = await fetchLeagueData();
+      state.rawData = data;
+      state.leagues = data.leagues || [];
+
+      // Keep currentLeagueId = new/edited league
+      state.currentLeagueId = newId;
+      state.editingLeagueId = newId;
+
+      setLeagueManageStatus('League changes saved.', 'ok');
+      setGlobalStatus('League data reloaded after save.', 'ok');
+
+      renderLeagueList();
+      renderLeagueView();
+    } catch (err) {
+      console.error(err);
+      setLeagueManageStatus(err.message, 'error');
+    }
+  });
+}
+
+// Create New League button
+if (leagueCreateBtn) {
+  leagueCreateBtn.addEventListener('click', () => {
+    openLeagueManage(null);
   });
 }
 
@@ -422,7 +824,7 @@ function renderLeagueHeader(league) {
   leagueHeaderEl.innerHTML = `
     <h2>${league.name}</h2>
     <div class="small">
-      Season ${league.season} &mdash; Status: ${league.status}
+      ID: ${league.id} &mdash; Season ${league.season} &mdash; Status: ${league.status}
       <br />
       Teams: ${totalTeams} | Completed matches: ${completed} | Scheduled: ${scheduled}${
         inProgress ? ` | In progress: ${inProgress}` : ''
@@ -786,7 +1188,7 @@ function renderMatchView() {
     <div>
       Score: ${scoreText}
     </div>
-  `;
+ `;
 
   const homeCas = match.casualties ? (match.casualties.homeInflicted || 0) : 0;
   const awayCas = match.casualties ? (match.casualties.awayInflicted || 0) : 0;
@@ -865,7 +1267,6 @@ function renderMatchView() {
     `;
   }
 
-  // Scoreboard button (just navigation for now)
   if (matchOpenScoreboardBtn) {
     matchOpenScoreboardBtn.onclick = () => {
       showScoreboardView();
@@ -874,7 +1275,7 @@ function renderMatchView() {
   }
 }
 
-// ---- Rendering: Scoreboard View (read-only skeleton) ----
+// ---- Rendering: Scoreboard View ----
 
 function renderScoreboardView() {
   const league = getCurrentLeague();
@@ -932,7 +1333,6 @@ function renderScoreboardView() {
     <div>${away ? away.name : match.awayTeamId} (Away)</div>
   `;
 
-  // Simple roster listing (no ready/done yet, just read-only)
   if (home) {
     const rows = (home.players || []).map(p => `<li>#${p.number ?? ''} ${p.name}</li>`).join('');
     scoreboardHomeRosterEl.innerHTML = `
