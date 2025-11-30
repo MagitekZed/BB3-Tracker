@@ -2,14 +2,18 @@
   "leagues": [
     {
       "id": "league_1",
-      "name": "Demo League",
+      "name": "Test League",
       "season": 1,
       "status": "active",
       "settings": {
         "pointsWin": 3,
         "pointsDraw": 1,
         "pointsLoss": 0,
-        "tiebreakers": ["points", "tdDiff", "casDiff"],
+        "tiebreakers": [
+          "points",
+          "tdDiff",
+          "casDiff"
+        ],
         "maxTeams": 4,
         "lockTeams": true
       },
@@ -34,9 +38,16 @@
               "ag": 3,
               "pa": 4,
               "av": 10,
-              "skills": ["Block"],
-              "primarySkillAccess": ["G", "S"],
-              "secondarySkillAccess": ["A"],
+              "skills": [
+                "Block"
+              ],
+              "primarySkillAccess": [
+                "G",
+                "S"
+              ],
+              "secondarySkillAccess": [
+                "A"
+              ],
               "spp": 6,
               "level": 2,
               "advancements": [
@@ -64,9 +75,15 @@
               "ag": 4,
               "pa": 5,
               "av": 10,
-              "skills": ["Brawler"],
-              "primarySkillAccess": ["S"],
-              "secondarySkillAccess": ["G"],
+              "skills": [
+                "Brawler"
+              ],
+              "primarySkillAccess": [
+                "S"
+              ],
+              "secondarySkillAccess": [
+                "G"
+              ],
               "spp": 0,
               "level": 1,
               "advancements": [],
@@ -99,9 +116,16 @@
               "ag": 2,
               "pa": 4,
               "av": 8,
-              "skills": ["Catch", "Dodge"],
-              "primarySkillAccess": ["A"],
-              "secondarySkillAccess": ["G"],
+              "skills": [
+                "Catch",
+                "Dodge"
+              ],
+              "primarySkillAccess": [
+                "A"
+              ],
+              "secondarySkillAccess": [
+                "G"
+              ],
               "spp": 3,
               "level": 2,
               "advancements": [
@@ -130,8 +154,12 @@
               "pa": 4,
               "av": 9,
               "skills": [],
-              "primarySkillAccess": ["G"],
-              "secondarySkillAccess": ["A"],
+              "primarySkillAccess": [
+                "G"
+              ],
+              "secondarySkillAccess": [
+                "A"
+              ],
               "spp": 0,
               "level": 1,
               "advancements": [],
@@ -164,8 +192,14 @@
               "ag": 4,
               "pa": 5,
               "av": 10,
-              "skills": ["Block", "Tackle"],
-              "primarySkillAccess": ["G", "S"],
+              "skills": [
+                "Block",
+                "Tackle"
+              ],
+              "primarySkillAccess": [
+                "G",
+                "S"
+              ],
               "secondarySkillAccess": [],
               "spp": 2,
               "level": 1,
@@ -187,9 +221,15 @@
               "ag": 3,
               "pa": 4,
               "av": 9,
-              "skills": ["Sure Hands"],
-              "primarySkillAccess": ["G"],
-              "secondarySkillAccess": ["P"],
+              "skills": [
+                "Sure Hands"
+              ],
+              "primarySkillAccess": [
+                "G"
+              ],
+              "secondarySkillAccess": [
+                "P"
+              ],
               "spp": 0,
               "level": 1,
               "advancements": [],
@@ -222,9 +262,15 @@
               "ag": 2,
               "pa": 4,
               "av": 8,
-              "skills": ["Dodge"],
-              "primarySkillAccess": ["A"],
-              "secondarySkillAccess": ["G"],
+              "skills": [
+                "Dodge"
+              ],
+              "primarySkillAccess": [
+                "A"
+              ],
+              "secondarySkillAccess": [
+                "G"
+              ],
               "spp": 5,
               "level": 2,
               "advancements": [
@@ -252,8 +298,14 @@
               "ag": 3,
               "pa": 2,
               "av": 8,
-              "skills": ["Pass", "Sure Hands"],
-              "primarySkillAccess": ["G", "P"],
+              "skills": [
+                "Pass",
+                "Sure Hands"
+              ],
+              "primarySkillAccess": [
+                "G",
+                "P"
+              ],
               "secondarySkillAccess": [],
               "spp": 0,
               "level": 1,
