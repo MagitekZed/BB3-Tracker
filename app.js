@@ -6,46 +6,52 @@ const API_BASE = 'https://bb3-tracker-api.zedt-ninja.workers.dev';
 // DOM elements
 const globalStatusEl = document.getElementById('globalStatus');
 
-// Top nav
+// Nav buttons
 const navLeagueBtn = document.getElementById('navLeague');
 const navAdminBtn = document.getElementById('navAdmin');
 
 // Sections
+const leagueListSection = document.getElementById('leagueListSection');
 const leagueViewSection = document.getElementById('leagueViewSection');
 const teamViewSection = document.getElementById('teamViewSection');
 const matchViewSection = document.getElementById('matchViewSection');
-const scoreboardViewSection = document.getElementById('scoreboardViewSection');
+const scoreboardSection = document.getElementById('scoreboardSection');
 const adminSection = document.getElementById('adminSection');
 
-// League selector
-const leagueSelect = document.getElementById('leagueSelect');
+// League list elements
+const leagueListContainer = document.getElementById('leagueListContainer');
+
+// League detail elements
+const leagueBackBtn = document.getElementById('leagueBackBtn');
 const leagueHeaderEl = document.getElementById('leagueHeader');
 const standingsContainer = document.getElementById('standingsContainer');
 const matchesContainer = document.getElementById('matchesContainer');
 const inProgressContainer = document.getElementById('inProgressContainer');
 
-// Team view
+// Team view elements
 const teamBackBtn = document.getElementById('teamBackBtn');
 const teamHeaderEl = document.getElementById('teamHeader');
 const teamSummaryEl = document.getElementById('teamSummary');
 const teamRosterContainer = document.getElementById('teamRosterContainer');
 
-// Match view
+// Match view elements
 const matchBackBtn = document.getElementById('matchBackBtn');
 const matchHeaderEl = document.getElementById('matchHeader');
 const matchSummaryEl = document.getElementById('matchSummary');
-const matchInfoContainer = document.getElementById('matchInfoContainer');
-const matchSPPContainer = document.getElementById('matchSPPContainer');
-const openScoreboardBtn = document.getElementById('openScoreboardBtn');
+const matchOverviewContainer = document.getElementById('matchOverviewContainer');
+const matchSppContainer = document.getElementById('matchSppContainer');
+const matchOpenScoreboardBtn = document.getElementById('matchOpenScoreboardBtn');
 
-// Scoreboard view
-const scoreboardBackBtn = document.getElementById('scoreboardBackBtn');
+// Scoreboard elements
 const scoreboardHeaderEl = document.getElementById('scoreboardHeader');
-const scoreboardSummaryEl = document.getElementById('scoreboardSummary');
-const scoreboardCoreEl = document.getElementById('scoreboardCore');
-const scoreboardPlayersEl = document.getElementById('scoreboardPlayers');
+const scoreboardMetaEl = document.getElementById('scoreboardMeta');
+const scoreboardHomeRosterEl = document.getElementById('scoreboardHomeRoster');
+const scoreboardAwayRosterEl = document.getElementById('scoreboardAwayRoster');
+const scoreboardScoreMainEl = document.getElementById('scoreboardScoreMain');
+const scoreboardScoreMetaEl = document.getElementById('scoreboardScoreMeta');
+const scoreboardBackToMatchBtn = document.getElementById('scoreboardBackToMatchBtn');
 
-// Admin / JSON editor
+// Admin / JSON editor elements
 const editKeyInput = document.getElementById('editKeyInput');
 const rememberKeyBtn = document.getElementById('rememberKeyBtn');
 const loadBtn = document.getElementById('loadBtn');
@@ -55,9 +61,9 @@ const adminStatusEl = document.getElementById('adminStatus');
 
 // App state
 const state = {
-  rawData: null,        // full JSON from /api/league
-  currentLeague: null,  // currently selected league object
-  selectedLeagueId: null,
+  rawData: null,         // full JSON from /api/league
+  leagues: [],
+  currentLeagueId: null,
   selectedTeamId: null,
   selectedMatchId: null
 };
@@ -80,52 +86,106 @@ function setAdminStatus(msg, type = 'info') {
   if (type === 'ok') adminStatusEl.classList.add('ok');
 }
 
-// ---- Navigation helpers ----
+// ---- Helpers to get current objects ----
+
+function getCurrentLeague() {
+  return state.leagues.find(l => l.id === state.currentLeagueId) || null;
+}
+
+function getTeamById(league, teamId) {
+  return league.teams.find(t => t.id === teamId) || null;
+}
+
+function getMatchById(league, matchId) {
+  return league.matches.find(m => m.id === matchId) || null;
+}
+
+// ---- Navigation / view toggling ----
 
 function hideAllMainSections() {
+  leagueListSection.classList.add('hidden');
   leagueViewSection.classList.add('hidden');
   teamViewSection.classList.add('hidden');
   matchViewSection.classList.add('hidden');
-  scoreboardViewSection.classList.add('hidden');
+  scoreboardSection.classList.add('hidden');
   adminSection.classList.add('hidden');
 }
 
-function setNavActive(which) {
-  // which: 'league' | 'admin' | null
-  navLeagueBtn.classList.remove('active');
+function showLeagueShell() {
+  navLeagueBtn.classList.add('active');
   navAdminBtn.classList.remove('active');
-  if (which === 'league') navLeagueBtn.classList.add('active');
-  if (which === 'admin') navAdminBtn.classList.add('active');
+  adminSection.classList.add('hidden');
+}
+
+function showAdminShell() {
+  navLeagueBtn.classList.remove('active');
+  navAdminBtn.classList.add('active');
+  adminSection.classList.remove('hidden');
+
+  leagueListSection.classList.add('hidden');
+  leagueViewSection.classList.add('hidden');
+  teamViewSection.classList.add('hidden');
+  matchViewSection.classList.add('hidden');
+  scoreboardSection.classList.add('hidden');
+}
+
+function showLeagueListView() {
+  showLeagueShell();
+  hideAllMainSections();
+  leagueListSection.classList.remove('hidden');
 }
 
 function showLeagueView() {
-  setNavActive('league');
+  showLeagueShell();
   hideAllMainSections();
   leagueViewSection.classList.remove('hidden');
 }
 
-function showAdminView() {
-  setNavActive('admin');
+function showTeamView() {
+  showLeagueShell();
   hideAllMainSections();
-  adminSection.classList.remove('hidden');
+  teamViewSection.classList.remove('hidden');
+}
+
+function showMatchView() {
+  showLeagueShell();
+  hideAllMainSections();
+  matchViewSection.classList.remove('hidden');
+}
+
+function showScoreboardView() {
+  showLeagueShell();
+  hideAllMainSections();
+  scoreboardSection.classList.remove('hidden');
 }
 
 navLeagueBtn.addEventListener('click', () => {
   state.selectedTeamId = null;
   state.selectedMatchId = null;
-  showLeagueView();
+  showLeagueListView();
+  renderLeagueList();
 });
 
 navAdminBtn.addEventListener('click', () => {
-  state.selectedTeamId = null;
-  state.selectedMatchId = null;
-  showAdminView();
+  showAdminShell();
 });
+
+// Back buttons
+if (leagueBackBtn) {
+  leagueBackBtn.addEventListener('click', () => {
+    state.currentLeagueId = null;
+    state.selectedTeamId = null;
+    state.selectedMatchId = null;
+    showLeagueListView();
+    renderLeagueList();
+  });
+}
 
 if (teamBackBtn) {
   teamBackBtn.addEventListener('click', () => {
     state.selectedTeamId = null;
     showLeagueView();
+    renderLeagueView();
   });
 }
 
@@ -133,13 +193,14 @@ if (matchBackBtn) {
   matchBackBtn.addEventListener('click', () => {
     state.selectedMatchId = null;
     showLeagueView();
+    renderLeagueView();
   });
 }
 
-if (scoreboardBackBtn) {
-  scoreboardBackBtn.addEventListener('click', () => {
-    hideAllMainSections();
-    matchViewSection.classList.remove('hidden');
+if (scoreboardBackToMatchBtn) {
+  scoreboardBackToMatchBtn.addEventListener('click', () => {
+    showMatchView();
+    renderMatchView();
   });
 }
 
@@ -162,11 +223,11 @@ if (rememberKeyBtn) {
     localStorage.setItem('bb3_edit_key', key);
     setAdminStatus('Edit key saved on this device.', 'ok');
   });
-});
+}
 
 // ---- API helpers ----
 
-async function fetchLeague() {
+async function fetchLeagueData() {
   const res = await fetch(`${API_BASE}/api/league`);
   if (!res.ok) {
     const text = await res.text();
@@ -300,49 +361,276 @@ function computeStandings(league) {
   return arr;
 }
 
-// ---- League selector ----
+// ---- Rendering: League List ----
 
-function renderLeagueSelector(rawData) {
-  if (!leagueSelect || !rawData || !Array.isArray(rawData.leagues)) return;
+function renderLeagueList() {
+  const leagues = state.leagues || [];
 
-  const leagues = rawData.leagues;
-  leagueSelect.innerHTML = leagues
-    .map(l => `<option value="${l.id}">${l.name} (Season ${l.season})</option>`)
-    .join('');
-
-  // If no selected league yet, default to first
-  if (!state.selectedLeagueId && leagues.length > 0) {
-    state.selectedLeagueId = leagues[0].id;
+  if (!leagues.length) {
+    leagueListContainer.innerHTML = `
+      <div class="small">No leagues defined yet. Use the Admin view to add one in league.json.</div>
+    `;
+    return;
   }
 
-  // Sync select value
-  if (state.selectedLeagueId) {
-    leagueSelect.value = state.selectedLeagueId;
-  }
+  const cards = leagues.map(l => {
+    const completed = l.matches.filter(m => m.status === 'completed').length;
+    const scheduled = l.matches.filter(m => m.status === 'scheduled').length;
+    const inProgress = l.matches.filter(m => m.status === 'in_progress').length;
+    return `
+      <div class="league-card">
+        <div class="league-card-main">
+          <div class="league-card-title">${l.name}</div>
+          <div class="small">
+            Season ${l.season} &mdash; Status: ${l.status}<br/>
+            Teams: ${l.teams.length} | Completed: ${completed} | Scheduled: ${scheduled}${
+              inProgress ? ` | In progress: ${inProgress}` : ''
+            }
+          </div>
+        </div>
+        <div>
+          <button class="link-button" data-league-id="${l.id}">Open</button>
+        </div>
+      </div>
+    `;
+  }).join('');
 
-  leagueSelect.addEventListener('change', () => {
-    state.selectedLeagueId = leagueSelect.value;
-    const league = rawData.leagues.find(l => l.id === state.selectedLeagueId) || null;
-    state.currentLeague = league;
-    state.selectedTeamId = null;
-    state.selectedMatchId = null;
-    renderLeagueView();
-    showLeagueView();
+  leagueListContainer.innerHTML = cards;
+
+  // Attach click handlers
+  leagueListContainer.querySelectorAll('.link-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-league-id');
+      if (!id) return;
+      state.currentLeagueId = id;
+      state.selectedTeamId = null;
+      state.selectedMatchId = null;
+      showLeagueView();
+      renderLeagueView();
+    });
   });
 }
 
-// ---- Team Detail Rendering ----
+// ---- Rendering: League Detail ----
+
+function renderLeagueHeader(league) {
+  const totalTeams = league.teams.length;
+  const completed = league.matches.filter(m => m.status === 'completed').length;
+  const scheduled = league.matches.filter(m => m.status === 'scheduled').length;
+  const inProgress = league.matches.filter(m => m.status === 'in_progress').length;
+
+  leagueHeaderEl.innerHTML = `
+    <h2>${league.name}</h2>
+    <div class="small">
+      Season ${league.season} &mdash; Status: ${league.status}
+      <br />
+      Teams: ${totalTeams} | Completed matches: ${completed} | Scheduled: ${scheduled}${
+        inProgress ? ` | In progress: ${inProgress}` : ''
+      }
+    </div>
+  `;
+}
 
 function openTeamView(teamId) {
   state.selectedTeamId = teamId;
+  showTeamView();
   renderTeamView();
-  setNavActive(null);
-  hideAllMainSections();
-  teamViewSection.classList.remove('hidden');
 }
 
+function attachTeamLinks() {
+  const links = standingsContainer.querySelectorAll('.team-link');
+  links.forEach(el => {
+    el.addEventListener('click', () => {
+      const teamId = el.getAttribute('data-team-id');
+      if (teamId) openTeamView(teamId);
+    });
+  });
+}
+
+function renderStandings(league) {
+  const standings = computeStandings(league);
+
+  if (!standings.length) {
+    standingsContainer.innerHTML = `
+      <div class="small">No completed matches yet. Play some games!</div>
+    `;
+    return;
+  }
+
+  const rows = standings.map((s, idx) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>
+        <button class="team-link" data-team-id="${s.teamId}">
+          ${s.name}
+        </button>
+        <div class="small">${s.coachName || ''}</div>
+      </td>
+      <td>${s.played}</td>
+      <td>${s.wins}</td>
+      <td>${s.draws}</td>
+      <td>${s.losses}</td>
+      <td>${s.points}</td>
+      <td>${s.tdFor}/${s.tdAgainst} (${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff})</td>
+      <td>${s.casFor}/${s.casAgainst} (${s.casDiff >= 0 ? '+' : ''}${s.casDiff})</td>
+    </tr>
+  `).join('');
+
+  standingsContainer.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Team</th>
+          <th>G</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>Pts</th>
+          <th>TD For/Against (Diff)</th>
+          <th>Cas For/Against (Diff)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+
+  attachTeamLinks();
+}
+
+function openMatchView(matchId) {
+  state.selectedMatchId = matchId;
+  showMatchView();
+  renderMatchView();
+}
+
+function renderMatches(league) {
+  const teamsById = new Map();
+  league.teams.forEach(t => teamsById.set(t.id, t));
+
+  const hasInProgress = league.matches.some(m => m.status === 'in_progress');
+
+  if (hasInProgress) {
+    const inProg = league.matches.filter(m => m.status === 'in_progress');
+    const links = inProg.map(m => {
+      const home = teamsById.get(m.homeTeamId);
+      const away = teamsById.get(m.awayTeamId);
+      return `
+        <li>
+          Round ${m.round}: ${home ? home.name : m.homeTeamId}
+          vs
+          ${away ? away.name : m.awayTeamId}
+          <span class="tag in_progress">In progress</span>
+        </li>
+      `;
+    }).join('');
+    inProgressContainer.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <h3>Game(s) in Progress</h3>
+          <div class="small">Future: scoreboard resume links</div>
+        </div>
+        <ul>
+          ${links}
+        </ul>
+      </div>
+    `;
+  } else {
+    inProgressContainer.innerHTML = '';
+  }
+
+  if (!league.matches.length) {
+    matchesContainer.innerHTML = `
+      <div class="small">No matches defined for this league yet.</div>
+    `;
+    return;
+  }
+
+  const rows = league.matches
+    .slice()
+    .sort((a, b) => a.round - b.round || a.id.localeCompare(b.id))
+    .map(m => {
+      const home = teamsById.get(m.homeTeamId);
+      const away = teamsById.get(m.awayTeamId);
+      let scoreDisplay = '';
+      if (m.status === 'completed') {
+        scoreDisplay = `${m.score.home} - ${m.score.away}`;
+      } else if (m.status === 'scheduled') {
+        scoreDisplay = 'vs';
+      } else if (m.status === 'in_progress') {
+        scoreDisplay = `${m.score.home ?? 0} - ${m.score.away ?? 0}`;
+      }
+
+      const tagClass = m.status === 'completed'
+        ? 'completed'
+        : m.status === 'in_progress'
+        ? 'in_progress'
+        : 'scheduled';
+
+      return `
+        <tr>
+          <td>${m.round}</td>
+          <td>${home ? home.name : m.homeTeamId}</td>
+          <td>${away ? away.name : m.awayTeamId}</td>
+          <td>${scoreDisplay}</td>
+          <td>
+            <span class="tag ${tagClass}">${m.status.replace('_', ' ')}</span>
+          </td>
+          <td>${m.date || ''}</td>
+          <td>
+            <button class="link-button match-view-btn" data-match-id="${m.id}">View</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+  matchesContainer.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Round</th>
+          <th>Home</th>
+          <th>Away</th>
+          <th>Score</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+
+  matchesContainer.querySelectorAll('.match-view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-match-id');
+      if (id) openMatchView(id);
+    });
+  });
+}
+
+function renderLeagueView() {
+  const league = getCurrentLeague();
+  if (!league) {
+    leagueHeaderEl.innerHTML = '<div class="small">No league selected.</div>';
+    standingsContainer.innerHTML = '';
+    matchesContainer.innerHTML = '';
+    return;
+  }
+
+  renderLeagueHeader(league);
+  renderStandings(league);
+  renderMatches(league);
+}
+
+// ---- Rendering: Team View ----
+
 function renderTeamView() {
-  const league = state.currentLeague;
+  const league = getCurrentLeague();
   if (!league || !state.selectedTeamId) {
     teamHeaderEl.textContent = 'Team Detail';
     teamSummaryEl.textContent = 'No team selected.';
@@ -350,7 +638,7 @@ function renderTeamView() {
     return;
   }
 
-  const team = league.teams.find(t => t.id === state.selectedTeamId);
+  const team = getTeamById(league, state.selectedTeamId);
   if (!team) {
     teamHeaderEl.textContent = 'Team not found';
     teamSummaryEl.textContent = '';
@@ -457,93 +745,100 @@ function renderTeamView() {
   `;
 }
 
-// ---- Match Detail Rendering ----
-
-function openMatchView(matchId) {
-  state.selectedMatchId = matchId;
-  renderMatchView();
-  setNavActive(null);
-  hideAllMainSections();
-  matchViewSection.classList.remove('hidden');
-}
+// ---- Rendering: Match View ----
 
 function renderMatchView() {
-  const league = state.currentLeague;
+  const league = getCurrentLeague();
   if (!league || !state.selectedMatchId) {
     matchHeaderEl.textContent = 'Match Detail';
     matchSummaryEl.textContent = 'No match selected.';
-    matchInfoContainer.innerHTML = '';
-    matchSPPContainer.innerHTML = '';
+    matchOverviewContainer.innerHTML = '';
+    matchSppContainer.innerHTML = '';
     return;
   }
 
-  const match = league.matches.find(m => m.id === state.selectedMatchId);
+  const match = getMatchById(league, state.selectedMatchId);
   if (!match) {
     matchHeaderEl.textContent = 'Match not found';
     matchSummaryEl.textContent = '';
-    matchInfoContainer.innerHTML = '';
-    matchSPPContainer.innerHTML = '';
+    matchOverviewContainer.innerHTML = '';
+    matchSppContainer.innerHTML = '';
     return;
   }
 
-  const teamsById = new Map();
-  league.teams.forEach(t => teamsById.set(t.id, t));
+  const home = getTeamById(league, match.homeTeamId);
+  const away = getTeamById(league, match.awayTeamId);
 
-  const home = teamsById.get(match.homeTeamId);
-  const away = teamsById.get(match.awayTeamId);
-
-  matchHeaderEl.textContent = `${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}`;
+  matchHeaderEl.textContent = `Round ${match.round} — ${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}`;
 
   const scoreText = match.status === 'completed'
     ? `${match.score.home} - ${match.score.away}`
-    : match.status === 'in_progress'
-    ? `${match.score.home ?? 0} - ${match.score.away ?? 0} (in progress)`
-    : 'Not played yet';
+    : match.status === 'scheduled'
+    ? 'Scheduled'
+    : `${match.score.home ?? 0} - ${match.score.away ?? 0} (in progress)`;
 
   matchSummaryEl.innerHTML = `
-    Round ${match.round} &mdash; Status: <strong>${match.status.replace('_', ' ')}</strong><br/>
-    Score: ${scoreText}<br/>
-    Date: ${match.date || 'N/A'}
+    <div>
+      Status: <strong>${match.status.replace('_', ' ')}</strong>${
+        match.date ? ` &mdash; Date: ${match.date}` : ''
+      }
+    </div>
+    <div>
+      Score: ${scoreText}
+    </div>
   `;
 
-  // Basic info block
   const homeCas = match.casualties ? (match.casualties.homeInflicted || 0) : 0;
   const awayCas = match.casualties ? (match.casualties.awayInflicted || 0) : 0;
 
-  matchInfoContainer.innerHTML = `
-    <div class="card">
-      <div class="card-header">
-        <h3>Teams</h3>
-      </div>
-      <div class="small">
-        Home: <strong>${home ? home.name : match.homeTeamId}</strong><br/>
-        Away: <strong>${away ? away.name : match.awayTeamId}</strong>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>Score & Casualties</h3>
-      </div>
-      <div class="small">
-        Score: ${scoreText}<br/>
-        Casualties inflicted: ${home ? home.name : 'Home'} ${homeCas} &mdash; ${away ? away.name : 'Away'} ${awayCas}
-      </div>
-    </div>
+  matchOverviewContainer.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Side</th>
+          <th>Team</th>
+          <th>Score</th>
+          <th>Casualties Inflicted</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Home</td>
+          <td>${home ? home.name : match.homeTeamId}</td>
+          <td>${match.score && match.score.home != null ? match.score.home : 0}</td>
+          <td>${homeCas}</td>
+        </tr>
+        <tr>
+          <td>Away</td>
+          <td>${away ? away.name : match.awayTeamId}</td>
+          <td>${match.score && match.score.away != null ? match.score.away : 0}</td>
+          <td>${awayCas}</td>
+        </tr>
+      </tbody>
+    </table>
   `;
 
-  // SPP log
-  if (match.sppLog && match.sppLog.length) {
-    const rows = match.sppLog.map(entry => {
+  // SPP table
+  if (!match.sppLog || !match.sppLog.length) {
+    matchSppContainer.innerHTML = `<div class="small">No SPP log recorded for this match.</div>`;
+  } else {
+    const teamsById = new Map();
+    league.teams.forEach(t => teamsById.set(t.id, t));
+
+    const playersById = new Map();
+    league.teams.forEach(t => {
+      (t.players || []).forEach(p => playersById.set(p.id, { teamId: t.id, player: p }));
+    });
+
+    const rows = match.sppLog.map((entry, idx) => {
       const team = teamsById.get(entry.teamId);
+      const playerInfo = playersById.get(entry.playerId);
+      const playerName = playerInfo ? playerInfo.player.name : entry.playerId;
       const teamName = team ? team.name : entry.teamId;
-      const player = team && team.players
-        ? team.players.find(p => p.id === entry.playerId)
-        : null;
-      const playerName = player ? player.name : entry.playerId;
 
       return `
         <tr>
+          <td>${idx + 1}</td>
           <td>${teamName}</td>
           <td>${playerName}</td>
           <td>${entry.type}</td>
@@ -552,10 +847,11 @@ function renderMatchView() {
       `;
     }).join('');
 
-    matchSPPContainer.innerHTML = `
+    matchSppContainer.innerHTML = `
       <table>
         <thead>
           <tr>
+            <th>#</th>
             <th>Team</th>
             <th>Player</th>
             <th>Event</th>
@@ -567,362 +863,97 @@ function renderMatchView() {
         </tbody>
       </table>
     `;
-  } else {
-    matchSPPContainer.innerHTML = `<div class="small">No SPP log recorded for this match.</div>`;
+  }
+
+  // Scoreboard button (just navigation for now)
+  if (matchOpenScoreboardBtn) {
+    matchOpenScoreboardBtn.onclick = () => {
+      showScoreboardView();
+      renderScoreboardView();
+    };
   }
 }
 
-// ---- Scoreboard Rendering (read-only skeleton) ----
-
-function openScoreboardView() {
-  const league = state.currentLeague;
-  if (!league || !state.selectedMatchId) return;
-  renderScoreboardView();
-  setNavActive(null);
-  hideAllMainSections();
-  scoreboardViewSection.classList.remove('hidden');
-}
-
-if (openScoreboardBtn) {
-  openScoreboardBtn.addEventListener('click', openScoreboardView);
-}
+// ---- Rendering: Scoreboard View (read-only skeleton) ----
 
 function renderScoreboardView() {
-  const league = state.currentLeague;
+  const league = getCurrentLeague();
   if (!league || !state.selectedMatchId) {
     scoreboardHeaderEl.textContent = 'Scoreboard';
-    scoreboardSummaryEl.textContent = 'No match selected.';
-    scoreboardCoreEl.innerHTML = '';
-    scoreboardPlayersEl.innerHTML = '';
+    scoreboardMetaEl.textContent = 'No match selected.';
+    scoreboardHomeRosterEl.innerHTML = '';
+    scoreboardAwayRosterEl.innerHTML = '';
+    scoreboardScoreMainEl.textContent = '';
+    scoreboardScoreMetaEl.textContent = '';
     return;
   }
 
-  const match = league.matches.find(m => m.id === state.selectedMatchId);
+  const match = getMatchById(league, state.selectedMatchId);
   if (!match) {
     scoreboardHeaderEl.textContent = 'Scoreboard';
-    scoreboardSummaryEl.textContent = 'Match not found.';
-    scoreboardCoreEl.innerHTML = '';
-    scoreboardPlayersEl.innerHTML = '';
+    scoreboardMetaEl.textContent = 'Match not found.';
+    scoreboardHomeRosterEl.innerHTML = '';
+    scoreboardAwayRosterEl.innerHTML = '';
+    scoreboardScoreMainEl.textContent = '';
+    scoreboardScoreMetaEl.textContent = '';
     return;
   }
 
-  const teamsById = new Map();
-  league.teams.forEach(t => teamsById.set(t.id, t));
+  const home = getTeamById(league, match.homeTeamId);
+  const away = getTeamById(league, match.awayTeamId);
 
-  const home = teamsById.get(match.homeTeamId);
-  const away = teamsById.get(match.awayTeamId);
+  scoreboardHeaderEl.textContent = `Round ${match.round} — Scoreboard`;
 
-  scoreboardHeaderEl.textContent = `Scoreboard: ${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}`;
+  const half = match.liveState ? match.liveState.half : null;
+  const turnHome = match.liveState && match.liveState.turn ? match.liveState.turn.home : null;
+  const turnAway = match.liveState && match.liveState.turn ? match.liveState.turn.away : null;
 
-  const live = match.liveState || null;
-  const scoreText = match.score
-    ? `${match.score.home ?? 0} - ${match.score.away ?? 0}`
-    : '0 - 0';
-
-  const half = live ? live.half : null;
-  const turnHome = live && live.turn ? live.turn.home : null;
-  const turnAway = live && live.turn ? live.turn.away : null;
-  const rrHome = live && live.rerolls ? live.rerolls.home : null;
-  const rrAway = live && live.rerolls ? live.rerolls.away : null;
-
-  const statusText = match.status === 'in_progress'
-    ? 'In progress'
-    : match.status === 'completed'
-    ? 'Completed'
-    : 'Not started';
-
-  scoreboardSummaryEl.innerHTML = `
-    Status: <strong>${statusText}</strong><br/>
-    Round ${match.round} &mdash; Date: ${match.date || 'N/A'}
-  `;
-
-  scoreboardCoreEl.innerHTML = `
-    <div class="card">
-      <div class="card-header">
-        <h3>Score</h3>
-      </div>
-      <div class="small">
-        ${home ? home.name : 'Home'} vs ${away ? away.name : 'Away'}<br/>
-        <strong>${scoreText}</strong>
-      </div>
+  scoreboardMetaEl.innerHTML = `
+    <div>
+      ${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}
     </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>Turn & Half</h3>
-      </div>
-      <div class="small">
-        Half: ${half != null ? half : 'N/A'}<br/>
-        ${home ? home.name : 'Home'} turn: ${turnHome != null ? turnHome : 'N/A'}<br/>
-        ${away ? away.name : 'Away'} turn: ${turnAway != null ? turnAway : 'N/A'}
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>Rerolls</h3>
-      </div>
-      <div class="small">
-        ${home ? home.name : 'Home'} rerolls: ${rrHome != null ? rrHome : 'N/A'}<br/>
-        ${away ? away.name : 'Away'} rerolls: ${rrAway != null ? rrAway : 'N/A'}
-      </div>
+    <div>
+      Status: <strong>${match.status.replace('_', ' ')}</strong>${
+        half ? ` &mdash; Half: ${half}` : ''
+      }${
+        turnHome != null && turnAway != null
+          ? ` &mdash; Turns (Home/Away): ${turnHome}/${turnAway}`
+          : ''
+      }
     </div>
   `;
 
-  // Player live state (read-only placeholder)
-  if (live && Array.isArray(live.playerStates) && live.playerStates.length > 0) {
-    const rows = live.playerStates.map(ps => {
-      const team = teamsById.get(ps.teamId);
-      const teamName = team ? team.name : ps.teamId;
-      const player = team && team.players
-        ? team.players.find(p => p.id === ps.playerId)
-        : null;
-      const playerName = player ? player.name : ps.playerId;
+  const homeScore = match.score && match.score.home != null ? match.score.home : 0;
+  const awayScore = match.score && match.score.away != null ? match.score.away : 0;
 
-      return `
-        <tr>
-          <td>${teamName}</td>
-          <td>${playerName}</td>
-          <td>${ps.status}</td>
-        </tr>
-      `;
-    }).join('');
+  scoreboardScoreMainEl.textContent = `${homeScore} - ${awayScore}`;
+  scoreboardScoreMetaEl.innerHTML = `
+    <div>${home ? home.name : match.homeTeamId} (Home)</div>
+    <div>${away ? away.name : match.awayTeamId} (Away)</div>
+  `;
 
-    scoreboardPlayersEl.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>Player</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows}
-        </tbody>
-      </table>
+  // Simple roster listing (no ready/done yet, just read-only)
+  if (home) {
+    const rows = (home.players || []).map(p => `<li>#${p.number ?? ''} ${p.name}</li>`).join('');
+    scoreboardHomeRosterEl.innerHTML = `
+      <h3>${home.name}</h3>
+      <div class="small">Home team roster (read-only)</div>
+      <ul>${rows}</ul>
     `;
   } else {
-    scoreboardPlayersEl.innerHTML = `
-      <div class="small">
-        No live player state recorded yet. When we add in-game tracking, this will show per-player status (ready, done, KO, etc.).
-      </div>
-    `;
-  }
-}
-
-// ---- League View Rendering ----
-
-function renderLeagueHeader(league) {
-  const totalTeams = league.teams.length;
-  const completed = league.matches.filter(m => m.status === 'completed').length;
-  const scheduled = league.matches.filter(m => m.status === 'scheduled').length;
-  const inProgress = league.matches.filter(m => m.status === 'in_progress').length;
-
-  leagueHeaderEl.innerHTML = `
-    <h2>${league.name}</h2>
-    <div class="small">
-      Season ${league.season} &mdash; Status: ${league.status}
-      <br />
-      Teams: ${totalTeams} | Completed matches: ${completed} | Scheduled: ${scheduled}${
-        inProgress ? ` | In progress: ${inProgress}` : ''
-      }
-    </div>
-  `;
-}
-
-function attachTeamLinks() {
-  // After standings rendered, make team names clickable
-  const links = standingsContainer.querySelectorAll('.team-link');
-  links.forEach(el => {
-    el.addEventListener('click', () => {
-      const teamId = el.getAttribute('data-team-id');
-      if (teamId) {
-        openTeamView(teamId);
-      }
-    });
-  });
-}
-
-function attachMatchLinks() {
-  const buttons = matchesContainer.querySelectorAll('.match-link');
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const matchId = btn.getAttribute('data-match-id');
-      if (matchId) openMatchView(matchId);
-    });
-  });
-}
-
-function renderStandings(league) {
-  const standings = computeStandings(league);
-
-  if (!standings.length) {
-    standingsContainer.innerHTML = `
-      <div class="small">No completed matches yet. Play some games!</div>
-    `;
-    return;
+    scoreboardHomeRosterEl.innerHTML = `<div class="small">Home team not found.</div>`;
   }
 
-  const rows = standings.map((s, idx) => {
-    return `
-      <tr>
-        <td>${idx + 1}</td>
-        <td>
-          <button class="team-link" data-team-id="${s.teamId}">
-            ${s.name}
-          </button>
-          <div class="small">${s.coachName || ''}</div>
-        </td>
-        <td>${s.played}</td>
-        <td>${s.wins}</td>
-        <td>${s.draws}</td>
-        <td>${s.losses}</td>
-        <td>${s.points}</td>
-        <td>${s.tdFor}/${s.tdAgainst} (${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff})</td>
-        <td>${s.casFor}/${s.casAgainst} (${s.casDiff >= 0 ? '+' : ''}${s.casDiff})</td>
-      </tr>
-    `;
-  }).join('');
-
-  standingsContainer.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Team</th>
-          <th>G</th>
-          <th>W</th>
-          <th>D</th>
-          <th>L</th>
-          <th>Pts</th>
-          <th>TD For/Against (Diff)</th>
-          <th>Cas For/Against (Diff)</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows}
-      </tbody>
-    </table>
-  `;
-
-  attachTeamLinks();
-}
-
-function renderMatches(league) {
-  const teamsById = new Map();
-  league.teams.forEach(t => teamsById.set(t.id, t));
-
-  const hasInProgress = league.matches.some(m => m.status === 'in_progress');
-
-  if (hasInProgress) {
-    const inProg = league.matches.filter(m => m.status === 'in_progress');
-    const links = inProg.map(m => {
-      const home = teamsById.get(m.homeTeamId);
-      const away = teamsById.get(m.awayTeamId);
-      return `
-        <li>
-          Round ${m.round}: ${home ? home.name : m.homeTeamId}
-          vs
-          ${away ? away.name : m.awayTeamId}
-          <span class="tag in_progress">In progress</span>
-        </li>
-      `;
-    }).join('');
-    inProgressContainer.innerHTML = `
-      <div class="card">
-        <div class="card-header">
-          <h3>Game(s) in Progress</h3>
-          <div class="small">Future: link scoreboard view by match ID</div>
-        </div>
-        <ul>
-          ${links}
-        </ul>
-      </div>
+  if (away) {
+    const rows = (away.players || []).map(p => `<li>#${p.number ?? ''} ${p.name}</li>`).join('');
+    scoreboardAwayRosterEl.innerHTML = `
+      <h3>${away.name}</h3>
+      <div class="small">Away team roster (read-only)</div>
+      <ul>${rows}</ul>
     `;
   } else {
-    inProgressContainer.innerHTML = '';
+    scoreboardAwayRosterEl.innerHTML = `<div class="small">Away team not found.</div>`;
   }
-
-  if (!league.matches.length) {
-    matchesContainer.innerHTML = `
-      <div class="small">No matches defined for this league yet.</div>
-    `;
-    return;
-  }
-
-  const rows = league.matches
-    .slice()
-    .sort((a, b) => a.round - b.round || a.id.localeCompare(b.id))
-    .map(m => {
-      const home = teamsById.get(m.homeTeamId);
-      const away = teamsById.get(m.awayTeamId);
-      let scoreDisplay = '';
-      if (m.status === 'completed') {
-        scoreDisplay = `${m.score.home} - ${m.score.away}`;
-      } else if (m.status === 'scheduled') {
-        scoreDisplay = 'vs';
-      } else if (m.status === 'in_progress') {
-        scoreDisplay = `${m.score.home ?? 0} - ${m.score.away ?? 0}`;
-      }
-
-      const tagClass = m.status === 'completed'
-        ? 'completed'
-        : m.status === 'in_progress'
-        ? 'in_progress'
-        : 'scheduled';
-
-      return `
-        <tr>
-          <td>${m.round}</td>
-          <td>${home ? home.name : m.homeTeamId}</td>
-          <td>${away ? away.name : m.awayTeamId}</td>
-          <td>${scoreDisplay}</td>
-          <td>
-            <span class="tag ${tagClass}">${m.status.replace('_', ' ')}</span>
-          </td>
-          <td>${m.date || ''}</td>
-          <td>
-            <button class="match-link" data-match-id="${m.id}">Details</button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-  matchesContainer.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Round</th>
-          <th>Home</th>
-          <th>Away</th>
-          <th>Score</th>
-          <th>Status</th>
-          <th>Date</th>
-          <th>View</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows}
-      </tbody>
-    </table>
-  `;
-
-  attachMatchLinks();
-}
-
-function renderLeagueView() {
-  const league = state.currentLeague;
-  if (!league) {
-    leagueHeaderEl.innerHTML = '<div class="small">No league data loaded.</div>';
-    standingsContainer.innerHTML = '';
-    matchesContainer.innerHTML = '';
-    return;
-  }
-
-  renderLeagueHeader(league);
-  renderStandings(league);
-  renderMatches(league);
 }
 
 // ---- Admin / JSON editor behavior ----
@@ -931,7 +962,7 @@ if (loadBtn) {
   loadBtn.addEventListener('click', async () => {
     try {
       setAdminStatus('Loading league.json...', 'info');
-      const data = await fetchLeague();
+      const data = await fetchLeagueData();
       leagueTextarea.value = JSON.stringify(data, null, 2);
       setAdminStatus('Loaded league.json', 'ok');
     } catch (err) {
@@ -951,12 +982,13 @@ if (saveBtn) {
       setAdminStatus('Saved league.json (new commit created).', 'ok');
 
       // Refresh in-memory state after save
-      const data = await fetchLeague();
+      const data = await fetchLeagueData();
       state.rawData = data;
-      renderLeagueSelector(data);
-      state.currentLeague = data.leagues.find(l => l.id === state.selectedLeagueId) || data.leagues[0] || null;
+      state.leagues = data.leagues || [];
+      state.currentLeagueId = state.leagues[0] ? state.leagues[0].id : null;
+      renderLeagueList();
       renderLeagueView();
-      setGlobalStatus('League reloaded after save.', 'ok');
+      setGlobalStatus('League data reloaded after save.', 'ok');
     } catch (err) {
       console.error(err);
       setAdminStatus(err.message, 'error');
@@ -969,20 +1001,13 @@ if (saveBtn) {
 (async function init() {
   try {
     setGlobalStatus('Loading league data...');
-    const data = await fetchLeague();
+    const data = await fetchLeagueData();
     state.rawData = data;
+    state.leagues = data.leagues || [];
+    state.currentLeagueId = state.leagues[0] ? state.leagues[0].id : null;
 
-    if (data.leagues && data.leagues.length > 0) {
-      // default selected league
-      state.selectedLeagueId = data.leagues[0].id;
-      state.currentLeague = data.leagues[0];
-    } else {
-      state.currentLeague = null;
-    }
-
-    renderLeagueSelector(data);
-    renderLeagueView();
-    showLeagueView();
+    renderLeagueList();
+    showLeagueListView();
     setGlobalStatus('League data loaded.', 'ok');
   } catch (err) {
     console.error(err);
