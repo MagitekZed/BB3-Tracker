@@ -6,24 +6,46 @@ const API_BASE = 'https://bb3-tracker-api.zedt-ninja.workers.dev';
 // DOM elements
 const globalStatusEl = document.getElementById('globalStatus');
 
+// Top nav
 const navLeagueBtn = document.getElementById('navLeague');
 const navAdminBtn = document.getElementById('navAdmin');
 
+// Sections
 const leagueViewSection = document.getElementById('leagueViewSection');
-const adminSection = document.getElementById('adminSection');
 const teamViewSection = document.getElementById('teamViewSection');
-const teamBackBtn = document.getElementById('teamBackBtn');
-const teamHeaderEl = document.getElementById('teamHeader');
-const teamSummaryEl = document.getElementById('teamSummary');
-const teamRosterContainer = document.getElementById('teamRosterContainer');
+const matchViewSection = document.getElementById('matchViewSection');
+const scoreboardViewSection = document.getElementById('scoreboardViewSection');
+const adminSection = document.getElementById('adminSection');
 
-// League view elements
+// League selector
+const leagueSelect = document.getElementById('leagueSelect');
 const leagueHeaderEl = document.getElementById('leagueHeader');
 const standingsContainer = document.getElementById('standingsContainer');
 const matchesContainer = document.getElementById('matchesContainer');
 const inProgressContainer = document.getElementById('inProgressContainer');
 
-// Admin / JSON editor elements
+// Team view
+const teamBackBtn = document.getElementById('teamBackBtn');
+const teamHeaderEl = document.getElementById('teamHeader');
+const teamSummaryEl = document.getElementById('teamSummary');
+const teamRosterContainer = document.getElementById('teamRosterContainer');
+
+// Match view
+const matchBackBtn = document.getElementById('matchBackBtn');
+const matchHeaderEl = document.getElementById('matchHeader');
+const matchSummaryEl = document.getElementById('matchSummary');
+const matchInfoContainer = document.getElementById('matchInfoContainer');
+const matchSPPContainer = document.getElementById('matchSPPContainer');
+const openScoreboardBtn = document.getElementById('openScoreboardBtn');
+
+// Scoreboard view
+const scoreboardBackBtn = document.getElementById('scoreboardBackBtn');
+const scoreboardHeaderEl = document.getElementById('scoreboardHeader');
+const scoreboardSummaryEl = document.getElementById('scoreboardSummary');
+const scoreboardCoreEl = document.getElementById('scoreboardCore');
+const scoreboardPlayersEl = document.getElementById('scoreboardPlayers');
+
+// Admin / JSON editor
 const editKeyInput = document.getElementById('editKeyInput');
 const rememberKeyBtn = document.getElementById('rememberKeyBtn');
 const loadBtn = document.getElementById('loadBtn');
@@ -34,8 +56,10 @@ const adminStatusEl = document.getElementById('adminStatus');
 // App state
 const state = {
   rawData: null,        // full JSON from /api/league
-  currentLeague: null,
-  selectedTeamId: null
+  currentLeague: null,  // currently selected league object
+  selectedLeagueId: null,
+  selectedTeamId: null,
+  selectedMatchId: null
 };
 
 // ---- Utility status helpers ----
@@ -56,33 +80,66 @@ function setAdminStatus(msg, type = 'info') {
   if (type === 'ok') adminStatusEl.classList.add('ok');
 }
 
-// ---- Navigation between views ----
+// ---- Navigation helpers ----
 
-function showLeagueView() {
-  navLeagueBtn.classList.add('active');
-  navAdminBtn.classList.remove('active');
-
-  leagueViewSection.classList.remove('hidden');
+function hideAllMainSections() {
+  leagueViewSection.classList.add('hidden');
   teamViewSection.classList.add('hidden');
+  matchViewSection.classList.add('hidden');
+  scoreboardViewSection.classList.add('hidden');
   adminSection.classList.add('hidden');
 }
 
-function showAdminView() {
+function setNavActive(which) {
+  // which: 'league' | 'admin' | null
   navLeagueBtn.classList.remove('active');
-  navAdminBtn.classList.add('active');
+  navAdminBtn.classList.remove('active');
+  if (which === 'league') navLeagueBtn.classList.add('active');
+  if (which === 'admin') navAdminBtn.classList.add('active');
+}
 
-  leagueViewSection.classList.add('hidden');
-  teamViewSection.classList.add('hidden');
+function showLeagueView() {
+  setNavActive('league');
+  hideAllMainSections();
+  leagueViewSection.classList.remove('hidden');
+}
+
+function showAdminView() {
+  setNavActive('admin');
+  hideAllMainSections();
   adminSection.classList.remove('hidden');
 }
 
-navLeagueBtn.addEventListener('click', showLeagueView);
-navAdminBtn.addEventListener('click', showAdminView);
+navLeagueBtn.addEventListener('click', () => {
+  state.selectedTeamId = null;
+  state.selectedMatchId = null;
+  showLeagueView();
+});
+
+navAdminBtn.addEventListener('click', () => {
+  state.selectedTeamId = null;
+  state.selectedMatchId = null;
+  showAdminView();
+});
 
 if (teamBackBtn) {
   teamBackBtn.addEventListener('click', () => {
     state.selectedTeamId = null;
     showLeagueView();
+  });
+}
+
+if (matchBackBtn) {
+  matchBackBtn.addEventListener('click', () => {
+    state.selectedMatchId = null;
+    showLeagueView();
+  });
+}
+
+if (scoreboardBackBtn) {
+  scoreboardBackBtn.addEventListener('click', () => {
+    hideAllMainSections();
+    matchViewSection.classList.remove('hidden');
   });
 }
 
@@ -105,7 +162,7 @@ if (rememberKeyBtn) {
     localStorage.setItem('bb3_edit_key', key);
     setAdminStatus('Edit key saved on this device.', 'ok');
   });
-}
+});
 
 // ---- API helpers ----
 
@@ -243,17 +300,44 @@ function computeStandings(league) {
   return arr;
 }
 
+// ---- League selector ----
+
+function renderLeagueSelector(rawData) {
+  if (!leagueSelect || !rawData || !Array.isArray(rawData.leagues)) return;
+
+  const leagues = rawData.leagues;
+  leagueSelect.innerHTML = leagues
+    .map(l => `<option value="${l.id}">${l.name} (Season ${l.season})</option>`)
+    .join('');
+
+  // If no selected league yet, default to first
+  if (!state.selectedLeagueId && leagues.length > 0) {
+    state.selectedLeagueId = leagues[0].id;
+  }
+
+  // Sync select value
+  if (state.selectedLeagueId) {
+    leagueSelect.value = state.selectedLeagueId;
+  }
+
+  leagueSelect.addEventListener('change', () => {
+    state.selectedLeagueId = leagueSelect.value;
+    const league = rawData.leagues.find(l => l.id === state.selectedLeagueId) || null;
+    state.currentLeague = league;
+    state.selectedTeamId = null;
+    state.selectedMatchId = null;
+    renderLeagueView();
+    showLeagueView();
+  });
+}
+
 // ---- Team Detail Rendering ----
 
 function openTeamView(teamId) {
   state.selectedTeamId = teamId;
   renderTeamView();
-  // Show team section, hide league/admin
-  navLeagueBtn.classList.remove('active');
-  navAdminBtn.classList.remove('active');
-
-  leagueViewSection.classList.add('hidden');
-  adminSection.classList.add('hidden');
+  setNavActive(null);
+  hideAllMainSections();
   teamViewSection.classList.remove('hidden');
 }
 
@@ -276,7 +360,6 @@ function renderTeamView() {
 
   teamHeaderEl.textContent = team.name;
 
-  // Get standings entry for this team (if any)
   const standings = computeStandings(league);
   const entry = standings.find(s => s.teamId === team.id);
 
@@ -374,7 +457,261 @@ function renderTeamView() {
   `;
 }
 
-// ---- Rendering: League View ----
+// ---- Match Detail Rendering ----
+
+function openMatchView(matchId) {
+  state.selectedMatchId = matchId;
+  renderMatchView();
+  setNavActive(null);
+  hideAllMainSections();
+  matchViewSection.classList.remove('hidden');
+}
+
+function renderMatchView() {
+  const league = state.currentLeague;
+  if (!league || !state.selectedMatchId) {
+    matchHeaderEl.textContent = 'Match Detail';
+    matchSummaryEl.textContent = 'No match selected.';
+    matchInfoContainer.innerHTML = '';
+    matchSPPContainer.innerHTML = '';
+    return;
+  }
+
+  const match = league.matches.find(m => m.id === state.selectedMatchId);
+  if (!match) {
+    matchHeaderEl.textContent = 'Match not found';
+    matchSummaryEl.textContent = '';
+    matchInfoContainer.innerHTML = '';
+    matchSPPContainer.innerHTML = '';
+    return;
+  }
+
+  const teamsById = new Map();
+  league.teams.forEach(t => teamsById.set(t.id, t));
+
+  const home = teamsById.get(match.homeTeamId);
+  const away = teamsById.get(match.awayTeamId);
+
+  matchHeaderEl.textContent = `${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}`;
+
+  const scoreText = match.status === 'completed'
+    ? `${match.score.home} - ${match.score.away}`
+    : match.status === 'in_progress'
+    ? `${match.score.home ?? 0} - ${match.score.away ?? 0} (in progress)`
+    : 'Not played yet';
+
+  matchSummaryEl.innerHTML = `
+    Round ${match.round} &mdash; Status: <strong>${match.status.replace('_', ' ')}</strong><br/>
+    Score: ${scoreText}<br/>
+    Date: ${match.date || 'N/A'}
+  `;
+
+  // Basic info block
+  const homeCas = match.casualties ? (match.casualties.homeInflicted || 0) : 0;
+  const awayCas = match.casualties ? (match.casualties.awayInflicted || 0) : 0;
+
+  matchInfoContainer.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3>Teams</h3>
+      </div>
+      <div class="small">
+        Home: <strong>${home ? home.name : match.homeTeamId}</strong><br/>
+        Away: <strong>${away ? away.name : match.awayTeamId}</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Score & Casualties</h3>
+      </div>
+      <div class="small">
+        Score: ${scoreText}<br/>
+        Casualties inflicted: ${home ? home.name : 'Home'} ${homeCas} &mdash; ${away ? away.name : 'Away'} ${awayCas}
+      </div>
+    </div>
+  `;
+
+  // SPP log
+  if (match.sppLog && match.sppLog.length) {
+    const rows = match.sppLog.map(entry => {
+      const team = teamsById.get(entry.teamId);
+      const teamName = team ? team.name : entry.teamId;
+      const player = team && team.players
+        ? team.players.find(p => p.id === entry.playerId)
+        : null;
+      const playerName = player ? player.name : entry.playerId;
+
+      return `
+        <tr>
+          <td>${teamName}</td>
+          <td>${playerName}</td>
+          <td>${entry.type}</td>
+          <td>${entry.amount}</td>
+        </tr>
+      `;
+    }).join('');
+
+    matchSPPContainer.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Player</th>
+            <th>Event</th>
+            <th>SPP</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+  } else {
+    matchSPPContainer.innerHTML = `<div class="small">No SPP log recorded for this match.</div>`;
+  }
+}
+
+// ---- Scoreboard Rendering (read-only skeleton) ----
+
+function openScoreboardView() {
+  const league = state.currentLeague;
+  if (!league || !state.selectedMatchId) return;
+  renderScoreboardView();
+  setNavActive(null);
+  hideAllMainSections();
+  scoreboardViewSection.classList.remove('hidden');
+}
+
+if (openScoreboardBtn) {
+  openScoreboardBtn.addEventListener('click', openScoreboardView);
+}
+
+function renderScoreboardView() {
+  const league = state.currentLeague;
+  if (!league || !state.selectedMatchId) {
+    scoreboardHeaderEl.textContent = 'Scoreboard';
+    scoreboardSummaryEl.textContent = 'No match selected.';
+    scoreboardCoreEl.innerHTML = '';
+    scoreboardPlayersEl.innerHTML = '';
+    return;
+  }
+
+  const match = league.matches.find(m => m.id === state.selectedMatchId);
+  if (!match) {
+    scoreboardHeaderEl.textContent = 'Scoreboard';
+    scoreboardSummaryEl.textContent = 'Match not found.';
+    scoreboardCoreEl.innerHTML = '';
+    scoreboardPlayersEl.innerHTML = '';
+    return;
+  }
+
+  const teamsById = new Map();
+  league.teams.forEach(t => teamsById.set(t.id, t));
+
+  const home = teamsById.get(match.homeTeamId);
+  const away = teamsById.get(match.awayTeamId);
+
+  scoreboardHeaderEl.textContent = `Scoreboard: ${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}`;
+
+  const live = match.liveState || null;
+  const scoreText = match.score
+    ? `${match.score.home ?? 0} - ${match.score.away ?? 0}`
+    : '0 - 0';
+
+  const half = live ? live.half : null;
+  const turnHome = live && live.turn ? live.turn.home : null;
+  const turnAway = live && live.turn ? live.turn.away : null;
+  const rrHome = live && live.rerolls ? live.rerolls.home : null;
+  const rrAway = live && live.rerolls ? live.rerolls.away : null;
+
+  const statusText = match.status === 'in_progress'
+    ? 'In progress'
+    : match.status === 'completed'
+    ? 'Completed'
+    : 'Not started';
+
+  scoreboardSummaryEl.innerHTML = `
+    Status: <strong>${statusText}</strong><br/>
+    Round ${match.round} &mdash; Date: ${match.date || 'N/A'}
+  `;
+
+  scoreboardCoreEl.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3>Score</h3>
+      </div>
+      <div class="small">
+        ${home ? home.name : 'Home'} vs ${away ? away.name : 'Away'}<br/>
+        <strong>${scoreText}</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Turn & Half</h3>
+      </div>
+      <div class="small">
+        Half: ${half != null ? half : 'N/A'}<br/>
+        ${home ? home.name : 'Home'} turn: ${turnHome != null ? turnHome : 'N/A'}<br/>
+        ${away ? away.name : 'Away'} turn: ${turnAway != null ? turnAway : 'N/A'}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Rerolls</h3>
+      </div>
+      <div class="small">
+        ${home ? home.name : 'Home'} rerolls: ${rrHome != null ? rrHome : 'N/A'}<br/>
+        ${away ? away.name : 'Away'} rerolls: ${rrAway != null ? rrAway : 'N/A'}
+      </div>
+    </div>
+  `;
+
+  // Player live state (read-only placeholder)
+  if (live && Array.isArray(live.playerStates) && live.playerStates.length > 0) {
+    const rows = live.playerStates.map(ps => {
+      const team = teamsById.get(ps.teamId);
+      const teamName = team ? team.name : ps.teamId;
+      const player = team && team.players
+        ? team.players.find(p => p.id === ps.playerId)
+        : null;
+      const playerName = player ? player.name : ps.playerId;
+
+      return `
+        <tr>
+          <td>${teamName}</td>
+          <td>${playerName}</td>
+          <td>${ps.status}</td>
+        </tr>
+      `;
+    }).join('');
+
+    scoreboardPlayersEl.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Player</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
+  } else {
+    scoreboardPlayersEl.innerHTML = `
+      <div class="small">
+        No live player state recorded yet. When we add in-game tracking, this will show per-player status (ready, done, KO, etc.).
+      </div>
+    `;
+  }
+}
+
+// ---- League View Rendering ----
 
 function renderLeagueHeader(league) {
   const totalTeams = league.teams.length;
@@ -403,6 +740,16 @@ function attachTeamLinks() {
       if (teamId) {
         openTeamView(teamId);
       }
+    });
+  });
+}
+
+function attachMatchLinks() {
+  const buttons = matchesContainer.querySelectorAll('.match-link');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const matchId = btn.getAttribute('data-match-id');
+      if (matchId) openMatchView(matchId);
     });
   });
 }
@@ -535,6 +882,9 @@ function renderMatches(league) {
             <span class="tag ${tagClass}">${m.status.replace('_', ' ')}</span>
           </td>
           <td>${m.date || ''}</td>
+          <td>
+            <button class="match-link" data-match-id="${m.id}">Details</button>
+          </td>
         </tr>
       `;
     }).join('');
@@ -549,6 +899,7 @@ function renderMatches(league) {
           <th>Score</th>
           <th>Status</th>
           <th>Date</th>
+          <th>View</th>
         </tr>
       </thead>
       <tbody>
@@ -556,6 +907,8 @@ function renderMatches(league) {
       </tbody>
     </table>
   `;
+
+  attachMatchLinks();
 }
 
 function renderLeagueView() {
@@ -600,7 +953,8 @@ if (saveBtn) {
       // Refresh in-memory state after save
       const data = await fetchLeague();
       state.rawData = data;
-      state.currentLeague = (data.leagues && data.leagues[0]) || null;
+      renderLeagueSelector(data);
+      state.currentLeague = data.leagues.find(l => l.id === state.selectedLeagueId) || data.leagues[0] || null;
       renderLeagueView();
       setGlobalStatus('League reloaded after save.', 'ok');
     } catch (err) {
@@ -617,9 +971,18 @@ if (saveBtn) {
     setGlobalStatus('Loading league data...');
     const data = await fetchLeague();
     state.rawData = data;
-    state.currentLeague = (data.leagues && data.leagues[0]) || null;
 
+    if (data.leagues && data.leagues.length > 0) {
+      // default selected league
+      state.selectedLeagueId = data.leagues[0].id;
+      state.currentLeague = data.leagues[0];
+    } else {
+      state.currentLeague = null;
+    }
+
+    renderLeagueSelector(data);
     renderLeagueView();
+    showLeagueView();
     setGlobalStatus('League data loaded.', 'ok');
   } catch (err) {
     console.error(err);
