@@ -74,6 +74,30 @@ th {
   background: #f0f0f0;
 }
 
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  border: 1px solid #ccc;
+  margin-left: 0.25rem;
+}
+
+.tag.completed {
+  border-color: #0a0;
+  color: #0a0;
+}
+
+.tag.scheduled {
+  border-color: #555;
+  color: #555;
+}
+
+.tag.in_progress {
+  border-color: #06c;
+  color: #06c;
+}
+
 .small {
   font-size: 0.8rem;
   color: #666;
@@ -92,6 +116,10 @@ th {
   align-items: baseline;
 }
 
+.card-header h3 {
+  margin: 0;
+}
+
 .hidden {
   display: none;
 }
@@ -103,28 +131,16 @@ textarea {
   font-size: 0.9rem;
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.75rem;
+.inline-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.85rem;
-}
-
-.form-field label {
-  margin-bottom: 0.15rem;
-}
-
-.form-field input,
-.form-field select,
-.form-field textarea {
-  padding: 0.25rem 0.35rem;
-  font-size: 0.9rem;
+.inline-input input {
+  padding: 0.2rem 0.4rem;
 }
 
 button {
@@ -152,6 +168,78 @@ button {
   cursor: pointer;
   font: inherit;
 }
+
+.team-meta {
+  margin-top: 0.25rem;
+}
+
+.league-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.league-card-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.league-card-title {
+  font-weight: 600;
+}
+
+.scoreboard-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+}
+
+.scoreboard-score {
+  text-align: center;
+}
+
+.scoreboard-score-main {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.scoreboard-score-meta {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Forms for league/team management */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+}
+
+.form-field label {
+  margin-bottom: 0.15rem;
+}
+
+.form-field input,
+.form-field select {
+  padding: 0.25rem 0.35rem;
+  font-size: 0.9rem;
+}
+
+/* NEW: roster quick view tiles on league page */
 
 .roster-tiles {
   display: grid;
