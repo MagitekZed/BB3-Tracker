@@ -36,6 +36,11 @@ const leagueManageHeader = document.getElementById('leagueManageHeader');
 const leagueManageBackBtn = document.getElementById('leagueManageBackBtn');
 const leagueManageStatusEl = document.getElementById('leagueManageStatus');
 
+// Specific cards to toggle visibility
+const leagueInfoCard = document.getElementById('leagueInfoCard');
+const leagueTeamsCard = document.getElementById('leagueTeamsCard');
+const teamEditorCard = document.getElementById('teamEditorCard');
+
 const leagueManageIdInput = document.getElementById('leagueManageIdInput');
 const leagueManageNameInput = document.getElementById('leagueManageNameInput');
 const leagueManageSeasonInput = document.getElementById('leagueManageSeasonInput');
@@ -83,15 +88,20 @@ const saveBtn = document.getElementById('saveBtn');
 const leagueTextarea = document.getElementById('leagueTextarea');
 const adminStatusEl = document.getElementById('adminStatus');
 
+// Datalist
+const skillListEl = document.getElementById('skillList');
+
 // App state
 const state = {
   rawData: null,         // full JSON from /api/league
+  gameData: null,        // content of data/gameData.json
   leagues: [],
   currentLeagueId: null,
   selectedTeamId: null,
   selectedMatchId: null,
   editingLeagueId: null,
-  editingTeamId: null
+  editingTeamId: null,
+  manageMode: 'league'   // 'league' or 'team'
 };
 
 // ---- Utility status helpers ----
@@ -195,6 +205,24 @@ function showLeagueManageView() {
   showLeagueShell();
   hideAllMainSections();
   leagueManageSection.classList.remove('hidden');
+
+  // Toggle sections based on mode
+  if (state.manageMode === 'team') {
+    leagueInfoCard.classList.add('hidden');
+    leagueTeamsCard.classList.add('hidden');
+    teamEditorCard.classList.remove('hidden');
+    leagueManageHeader.textContent = 'Manage Team';
+  } else {
+    leagueInfoCard.classList.remove('hidden');
+    leagueTeamsCard.classList.remove('hidden');
+    // If we have a selected team, show editor, otherwise hide it
+    if (state.editingTeamId) {
+      teamEditorCard.classList.remove('hidden');
+    } else {
+      teamEditorCard.classList.add('hidden');
+    }
+    leagueManageHeader.textContent = state.editingLeagueId ? 'Manage League' : 'Create New League';
+  }
 }
 
 function showTeamView() {
@@ -242,10 +270,18 @@ if (leagueBackBtn) {
 
 if (leagueManageBackBtn) {
   leagueManageBackBtn.addEventListener('click', () => {
-    state.editingLeagueId = null;
-    state.editingTeamId = null;
-    showLeagueListView();
-    renderLeagueList();
+    // If in team mode, go back to team view
+    if (state.manageMode === 'team') {
+      state.editingTeamId = null;
+      showTeamView();
+      renderTeamView();
+    } else {
+      // League mode
+      state.editingLeagueId = null;
+      state.editingTeamId = null;
+      showLeagueListView();
+      renderLeagueList();
+    }
   });
 }
 
@@ -279,14 +315,15 @@ if (teamManageBtn) {
     const teamId = state.selectedTeamId;
     if (!leagueId || !teamId) return;
 
-    openLeagueManage(leagueId);
+    // Use specific "team" mode
+    openLeagueManage(leagueId, 'team');
     state.editingTeamId = teamId;
 
     const league = state._editingLeagueLocal;
     if (league) {
-      renderLeagueManageTeamsList(league);
+      // In team mode, we don't need the team list, but we need the editor
       renderLeagueManageTeamEditor(teamId);
-      setLeagueManageStatus(`Editing team ${teamId} (roster + meta, not saved yet).`, 'info');
+      setLeagueManageStatus(`Editing team ${teamId} (roster + meta).`, 'info');
     }
   });
 }
@@ -323,6 +360,33 @@ async function fetchLeagueData() {
   return res.json();
 }
 
+async function fetchGameData() {
+  try {
+    const res = await fetch('data/gameData.json');
+    if (res.ok) {
+      const data = await res.json();
+      state.gameData = data;
+      populateSkillList(data); // Fill datalist
+    } else {
+      console.warn('Could not load data/gameData.json');
+    }
+  } catch (e) {
+    console.warn('Error loading gameData:', e);
+  }
+}
+
+function populateSkillList(gameData) {
+  if (!skillListEl || !gameData.skillCategories) return;
+  skillListEl.innerHTML = '';
+  Object.values(gameData.skillCategories).forEach(catList => {
+    catList.forEach(skill => {
+      const opt = document.createElement('option');
+      opt.value = skill;
+      skillListEl.appendChild(opt);
+    });
+  });
+}
+
 async function saveLeagueJSON(jsonText, editKey) {
   if (!editKey) {
     throw new Error('Edit key is required to save.');
@@ -355,7 +419,7 @@ async function saveLeagueJSON(jsonText, editKey) {
   return res.json();
 }
 
-// ---- Standings computation ----
+// ---- Standings computation (Same as before) ----
 
 function computeStandings(league) {
   const teamsById = new Map();
@@ -463,16 +527,13 @@ function renderLeagueList() {
   const cards = leagues.map(l => {
     const completed = l.matches.filter(m => m.status === 'completed').length;
     const scheduled = l.matches.filter(m => m.status === 'scheduled').length;
-    const inProgress = l.matches.filter(m => m.status === 'in_progress').length;
     return `
       <div class="league-card">
         <div class="league-card-main">
           <div class="league-card-title">${l.name}</div>
           <div class="small">
             ID: ${l.id} &mdash; Season ${l.season} &mdash; Status: ${l.status}<br/>
-            Teams: ${l.teams.length} | Completed: ${completed} | Scheduled: ${scheduled}${
-              inProgress ? ` | In progress: ${inProgress}` : ''
-            }
+            Teams: ${l.teams.length} | Completed Matches: ${completed}
           </div>
         </div>
         <div>
@@ -502,16 +563,17 @@ function renderLeagueList() {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-league-id');
       if (!id) return;
-      openLeagueManage(id);
+      openLeagueManage(id, 'league');
     });
   });
 }
 
 // ---- League Manage: helpers ----
 
-function openLeagueManage(leagueIdOrNull) {
+function openLeagueManage(leagueIdOrNull, mode = 'league') {
   state.editingLeagueId = leagueIdOrNull || null;
-  state.editingTeamId = null;
+  state.editingTeamId = null; // reset unless explicitly set later
+  state.manageMode = mode;
 
   const isNew = !leagueIdOrNull;
   let league;
@@ -541,16 +603,19 @@ function openLeagueManage(leagueIdOrNull) {
     }
   }
 
-  // If new, we only hold it in form until Save; if existing, we edit in place
-  state._editingLeagueLocal = isNew ? league : league;
+  // Clone/Hold for editing
+  state._editingLeagueLocal = isNew ? league : league; // shallow ref (in-place editing)
 
   populateLeagueManageForm(league);
-  renderLeagueManageTeamsList(league);
-  renderLeagueManageTeamEditor(null);
+  if (mode === 'league') {
+    renderLeagueManageTeamsList(league);
+    renderLeagueManageTeamEditor(null); // Clear team editor initially in league mode
+  } else {
+    // In team mode, we skip rendering the team list,
+    // The specific team will be rendered by the caller or defaults to null
+  }
 
-  leagueManageHeader.textContent = isNew ? 'Create New League' : `Manage League: ${league.name}`;
-  setLeagueManageStatus(isNew ? 'Fill out the fields to create a new league.' : 'Editing existing league.', 'info');
-
+  setLeagueManageStatus(isNew ? 'Create a new league.' : 'Editing mode.', 'info');
   showLeagueManageView();
 }
 
@@ -609,6 +674,7 @@ function renderLeagueManageTeamsList(league) {
     btn.addEventListener('click', () => {
       const teamId = btn.getAttribute('data-team-id');
       state.editingTeamId = teamId;
+      showLeagueManageView(); // refresh visibility
       renderLeagueManageTeamEditor(teamId);
     });
   });
@@ -654,6 +720,17 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
     return;
   }
 
+  // RACE DROPDOWN LOGIC
+  let raceOptions = '<option value="">-- Select Race --</option>';
+  if (state.gameData && state.gameData.races) {
+    raceOptions += state.gameData.races.map(r => 
+      `<option value="${r}" ${team.race === r ? 'selected' : ''}>${r}</option>`
+    ).join('');
+  } else {
+    // Fallback if no gameData
+    raceOptions += `<option value="${team.race || ''}" selected>${team.race || ''}</option>`;
+  }
+
   team.players = team.players || [];
 
   const rosterRows = team.players.length
@@ -666,25 +743,26 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
           const status = p.status || {};
           return `
             <tr data-player-id="${p.id}">
-              <td><input type="number" class="player-field" data-field="number" data-player-id="${p.id}" value="${p.number != null ? p.number : ''}" /></td>
+              <td><input type="number" class="player-field" data-field="number" data-player-id="${p.id}" value="${p.number != null ? p.number : ''}" style="width:40px" /></td>
               <td><input type="text" class="player-field" data-field="name" data-player-id="${p.id}" value="${p.name || ''}" /></td>
               <td><input type="text" class="player-field" data-field="position" data-player-id="${p.id}" value="${p.position || ''}" /></td>
-              <td><input type="number" class="player-field" data-field="ma" data-player-id="${p.id}" value="${p.ma != null ? p.ma : ''}" /></td>
-              <td><input type="number" class="player-field" data-field="st" data-player-id="${p.id}" value="${p.st != null ? p.st : ''}" /></td>
-              <td><input type="number" class="player-field" data-field="ag" data-player-id="${p.id}" value="${p.ag != null ? p.ag : ''}" /></td>
-              <td><input type="number" class="player-field" data-field="pa" data-player-id="${p.id}" value="${p.pa != null ? p.pa : ''}" /></td>
-              <td><input type="number" class="player-field" data-field="av" data-player-id="${p.id}" value="${p.av != null ? p.av : ''}" /></td>
-              <td><input type="text" class="player-field" data-field="skills" data-player-id="${p.id}" value="${skills}" /></td>
-              <td><input type="number" class="player-field" data-field="spp" data-player-id="${p.id}" value="${p.spp != null ? p.spp : 0}" /></td>
-              <td><input type="number" class="player-field" data-field="level" data-player-id="${p.id}" value="${p.level != null ? p.level : ''}" /></td>
+              <td><input type="number" class="player-field" data-field="ma" data-player-id="${p.id}" value="${p.ma != null ? p.ma : ''}" style="width:30px" /></td>
+              <td><input type="number" class="player-field" data-field="st" data-player-id="${p.id}" value="${p.st != null ? p.st : ''}" style="width:30px" /></td>
+              <td><input type="number" class="player-field" data-field="ag" data-player-id="${p.id}" value="${p.ag != null ? p.ag : ''}" style="width:30px" /></td>
+              <td><input type="number" class="player-field" data-field="pa" data-player-id="${p.id}" value="${p.pa != null ? p.pa : ''}" style="width:30px" /></td>
+              <td><input type="number" class="player-field" data-field="av" data-player-id="${p.id}" value="${p.av != null ? p.av : ''}" style="width:30px" /></td>
+              <td>
+                 <input type="text" list="skillList" class="player-field" data-field="skills" data-player-id="${p.id}" value="${skills}" placeholder="Skill1, Skill2" />
+              </td>
+              <td><input type="number" class="player-field" data-field="spp" data-player-id="${p.id}" value="${p.spp != null ? p.spp : 0}" style="width:40px" /></td>
+              <td><input type="number" class="player-field" data-field="level" data-player-id="${p.id}" value="${p.level != null ? p.level : ''}" style="width:30px" /></td>
               <td><input type="text" class="player-field" data-field="injuries" data-player-id="${p.id}" value="${injuries}" /></td>
               <td>
                 <label><input type="checkbox" class="player-status-input" data-status-field="mng" data-player-id="${p.id}" ${status.mng ? 'checked' : ''} /> MNG</label><br/>
-                <label><input type="checkbox" class="player-status-input" data-status-field="dead" data-player-id="${p.id}" ${status.dead ? 'checked' : ''} /> Dead</label><br/>
-                <label><input type="checkbox" class="player-status-input" data-status-field="retired" data-player-id="${p.id}" ${status.retired ? 'checked' : ''} /> Retired</label>
+                <label><input type="checkbox" class="player-status-input" data-status-field="dead" data-player-id="${p.id}" ${status.dead ? 'checked' : ''} /> Dead</label>
               </td>
               <td>
-                <button type="button" class="link-button player-remove-btn" data-player-id="${p.id}">Remove</button>
+                <button type="button" class="link-button player-remove-btn" data-player-id="${p.id}">X</button>
               </td>
             </tr>
           `;
@@ -692,17 +770,16 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
         .join('')
     : `
       <tr>
-        <td colspan="14" class="small">No players on this team yet. Use "Add Player" below.</td>
+        <td colspan="14" class="small">No players. Use "Add Player" below.</td>
       </tr>
     `;
 
   leagueManageTeamEditor.innerHTML = `
-    <h3>Edit Team</h3>
+    <h3>Edit Team: ${team.name}</h3>
     <div class="form-grid">
       <div class="form-field">
         <label>Team ID</label>
         <input type="text" id="teamEditIdInput" value="${team.id}" />
-        <div class="small">Internal ID; must be unique in this league.</div>
       </div>
       <div class="form-field">
         <label>Team Name</label>
@@ -710,7 +787,9 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
       </div>
       <div class="form-field">
         <label>Race</label>
-        <input type="text" id="teamEditRaceInput" value="${team.race || ''}" />
+        <select id="teamEditRaceInput">
+          ${raceOptions}
+        </select>
       </div>
       <div class="form-field">
         <label>Coach Name</label>
@@ -736,8 +815,8 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
 
     <div style="margin-top: 1rem;">
       <h4>Roster (editable)</h4>
-      <div class="small">
-        Edit player stats below. Skills and injuries are comma-separated lists. Changes are local until you save the league.
+      <div class="small" style="margin-bottom:0.5rem">
+        Skills and injuries are comma-separated. The skills field will suggest options as you type.
       </div>
       <table>
         <thead>
@@ -792,7 +871,10 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
   [idInput, nameInput, raceInput, coachInput, tvInput, treasuryInput, rerollsInput, dfInput].forEach(input => {
     input.addEventListener('input', () => {
       applyMeta();
-      renderLeagueManageTeamsList(league); // update ID/name in the list as you type
+      // If we are in league mode, update the list
+      if (state.manageMode === 'league') {
+        renderLeagueManageTeamsList(league);
+      }
     });
   });
 
@@ -813,11 +895,8 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
         pa: null,
         av: null,
         skills: [],
-        primarySkillAccess: [],
-        secondarySkillAccess: [],
         spp: 0,
         level: 1,
-        advancements: [],
         status: {
           mng: false,
           dead: false,
@@ -827,7 +906,6 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
       };
 
       team.players.push(newPlayer);
-      setLeagueManageStatus(`Added new player to ${team.name} (not saved yet).`, 'info');
       renderLeagueManageTeamEditor(team.id);
     });
   }
@@ -879,8 +957,7 @@ function renderLeagueManageTeamEditor(teamIdOrNull) {
       const playerId = btn.getAttribute('data-player-id');
       const idx = team.players.findIndex(p => p.id === playerId);
       if (idx === -1) return;
-      const removed = team.players.splice(idx, 1)[0];
-      setLeagueManageStatus(`Removed player ${removed.name || playerId} from ${team.name} (not saved yet).`, 'info');
+      team.players.splice(idx, 1);
       renderLeagueManageTeamEditor(team.id);
     });
   });
@@ -951,20 +1028,11 @@ if (leagueManageSaveBtn) {
 
       // If this is a new league, push into global list
       if (!state.editingLeagueId) {
-        // Check for duplicate ID
         if (state.leagues.some(l => l.id === newId)) {
           setLeagueManageStatus('A league with that ID already exists. Choose a different ID.', 'error');
           return;
         }
         state.leagues.push(league);
-      } else {
-        // Existing league already mutated in place
-        // But we must ensure we didn't change ID to collide
-        const other = state.leagues.find(l => l.id === newId && l !== league);
-        if (other) {
-          setLeagueManageStatus('Another league already has that ID. Choose a different ID.', 'error');
-          return;
-        }
       }
 
       // Sync state.rawData
@@ -973,23 +1041,28 @@ if (leagueManageSaveBtn) {
 
       setLeagueManageStatus('Saving league changes to GitHub...', 'info');
 
-      const result = await saveLeagueJSON(JSON.stringify(state.rawData, null, 2), key);
-      console.log(result);
+      await saveLeagueJSON(JSON.stringify(state.rawData, null, 2), key);
 
-      // Refresh from server to be safe
+      // Refresh from server
       const data = await fetchLeagueData();
       state.rawData = data;
       state.leagues = data.leagues || [];
 
-      // Keep currentLeagueId = new/edited league
+      // Stay on the edited league
       state.currentLeagueId = newId;
       state.editingLeagueId = newId;
 
-      setLeagueManageStatus('League changes saved.', 'ok');
-      setGlobalStatus('League data reloaded after save.', 'ok');
+      setLeagueManageStatus('Saved successfully.', 'ok');
+      setGlobalStatus('League data reloaded.', 'ok');
 
-      renderLeagueList();
-      renderLeagueView();
+      // If we were in team mode, go back to team view, else league view
+      if (state.manageMode === 'team') {
+        showTeamView();
+        renderTeamView();
+      } else {
+        renderLeagueList();
+        renderLeagueView();
+      }
     } catch (err) {
       console.error(err);
       setLeagueManageStatus(err.message, 'error');
@@ -1000,7 +1073,7 @@ if (leagueManageSaveBtn) {
 // Create New League button
 if (leagueCreateBtn) {
   leagueCreateBtn.addEventListener('click', () => {
-    openLeagueManage(null);
+    openLeagueManage(null, 'league');
   });
 }
 
@@ -1010,16 +1083,13 @@ function renderLeagueHeader(league) {
   const totalTeams = league.teams.length;
   const completed = league.matches.filter(m => m.status === 'completed').length;
   const scheduled = league.matches.filter(m => m.status === 'scheduled').length;
-  const inProgress = league.matches.filter(m => m.status === 'in_progress').length;
 
   leagueHeaderEl.innerHTML = `
     <h2>${league.name}</h2>
     <div class="small">
       ID: ${league.id} &mdash; Season ${league.season} &mdash; Status: ${league.status}
       <br />
-      Teams: ${totalTeams} | Completed matches: ${completed} | Scheduled: ${scheduled}${
-        inProgress ? ` | In progress: ${inProgress}` : ''
-      }
+      Teams: ${totalTeams} | Completed matches: ${completed} | Scheduled: ${scheduled}
     </div>
   `;
 }
@@ -1030,7 +1100,6 @@ function openTeamView(teamId) {
   renderTeamView();
 }
 
-// updated: can attach to standings table and quick-view tiles
 function attachTeamLinks(rootEl) {
   if (!rootEl) return;
   const links = rootEl.querySelectorAll('.team-link');
@@ -1042,13 +1111,10 @@ function attachTeamLinks(rootEl) {
   });
 }
 
-// helper: record map for roster quick view
 function getTeamRecordMap(league) {
   const standingsArr = computeStandings(league);
   const map = new Map();
   standingsArr.forEach(s => map.set(s.teamId, s));
-
-  // ensure every team has an entry, even with no games
   league.teams.forEach(team => {
     if (!map.has(team.id)) {
       map.set(team.id, {
@@ -1062,23 +1128,16 @@ function getTeamRecordMap(league) {
       });
     }
   });
-
   return map;
 }
 
-// NEW: roster quick view tiles above standings
 function renderRosterQuickView(league) {
   if (!rosterQuickViewContainer) return;
-
   if (!league.teams || !league.teams.length) {
-    rosterQuickViewContainer.innerHTML = `
-      <div class="small">No teams in this league yet.</div>
-    `;
+    rosterQuickViewContainer.innerHTML = `<div class="small">No teams in this league yet.</div>`;
     return;
   }
-
   const recordMap = getTeamRecordMap(league);
-
   const tiles = league.teams.map(team => {
     const rec = recordMap.get(team.id);
     const wins = rec ? rec.wins : 0;
@@ -1090,46 +1149,28 @@ function renderRosterQuickView(league) {
     return `
       <div class="roster-tile">
         <div class="roster-tile-title">
-          <button class="team-link" data-team-id="${team.id}">
-            ${team.name}
-          </button>
+          <button class="team-link" data-team-id="${team.id}">${team.name}</button>
         </div>
-        <div class="roster-tile-meta">
-          Coach: ${team.coachName || 'Unknown'}
-        </div>
-        <div class="roster-tile-meta">
-          Record: ${recordText} (G: ${played})
-        </div>
+        <div class="roster-tile-meta">Coach: ${team.coachName || 'Unknown'}</div>
+        <div class="roster-tile-meta">Record: ${recordText} (G: ${played})</div>
       </div>
     `;
   }).join('');
-
-  rosterQuickViewContainer.innerHTML = `
-    <div class="roster-tiles">
-      ${tiles}
-    </div>
-  `;
-
+  rosterQuickViewContainer.innerHTML = `<div class="roster-tiles">${tiles}</div>`;
   attachTeamLinks(rosterQuickViewContainer);
 }
 
 function renderStandings(league) {
   const standings = computeStandings(league);
-
   if (!standings.length) {
-    standingsContainer.innerHTML = `
-      <div class="small">No completed matches yet. Play some games!</div>
-    `;
+    standingsContainer.innerHTML = `<div class="small">No completed matches yet. Play some games!</div>`;
     return;
   }
-
   const rows = standings.map((s, idx) => `
     <tr>
       <td>${idx + 1}</td>
       <td>
-        <button class="team-link" data-team-id="${s.teamId}">
-          ${s.name}
-        </button>
+        <button class="team-link" data-team-id="${s.teamId}">${s.name}</button>
         <div class="small">${s.coachName || ''}</div>
       </td>
       <td>${s.played}</td>
@@ -1141,7 +1182,6 @@ function renderStandings(league) {
       <td>${s.casFor}/${s.casAgainst} (${s.casDiff >= 0 ? '+' : ''}${s.casDiff})</td>
     </tr>
   `).join('');
-
   standingsContainer.innerHTML = `
     <table>
       <thead>
@@ -1153,16 +1193,13 @@ function renderStandings(league) {
           <th>D</th>
           <th>L</th>
           <th>Pts</th>
-          <th>TD For/Against (Diff)</th>
-          <th>Cas For/Against (Diff)</th>
+          <th>TD (Diff)</th>
+          <th>Cas (Diff)</th>
         </tr>
       </thead>
-      <tbody>
-        ${rows}
-      </tbody>
+      <tbody>${rows}</tbody>
     </table>
   `;
-
   attachTeamLinks(standingsContainer);
 }
 
@@ -1176,41 +1213,20 @@ function renderMatches(league) {
   const teamsById = new Map();
   league.teams.forEach(t => teamsById.set(t.id, t));
 
-  const hasInProgress = league.matches.some(m => m.status === 'in_progress');
-
-  if (hasInProgress) {
-    const inProg = league.matches.filter(m => m.status === 'in_progress');
+  const inProg = league.matches.filter(m => m.status === 'in_progress');
+  if (inProg.length) {
     const links = inProg.map(m => {
       const home = teamsById.get(m.homeTeamId);
       const away = teamsById.get(m.awayTeamId);
-      return `
-        <li>
-          Round ${m.round}: ${home ? home.name : m.homeTeamId}
-          vs
-          ${away ? away.name : m.awayTeamId}
-          <span class="tag in_progress">In progress</span>
-        </li>
-      `;
+      return `<li>Round ${m.round}: ${home ? home.name : m.homeTeamId} vs ${away ? away.name : m.awayTeamId} <span class="tag in_progress">In progress</span></li>`;
     }).join('');
-    inProgressContainer.innerHTML = `
-      <div class="card">
-        <div class="card-header">
-          <h3>Game(s) in Progress</h3>
-          <div class="small">Future: scoreboard resume links</div>
-        </div>
-        <ul>
-          ${links}
-        </ul>
-      </div>
-    `;
+    inProgressContainer.innerHTML = `<div class="card"><div class="card-header"><h3>Game(s) in Progress</h3></div><ul>${links}</ul></div>`;
   } else {
     inProgressContainer.innerHTML = '';
   }
 
   if (!league.matches.length) {
-    matchesContainer.innerHTML = `
-      <div class="small">No matches defined for this league yet.</div>
-    `;
+    matchesContainer.innerHTML = `<div class="small">No matches defined for this league yet.</div>`;
     return;
   }
 
@@ -1221,19 +1237,11 @@ function renderMatches(league) {
       const home = teamsById.get(m.homeTeamId);
       const away = teamsById.get(m.awayTeamId);
       let scoreDisplay = '';
-      if (m.status === 'completed') {
-        scoreDisplay = `${m.score.home} - ${m.score.away}`;
-      } else if (m.status === 'scheduled') {
-        scoreDisplay = 'vs';
-      } else if (m.status === 'in_progress') {
-        scoreDisplay = `${m.score.home ?? 0} - ${m.score.away ?? 0}`;
-      }
+      if (m.status === 'completed') scoreDisplay = `${m.score.home} - ${m.score.away}`;
+      else if (m.status === 'scheduled') scoreDisplay = 'vs';
+      else if (m.status === 'in_progress') scoreDisplay = `${m.score.home ?? 0} - ${m.score.away ?? 0}`;
 
-      const tagClass = m.status === 'completed'
-        ? 'completed'
-        : m.status === 'in_progress'
-        ? 'in_progress'
-        : 'scheduled';
+      const tagClass = m.status === 'completed' ? 'completed' : m.status === 'in_progress' ? 'in_progress' : 'scheduled';
 
       return `
         <tr>
@@ -1241,13 +1249,9 @@ function renderMatches(league) {
           <td>${home ? home.name : m.homeTeamId}</td>
           <td>${away ? away.name : m.awayTeamId}</td>
           <td>${scoreDisplay}</td>
-          <td>
-            <span class="tag ${tagClass}">${m.status.replace('_', ' ')}</span>
-          </td>
+          <td><span class="tag ${tagClass}">${m.status.replace('_', ' ')}</span></td>
           <td>${m.date || ''}</td>
-          <td>
-            <button class="link-button match-view-btn" data-match-id="${m.id}">View</button>
-          </td>
+          <td><button class="link-button match-view-btn" data-match-id="${m.id}">View</button></td>
         </tr>
       `;
     }).join('');
@@ -1265,9 +1269,7 @@ function renderMatches(league) {
           <th></th>
         </tr>
       </thead>
-      <tbody>
-        ${rows}
-      </tbody>
+      <tbody>${rows}</tbody>
     </table>
   `;
 
@@ -1288,9 +1290,8 @@ function renderLeagueView() {
     if (rosterQuickViewContainer) rosterQuickViewContainer.innerHTML = '';
     return;
   }
-
   renderLeagueHeader(league);
-  renderRosterQuickView(league); // NEW: quick tile view
+  renderRosterQuickView(league);
   renderStandings(league);
   renderMatches(league);
 }
@@ -1318,18 +1319,11 @@ function renderTeamView() {
 
   const standings = computeStandings(league);
   const entry = standings.find(s => s.teamId === team.id);
-
   const recordText = entry
     ? `Record: ${entry.wins}-${entry.draws}-${entry.losses} in ${entry.played} game${entry.played === 1 ? '' : 's'}`
     : 'No completed games yet.';
-
-  const tdText = entry
-    ? `TD: ${entry.tdFor}/${entry.tdAgainst} (diff ${entry.tdDiff >= 0 ? '+' : ''}${entry.tdDiff})`
-    : '';
-
-  const casText = entry
-    ? `Cas: ${entry.casFor}/${entry.casAgainst} (diff ${entry.casDiff >= 0 ? '+' : ''}${entry.casDiff})`
-    : '';
+  const tdText = entry ? `TD: ${entry.tdFor}/${entry.tdAgainst}` : '';
+  const casText = entry ? `Cas: ${entry.casFor}/${entry.casAgainst}` : '';
 
   teamSummaryEl.innerHTML = `
     <div class="team-meta">
@@ -1406,9 +1400,7 @@ function renderTeamView() {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
-        ${rows}
-      </tbody>
+      <tbody>${rows}</tbody>
     </table>
   `;
 }
@@ -1439,22 +1431,8 @@ function renderMatchView() {
 
   matchHeaderEl.textContent = `Round ${match.round} — ${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}`;
 
-  const scoreText = match.status === 'completed'
-    ? `${match.score.home} - ${match.score.away}`
-    : match.status === 'scheduled'
-    ? 'Scheduled'
-    : `${match.score.home ?? 0} - ${match.score.away ?? 0} (in progress)`;
-
-  matchSummaryEl.innerHTML = `
-    <div>
-      Status: <strong>${match.status.replace('_', ' ')}</strong>${
-        match.date ? ` &mdash; Date: ${match.date}` : ''
-      }
-    </div>
-    <div>
-      Score: ${scoreText}
-    </div>
- `;
+  const scoreText = match.status === 'completed' ? `${match.score.home} - ${match.score.away}` : match.status === 'scheduled' ? 'Scheduled' : `${match.score.home ?? 0} - ${match.score.away ?? 0} (in progress)`;
+  matchSummaryEl.innerHTML = `<div>Status: <strong>${match.status.replace('_', ' ')}</strong>${match.date ? ` &mdash; Date: ${match.date}` : ''}</div><div>Score: ${scoreText}</div>`;
 
   const homeCas = match.casualties ? (match.casualties.homeInflicted || 0) : 0;
   const awayCas = match.casualties ? (match.casualties.awayInflicted || 0) : 0;
@@ -1462,75 +1440,32 @@ function renderMatchView() {
   matchOverviewContainer.innerHTML = `
     <table>
       <thead>
-        <tr>
-          <th>Side</th>
-          <th>Team</th>
-          <th>Score</th>
-          <th>Casualties Inflicted</th>
-        </tr>
+        <tr><th>Side</th><th>Team</th><th>Score</th><th>Casualties Inflicted</th></tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Home</td>
-          <td>${home ? home.name : match.homeTeamId}</td>
-          <td>${match.score && match.score.home != null ? match.score.home : 0}</td>
-          <td>${homeCas}</td>
-        </tr>
-        <tr>
-          <td>Away</td>
-          <td>${away ? away.name : match.awayTeamId}</td>
-          <td>${match.score && match.score.away != null ? match.score.away : 0}</td>
-          <td>${awayCas}</td>
-        </tr>
+        <tr><td>Home</td><td>${home ? home.name : match.homeTeamId}</td><td>${match.score && match.score.home != null ? match.score.home : 0}</td><td>${homeCas}</td></tr>
+        <tr><td>Away</td><td>${away ? away.name : match.awayTeamId}</td><td>${match.score && match.score.away != null ? match.score.away : 0}</td><td>${awayCas}</td></tr>
       </tbody>
     </table>
   `;
 
-  // SPP table
   if (!match.sppLog || !match.sppLog.length) {
-    matchSppContainer.innerHTML = `<div class="small">No SPP log recorded for this match.</div>`;
+    matchSppContainer.innerHTML = `<div class="small">No SPP log recorded.</div>`;
   } else {
     const teamsById = new Map();
     league.teams.forEach(t => teamsById.set(t.id, t));
-
     const playersById = new Map();
     league.teams.forEach(t => {
       (t.players || []).forEach(p => playersById.set(p.id, { teamId: t.id, player: p }));
     });
-
     const rows = match.sppLog.map((entry, idx) => {
       const team = teamsById.get(entry.teamId);
       const playerInfo = playersById.get(entry.playerId);
       const playerName = playerInfo ? playerInfo.player.name : entry.playerId;
       const teamName = team ? team.name : entry.teamId;
-
-      return `
-        <tr>
-          <td>${idx + 1}</td>
-          <td>${teamName}</td>
-          <td>${playerName}</td>
-          <td>${entry.type}</td>
-          <td>${entry.amount}</td>
-        </tr>
-      `;
+      return `<tr><td>${idx + 1}</td><td>${teamName}</td><td>${playerName}</td><td>${entry.type}</td><td>${entry.amount}</td></tr>`;
     }).join('');
-
-    matchSppContainer.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Team</th>
-            <th>Player</th>
-            <th>Event</th>
-            <th>SPP</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows}
-        </tbody>
-      </table>
-    `;
+    matchSppContainer.innerHTML = `<table><thead><tr><th>#</th><th>Team</th><th>Player</th><th>Event</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
   }
 
   if (matchOpenScoreboardBtn) {
@@ -1554,15 +1489,10 @@ function renderScoreboardView() {
     scoreboardScoreMetaEl.textContent = '';
     return;
   }
-
   const match = getMatchById(league, state.selectedMatchId);
   if (!match) {
     scoreboardHeaderEl.textContent = 'Scoreboard';
     scoreboardMetaEl.textContent = 'Match not found.';
-    scoreboardHomeRosterEl.innerHTML = '';
-    scoreboardAwayRosterEl.innerHTML = '';
-    scoreboardScoreMainEl.textContent = '';
-    scoreboardScoreMetaEl.textContent = '';
     return;
   }
 
@@ -1570,56 +1500,27 @@ function renderScoreboardView() {
   const away = getTeamById(league, match.awayTeamId);
 
   scoreboardHeaderEl.textContent = `Round ${match.round} — Scoreboard`;
-
   const half = match.liveState ? match.liveState.half : null;
   const turnHome = match.liveState && match.liveState.turn ? match.liveState.turn.home : null;
   const turnAway = match.liveState && match.liveState.turn ? match.liveState.turn.away : null;
 
-  scoreboardMetaEl.innerHTML = `
-    <div>
-      ${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}
-    </div>
-    <div>
-      Status: <strong>${match.status.replace('_', ' ')}</strong>${
-        half ? ` &mdash; Half: ${half}` : ''
-      }${
-        turnHome != null && turnAway != null
-          ? ` &mdash; Turns (Home/Away): ${turnHome}/${turnAway}`
-          : ''
-      }
-    </div>
-  `;
+  scoreboardMetaEl.innerHTML = `<div>${home ? home.name : match.homeTeamId} vs ${away ? away.name : match.awayTeamId}</div><div>Status: <strong>${match.status.replace('_', ' ')}</strong>${half ? ` &mdash; Half: ${half}` : ''}</div>`;
 
   const homeScore = match.score && match.score.home != null ? match.score.home : 0;
   const awayScore = match.score && match.score.away != null ? match.score.away : 0;
 
   scoreboardScoreMainEl.textContent = `${homeScore} - ${awayScore}`;
-  scoreboardScoreMetaEl.innerHTML = `
-    <div>${home ? home.name : match.homeTeamId} (Home)</div>
-    <div>${away ? away.name : match.awayTeamId} (Away)</div>
-  `;
+  scoreboardScoreMetaEl.innerHTML = `<div>${home ? home.name : match.homeTeamId} (Home)</div><div>${away ? away.name : match.awayTeamId} (Away)</div>`;
 
   if (home) {
     const rows = (home.players || []).map(p => `<li>#${p.number ?? ''} ${p.name}</li>`).join('');
-    scoreboardHomeRosterEl.innerHTML = `
-      <h3>${home.name}</h3>
-      <div class="small">Home team roster (read-only)</div>
-      <ul>${rows}</ul>
-    `;
-  } else {
-    scoreboardHomeRosterEl.innerHTML = `<div class="small">Home team not found.</div>`;
-  }
+    scoreboardHomeRosterEl.innerHTML = `<h3>${home.name}</h3><ul>${rows}</ul>`;
+  } else scoreboardHomeRosterEl.innerHTML = `<div class="small">Home team not found.</div>`;
 
   if (away) {
     const rows = (away.players || []).map(p => `<li>#${p.number ?? ''} ${p.name}</li>`).join('');
-    scoreboardAwayRosterEl.innerHTML = `
-      <h3>${away.name}</h3>
-      <div class="small">Away team roster (read-only)</div>
-      <ul>${rows}</ul>
-    `;
-  } else {
-    scoreboardAwayRosterEl.innerHTML = `<div class="small">Away team not found.</div>`;
-  }
+    scoreboardAwayRosterEl.innerHTML = `<h3>${away.name}</h3><ul>${rows}</ul>`;
+  } else scoreboardAwayRosterEl.innerHTML = `<div class="small">Away team not found.</div>`;
 }
 
 // ---- Admin / JSON editor behavior ----
@@ -1647,7 +1548,6 @@ if (saveBtn) {
       console.log(result);
       setAdminStatus('Saved league.json (new commit created).', 'ok');
 
-      // Refresh in-memory state after save
       const data = await fetchLeagueData();
       state.rawData = data;
       state.leagues = data.leagues || [];
@@ -1667,6 +1567,10 @@ if (saveBtn) {
 (async function init() {
   try {
     setGlobalStatus('Loading league data...');
+    
+    // Load game data in background
+    fetchGameData();
+    
     const data = await fetchLeagueData();
     state.rawData = data;
     state.leagues = data.leagues || [];
