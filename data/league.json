@@ -1,6 +1,403 @@
 {
-  "teams": [
-    "Team 1"
-  ],
-  "matches": []
+  "leagues": [
+    {
+      "id": "league_1",
+      "name": "Demo League",
+      "season": 1,
+      "status": "active",
+      "settings": {
+        "pointsWin": 3,
+        "pointsDraw": 1,
+        "pointsLoss": 0,
+        "tiebreakers": ["points", "tdDiff", "casDiff"],
+        "maxTeams": 4,
+        "lockTeams": true
+      },
+      "teams": [
+        {
+          "id": "orc_rippers",
+          "name": "Orc Rippers",
+          "race": "Orc",
+          "coachName": "Zed",
+          "treasury": 50000,
+          "rerolls": 2,
+          "dedicatedFans": 2,
+          "teamValue": 1000000,
+          "players": [
+            {
+              "id": "orc_rippers_p1",
+              "number": 4,
+              "name": "Gorbag",
+              "position": "Blitzer",
+              "ma": 6,
+              "st": 3,
+              "ag": 3,
+              "pa": 4,
+              "av": 10,
+              "skills": ["Block"],
+              "primarySkillAccess": ["G", "S"],
+              "secondarySkillAccess": ["A"],
+              "spp": 6,
+              "level": 2,
+              "advancements": [
+                {
+                  "type": "skill",
+                  "skill": "Mighty Blow",
+                  "chosen": true,
+                  "sppCost": 6
+                }
+              ],
+              "status": {
+                "mng": false,
+                "dead": false,
+                "retired": false
+              },
+              "injuries": []
+            },
+            {
+              "id": "orc_rippers_p2",
+              "number": 1,
+              "name": "Thrag",
+              "position": "Black Orc",
+              "ma": 4,
+              "st": 4,
+              "ag": 4,
+              "pa": 5,
+              "av": 10,
+              "skills": ["Brawler"],
+              "primarySkillAccess": ["S"],
+              "secondarySkillAccess": ["G"],
+              "spp": 0,
+              "level": 1,
+              "advancements": [],
+              "status": {
+                "mng": false,
+                "dead": false,
+                "retired": false
+              },
+              "injuries": []
+            }
+          ]
+        },
+        {
+          "id": "elf_prancers",
+          "name": "Elf Prancers",
+          "race": "Elven Union",
+          "coachName": "Lyra",
+          "treasury": 70000,
+          "rerolls": 2,
+          "dedicatedFans": 3,
+          "teamValue": 1000000,
+          "players": [
+            {
+              "id": "elf_prancers_p1",
+              "number": 8,
+              "name": "Aelor",
+              "position": "Catcher",
+              "ma": 8,
+              "st": 2,
+              "ag": 2,
+              "pa": 4,
+              "av": 8,
+              "skills": ["Catch", "Dodge"],
+              "primarySkillAccess": ["A"],
+              "secondarySkillAccess": ["G"],
+              "spp": 3,
+              "level": 2,
+              "advancements": [
+                {
+                  "type": "skill",
+                  "skill": "Sidestep",
+                  "chosen": true,
+                  "sppCost": 6
+                }
+              ],
+              "status": {
+                "mng": false,
+                "dead": false,
+                "retired": false
+              },
+              "injuries": []
+            },
+            {
+              "id": "elf_prancers_p2",
+              "number": 2,
+              "name": "Serel",
+              "position": "Lineman",
+              "ma": 6,
+              "st": 3,
+              "ag": 3,
+              "pa": 4,
+              "av": 9,
+              "skills": [],
+              "primarySkillAccess": ["G"],
+              "secondarySkillAccess": ["A"],
+              "spp": 0,
+              "level": 1,
+              "advancements": [],
+              "status": {
+                "mng": false,
+                "dead": false,
+                "retired": false
+              },
+              "injuries": []
+            }
+          ]
+        },
+        {
+          "id": "dwarf_wall",
+          "name": "Dwarf Wall",
+          "race": "Dwarf",
+          "coachName": "Brun",
+          "treasury": 40000,
+          "rerolls": 2,
+          "dedicatedFans": 3,
+          "teamValue": 1000000,
+          "players": [
+            {
+              "id": "dwarf_wall_p1",
+              "number": 3,
+              "name": "Durik",
+              "position": "Blocker",
+              "ma": 4,
+              "st": 3,
+              "ag": 4,
+              "pa": 5,
+              "av": 10,
+              "skills": ["Block", "Tackle"],
+              "primarySkillAccess": ["G", "S"],
+              "secondarySkillAccess": [],
+              "spp": 2,
+              "level": 1,
+              "advancements": [],
+              "status": {
+                "mng": false,
+                "dead": false,
+                "retired": false
+              },
+              "injuries": []
+            },
+            {
+              "id": "dwarf_wall_p2",
+              "number": 7,
+              "name": "Hargim",
+              "position": "Runner",
+              "ma": 6,
+              "st": 3,
+              "ag": 3,
+              "pa": 4,
+              "av": 9,
+              "skills": ["Sure Hands"],
+              "primarySkillAccess": ["G"],
+              "secondarySkillAccess": ["P"],
+              "spp": 0,
+              "level": 1,
+              "advancements": [],
+              "status": {
+                "mng": false,
+                "dead": false,
+                "retired": false
+              },
+              "injuries": []
+            }
+          ]
+        },
+        {
+          "id": "skaven_dash",
+          "name": "Skaven Dash",
+          "race": "Skaven",
+          "coachName": "Rik",
+          "treasury": 60000,
+          "rerolls": 3,
+          "dedicatedFans": 2,
+          "teamValue": 1000000,
+          "players": [
+            {
+              "id": "skaven_dash_p1",
+              "number": 9,
+              "name": "Skritch",
+              "position": "Gutter Runner",
+              "ma": 9,
+              "st": 2,
+              "ag": 2,
+              "pa": 4,
+              "av": 8,
+              "skills": ["Dodge"],
+              "primarySkillAccess": ["A"],
+              "secondarySkillAccess": ["G"],
+              "spp": 5,
+              "level": 2,
+              "advancements": [
+                {
+                  "type": "skill",
+                  "skill": "Sprint",
+                  "chosen": true,
+                  "sppCost": 6
+                }
+              ],
+              "status": {
+                "mng": false,
+                "dead": false,
+                "retired": false
+              },
+              "injuries": []
+            },
+            {
+              "id": "skaven_dash_p2",
+              "number": 1,
+              "name": "Rikkit",
+              "position": "Thrower",
+              "ma": 7,
+              "st": 3,
+              "ag": 3,
+              "pa": 2,
+              "av": 8,
+              "skills": ["Pass", "Sure Hands"],
+              "primarySkillAccess": ["G", "P"],
+              "secondarySkillAccess": [],
+              "spp": 0,
+              "level": 1,
+              "advancements": [],
+              "status": {
+                "mng": false,
+                "dead": false,
+                "retired": false
+              },
+              "injuries": []
+            }
+          ]
+        }
+      ],
+      "matches": [
+        {
+          "id": "match_001",
+          "leagueId": "league_1",
+          "round": 1,
+          "status": "completed",
+          "homeTeamId": "orc_rippers",
+          "awayTeamId": "elf_prancers",
+          "date": "2025-11-01",
+          "score": {
+            "home": 2,
+            "away": 1
+          },
+          "casualties": {
+            "homeInflicted": 2,
+            "awayInflicted": 1
+          },
+          "inducements": {
+            "home": [],
+            "away": []
+          },
+          "sppLog": [
+            {
+              "teamId": "orc_rippers",
+              "playerId": "orc_rippers_p1",
+              "type": "TD",
+              "amount": 3
+            },
+            {
+              "teamId": "orc_rippers",
+              "playerId": "orc_rippers_p2",
+              "type": "MVP",
+              "amount": 4
+            },
+            {
+              "teamId": "elf_prancers",
+              "playerId": "elf_prancers_p1",
+              "type": "TD",
+              "amount": 3
+            }
+          ],
+          "liveState": null,
+          "notes": "Hard-fought opener."
+        },
+        {
+          "id": "match_002",
+          "leagueId": "league_1",
+          "round": 1,
+          "status": "completed",
+          "homeTeamId": "dwarf_wall",
+          "awayTeamId": "skaven_dash",
+          "date": "2025-11-01",
+          "score": {
+            "home": 1,
+            "away": 1
+          },
+          "casualties": {
+            "homeInflicted": 3,
+            "awayInflicted": 0
+          },
+          "inducements": {
+            "home": [],
+            "away": []
+          },
+          "sppLog": [
+            {
+              "teamId": "dwarf_wall",
+              "playerId": "dwarf_wall_p1",
+              "type": "CAS",
+              "amount": 2
+            },
+            {
+              "teamId": "skaven_dash",
+              "playerId": "skaven_dash_p1",
+              "type": "TD",
+              "amount": 3
+            }
+          ],
+          "liveState": null,
+          "notes": "Dwarfs smashed rats but couldn't stop the scoring."
+        },
+        {
+          "id": "match_003",
+          "leagueId": "league_1",
+          "round": 2,
+          "status": "scheduled",
+          "homeTeamId": "orc_rippers",
+          "awayTeamId": "dwarf_wall",
+          "date": null,
+          "score": {
+            "home": null,
+            "away": null
+          },
+          "casualties": {
+            "homeInflicted": 0,
+            "awayInflicted": 0
+          },
+          "inducements": {
+            "home": [],
+            "away": []
+          },
+          "sppLog": [],
+          "liveState": null,
+          "notes": ""
+        },
+        {
+          "id": "match_004",
+          "leagueId": "league_1",
+          "round": 2,
+          "status": "scheduled",
+          "homeTeamId": "elf_prancers",
+          "awayTeamId": "skaven_dash",
+          "date": null,
+          "score": {
+            "home": null,
+            "away": null
+          },
+          "casualties": {
+            "homeInflicted": 0,
+            "awayInflicted": 0
+          },
+          "inducements": {
+            "home": [],
+            "away": []
+          },
+          "sppLog": [],
+          "liveState": null,
+          "notes": ""
+        }
+      ]
+    }
+  ]
 }
