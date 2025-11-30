@@ -19,7 +19,6 @@
     <button id="navAdmin">Admin / Raw JSON</button>
   </div>
 
-  <!-- League List View -->
   <section id="leagueListSection">
     <h2>Leagues</h2>
     <div class="small">
@@ -31,7 +30,6 @@
     <div id="leagueListContainer"></div>
   </section>
 
-  <!-- League Detail View -->
   <section id="leagueViewSection" class="hidden">
     <div class="card">
       <div class="card-header">
@@ -48,7 +46,6 @@
         Standings are calculated from completed matches only. Click a team name to view its roster.
       </div>
 
-      <!-- NEW: Roster quick view tiles -->
       <div id="rosterQuickViewContainer"></div>
 
       <div id="standingsContainer"></div>
@@ -61,17 +58,16 @@
     </section>
   </section>
 
-  <!-- League Management View -->
   <section id="leagueManageSection" class="hidden">
     <div class="card">
       <div class="card-header">
         <h2 id="leagueManageHeader">Manage League</h2>
-        <button id="leagueManageBackBtn">← Back to Leagues</button>
+        <button id="leagueManageBackBtn">← Back</button>
       </div>
       <div id="leagueManageStatus" class="small"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="leagueInfoCard">
       <div class="card-header">
         <h3>League Info</h3>
       </div>
@@ -122,31 +118,32 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="leagueTeamsCard">
       <div class="card-header">
         <h3>Teams in League</h3>
         <button id="leagueManageAddNewTeamBtn">+ Add New Team</button>
       </div>
       <div id="leagueManageTeamsList"></div>
+    </div>
+
+    <div class="card" id="teamEditorCard">
       <div id="leagueManageTeamEditor"></div>
     </div>
 
     <div class="card">
-      <button id="leagueManageSaveBtn">Save League Changes</button>
+      <button id="leagueManageSaveBtn">Save Changes</button>
       <div class="small">
         Changes are saved to GitHub and apply to all users once committed.
       </div>
     </div>
   </section>
 
-  <!-- Team Detail View -->
   <section id="teamViewSection" class="hidden">
     <div class="card">
       <div class="card-header">
         <h2 id="teamHeader">Team Detail</h2>
         <div>
           <button id="teamBackBtn">← Back to League</button>
-          <!-- NEW: shortcut into manage view for this team -->
           <button id="teamManageBtn">Manage Team</button>
         </div>
       </div>
@@ -159,7 +156,6 @@
     </section>
   </section>
 
-  <!-- Match Detail View -->
   <section id="matchViewSection" class="hidden">
     <div class="card">
       <div class="card-header">
@@ -183,7 +179,6 @@
     </section>
   </section>
 
-  <!-- Scoreboard / Game Session View (read-only skeleton) -->
   <section id="scoreboardSection" class="hidden">
     <div class="card">
       <div class="card-header">
@@ -207,7 +202,6 @@
     </div>
   </section>
 
-  <!-- Admin / Raw JSON -->
   <section id="adminSection" class="hidden">
     <h2>Admin / Raw JSON Editor</h2>
     <p class="small">
@@ -239,7 +233,8 @@
       <textarea id="leagueTextarea" placeholder="League JSON will appear here..."></textarea>
     </div>
   </section>
-
+  
+  <datalist id="skillList"></datalist>
   <script src="app.js"></script>
 </body>
 </html>
