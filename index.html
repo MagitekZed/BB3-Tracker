@@ -47,6 +47,10 @@
       <div class="small">
         Standings are calculated from completed matches only. Click a team name to view its roster.
       </div>
+
+      <!-- NEW: Roster quick view tiles -->
+      <div id="rosterQuickViewContainer"></div>
+
       <div id="standingsContainer"></div>
     </section>
 
@@ -140,7 +144,11 @@
     <div class="card">
       <div class="card-header">
         <h2 id="teamHeader">Team Detail</h2>
-        <button id="teamBackBtn">← Back to League</button>
+        <div>
+          <button id="teamBackBtn">← Back to League</button>
+          <!-- NEW: shortcut into manage view for this team -->
+          <button id="teamManageBtn">Manage Team</button>
+        </div>
       </div>
       <div id="teamSummary" class="small"></div>
     </div>
