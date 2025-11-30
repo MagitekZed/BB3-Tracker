@@ -11,6 +11,11 @@ const navAdminBtn = document.getElementById('navAdmin');
 
 const leagueViewSection = document.getElementById('leagueViewSection');
 const adminSection = document.getElementById('adminSection');
+const teamViewSection = document.getElementById('teamViewSection');
+const teamBackBtn = document.getElementById('teamBackBtn');
+const teamHeaderEl = document.getElementById('teamHeader');
+const teamSummaryEl = document.getElementById('teamSummary');
+const teamRosterContainer = document.getElementById('teamRosterContainer');
 
 // League view elements
 const leagueHeaderEl = document.getElementById('leagueHeader');
@@ -28,8 +33,9 @@ const adminStatusEl = document.getElementById('adminStatus');
 
 // App state
 const state = {
-  rawData: null,     // full JSON from /api/league
-  currentLeague: null
+  rawData: null,        // full JSON from /api/league
+  currentLeague: null,
+  selectedTeamId: null
 };
 
 // ---- Utility status helpers ----
@@ -55,19 +61,30 @@ function setAdminStatus(msg, type = 'info') {
 function showLeagueView() {
   navLeagueBtn.classList.add('active');
   navAdminBtn.classList.remove('active');
+
   leagueViewSection.classList.remove('hidden');
+  teamViewSection.classList.add('hidden');
   adminSection.classList.add('hidden');
 }
 
 function showAdminView() {
   navLeagueBtn.classList.remove('active');
   navAdminBtn.classList.add('active');
+
   leagueViewSection.classList.add('hidden');
+  teamViewSection.classList.add('hidden');
   adminSection.classList.remove('hidden');
 }
 
 navLeagueBtn.addEventListener('click', showLeagueView);
 navAdminBtn.addEventListener('click', showAdminView);
+
+if (teamBackBtn) {
+  teamBackBtn.addEventListener('click', () => {
+    state.selectedTeamId = null;
+    showLeagueView();
+  });
+}
 
 // ---- Edit key handling ----
 
@@ -226,6 +243,137 @@ function computeStandings(league) {
   return arr;
 }
 
+// ---- Team Detail Rendering ----
+
+function openTeamView(teamId) {
+  state.selectedTeamId = teamId;
+  renderTeamView();
+  // Show team section, hide league/admin
+  navLeagueBtn.classList.remove('active');
+  navAdminBtn.classList.remove('active');
+
+  leagueViewSection.classList.add('hidden');
+  adminSection.classList.add('hidden');
+  teamViewSection.classList.remove('hidden');
+}
+
+function renderTeamView() {
+  const league = state.currentLeague;
+  if (!league || !state.selectedTeamId) {
+    teamHeaderEl.textContent = 'Team Detail';
+    teamSummaryEl.textContent = 'No team selected.';
+    teamRosterContainer.innerHTML = '';
+    return;
+  }
+
+  const team = league.teams.find(t => t.id === state.selectedTeamId);
+  if (!team) {
+    teamHeaderEl.textContent = 'Team not found';
+    teamSummaryEl.textContent = '';
+    teamRosterContainer.innerHTML = '';
+    return;
+  }
+
+  teamHeaderEl.textContent = team.name;
+
+  // Get standings entry for this team (if any)
+  const standings = computeStandings(league);
+  const entry = standings.find(s => s.teamId === team.id);
+
+  const recordText = entry
+    ? `Record: ${entry.wins}-${entry.draws}-${entry.losses} in ${entry.played} game${entry.played === 1 ? '' : 's'}`
+    : 'No completed games yet.';
+
+  const tdText = entry
+    ? `TD: ${entry.tdFor}/${entry.tdAgainst} (diff ${entry.tdDiff >= 0 ? '+' : ''}${entry.tdDiff})`
+    : '';
+
+  const casText = entry
+    ? `Cas: ${entry.casFor}/${entry.casAgainst} (diff ${entry.casDiff >= 0 ? '+' : ''}${entry.casDiff})`
+    : '';
+
+  teamSummaryEl.innerHTML = `
+    <div class="team-meta">
+      Coach: <strong>${team.coachName || 'Unknown'}</strong> &mdash;
+      Race: <strong>${team.race || 'Unknown'}</strong>
+    </div>
+    <div class="team-meta">
+      TV: ${team.teamValue != null ? team.teamValue : 'N/A'} &mdash;
+      Treasury: ${team.treasury != null ? team.treasury : 0} &mdash;
+      Rerolls: ${team.rerolls != null ? team.rerolls : 0} &mdash;
+      Dedicated Fans: ${team.dedicatedFans != null ? team.dedicatedFans : 0}
+    </div>
+    <div class="team-meta">
+      ${recordText}
+      ${tdText ? `<br/>${tdText}` : ''}
+      ${casText ? `<br/>${casText}` : ''}
+    </div>
+  `;
+
+  if (!team.players || !team.players.length) {
+    teamRosterContainer.innerHTML = `<div class="small">No players on this team yet.</div>`;
+    return;
+  }
+
+  const rows = team.players
+    .slice()
+    .sort((a, b) => (a.number || 0) - (b.number || 0))
+    .map(p => {
+      const skills = (p.skills || []).join(', ');
+      const injuries = (p.injuries || []).join(', ');
+      const statusBits = [];
+      if (p.status) {
+        if (p.status.mng) statusBits.push('MNG');
+        if (p.status.dead) statusBits.push('Dead');
+        if (p.status.retired) statusBits.push('Retired');
+      }
+      const statusText = statusBits.join(', ');
+
+      return `
+        <tr>
+          <td>${p.number != null ? p.number : ''}</td>
+          <td>${p.name}</td>
+          <td>${p.position || ''}</td>
+          <td>${p.ma != null ? p.ma : ''}</td>
+          <td>${p.st != null ? p.st : ''}</td>
+          <td>${p.ag != null ? p.ag : ''}</td>
+          <td>${p.pa != null ? p.pa : ''}</td>
+          <td>${p.av != null ? p.av : ''}</td>
+          <td>${skills}</td>
+          <td>${p.spp != null ? p.spp : 0}</td>
+          <td>${p.level != null ? p.level : ''}</td>
+          <td>${injuries}</td>
+          <td>${statusText}</td>
+        </tr>
+      `;
+    }).join('');
+
+  teamRosterContainer.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Pos</th>
+          <th>MA</th>
+          <th>ST</th>
+          <th>AG</th>
+          <th>PA</th>
+          <th>AV</th>
+          <th>Skills</th>
+          <th>SPP</th>
+          <th>Lvl</th>
+          <th>Injuries</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+}
+
 // ---- Rendering: League View ----
 
 function renderLeagueHeader(league) {
@@ -246,6 +394,19 @@ function renderLeagueHeader(league) {
   `;
 }
 
+function attachTeamLinks() {
+  // After standings rendered, make team names clickable
+  const links = standingsContainer.querySelectorAll('.team-link');
+  links.forEach(el => {
+    el.addEventListener('click', () => {
+      const teamId = el.getAttribute('data-team-id');
+      if (teamId) {
+        openTeamView(teamId);
+      }
+    });
+  });
+}
+
 function renderStandings(league) {
   const standings = computeStandings(league);
 
@@ -260,7 +421,12 @@ function renderStandings(league) {
     return `
       <tr>
         <td>${idx + 1}</td>
-        <td>${s.name}<div class="small">${s.coachName || ''}</div></td>
+        <td>
+          <button class="team-link" data-team-id="${s.teamId}">
+            ${s.name}
+          </button>
+          <div class="small">${s.coachName || ''}</div>
+        </td>
         <td>${s.played}</td>
         <td>${s.wins}</td>
         <td>${s.draws}</td>
@@ -292,6 +458,8 @@ function renderStandings(league) {
       </tbody>
     </table>
   `;
+
+  attachTeamLinks();
 }
 
 function renderMatches(league) {
