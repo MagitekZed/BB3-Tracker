@@ -78,6 +78,14 @@ const els = {
   datalist: document.getElementById('skillList')
 };
 
+// ---- Utility: ID Normalization ----
+function normalizeName(name) {
+  if (!name) return '';
+  return name.toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_') // Replace non-alphanumeric with underscore
+    .replace(/^_+|_+$/g, '');    // Trim leading/trailing underscores
+}
+
 // ---- State Management ----
 const state = {
   leaguesIndex: [],        // loaded from data/leagues/index.json
@@ -226,7 +234,7 @@ window.handleManageLeague = async (id) => {
   state.editMode = 'league';
   state.editLeagueId = id;
   state.editTeamId = null;
-  state.dirtyLeague = null; // reset dirty state
+  state.dirtyLeague = null;
 
   if (id) {
     // Edit existing
@@ -297,7 +305,6 @@ function renderLeagueView() {
 }
 
 function computeStandings(league) {
-  // Simplified for brevity - assumes league.teams has metadata
   const map = new Map();
   league.teams.forEach(t => map.set(t.id, { ...t, wins:0, draws:0, losses:0, points:0, tdDiff:0, casDiff:0 }));
   
@@ -306,22 +313,58 @@ function computeStandings(league) {
     const a = map.get(m.awayTeamId);
     if(!h || !a) return;
     
-    // Calc logic here (omitted for brevity, same as previous app.js)
-    // You can copy the logic from the previous file if needed
+    const hf = m.score?.home || 0;
+    const af = m.score?.away || 0;
+    const hCas = m.casualties?.homeInflicted || 0;
+    const aCas = m.casualties?.awayInflicted || 0;
+
+    h.tdDiff += (hf - af);
+    a.tdDiff += (af - hf);
+    h.casDiff += (hCas - aCas);
+    a.casDiff += (aCas - hCas);
+
+    if (hf > af) {
+      h.wins++; a.losses++;
+      h.points += (league.settings.pointsWin || 3);
+      a.points += (league.settings.pointsLoss || 0);
+    } else if (hf < af) {
+      a.wins++; h.losses++;
+      a.points += (league.settings.pointsWin || 3);
+      h.points += (league.settings.pointsLoss || 0);
+    } else {
+      h.draws++; a.draws++;
+      h.points += (league.settings.pointsDraw || 1);
+      a.points += (league.settings.pointsDraw || 1);
+    }
   });
   
   return Array.from(map.values()).sort((a,b) => b.points - a.points);
 }
 
 function renderMatchesList(league) {
-  // Same logic as before
   if(!league.matches.length) {
     els.containers.matches.innerHTML = '<div class="small">No matches scheduled.</div>';
     return;
   }
-  // Render table...
-  els.containers.matches.innerHTML = '<table>...matches...</table>'; 
-  // (Placeholder: Reuse the renderMatches logic from previous app.js)
+  
+  const rows = league.matches.map(m => {
+    // Attempt to resolve team names from ID
+    const homeT = league.teams.find(t => t.id === m.homeTeamId);
+    const awayT = league.teams.find(t => t.id === m.awayTeamId);
+    const hName = homeT ? homeT.name : m.homeTeamId;
+    const aName = awayT ? awayT.name : m.awayTeamId;
+    const score = m.status === 'completed' ? `${m.score.home}-${m.score.away}` : (m.status === 'in_progress' ? 'Live' : 'vs');
+
+    return `<tr>
+      <td>${m.round}</td>
+      <td>${hName}</td>
+      <td>${aName}</td>
+      <td>${score}</td>
+      <td>${m.status}</td>
+    </tr>`;
+  }).join('');
+
+  els.containers.matches.innerHTML = `<table><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
 }
 
 // ---- Action: Open Team ----
@@ -372,11 +415,30 @@ function renderTeamView() {
 
 function renderManageForm() {
   const l = state.dirtyLeague;
+  const isNewLeague = !state.editLeagueId;
   
   // Bind inputs to dirtyLeague state
   els.inputs.leagueId.value = l.id;
-  els.inputs.leagueId.disabled = !!state.editLeagueId; // Cannot change ID of existing
+  
+  // Special Handling: ID Field
+  if (isNewLeague) {
+    els.inputs.leagueId.placeholder = "Auto-generated from Name";
+    els.inputs.leagueId.readOnly = true;
+    els.inputs.leagueId.classList.add('faded');
+  } else {
+    els.inputs.leagueId.readOnly = true;
+    els.inputs.leagueId.classList.remove('faded');
+  }
+
   els.inputs.leagueName.value = l.name;
+  els.inputs.leagueName.oninput = function() {
+    state.dirtyLeague.name = this.value;
+    if (isNewLeague) {
+      state.dirtyLeague.id = normalizeName(this.value);
+      els.inputs.leagueId.value = state.dirtyLeague.id;
+    }
+  };
+
   els.inputs.leagueSeason.value = l.season;
   els.inputs.leagueStatus.value = l.status;
   
@@ -435,8 +497,8 @@ window.handleEditTeam = async (teamId) => {
       state.dirtyTeam = createEmptyTeam(teamId); // Fallback
     }
   } else {
-    // Creating new team
-    state.dirtyTeam = createEmptyTeam(`team_${Date.now()}`);
+    // Creating new team - ID starts empty, filled by Name
+    state.dirtyTeam = createEmptyTeam('');
   }
   
   renderManageForm(); // Updates visibility
@@ -449,24 +511,42 @@ function createEmptyTeam(id) {
 function renderTeamEditor() {
   const t = state.dirtyTeam;
   const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}">${r.name}</option>`).join('');
+  const isNewTeam = !state.editTeamId;
   
   els.containers.manageTeamEditor.innerHTML = `
     <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
     <div class="form-grid">
-      <div class="form-field"><label>Name</label><input type="text" value="${t.name}" onchange="state.dirtyTeam.name = this.value"></div>
+      <div class="form-field">
+        <label>File ID</label>
+        <input type="text" value="${t.id}" readonly class="faded" placeholder="Auto-generated from Name">
+      </div>
+      <div class="form-field">
+        <label>Name</label>
+        <input type="text" value="${t.name}" id="teamEditNameInput">
+      </div>
       <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
       <div class="form-field"><label>Race</label><select onchange="state.dirtyTeam.race = this.value; state.dirtyTeam.raceObj = null;">${raceOpts}</select></div>
     </div>
     
     <h4>Roster</h4>
-    <div class="small">Add Player logic here... (Simplified for now)</div>
+    <div class="small">Add Player logic here...</div>
     <button onclick="addPlaceholderPlayer()">+ Add Placeholder Player</button>
     <div id="editorRosterList">
       ${t.players.map(p => `<div>${p.name} (${p.position})</div>`).join('')}
     </div>
   `;
   
-  // Set initial select value
+  // Wire up Name -> ID logic for new teams
+  const nameInput = document.getElementById('teamEditNameInput');
+  nameInput.oninput = function() {
+    state.dirtyTeam.name = this.value;
+    if (isNewTeam) {
+      state.dirtyTeam.id = normalizeName(this.value);
+      // Update the readonly ID field visually
+      els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
+    }
+  };
+  
   const select = els.containers.manageTeamEditor.querySelector('select');
   if(select) select.value = t.race;
 }
@@ -490,6 +570,15 @@ els.buttons.manageSave.addEventListener('click', async () => {
       const t = state.dirtyTeam;
       const l = state.dirtyLeague;
       
+      // Validation: Check ID
+      if (!t.id) return setStatus('Team name cannot be empty/invalid.', 'error');
+      
+      // Collision Check (Only if new)
+      if (!state.editTeamId) {
+        const conflict = l.teams.find(x => x.id === t.id);
+        if (conflict) return setStatus(`A team with ID "${t.id}" already exists in this league.`, 'error');
+      }
+
       // Save Team JSON file
       await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
       
@@ -512,22 +601,31 @@ els.buttons.manageSave.addEventListener('click', async () => {
     // 2. Save League Logic
     const l = state.dirtyLeague;
     
-    // Validate
-    if (!l.id) return setStatus('League ID required', 'error');
+    // Validation
+    if (!l.id) return setStatus('League ID required (Name cannot be empty).', 'error');
+    
+    // Collision Check (Only if new)
+    if (!state.editLeagueId) {
+       const conflict = state.leaguesIndex.find(x => x.id === l.id);
+       if (conflict) return setStatus(`League with ID "${l.id}" already exists.`, 'error');
+    }
 
     // Update settings object from inputs
     l.name = els.inputs.leagueName.value;
     l.season = parseInt(els.inputs.leagueSeason.value);
     l.status = els.inputs.leagueStatus.value;
-    // ... (map other settings)
+    l.settings.pointsWin = parseInt(els.inputs.ptsWin.value);
+    l.settings.pointsDraw = parseInt(els.inputs.ptsDraw.value);
+    l.settings.pointsLoss = parseInt(els.inputs.ptsLoss.value);
 
     // A. Save Settings File
     await apiSave(PATHS.leagueSettings(l.id), l, `Save league ${l.id}`, key);
     
     // B. Update Index File
-    // We need to fetch the fresh index, update/add this league, and save back
     const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
     const idxEntry = { id: l.id, name: l.name, season: l.season, status: l.status };
+    
+    // Find if updating or pushing new
     const i = freshIndex.findIndex(x => x.id === l.id);
     if (i >= 0) freshIndex[i] = idxEntry;
     else freshIndex.push(idxEntry);
@@ -580,7 +678,8 @@ function populateSkillList() {
   list.innerHTML = '';
   Object.values(state.gameData.skillCategories).flat().forEach(s => {
     const opt = document.createElement('option');
-    opt.value = s.name || s; // handle obj or string
+    // If gameData uses objects {name: "Block"}, use that. Else string.
+    opt.value = (typeof s === 'object' && s.name) ? s.name : s; 
     list.appendChild(opt);
   });
 }
