@@ -12,13 +12,22 @@ export default {
       });
     }
 
-    if (url.pathname === '/api/league') {
+    // New Endpoint: /api/file?path=data/leagues/index.json
+    if (url.pathname === '/api/file') {
+      const filePath = url.searchParams.get('path');
+      if (!filePath) {
+        return new Response('Missing "path" query param', { status: 400, headers: corsHeaders() });
+      }
+
+      // Security: Prevent accessing files outside of data/ folder
+      if (!filePath.startsWith('data/')) {
+        return new Response('Forbidden: Access allowed only to data/ folder', { status: 403, headers: corsHeaders() });
+      }
+
       if (request.method === 'GET') {
-        // Anyone can read
-        return handleGetLeague(env);
+        return handleGetFile(filePath, env);
       } else if (request.method === 'POST') {
-        // Only allowed with correct edit key
-        return handlePostLeague(request, env);
+        return handlePostFile(request, filePath, env);
       }
     }
 
@@ -28,7 +37,7 @@ export default {
 
 function corsHeaders() {
   return {
-    'Access-Control-Allow-Origin': '*', // later you can restrict to your GitHub Pages origin
+    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, X-Edit-Key',
   };
@@ -37,22 +46,13 @@ function corsHeaders() {
 function isAuthorized(request, env) {
   const clientKey = request.headers.get('X-Edit-Key');
   const serverKey = env.EDIT_KEY;
-
-  // No key configured or mismatch
-  if (!serverKey) {
-    // If EDIT_KEY is not set, we can choose to deny everything to be safe
-    return false;
-  }
-
-  if (!clientKey) return false;
-
+  if (!serverKey) return false; 
   return clientKey === serverKey;
 }
 
-async function handleGetLeague(env) {
-  const { GITHUB_OWNER, GITHUB_REPO, GITHUB_FILE_PATH, GITHUB_BRANCH, GITHUB_TOKEN } = env;
-
-  const ghUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}?ref=${GITHUB_BRANCH}`;
+async function handleGetFile(filePath, env) {
+  const { GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, GITHUB_TOKEN } = env;
+  const ghUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`;
 
   const res = await fetch(ghUrl, {
     headers: {
@@ -63,35 +63,30 @@ async function handleGetLeague(env) {
   });
 
   if (!res.ok) {
+    // If file not found (404), return null so frontend knows to create it
+    if (res.status === 404) {
+      return new Response(JSON.stringify(null), { status: 404, headers: corsHeaders() });
+    }
     const text = await res.text();
-    return new Response(`GitHub GET failed: ${res.status} - ${text}`, {
-      status: 500,
-      headers: corsHeaders(),
-    });
+    return new Response(`GitHub GET failed: ${res.status} - ${text}`, { status: 500, headers: corsHeaders() });
   }
 
   const data = await res.json();
-  const decoded = JSON.parse(atob(data.content));
+  // GitHub API returns content in Base64
+  const decoded = decodeURIComponent(escape(atob(data.content))); // safer unicode decoding
 
-  return new Response(JSON.stringify(decoded), {
+  return new Response(decoded, {
     status: 200,
-    headers: {
-      ...corsHeaders(),
-      'Content-Type': 'application/json',
-    },
+    headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
   });
 }
 
-async function handlePostLeague(request, env) {
-  // 🔒 Check edit key
+async function handlePostFile(request, filePath, env) {
   if (!isAuthorized(request, env)) {
-    return new Response('Unauthorized: invalid edit key', {
-      status: 401,
-      headers: corsHeaders(),
-    });
+    return new Response('Unauthorized', { status: 401, headers: corsHeaders() });
   }
 
-  const { GITHUB_OWNER, GITHUB_REPO, GITHUB_FILE_PATH, GITHUB_BRANCH, GITHUB_TOKEN } = env;
+  const { GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, GITHUB_TOKEN } = env;
 
   let body;
   try {
@@ -100,17 +95,17 @@ async function handlePostLeague(request, env) {
     return new Response('Invalid JSON body', { status: 400, headers: corsHeaders() });
   }
 
-  const { league, message } = body;
+  const { content, message } = body; // Expecting raw object in 'content'
 
-  if (!league) {
-    return new Response('Missing "league" in body', { status: 400, headers: corsHeaders() });
+  if (!content) {
+    return new Response('Missing "content" in body', { status: 400, headers: corsHeaders() });
   }
 
-  const commitMessage = message || 'Update league from BB3 tracker';
+  const commitMessage = message || `Update ${filePath} via BB3 Tracker`;
+  const ghFileUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`;
 
-  const ghFileUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
-
-  // 1) Get current file to obtain SHA
+  // 1. Get current SHA (if file exists) to allow update
+  let sha = null;
   const getRes = await fetch(`${ghFileUrl}?ref=${GITHUB_BRANCH}`, {
     headers: {
       'Authorization': `Bearer ${GITHUB_TOKEN}`,
@@ -119,27 +114,27 @@ async function handlePostLeague(request, env) {
     },
   });
 
-  if (!getRes.ok) {
-    const text = await getRes.text();
-    return new Response(`GitHub GET for SHA failed: ${getRes.status} - ${text}`, {
-      status: 500,
-      headers: corsHeaders(),
-    });
+  if (getRes.ok) {
+    const fileMeta = await getRes.json();
+    sha = fileMeta.sha;
+  } else if (getRes.status !== 404) {
+    return new Response('Error checking file existence', { status: 500, headers: corsHeaders() });
   }
 
-  const fileMeta = await getRes.json();
-  const sha = fileMeta.sha;
-
-  // 2) Encode new content
-  const newContent = JSON.stringify(league, null, 2);
-  const base64Content = btoa(newContent);
+  // 2. PUT new content
+  const jsonString = JSON.stringify(content, null, 2);
+  // Encode generic unicode strings to Base64 safe for GitHub
+  const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
 
   const putBody = {
     message: commitMessage,
     content: base64Content,
-    sha,
     branch: GITHUB_BRANCH,
   };
+
+  if (sha) {
+    putBody.sha = sha;
+  }
 
   const putRes = await fetch(ghFileUrl, {
     method: 'PUT',
@@ -154,19 +149,12 @@ async function handlePostLeague(request, env) {
 
   if (!putRes.ok) {
     const text = await putRes.text();
-    return new Response(`GitHub PUT failed: ${putRes.status} - ${text}`, {
-      status: 500,
-      headers: corsHeaders(),
-    });
+    return new Response(`GitHub PUT failed: ${putRes.status} - ${text}`, { status: 500, headers: corsHeaders() });
   }
 
   const result = await putRes.json();
-
   return new Response(JSON.stringify({ ok: true, commit: result.commit }), {
     status: 200,
-    headers: {
-      ...corsHeaders(),
-      'Content-Type': 'application/json',
-    },
+    headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
   });
 }
