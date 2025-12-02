@@ -22,7 +22,6 @@ const state = {
   currentTeam: null,
   activeMatch: null,
   pollInterval: null,
-  editMode: null,
   dirtyData: null,
   coachSide: null,
   selectedPlayerIdx: null
@@ -36,6 +35,7 @@ async function init() {
   const storedKey = localStorage.getItem('bb3_edit_key');
   if (storedKey) document.getElementById('editKeyInput').value = storedKey;
   
+  showStatus('Initializing...', 'info');
   try {
     state.gameData = await apiGet(PATHS.gameData);
     state.leagues = await apiGet(PATHS.leaguesIndex) || [];
@@ -46,9 +46,10 @@ async function init() {
     
     // Initial Route
     handleRouting(); 
+    showStatus('Ready.', 'ok');
   } catch(e) { 
     console.error(e); 
-    showToast("Init Failed: " + e.message); 
+    showStatus("Init Failed: " + e.message, 'error'); 
   }
 }
 
@@ -74,6 +75,7 @@ async function handleRouting() {
     
     // Load League Data if needed
     if (!state.currentLeague || state.currentLeague.id !== lId) {
+      showStatus(`Loading league ${lId}...`);
       state.currentLeague = await apiGet(PATHS.leagueSettings(lId));
     }
     
@@ -90,16 +92,19 @@ async function handleRouting() {
     // SUB-ROUTE: TEAM VIEW
     else if (parts[2] === 'team' && parts[3]) {
       const tId = parts[3];
+      showStatus(`Loading team ${tId}...`);
       state.currentTeam = await apiGet(PATHS.team(lId, tId));
       renderTeamView();
       updateBreadcrumbs(['Home', state.currentLeague.name, state.currentTeam.name], [`#`, `#league/${lId}`, null]);
       document.getElementById('teamViewSection').classList.remove('hidden');
+      showStatus('Team loaded.', 'ok');
     } 
     // DEFAULT: LEAGUE VIEW
     else {
       renderLeagueView();
       updateBreadcrumbs(['Home', state.currentLeague.name], ['#', null]);
       document.getElementById('leagueViewSection').classList.remove('hidden');
+      showStatus('League loaded.', 'ok');
     }
   }
   
@@ -139,6 +144,12 @@ async function handleRouting() {
       document.getElementById('scoreboardSection').classList.remove('hidden');
     }
   }
+  
+  // ADMIN SCANNER ROUTE
+  else if (parts[0] === 'admin-tools') {
+    updateBreadcrumbs(['Home', 'Admin Tools']);
+    document.getElementById('adminSection').classList.remove('hidden');
+  }
 }
 
 function hideAllSections() {
@@ -147,6 +158,7 @@ function hideAllSections() {
 
 function updateBreadcrumbs(labels, links = []) {
   const el = document.getElementById('breadcrumbs');
+  if(!el) return;
   el.innerHTML = labels.map((l, i) => {
     if (links[i]) return `<span onclick="location.hash='${links[i]}'">${l}</span>`;
     return l;
@@ -156,6 +168,15 @@ function updateBreadcrumbs(labels, links = []) {
 // ============================================
 // API FUNCTIONS
 // ============================================
+
+function showStatus(msg, type='info') {
+  const el = document.getElementById('globalStatus');
+  if(!el) return;
+  el.textContent = msg;
+  el.className = `status ${type}`;
+  // Auto-hide 'ok' messages after 3s
+  if(type === 'ok') setTimeout(() => { el.textContent=''; el.className='status'; }, 3000);
+}
 
 async function apiGet(path) {
   const url = `${API_BASE}/api/file?path=${encodeURIComponent(path)}`;
@@ -205,9 +226,18 @@ function renderLeagueList() {
         <div style="font-weight:bold; font-size:1.1rem; color:var(--primary-red)">${l.name}</div>
         <div style="font-size:0.85rem; color:#666;">Season ${l.season} • ${l.status}</div>
       </div>
-      <button class="primary-btn" onclick="location.hash='#league/${l.id}'">Open</button>
+      <div style="display:flex; gap:0.5rem">
+        <button class="primary-btn" onclick="location.hash='#league/${l.id}'">Open</button>
+        <button class="secondary-btn" onclick="location.hash='#manage-league/${l.id}'">Manage</button>
+      </div>
     </div>
   `).join('');
+  
+  // Also add Admin Tools button to the list view
+  const adminDiv = document.createElement('div');
+  adminDiv.style.marginTop = '2rem';
+  adminDiv.innerHTML = `<button class="secondary-btn" onclick="location.hash='#admin-tools'">🔧 Admin Tools (Scanner)</button>`;
+  container.appendChild(adminDiv);
   
   document.getElementById('leagueCreateBtn').onclick = () => location.hash = '#manage-league/new';
 }
@@ -275,7 +305,7 @@ function renderLeagueView() {
 }
 
 // ============================================
-// TEAM VIEWS
+// TEAM VIEWS & EDITOR
 // ============================================
 
 function renderTeamView() {
@@ -299,10 +329,6 @@ function renderTeamView() {
       
   document.getElementById('teamEditBtn').onclick = () => location.hash = `#league/${state.currentLeague.id}/edit-team/${t.id}`;
 }
-
-// ============================================
-// TEAM EDITOR & SHOP
-// ============================================
 
 function renderTeamEditor() {
   const t = state.dirtyData;
@@ -338,6 +364,8 @@ function renderTeamEditor() {
   // Save Action
   document.getElementById('teamSaveBtn').onclick = async () => {
     const key = document.getElementById('editKeyInput').value;
+    if(!key) return showStatus("Edit key required", 'error');
+    
     if(!t.id) t.id = normalizeName(t.name);
     
     // Check if new team
@@ -347,7 +375,7 @@ function renderTeamEditor() {
     }
     
     await apiSave(PATHS.team(state.currentLeague.id, t.id), t, "Update Team", key);
-    showToast("Team Saved", 1500);
+    showStatus("Team Saved", 'ok');
     window.history.back();
   };
   
@@ -367,60 +395,6 @@ function renderTeamEditor() {
   };
 }
 
-function changeTeamRace(newRace) {
-  if (state.dirtyData.players.length > 0 && !confirm("Changing race will create conflict with existing players. Continue?")) return;
-  state.dirtyData.race = newRace;
-  renderTeamEditor();
-}
-
-function openShopModal() {
-  const t = state.dirtyData;
-  const race = state.gameData.races.find(r => r.name === t.race);
-  if (!race) return alert("Invalid Race Data");
-  
-  document.getElementById('shopContainer').innerHTML = race.positionals.map(pos => `
-    <div class="shop-item" onclick="buyPlayer('${pos.name}')">
-      <div style="font-weight:bold">${pos.name}</div>
-      <div style="color:#666; font-size:0.8rem">${Math.floor(pos.cost/1000)}k</div>
-      <div style="font-size:0.8rem; margin-top:5px">MA${pos.ma} ST${pos.st} AG${pos.ag}+ AV${pos.av}+</div>
-      <div style="font-size:0.75rem; color:#888; font-style:italic">${pos.skills.join(', ')}</div>
-    </div>
-  `).join('');
-  document.getElementById('shopModal').classList.remove('hidden');
-}
-
-window.buyPlayer = (posName) => {
-  const t = state.dirtyData;
-  const race = state.gameData.races.find(r => r.name === t.race);
-  const pos = race.positionals.find(p => p.name === posName);
-  
-  if ((t.treasury || 0) < pos.cost) {
-    if(!confirm("Not enough treasury. Buy anyway?")) return;
-  }
-  
-  t.treasury = (t.treasury || 1000000) - pos.cost;
-  const nextNum = t.players.reduce((max, p) => Math.max(max, p.number||0), 0) + 1;
-  t.players.push({
-    number: nextNum, name: 'Rookie', position: pos.name,
-    ma: pos.ma, st: pos.st, ag: pos.ag, pa: pos.pa, av: pos.av,
-    skills: [...pos.skills], spp: 0, cost: pos.cost
-  });
-  
-  closeModal('shopModal');
-  renderTeamEditor();
-};
-
-window.updatePlayer = (i, f, v) => {
-  if(['number','spp'].includes(f)) state.dirtyData.players[i][f] = parseInt(v);
-  else state.dirtyData.players[i][f] = v;
-};
-window.deletePlayer = (i) => { state.dirtyData.players.splice(i,1); renderTeamEditor(); };
-window.removeSkill = (pi, si) => { state.dirtyData.players[pi].skills.splice(si, 1); renderTeamEditor(); };
-window.addSkillPrompt = (pi) => {
-  const skill = prompt("Enter Skill Name (exact spelling):");
-  if(skill) { state.dirtyData.players[pi].skills.push(skill); renderTeamEditor(); }
-};
-
 // ============================================
 // MATCH SETUP & PLAY
 // ============================================
@@ -430,6 +404,7 @@ window.setupMatch = async (matchId) => {
   const m = l.matches.find(x => x.id === matchId);
   if(!m) return;
   
+  showStatus("Setting up match...");
   try {
     const home = await apiGet(PATHS.team(l.id, m.homeTeamId));
     const away = await apiGet(PATHS.team(l.id, m.awayTeamId));
@@ -460,12 +435,13 @@ window.setupMatch = async (matchId) => {
        await createActiveMatch(m, home, away);
        location.hash = `#match/${matchId}`;
     };
-  } catch(e) { alert(e.message); }
+    showStatus("Ready.", 'ok');
+  } catch(e) { showStatus(e.message, 'error'); }
 };
 
 async function createActiveMatch(match, homeTeam, awayTeam) {
     const key = document.getElementById('editKeyInput').value;
-    if (!key) return showToast("Edit key required");
+    if (!key) return showStatus("Edit key required", 'error');
 
     const initRoster = (players) => (players||[]).map(p => ({
         ...p, live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, mvp: false }
@@ -493,8 +469,10 @@ async function createActiveMatch(match, homeTeam, awayTeam) {
 // ============================================
 
 async function loadActiveMatch(mid) {
+  showStatus("Syncing match data...");
   state.activeMatch = await apiGet(PATHS.activeMatch(mid));
   if (!state.activeMatch) throw new Error("Match not found");
+  showStatus("Synced.", 'ok');
 }
 
 function renderScoreboard() {
@@ -667,6 +645,7 @@ function renderLeagueManager() {
     if(idx >= 0) index[idx] = entry; else index.push(entry);
     await apiSave(PATHS.leaguesIndex, index, "Update Index", key);
     
+    showStatus("League saved", 'ok');
     location.hash = `#league/${l.id}`;
   };
   
@@ -683,6 +662,109 @@ function renderLeagueManager() {
   
   document.getElementById('leagueManageAddTeamBtn').onclick = () => location.hash = `#league/${l.id}/edit-team/new`;
 }
+
+// ============================================
+// ADMIN & SCANNER TOOLS
+// ============================================
+
+// If you add this to index.html: <section id="adminSection" class="hidden">...</section>
+// it needs this logic to work!
+if(document.getElementById('adminSection')) {
+  // We need to inject the scanner HTML if it wasn't statically in the new index.html
+  // But assuming we want to restore functionality:
+  const adminSec = document.getElementById('adminSection');
+  adminSec.innerHTML = `
+    <h2>Admin Tools</h2>
+    <div class="card">
+      <div class="card-header"><h3>Repository Health</h3></div>
+      <div class="small" style="margin-bottom:1rem">
+        Scans <code>data/leagues/</code> for "Ghost" leagues and "Orphan" teams.
+      </div>
+      <button id="scanBtn" class="primary-btn">Scan Repository</button>
+      <div id="scanResults" style="margin-top:1rem;"></div>
+    </div>
+  `;
+  
+  document.getElementById('scanBtn').onclick = async () => {
+    const resEl = document.getElementById('scanResults');
+    resEl.innerHTML = '<div class="small">Scanning...</div>';
+    try {
+      const rootContents = await apiGet('data/leagues');
+      if (!Array.isArray(rootContents)) throw new Error("Could not list directories.");
+      const leagueDirs = rootContents.filter(x => x.type === 'dir').map(x => x.name);
+      const indexIds = state.leagues.map(l => l.id);
+      let html = '<table style="width:100%; font-size:0.9rem;">';
+      let issuesFound = 0;
+      for (const leagueId of leagueDirs) {
+        if (!indexIds.includes(leagueId)) {
+           const settings = await apiGet(`data/leagues/${leagueId}/settings.json`);
+           if (settings) {
+              issuesFound++;
+              html += `<tr style="background:#fff0f0"><td><strong>GHOST LEAGUE</strong>: ${leagueId}</td><td style="text-align:right"><button onclick="restoreLeague('${leagueId}')" style="color:green">Restore</button> | <button onclick="deleteLeagueFolder('${leagueId}')" style="color:red">Delete</button></td></tr>`;
+           }
+        }
+        const teamFiles = await apiGet(`data/leagues/${leagueId}/teams`);
+        const settings = await apiGet(`data/leagues/${leagueId}/settings.json`);
+        if (Array.isArray(teamFiles) && settings) {
+           const registeredIds = settings.teams.map(t => t.id);
+           const orphans = teamFiles.filter(f => f.name.endsWith('.json')).filter(f => !registeredIds.includes(f.name.replace('.json', '')));
+           orphans.forEach(f => {
+             issuesFound++;
+             html += `<tr><td>Orphan Team (in ${leagueId}): ${f.name}</td><td style="text-align:right"><button onclick="attachTeam('${leagueId}', '${f.name}')" style="color:#007bff">Attach</button> | <button onclick="deleteOrphanFile('${leagueId}', '${f.name}')" style="color:red">Delete</button></td></tr>`;
+           });
+        }
+      }
+      html += '</table>';
+      if (issuesFound === 0) resEl.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
+      else resEl.innerHTML = html;
+    } catch (e) { resEl.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`; }
+  };
+}
+
+window.attachTeam = async (leagueId, filename) => {
+  const key = document.getElementById('editKeyInput').value;
+  try {
+     const teamId = filename.replace('.json', '');
+     const team = await apiGet(PATHS.team(leagueId, teamId));
+     const settings = await apiGet(PATHS.leagueSettings(leagueId));
+     settings.teams.push({ id: team.id, name: team.name, race: team.race, coachName: team.coachName });
+     await apiSave(PATHS.leagueSettings(leagueId), settings, `Attach orphan ${teamId}`, key);
+     document.getElementById('scanBtn').click();
+     showStatus(`Attached ${team.name}`, 'ok');
+  } catch(e) { alert(e.message); }
+};
+
+window.restoreLeague = async (leagueId) => {
+  const key = document.getElementById('editKeyInput').value;
+  try {
+    const settings = await apiGet(PATHS.leagueSettings(leagueId));
+    const index = await apiGet(PATHS.leaguesIndex) || [];
+    index.push({ id: settings.id, name: settings.name, season: settings.season, status: settings.status });
+    await apiSave(PATHS.leaguesIndex, index, `Restored ghost league ${leagueId}`, key);
+    state.leagues = index;
+    document.getElementById('scanBtn').click();
+    showStatus(`Restored ${settings.name}`, 'ok');
+  } catch(e) { alert(e.message); }
+};
+
+window.deleteOrphanFile = async (leagueId, filename) => {
+  if(!confirm(`Delete ${filename}?`)) return;
+  const key = document.getElementById('editKeyInput').value;
+  try {
+    await apiDelete(`data/leagues/${leagueId}/teams/${filename}`, `Clean orphan ${filename}`, key);
+    document.getElementById('scanBtn').click();
+  } catch(e) { alert(e.message); }
+};
+
+window.deleteLeagueFolder = async (leagueId) => {
+  if(!confirm(`Delete Settings file for ${leagueId}?`)) return;
+  const key = document.getElementById('editKeyInput').value;
+  try {
+    await apiDelete(PATHS.leagueSettings(leagueId), `Delete ghost league ${leagueId}`, key);
+    document.getElementById('scanBtn').click();
+  } catch(e) { alert(e.message); }
+};
+
 
 // ============================================
 // UTILITIES
@@ -719,6 +801,7 @@ function normalizeName(name) {
 
 function showToast(msg, time) {
   const el = document.getElementById('toast');
+  if(!el) return;
   el.innerText = msg;
   el.classList.remove('hidden');
   if (time) setTimeout(() => el.classList.add('hidden'), time);
@@ -727,6 +810,7 @@ function showToast(msg, time) {
 function populateSkillList() {
   if (!state.gameData?.skillCategories) return;
   const list = document.getElementById('skillList');
+  if(!list) return;
   list.innerHTML = '';
   Object.values(state.gameData.skillCategories).flat().forEach(s => {
     const opt = document.createElement('option');
@@ -781,6 +865,12 @@ window.showSkill = (skillName) => {
   document.getElementById('skillModal').classList.remove('hidden');
 };
 
+window.changeTeamRace = (newRace) => {
+  if (state.dirtyData.players.length > 0 && !confirm("Changing race will create conflict with existing players. Continue?")) return;
+  state.dirtyData.race = newRace;
+  renderTeamEditor();
+}
+
 window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
 window.closeActionSheet = () => document.getElementById('actionSheet').classList.add('hidden');
 window.switchLeagueTab = (tab) => {
@@ -789,6 +879,52 @@ window.switchLeagueTab = (tab) => {
   document.getElementById(`tab-${tab}`).classList.remove('hidden');
   event.target.classList.add('active');
 };
+window.updatePlayer = (i, f, v) => {
+  if(['number','spp'].includes(f)) state.dirtyData.players[i][f] = parseInt(v);
+  else state.dirtyData.players[i][f] = v;
+};
+window.deletePlayer = (i) => { state.dirtyData.players.splice(i,1); renderTeamEditor(); };
+window.removeSkill = (pi, si) => { state.dirtyData.players[pi].skills.splice(si, 1); renderTeamEditor(); };
+window.addSkillPrompt = (pi) => {
+  const skill = prompt("Enter Skill Name (exact spelling):");
+  if(skill) { state.dirtyData.players[pi].skills.push(skill); renderTeamEditor(); }
+};
+window.openShopModal = () => {
+  const t = state.dirtyData;
+  const race = state.gameData.races.find(r => r.name === t.race);
+  if (!race) return alert("Invalid Race Data");
+  
+  document.getElementById('shopContainer').innerHTML = race.positionals.map(pos => `
+    <div class="shop-item" onclick="buyPlayer('${pos.name}')">
+      <div style="font-weight:bold">${pos.name}</div>
+      <div style="color:#666; font-size:0.8rem">${Math.floor(pos.cost/1000)}k</div>
+      <div style="font-size:0.8rem; margin-top:5px">MA${pos.ma} ST${pos.st} AG${pos.ag}+ AV${pos.av}+</div>
+      <div style="font-size:0.75rem; color:#888; font-style:italic">${pos.skills.join(', ')}</div>
+    </div>
+  `).join('');
+  document.getElementById('shopModal').classList.remove('hidden');
+};
+window.buyPlayer = (posName) => {
+  const t = state.dirtyData;
+  const race = state.gameData.races.find(r => r.name === t.race);
+  const pos = race.positionals.find(p => p.name === posName);
+  
+  if ((t.treasury || 0) < pos.cost) {
+    if(!confirm("Not enough treasury. Buy anyway?")) return;
+  }
+  
+  t.treasury = (t.treasury || 1000000) - pos.cost;
+  const nextNum = t.players.reduce((max, p) => Math.max(max, p.number||0), 0) + 1;
+  t.players.push({
+    number: nextNum, name: 'Rookie', position: pos.name,
+    ma: pos.ma, st: pos.st, ag: pos.ag, pa: pos.pa, av: pos.av,
+    skills: [...pos.skills], spp: 0, cost: pos.cost
+  });
+  
+  closeModal('shopModal');
+  renderTeamEditor();
+};
+
 document.getElementById('rememberKeyBtn').onclick = () => {
   localStorage.setItem('bb3_edit_key', document.getElementById('editKeyInput').value);
   showToast("Key Saved", 1000);
