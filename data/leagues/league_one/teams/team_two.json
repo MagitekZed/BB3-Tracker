@@ -1,0 +1,43 @@
+{
+  "id": "team_two",
+  "name": "team two",
+  "race": "Khorne",
+  "coachName": "zer",
+  "players": [
+    {
+      "number": 1,
+      "name": "Player",
+      "position": "Khorngor",
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [
+        "Horns",
+        "Juggernaut",
+        "Jump Up",
+        "Thick Skull"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 2,
+      "name": "Player",
+      "position": "Bloodspawn",
+      "ma": 5,
+      "st": 5,
+      "ag": 4,
+      "pa": -1,
+      "av": 9,
+      "skills": [
+        "Claws",
+        "Frenzy",
+        "Loner (4+)",
+        "Mighty Blow (+1)",
+        "Unchannelled Fury"
+      ],
+      "spp": 0
+    }
+  ]
+}
