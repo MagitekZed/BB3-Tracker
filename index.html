@@ -206,17 +206,23 @@
   </section>
 
   <section id="adminSection" class="hidden">
-    <h2>Admin / Raw JSON Editor</h2>
-    <p class="small">
-      Use this to inspect or manually fix data.
-    </p>
+    <h2>Admin Tools</h2>
+    
+    <div class="card">
+      <div class="card-header">
+        <h3>System Health</h3>
+      </div>
+      <div class="small" style="margin-bottom:1rem">
+        Scan currently selected league for orphaned team files (files that exist in the repo but are not linked to the league).
+      </div>
+      <button id="scanBtn">Scan Current League for Orphans</button>
+      <div id="scanResults" style="margin-top:1rem;"></div>
+    </div>
+
     <div class="card">
       <div class="card-header">
         <h3>Raw JSON Editor</h3>
-        <div>
-          <button id="loadBtn">Load</button>
-          <button id="saveBtn">Save</button>
-        </div>
+        <div><button id="loadBtn">Load</button> <button id="saveBtn">Save</button></div>
       </div>
       <textarea id="leagueTextarea" placeholder="JSON content..."></textarea>
     </div>
