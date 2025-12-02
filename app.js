@@ -28,6 +28,7 @@ const state = {
   // Navigation State
   viewLeagueId: null,
   viewTeamId: null,
+  selectedPlayerIdx: null, // For Action Modal
   
   // Editing State
   editLeagueId: null,
@@ -78,6 +79,7 @@ const els = {
     coachRerolls: document.getElementById('coachRerolls'),
     coachTurn: document.getElementById('coachTurnDisplay'),
     coachRoster: document.getElementById('coachRosterList'),
+    coachApo: document.getElementById('coachApoCheck'),
     // Admin
     delLeagueBtn: document.getElementById('deleteLeagueContainer'),
     scanResults: document.getElementById('scanResults')
@@ -119,15 +121,12 @@ const els = {
     schedAway: document.getElementById('schedAway'),
     adminText: document.getElementById('leagueTextarea')
   },
-  cards: {
-    leagueInfo: document.getElementById('leagueInfoCard'),
-    leagueTeams: document.getElementById('leagueTeamsCard'),
-    teamEditor: document.getElementById('teamEditorCard')
-  },
-  modal: {
-    el: document.getElementById('skillModal'),
-    title: document.getElementById('skillModalTitle'),
-    body: document.getElementById('skillModalBody')
+  modals: {
+    skill: document.getElementById('skillModal'),
+    skillTitle: document.getElementById('skillModalTitle'),
+    skillBody: document.getElementById('skillModalBody'),
+    action: document.getElementById('actionModal'),
+    actionTitle: document.getElementById('actionModalTitle')
   },
   datalist: document.getElementById('skillList')
 };
@@ -410,7 +409,7 @@ window.handleStartMatch = async (matchId) => {
     // Initialize Live Data (Rerolls, Apothecary)
     const initRoster = (players) => (players||[]).map(p => ({
         ...p,
-        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
+        live: { used: false, status: 'healthy', td: 0, cas: 0, int: 0, comp: 0, mvp: 0 }
     }));
 
     const activeData = {
@@ -420,21 +419,19 @@ window.handleStartMatch = async (matchId) => {
       status: 'in_progress',
       home: { 
         id: homeTeam.id, name: homeTeam.name, score: 0, roster: initRoster(homeTeam.players),
-        rerolls: homeTeam.rerolls || 0, apothecary: true 
+        rerolls_total: homeTeam.rerolls || 0, rerolls_left: homeTeam.rerolls || 0, apo_used: false 
       },
       away: { 
         id: awayTeam.id, name: awayTeam.name, score: 0, roster: initRoster(awayTeam.players),
-        rerolls: awayTeam.rerolls || 0, apothecary: true
+        rerolls_total: awayTeam.rerolls || 0, rerolls_left: awayTeam.rerolls || 0, apo_used: false 
       },
       turn: { home: 0, away: 0 },
       log: []
     };
     
     await apiSave(PATHS.activeMatch(m.id), activeData, `Start match ${m.id}`, key);
-    
     m.status = 'in_progress';
     await apiSave(PATHS.leagueSettings(l.id), l, `Set match ${m.id} to in_progress`, key);
-    
     handleOpenScoreboard(m.id);
     setStatus('Match started!', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
@@ -510,11 +507,13 @@ function renderCoachView() {
   els.containers.coachTeamName.textContent = team.name;
   els.containers.coachScore.textContent = `${team.score} - ${oppTeam.score}`;
   els.containers.coachTurn.textContent = d.turn[side];
+  if(els.containers.coachApo) els.containers.coachApo.checked = team.apo_used;
 
   // Rerolls (Interactive Pips)
   let pips = '';
-  for(let i=0; i<team.rerolls; i++) {
-    pips += `<div class="reroll-pip ${i < (team.rerolls) ? 'active' : ''}" onclick="toggleReroll('${side}', ${i})"></div>`;
+  for(let i=0; i<team.rerolls_total; i++) {
+    const active = i < team.rerolls_left ? 'active' : '';
+    pips += `<div class="reroll-pip ${active}" onclick="toggleReroll('${side}', ${i})"></div>`;
   }
   els.containers.coachRerolls.innerHTML = pips;
 
@@ -526,39 +525,44 @@ function renderLiveRoster(roster, side, readOnly) {
   return roster.map((p, idx) => {
     const live = p.live || {};
     const usedClass = live.used ? 'used' : '';
-    const injClass = live.injured ? 'injured' : '';
+    const statusClass = live.status !== 'healthy' ? live.status : '';
     
-    let badges = '';
-    if(live.td > 0) badges += `<span class="stat-badge">TD:${live.td}</span>`;
-    if(live.cas > 0) badges += `<span class="stat-badge">CAS:${live.cas}</span>`;
-    if(live.int > 0) badges += `<span class="stat-badge">INT:${live.int}</span>`;
-    if(live.sentOff) badges += `<span class="stat-badge" style="background:#faa">Off</span>`;
+    let badges = [];
+    if(live.td > 0) badges.push(`<span class="stat-badge badge-td">TD:${live.td}</span>`);
+    if(live.cas > 0) badges.push(`<span class="stat-badge badge-cas">CAS:${live.cas}</span>`);
+    if(live.int > 0) badges.push(`<span class="stat-badge badge-int">INT:${live.int}</span>`);
+    if(live.comp > 0) badges.push(`<span class="stat-badge">CP:${live.comp}</span>`);
+    if(live.mvp > 0) badges.push(`<span class="stat-badge" style="background:#ffc107">MVP</span>`);
+
+    let statusText = '';
+    if(live.status === 'ko') statusText = '<span style="color:#d39e00; font-weight:bold">KO</span>';
+    if(live.status === 'cas') statusText = '<span style="color:#d32f2f; font-weight:bold">CAS</span>';
+    if(live.status === 'sentOff') statusText = '<span style="color:#555; font-weight:bold">OFF</span>';
 
     const skillTags = (p.skills || []).map(s => 
       `<span class="skill-tag" onclick="event.stopPropagation(); showSkill('${s}')">${s}</span>`
     ).join(' ');
 
     if (readOnly) {
+        // Jumbotron View
         return `
-          <div class="live-player-row ${usedClass} ${injClass}">
+          <div class="live-player-row ${usedClass} ${statusClass}">
             <div class="player-info">
-              <span class="player-name">#${p.number} ${p.name} ${badges}</span>
+              <span class="player-name">#${p.number} ${p.name} ${statusText} ${badges.join('')}</span>
               <span class="player-pos">${p.position} | ${skillTags}</span>
             </div>
           </div>`;
     }
 
-    // Interactive Row
+    // Coach Interactive Row
     return `
-      <div class="live-player-row ${usedClass} ${injClass}" onclick="togglePlayerStatus('${side}', ${idx}, 'used')">
+      <div class="live-player-row ${usedClass} ${statusClass}" onclick="togglePlayerStatus('${side}', ${idx}, 'used')">
         <div class="player-info">
-          <span class="player-name">#${p.number} ${p.name} ${badges}</span>
+          <span class="player-name">#${p.number} ${p.name} ${statusText} ${badges.join('')}</span>
           <span class="player-pos">${p.position} | ${skillTags}</span>
         </div>
-        <div class="player-actions" onclick="event.stopPropagation()">
-          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'td')">TD</button>
-          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'cas')">CAS</button>
-          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'injured')" style="color:red">Inj</button>
+        <div class="player-actions">
+          <button class="star-btn" onclick="event.stopPropagation(); openActionModal(${idx})">★</button>
         </div>
       </div>
     `;
@@ -577,34 +581,73 @@ async function updateLiveMatch(actionDesc) {
 
 window.togglePlayerStatus = (side, idx, type) => {
   const p = state.activeMatchData[side].roster[idx];
-  p.live = p.live || {};
-  
-  if (type === 'used') p.live.used = !p.live.used;
-  else if (type === 'injured') p.live.injured = !p.live.injured;
-  else if (type === 'td') {
-    p.live.td++;
-    state.activeMatchData[side].score++;
+  // Simple 'Used' toggle
+  if (type === 'used' && p.live.status === 'healthy') {
+    p.live.used = !p.live.used;
+    renderCoachView();
+    updateLiveMatch(`Toggle Used: ${p.name}`);
   }
-  else if (type === 'cas') p.live.cas++;
-  
-  renderCoachView();
-  updateLiveMatch(`Update ${p.name} ${type}`);
 };
 
 window.toggleReroll = (side, idx) => {
   const team = state.activeMatchData[side];
-  if (team.rerolls > 0) {
-      team.rerolls--;
-      renderCoachView();
-      updateLiveMatch(`${side} used Reroll`);
-  }
+  if (idx < team.rerolls_left) team.rerolls_left--;
+  else team.rerolls_left++;
+  renderCoachView();
+  updateLiveMatch(`${side} Reroll Update`);
 };
 
+window.toggleApothecary = () => {
+  const team = state.activeMatchData[state.coachSide];
+  team.apo_used = !team.apo_used;
+  updateLiveMatch(`${state.coachSide} Apothecary toggle`);
+};
+
+// ---- ACTION MODAL ----
+
+window.openActionModal = (idx) => {
+  state.selectedPlayerIdx = idx;
+  const p = state.activeMatchData[state.coachSide].roster[idx];
+  els.modals.actionTitle.textContent = `#${p.number} ${p.name}`;
+  
+  // Highlight current status buttons if needed
+  // (In a real app, we'd toggle classes on the buttons)
+  els.modals.action.classList.remove('hidden');
+};
+
+window.closeActionModal = () => els.modals.action.classList.add('hidden');
+
+window.doPlayerAction = (type, delta) => {
+  const side = state.coachSide;
+  const p = state.activeMatchData[side].roster[state.selectedPlayerIdx];
+  
+  p.live[type] = Math.max(0, (p.live[type]||0) + delta);
+  
+  if (type === 'td') {
+    state.activeMatchData[side].score = Math.max(0, state.activeMatchData[side].score + delta);
+  }
+  
+  renderCoachView();
+  updateLiveMatch(`${p.name} ${type} ${delta > 0 ? '+' : '-'}`);
+  closeActionModal();
+};
+
+window.setPlayerStatus = (status) => {
+  const p = state.activeMatchData[state.coachSide].roster[state.selectedPlayerIdx];
+  p.live.status = status;
+  if (status !== 'healthy') p.live.used = true;
+  
+  renderCoachView();
+  updateLiveMatch(`${p.name} status: ${status}`);
+  closeActionModal();
+};
+
+// ---- End Turn ----
 if(els.buttons.coachEndTurn) {
   els.buttons.coachEndTurn.addEventListener('click', async () => {
     const side = state.coachSide;
     const d = state.activeMatchData;
-    d[side].roster.forEach(p => { if(p.live) p.live.used = false; });
+    d[side].roster.forEach(p => { if(p.live.status === 'healthy') p.live.used = false; });
     d.turn[side]++;
     renderCoachView();
     await updateLiveMatch(`End Turn: ${side}`);
@@ -615,7 +658,7 @@ if(els.buttons.coachEndTurn) {
 // ---- Admin Match End/Cancel ----
 
 els.buttons.cancelGame.addEventListener('click', async () => {
-  if(!confirm("Cancel match?")) return;
+  if(!confirm("Cancel match? All progress will be lost.")) return;
   const key = els.inputs.editKey.value;
   try {
     const mId = state.activeMatchData.matchId;
@@ -626,6 +669,7 @@ els.buttons.cancelGame.addEventListener('click', async () => {
     if(m) m.status = 'scheduled';
     await apiSave(PATHS.leagueSettings(lId), l, `Revert ${mId}`, key);
     handleOpenLeague(lId);
+    setStatus('Match cancelled.', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
 });
 
@@ -647,6 +691,7 @@ els.buttons.endGame.addEventListener('click', async () => {
     await apiSave(PATHS.leagueSettings(d.leagueId), l, `Complete ${d.matchId}`, key);
     await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
     handleOpenLeague(d.leagueId);
+    setStatus('Match completed successfully!', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
 });
 
@@ -674,12 +719,12 @@ window.showSkill = (skillName) => {
       if (found) desc = found.description;
   }
   
-  els.modal.title.textContent = skillName;
-  els.modal.body.textContent = desc;
-  els.modal.el.classList.remove('hidden');
+  els.modals.skillTitle.textContent = skillName;
+  els.modals.skillBody.textContent = desc;
+  els.modals.skill.classList.remove('hidden');
 };
 
-window.closeSkillModal = () => els.modal.el.classList.add('hidden');
+window.closeSkillModal = () => els.modals.skill.classList.add('hidden');
 
 // ============================================
 // MANAGEMENT (Teams, Players, Orphans)
