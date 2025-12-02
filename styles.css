@@ -559,3 +559,102 @@ input.faded {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+/* COACH VIEW SPECIFIC */
+#coachSection {
+  padding-bottom: 80px; /* Space for sticky footer */
+}
+
+.coach-header {
+  position: sticky;
+  top: 0;
+  background: #222;
+  color: white;
+  padding: 0.8rem;
+  z-index: 100;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  margin: -2rem -1rem 1rem -1rem; /* Break out of body padding */
+}
+
+.coach-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.coach-team-name {
+  font-family: Impact, sans-serif;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+}
+
+.coach-score {
+  font-family: Consolas, monospace;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--gold-accent);
+}
+
+.coach-resources {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.reroll-pips {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.reroll-pip {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #666;
+  background: #444;
+  cursor: pointer;
+}
+.reroll-pip.active {
+  background: var(--gold-accent);
+  border-color: #fff;
+  box-shadow: 0 0 4px var(--gold-accent);
+}
+
+.coach-footer {
+  position: fixed;
+  bottom: 0; left: 0; width: 100%;
+  background: white;
+  border-top: 1px solid #ddd;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+  z-index: 100;
+}
+
+/* Secondary Button Style */
+.secondary-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+}
+.secondary-btn:hover { background: #5a6268; }
+
+/* Large Action Buttons for Mobile */
+.action-btn-large {
+  width: 32px; height: 32px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+.action-btn-large.active {
+  background: #333; color: white;
+}
