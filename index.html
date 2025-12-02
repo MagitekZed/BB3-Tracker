@@ -48,7 +48,7 @@
     <section id="leagueTeamsSection">
       <h2>Teams & Standings</h2>
       <div class="small">
-        Standings are calculated from completed matches only. Click a team name to view its roster.
+        Standings are calculated from completed matches only.
       </div>
       <div id="rosterQuickViewContainer"></div>
       <div id="standingsContainer"></div>
@@ -56,6 +56,18 @@
 
     <section id="leagueMatchesSection">
       <h2>Matches</h2>
+      
+      <div class="card">
+        <h3>Schedule Match</h3>
+        <div class="inline-input">
+          <label>Round: <input type="number" id="schedRound" value="1" style="width:50px"></label>
+          <select id="schedHome"><option>Home Team...</option></select>
+          <span style="font-weight:bold">vs</span>
+          <select id="schedAway"><option>Away Team...</option></select>
+          <button id="schedAddBtn">Add to Schedule</button>
+        </div>
+      </div>
+
       <div id="inProgressContainer"></div>
       <div id="matchesContainer"></div>
     </section>
@@ -71,25 +83,22 @@
     </div>
 
     <div class="card" id="leagueInfoCard">
-      <div class="card-header">
-        <h3>League Info</h3>
-      </div>
+      <div class="card-header"><h3>League Info</h3></div>
       <div class="form-grid">
         <div class="form-field">
-          <label for="leagueManageIdInput">League ID</label>
+          <label>League ID</label>
           <input id="leagueManageIdInput" type="text" placeholder="league_1" />
-          <div class="small">For internal use; must be unique.</div>
         </div>
         <div class="form-field">
-          <label for="leagueManageNameInput">Name</label>
+          <label>Name</label>
           <input id="leagueManageNameInput" type="text" placeholder="Local League" />
         </div>
         <div class="form-field">
-          <label for="leagueManageSeasonInput">Season</label>
+          <label>Season</label>
           <input id="leagueManageSeasonInput" type="number" min="1" />
         </div>
         <div class="form-field">
-          <label for="leagueManageStatusSelect">Status</label>
+          <label>Status</label>
           <select id="leagueManageStatusSelect">
             <option value="active">active</option>
             <option value="upcoming">upcoming</option>
@@ -97,26 +106,19 @@
           </select>
         </div>
         <div class="form-field">
-          <label for="leagueManagePointsWinInput">Points for Win</label>
-          <input id="leagueManagePointsWinInput" type="number" />
+          <label>Points (W/D/L)</label>
+          <div style="display:flex; gap:0.5rem">
+            <input id="leagueManagePointsWinInput" type="number" placeholder="W" style="width:50px" />
+            <input id="leagueManagePointsDrawInput" type="number" placeholder="D" style="width:50px" />
+            <input id="leagueManagePointsLossInput" type="number" placeholder="L" style="width:50px" />
+          </div>
         </div>
         <div class="form-field">
-          <label for="leagueManagePointsDrawInput">Points for Draw</label>
-          <input id="leagueManagePointsDrawInput" type="number" />
-        </div>
-        <div class="form-field">
-          <label for="leagueManagePointsLossInput">Points for Loss</label>
-          <input id="leagueManagePointsLossInput" type="number" />
-        </div>
-        <div class="form-field">
-          <label for="leagueManageMaxTeamsInput">Max Teams</label>
+          <label>Max Teams</label>
           <input id="leagueManageMaxTeamsInput" type="number" min="2" />
         </div>
         <div class="form-field">
-          <label>
-            <input id="leagueManageLockTeamsInput" type="checkbox" />
-            Lock teams
-          </label>
+          <label><input id="leagueManageLockTeamsInput" type="checkbox" /> Lock teams</label>
         </div>
       </div>
     </div>
@@ -135,9 +137,6 @@
 
     <div class="card">
       <button id="leagueManageSaveBtn">Save Changes</button>
-      <div class="small">
-        Changes are saved to GitHub. Requires Edit Key.
-      </div>
     </div>
   </section>
 
@@ -152,54 +151,33 @@
       </div>
       <div id="teamSummary" class="small"></div>
     </div>
-
     <section id="teamRosterSection">
       <h3>Roster</h3>
       <div id="teamRosterContainer"></div>
     </section>
   </section>
 
-  <section id="matchViewSection" class="hidden">
-    <div class="card">
-      <div class="card-header">
-        <h2 id="matchHeader">Match Detail</h2>
-        <button id="matchBackBtn">← Back to League</button>
-      </div>
-      <div id="matchSummary" class="small"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>Overview</h3>
-        <button id="matchOpenScoreboardBtn">Open Scoreboard View</button>
-      </div>
-      <div id="matchOverviewContainer"></div>
-    </div>
-
-    <section>
-      <h3>SPP Log</h3>
-      <div id="matchSppContainer"></div>
-    </section>
-  </section>
-
   <section id="scoreboardSection" class="hidden">
     <div class="card">
       <div class="card-header">
-        <h2 id="scoreboardHeader">Scoreboard</h2>
+        <h2 id="scoreboardHeader">Scoreboard (Live)</h2>
         <div>
-          <button id="scoreboardBackToMatchBtn">← Back to Match</button>
+          <button id="scoreboardBackToMatchBtn">← Back to League</button>
         </div>
       </div>
       <div id="scoreboardMeta" class="small"></div>
     </div>
 
     <div id="scoreboardContent" class="card">
-      <div class="scoreboard-layout">
-        <div id="scoreboardHomeRoster"></div>
+      <div class="scoreboard-layout" style="text-align:center; margin-bottom:1rem;">
         <div class="scoreboard-score">
-          <div id="scoreboardScoreMain" class="scoreboard-score-main"></div>
+          <h1 id="scoreboardScoreMain" class="scoreboard-score-main">0 - 0</h1>
           <div id="scoreboardScoreMeta" class="scoreboard-score-meta"></div>
         </div>
+      </div>
+      
+      <div class="scoreboard-rosters" style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+        <div id="scoreboardHomeRoster"></div>
         <div id="scoreboardAwayRoster"></div>
       </div>
     </div>
@@ -207,18 +185,14 @@
 
   <section id="adminSection" class="hidden">
     <h2>Admin Tools</h2>
-    
     <div class="card">
-      <div class="card-header">
-        <h3>Repository Health</h3>
-      </div>
+      <div class="card-header"><h3>Repository Health</h3></div>
       <div class="small" style="margin-bottom:1rem">
-        Scans the entire <code>data/leagues/</code> structure for "Ghost" leagues (not in index) and "Orphan" teams (not in league roster).
+        Scans <code>data/leagues/</code> for "Ghost" leagues and "Orphan" teams.
       </div>
       <button id="scanBtn">Scan Repository</button>
       <div id="scanResults" style="margin-top:1rem;"></div>
     </div>
-
     <div class="card">
       <div class="card-header">
         <h3>Raw JSON Editor</h3>
