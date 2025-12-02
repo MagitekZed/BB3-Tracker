@@ -130,7 +130,7 @@
         ],
         "spp": 0,
         "live": {
-          "used": true,
+          "used": false,
           "injured": false,
           "sentOff": false,
           "td": 0,
