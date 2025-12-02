@@ -72,7 +72,8 @@ const els = {
     sbHomeRoster: document.getElementById('scoreboardHomeRoster'),
     sbAwayRoster: document.getElementById('scoreboardAwayRoster'),
     sbScoreMain: document.getElementById('scoreboardScoreMain'),
-    sbScoreMeta: document.getElementById('scoreboardScoreMeta')
+    sbScoreMeta: document.getElementById('scoreboardScoreMeta'),
+    delLeagueBtn: document.getElementById('deleteLeagueContainer')
   },
   buttons: {
     createLeague: document.getElementById('leagueCreateBtn'),
@@ -114,6 +115,11 @@ const els = {
     leagueInfo: document.getElementById('leagueInfoCard'),
     leagueTeams: document.getElementById('leagueTeamsCard'),
     teamEditor: document.getElementById('teamEditorCard')
+  },
+  modal: {
+    el: document.getElementById('skillModal'),
+    title: document.getElementById('skillModalTitle'),
+    body: document.getElementById('skillModalBody')
   },
   datalist: document.getElementById('skillList'),
   scanResults: document.getElementById('scanResults')
@@ -240,7 +246,10 @@ function renderLeagueList() {
     <div class="league-card">
       <div class="league-card-main">
         <div class="league-card-title">${l.name}</div>
-        <div class="small">ID: ${l.id} | Season ${l.season} | Status: ${l.status}</div>
+        <div class="league-meta">
+          <span class="tag ${l.status === 'active' ? 'in_progress' : 'scheduled'}">${l.status}</span>
+          Season ${l.season} • ID: ${l.id}
+        </div>
       </div>
       <div>
         <button class="link-button" onclick="handleOpenLeague('${l.id}')">Open</button>
@@ -466,11 +475,16 @@ function renderLiveRoster(roster, side) {
     if(live.int > 0) badges += `<span class="stat-badge">INT:${live.int}</span>`;
     if(live.sentOff) badges += `<span class="stat-badge" style="background:#faa">Sent Off</span>`;
 
+    // Skill tags with onclick handler
+    const skillTags = (p.skills || []).map(s => 
+      `<span class="skill-tag" onclick="showSkill('${s}')">${s}</span>`
+    ).join(' ');
+
     return `
       <div class="live-player-row ${usedClass} ${injClass}">
         <div class="player-info">
           <span class="player-name">#${p.number} ${p.name} ${badges}</span>
-          <span class="player-pos">${p.position} | ${(p.skills||[]).join(', ')}</span>
+          <span class="player-pos">${p.position} | ${skillTags}</span>
         </div>
         <div class="player-actions">
           <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'used')">${live.used ? 'Done' : 'Act'}</button>
@@ -573,6 +587,31 @@ els.buttons.sbBack.addEventListener('click', () => {
 els.buttons.sbRefresh.addEventListener('click', () => handleOpenScoreboard(state.activeMatchData.matchId));
 
 // ============================================
+// SKILL MODAL
+// ============================================
+
+window.showSkill = (skillName) => {
+  const cleanName = skillName.replace(/\(\+.*\)/, '').trim(); 
+  let desc = "No description available.";
+  if (state.gameData?.skillCategories) {
+    for (const cat in state.gameData.skillCategories) {
+      const found = state.gameData.skillCategories[cat].find(s => s.name.startsWith(cleanName));
+      if (found) { desc = found.description; break; }
+    }
+  } else if (state.gameData?.Traits) {
+      // Fallback for traits if they are in root
+      const found = state.gameData.Traits.find(s => s.name.startsWith(cleanName));
+      if (found) desc = found.description;
+  }
+  
+  els.modal.title.textContent = skillName;
+  els.modal.body.textContent = desc;
+  els.modal.el.classList.remove('hidden');
+};
+
+window.closeSkillModal = () => els.modal.el.classList.add('hidden');
+
+// ============================================
 // MANAGEMENT (Teams, Players, Orphans)
 // ============================================
 
@@ -626,17 +665,15 @@ function renderManageForm() {
     els.cards.leagueTeams.classList.remove('hidden');
     els.cards.teamEditor.classList.add('hidden');
     renderManageTeamsList();
+    
     let delBtn = document.getElementById('deleteLeagueBtn');
     if (!delBtn) {
        delBtn = document.createElement('button');
        delBtn.id = 'deleteLeagueBtn';
        delBtn.textContent = 'Delete Entire League';
-       delBtn.style.backgroundColor = '#d33';
-       delBtn.style.color = 'white';
-       delBtn.style.float = 'right';
-       delBtn.style.marginTop = '1rem';
+       delBtn.className = 'danger-btn'; // Use new class
        delBtn.onclick = handleDeleteLeague;
-       els.cards.leagueInfo.appendChild(delBtn);
+       els.containers.delLeagueBtn.appendChild(delBtn);
     }
     delBtn.classList.toggle('hidden', isNewLeague);
   }
@@ -680,7 +717,7 @@ function renderTeamEditor() {
     </div>
     <h4>Roster</h4>
     <table class="roster-editor-table"><thead><tr><th>No</th><th>Name</th><th>Position</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th><th></th></tr></thead><tbody id="editorRosterBody"></tbody></table>
-    <button onclick="addSmartPlayer()" style="margin-top:0.5rem">+ Add Player</button>
+    <button onclick="addSmartPlayer()" class="primary-btn" style="margin-top:0.5rem">+ Add Player</button>
   `;
   const tbody = document.getElementById('editorRosterBody');
   const currentRaceObj = state.gameData?.races.find(r => r.name === t.race);
@@ -912,9 +949,12 @@ window.deleteLeagueFolder = async (leagueId) => {
   } catch(e) { alert(e.message); }
 };
 
-// ============================================
-// BOOTSTRAP
-// ============================================
+// Wire up Manage Team button (Specific fix request)
+els.buttons.teamManage.addEventListener('click', async () => {
+  if (!state.currentLeague || !state.currentTeam) return;
+  await handleManageLeague(state.currentLeague.id);
+  await handleEditTeam(state.currentTeam.id);
+});
 
 window.handleOpenTeam = async (leagueId, teamId) => {
   setStatus(`Loading team ${teamId}...`);
