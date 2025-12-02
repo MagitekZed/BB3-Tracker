@@ -1,5 +1,9 @@
 // app.js
 
+// ============================================
+// CONFIGURATION & STATE
+// ============================================
+
 const API_BASE = 'https://bb3-tracker-api.zedt-ninja.workers.dev';
 const PATHS = {
   gameData: 'data/gameData.json',
@@ -7,6 +11,29 @@ const PATHS = {
   leagueSettings: (id) => `data/leagues/${id}/settings.json`,
   team: (leagueId, teamId) => `data/leagues/${leagueId}/teams/${teamId}.json`,
   activeMatch: (matchId) => `data/active_matches/${matchId}.json`
+};
+
+const state = {
+  // Global Data
+  leaguesIndex: [],
+  gameData: null,
+  
+  // Current View Data
+  currentLeague: null,
+  currentTeam: null,
+  activeMatchData: null,
+  activeMatchPollInterval: null,
+  
+  // Navigation State
+  viewLeagueId: null,
+  viewTeamId: null,
+  
+  // Editing State
+  editLeagueId: null,
+  editTeamId: null,
+  editMode: 'league',
+  dirtyLeague: null,
+  dirtyTeam: null
 };
 
 // ---- DOM Elements ----
@@ -34,6 +61,14 @@ const els = {
     manageTeamEditor: document.getElementById('leagueManageTeamEditor'),
     teamSummary: document.getElementById('teamSummary'),
     teamRoster: document.getElementById('teamRosterContainer'),
+    // Scoreboard
+    sbMeta: document.getElementById('scoreboardMeta'),
+    sbHomeName: document.getElementById('sbHomeName'),
+    sbAwayName: document.getElementById('sbAwayName'),
+    sbHomeScore: document.getElementById('sbHomeScore'),
+    sbAwayScore: document.getElementById('sbAwayScore'),
+    sbHomeTurn: document.getElementById('sbHomeTurn'),
+    sbAwayTurn: document.getElementById('sbAwayTurn'),
     sbHomeRoster: document.getElementById('scoreboardHomeRoster'),
     sbAwayRoster: document.getElementById('scoreboardAwayRoster'),
     sbScoreMain: document.getElementById('scoreboardScoreMain'),
@@ -48,6 +83,9 @@ const els = {
     teamBack: document.getElementById('teamBackBtn'),
     teamManage: document.getElementById('teamManageBtn'),
     sbBack: document.getElementById('scoreboardBackToMatchBtn'),
+    sbRefresh: document.getElementById('scoreboardRefreshBtn'),
+    endGame: document.getElementById('endGameBtn'),
+    cancelGame: document.getElementById('cancelGameBtn'),
     schedAdd: document.getElementById('schedAddBtn'),
     rememberKey: document.getElementById('rememberKeyBtn'),
     // Admin
@@ -81,30 +119,21 @@ const els = {
   scanResults: document.getElementById('scanResults')
 };
 
+// ============================================
+// UTILITIES & API
+// ============================================
+
 function normalizeName(name) {
   if (!name) return '';
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
 }
 
-const state = {
-  leaguesIndex: [],
-  gameData: null,
-  currentLeague: null,
-  currentTeam: null,
-  activeMatchData: null,
-  activeMatchPollInterval: null,
-  
-  viewLeagueId: null,
-  viewTeamId: null,
-  
-  editLeagueId: null,
-  editTeamId: null,
-  editMode: 'league',
-  dirtyLeague: null,
-  dirtyTeam: null
-};
+function setStatus(msg, type = 'info') {
+  if (!els.globalStatus) return;
+  els.globalStatus.textContent = msg;
+  els.globalStatus.className = `status ${type}`;
+}
 
-// ---- API ----
 async function apiGet(path) {
   const url = `${API_BASE}/api/file?path=${encodeURIComponent(path)}`;
   const res = await fetch(url);
@@ -137,13 +166,10 @@ async function apiDelete(path, message, key) {
   return res.json();
 }
 
-function setStatus(msg, type = 'info') {
-  if (!els.globalStatus) return;
-  els.globalStatus.textContent = msg;
-  els.globalStatus.className = `status ${type}`;
-}
+// ============================================
+// INITIALIZATION & NAVIGATION
+// ============================================
 
-// ---- Initialization ----
 async function init() {
   setStatus('Initializing...');
   const storedKey = localStorage.getItem('bb3_edit_key');
@@ -164,12 +190,10 @@ async function init() {
 }
 
 function showSection(name) {
-  // Stop polling if leaving scoreboard
   if (state.activeMatchPollInterval) {
     clearInterval(state.activeMatchPollInterval);
     state.activeMatchPollInterval = null;
   }
-
   Object.values(els.sections).forEach(el => el.classList.add('hidden'));
   els.sections[name].classList.remove('hidden');
   
@@ -182,7 +206,18 @@ function showSection(name) {
   }
 }
 
-// ---- Nav Events ----
+function populateSkillList() {
+  if (!state.gameData?.skillCategories) return;
+  const list = els.datalist;
+  list.innerHTML = '';
+  Object.values(state.gameData.skillCategories).flat().forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = (typeof s === 'object' && s.name) ? s.name : s; 
+    list.appendChild(opt);
+  });
+}
+
+// Nav Listeners
 els.nav.league.addEventListener('click', () => { showSection('list'); renderLeagueList(); });
 els.nav.admin.addEventListener('click', () => showSection('admin'));
 if(els.buttons.rememberKey) {
@@ -193,7 +228,7 @@ if(els.buttons.rememberKey) {
 }
 
 // ============================================
-// LEAGUE LOGIC
+// LEAGUE VIEWS & LOGIC
 // ============================================
 
 function renderLeagueList() {
@@ -239,7 +274,7 @@ function renderLeagueView() {
     ${standings.map((s, i) => `<tr><td>${i+1}</td><td><button class="team-link" onclick="handleOpenTeam('${l.id}', '${s.teamId}')">${s.name}</button></td><td>${s.wins}-${s.draws}-${s.losses}</td><td>${s.points}</td><td>${s.tdDiff}/${s.casDiff}</td></tr>`).join('')}
   </tbody></table>`;
   
-  // Quick Roster
+  // Quick Roster Tiles
   if (els.containers.rosterQuick) {
     els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
       ${l.teams.map(t => `<div class="roster-tile"><div class="roster-tile-title"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div><div class="roster-tile-meta">${t.race} | ${t.coachName}</div></div>`).join('')}
@@ -266,11 +301,9 @@ function renderMatchesList(league) {
     return;
   }
   
-  // Filter active vs scheduled
   const active = league.matches.filter(m => m.status === 'in_progress');
   const others = league.matches.filter(m => m.status !== 'in_progress').sort((a,b) => a.round - b.round);
 
-  // In Progress
   let inProgHtml = '';
   if (active.length > 0) {
     inProgHtml = '<div class="card"><h4 style="color:#0066cc">Live Matches</h4><ul>' + 
@@ -283,17 +316,12 @@ function renderMatchesList(league) {
   }
   els.containers.inProgress.innerHTML = inProgHtml;
 
-  // Scheduled / Completed
   const rows = others.map(m => {
     const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
     const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
     const score = m.status === 'completed' ? `${m.score.home}-${m.score.away}` : '';
-    
     let action = m.status;
-    if (m.status === 'scheduled') {
-        action = `<button class="link-button" onclick="handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
-    }
-
+    if (m.status === 'scheduled') action = `<button class="link-button" onclick="handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
     return `<tr><td>${m.round}</td><td>${h}</td><td>${a}</td><td>${score}</td><td>${action}</td></tr>`;
   }).join('');
   
@@ -338,18 +366,9 @@ els.buttons.schedAdd.addEventListener('click', async () => {
   setStatus('Scheduling match...');
   try {
     const matchId = `match_${Date.now()}`;
-    const newMatch = {
-      id: matchId,
-      round: round,
-      homeTeamId: homeId,
-      awayTeamId: awayId,
-      status: 'scheduled',
-      date: new Date().toISOString().split('T')[0]
-    };
-    
+    const newMatch = { id: matchId, round: round, homeTeamId: homeId, awayTeamId: awayId, status: 'scheduled', date: new Date().toISOString().split('T')[0] };
     l.matches = l.matches || [];
     l.matches.push(newMatch);
-    
     await apiSave(PATHS.leagueSettings(l.id), l, `Schedule match ${homeId} vs ${awayId}`, key);
     renderLeagueView();
     setStatus('Match scheduled.', 'ok');
@@ -359,49 +378,44 @@ els.buttons.schedAdd.addEventListener('click', async () => {
 window.handleStartMatch = async (matchId) => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
-  if(!confirm("Start this match? This will create a live game file.")) return;
-
+  if(!confirm("Start this match?")) return;
+  
   setStatus('Initializing live match...');
   try {
     const l = state.currentLeague;
     const matchIdx = l.matches.findIndex(m => m.id === matchId);
     if(matchIdx === -1) throw new Error("Match not found");
     const m = l.matches[matchIdx];
-
-    // 1. Fetch full team data for rosters
     const homeTeam = await apiGet(PATHS.team(l.id, m.homeTeamId));
     const awayTeam = await apiGet(PATHS.team(l.id, m.awayTeamId));
-    
     if(!homeTeam || !awayTeam) throw new Error("Could not load team files.");
+    
+    // Initialize roster with live props
+    const initRoster = (players) => (players||[]).map(p => ({
+        ...p,
+        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
+    }));
 
-    // 2. Create Active Match Object
     const activeData = {
       matchId: m.id,
       leagueId: l.id,
       round: m.round,
       status: 'in_progress',
-      home: { id: homeTeam.id, name: homeTeam.name, score: 0, roster: homeTeam.players },
-      away: { id: awayTeam.id, name: awayTeam.name, score: 0, roster: awayTeam.players },
+      home: { id: homeTeam.id, name: homeTeam.name, score: 0, roster: initRoster(homeTeam.players) },
+      away: { id: awayTeam.id, name: awayTeam.name, score: 0, roster: initRoster(awayTeam.players) },
       turn: { home: 0, away: 0 },
       log: []
     };
-
-    // 3. Save Active File
     await apiSave(PATHS.activeMatch(m.id), activeData, `Start match ${m.id}`, key);
-
-    // 4. Update League Settings
     m.status = 'in_progress';
     await apiSave(PATHS.leagueSettings(l.id), l, `Set match ${m.id} to in_progress`, key);
-
-    // 5. Go to Scoreboard
     handleOpenScoreboard(m.id);
     setStatus('Match started!', 'ok');
-
   } catch(e) { setStatus(e.message, 'error'); }
 };
 
 // ============================================
-// LIVE SCOREBOARD
+// LIVE SCOREBOARD ENGINE
 // ============================================
 
 window.handleOpenScoreboard = async (matchId) => {
@@ -409,12 +423,10 @@ window.handleOpenScoreboard = async (matchId) => {
   try {
     const data = await apiGet(PATHS.activeMatch(matchId));
     if (!data) throw new Error("Active match file not found.");
-    
     state.activeMatchData = data;
     renderScoreboard();
     showSection('scoreboard');
     
-    // Start Polling
     if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
     state.activeMatchPollInterval = setInterval(async () => {
         try {
@@ -424,43 +436,145 @@ window.handleOpenScoreboard = async (matchId) => {
                 renderScoreboard();
             }
         } catch(e) { console.warn("Poll failed", e); }
-    }, 5000); // 5 seconds
-
+    }, 5000); 
     setStatus('Live connection active.', 'ok');
   } catch (e) { setStatus(e.message, 'error'); }
 };
 
 function renderScoreboard() {
   const d = state.activeMatchData;
-  els.containers.sbScoreMain.textContent = `${d.home.score} - ${d.away.score}`;
-  els.containers.sbScoreMeta.textContent = `Round ${d.round} | ${d.home.name} vs ${d.away.name}`;
-  
-  els.containers.sbHomeRoster.innerHTML = `
-    <h3>${d.home.name} (Home)</h3>
-    <ul class="roster-list">
-      ${d.home.roster.map(p => `<li>#${p.number} ${p.name} <span class="small">(${p.position})</span></li>`).join('')}
-    </ul>
-  `;
-  
-  els.containers.sbAwayRoster.innerHTML = `
-    <h3>${d.away.name} (Away)</h3>
-    <ul class="roster-list">
-      ${d.away.roster.map(p => `<li>#${p.number} ${p.name} <span class="small">(${p.position})</span></li>`).join('')}
-    </ul>
-  `;
+  els.containers.sbHomeName.textContent = d.home.name;
+  els.containers.sbAwayName.textContent = d.away.name;
+  els.containers.sbHomeScore.textContent = d.home.score;
+  els.containers.sbAwayScore.textContent = d.away.score;
+  els.containers.sbHomeTurn.textContent = d.turn.home;
+  els.containers.sbAwayTurn.textContent = d.turn.away;
+  els.containers.sbMeta.textContent = `Round ${d.round} • Match ID: ${d.matchId}`;
+
+  els.containers.sbHomeRoster.innerHTML = renderLiveRoster(d.home.roster, 'home');
+  els.containers.sbAwayRoster.innerHTML = renderLiveRoster(d.away.roster, 'away');
 }
+
+function renderLiveRoster(roster, side) {
+  return roster.map((p, idx) => {
+    const live = p.live || {};
+    const usedClass = live.used ? 'used' : '';
+    const injClass = live.injured ? 'injured' : '';
+    let badges = '';
+    if(live.td > 0) badges += `<span class="stat-badge">TD:${live.td}</span>`;
+    if(live.cas > 0) badges += `<span class="stat-badge">CAS:${live.cas}</span>`;
+    if(live.int > 0) badges += `<span class="stat-badge">INT:${live.int}</span>`;
+    if(live.sentOff) badges += `<span class="stat-badge" style="background:#faa">Sent Off</span>`;
+
+    return `
+      <div class="live-player-row ${usedClass} ${injClass}">
+        <div class="player-info">
+          <span class="player-name">#${p.number} ${p.name} ${badges}</span>
+          <span class="player-pos">${p.position} | ${(p.skills||[]).join(', ')}</span>
+        </div>
+        <div class="player-actions">
+          <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'used')">${live.used ? 'Done' : 'Act'}</button>
+          <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'td')">TD</button>
+          <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'cas')">CAS</button>
+          <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'injured')" style="color:red">Inj</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function updateLiveMatch(actionDesc) {
+  const key = els.inputs.editKey.value;
+  if(!key) return setStatus("Edit Key needed to update match.", "error");
+  try {
+    await apiSave(PATHS.activeMatch(state.activeMatchData.matchId), state.activeMatchData, actionDesc, key);
+  } catch(e) { console.error(e); setStatus("Sync failed!", "error"); }
+}
+
+window.updateLiveScore = (side, delta) => {
+  const d = state.activeMatchData;
+  d[side].score = Math.max(0, d[side].score + delta);
+  renderScoreboard();
+  updateLiveMatch(`Score update: ${side} ${delta}`);
+};
+
+window.updateLiveTurn = (side, delta) => {
+  const d = state.activeMatchData;
+  d.turn[side] = Math.max(0, d.turn[side] + delta);
+  if (delta > 0) {
+    d[side].roster.forEach(p => { if(p.live) p.live.used = false; });
+  }
+  renderScoreboard();
+  updateLiveMatch(`Turn update: ${side}`);
+};
+
+window.togglePlayerStatus = (side, idx, type) => {
+  const p = state.activeMatchData[side].roster[idx];
+  p.live = p.live || {};
+  
+  if (type === 'used') p.live.used = !p.live.used;
+  else if (type === 'injured') p.live.injured = !p.live.injured;
+  else if (type === 'td') {
+    p.live.td++;
+    state.activeMatchData[side].score++;
+  }
+  else if (type === 'cas') p.live.cas++;
+  
+  renderScoreboard();
+  updateLiveMatch(`Player update: ${p.name} ${type}`);
+};
+
+els.buttons.cancelGame.addEventListener('click', async () => {
+  if(!confirm("Cancel this match? All progress will be lost.")) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    const mId = state.activeMatchData.matchId;
+    const lId = state.activeMatchData.leagueId;
+    await apiDelete(PATHS.activeMatch(mId), `Cancel match ${mId}`, key);
+    const l = await apiGet(PATHS.leagueSettings(lId));
+    const m = l.matches.find(x => x.id === mId);
+    if(m) m.status = 'scheduled';
+    await apiSave(PATHS.leagueSettings(lId), l, `Revert match ${mId} status`, key);
+    handleOpenLeague(lId);
+    setStatus('Match cancelled.', 'ok');
+  } catch(e) { setStatus(e.message, 'error'); }
+});
+
+els.buttons.endGame.addEventListener('click', async () => {
+  if(!confirm("End the game? This will save the final score to the league.")) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  setStatus('Finalizing match...');
+  try {
+    const d = state.activeMatchData;
+    const l = await apiGet(PATHS.leagueSettings(d.leagueId));
+    const m = l.matches.find(x => x.id === d.matchId);
+    if(m) {
+      m.status = 'completed';
+      m.score = { home: d.home.score, away: d.away.score };
+      m.casualties = { 
+        homeInflicted: d.home.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0),
+        awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
+      };
+    }
+    await apiSave(PATHS.leagueSettings(d.leagueId), l, `Complete match ${d.matchId}`, key);
+    await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup completed match ${d.matchId}`, key);
+    handleOpenLeague(d.leagueId);
+    setStatus('Match completed successfully!', 'ok');
+  } catch(e) { setStatus(e.message, 'error'); }
+});
 
 els.buttons.sbBack.addEventListener('click', () => {
   if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
   showSection('view');
-  // Refresh league view to update status tags
   if (state.viewLeagueId) handleOpenLeague(state.viewLeagueId);
 });
+els.buttons.sbRefresh.addEventListener('click', () => handleOpenScoreboard(state.activeMatchData.matchId));
 
 // ============================================
 // MANAGEMENT (Teams, Players, Orphans)
 // ============================================
-// (Previous management code remains the same, included below for completeness)
 
 window.handleManageLeague = async (id) => {
   state.editMode = 'league';
@@ -712,14 +826,117 @@ els.buttons.manageAddTeam.addEventListener('click', () => handleEditTeam(null));
 els.buttons.leagueBack.addEventListener('click', () => showSection('list'));
 els.buttons.manageBack.addEventListener('click', () => { if (state.editMode === 'team') { state.editMode = 'league'; renderManageForm(); } else showSection('list'); });
 els.buttons.teamBack.addEventListener('click', () => showSection('view'));
-if(els.buttons.scanBtn) els.buttons.scanBtn.addEventListener('click', () => alert("Scanner logic included in previous step (omitted here for brevity, keep your existing logic!)"));
 
-function populateSkillList() {
-  if (!state.gameData?.skillCategories) return;
-  const list = els.datalist;
-  list.innerHTML = '';
-  Object.values(state.gameData.skillCategories).flat().forEach(s => { const opt = document.createElement('option'); opt.value = (typeof s === 'object' && s.name) ? s.name : s; list.appendChild(opt); });
+// ============================================
+// ADMIN SCANNER
+// ============================================
+
+if (els.buttons.scanBtn) {
+  els.buttons.scanBtn.addEventListener('click', async () => {
+    els.scanResults.innerHTML = '<div class="small">Scanning all leagues...</div>';
+    try {
+      const rootContents = await apiGet('data/leagues');
+      if (!Array.isArray(rootContents)) throw new Error("Could not list directories.");
+      const leagueDirs = rootContents.filter(x => x.type === 'dir').map(x => x.name);
+      const indexIds = state.leaguesIndex.map(l => l.id);
+      let html = '<table style="width:100%; font-size:0.9rem;">';
+      let issuesFound = 0;
+      for (const leagueId of leagueDirs) {
+        if (!indexIds.includes(leagueId)) {
+           const settings = await apiGet(`data/leagues/${leagueId}/settings.json`);
+           if (settings) {
+              issuesFound++;
+              html += `<tr style="background:#fff0f0"><td><strong>GHOST LEAGUE</strong>: ${leagueId}</td><td style="text-align:right"><button onclick="restoreLeague('${leagueId}')" style="color:green">Restore</button> | <button onclick="deleteLeagueFolder('${leagueId}')" style="color:red">Delete</button></td></tr>`;
+           }
+        }
+        const teamFiles = await apiGet(`data/leagues/${leagueId}/teams`);
+        const settings = await apiGet(`data/leagues/${leagueId}/settings.json`);
+        if (Array.isArray(teamFiles) && settings) {
+           const registeredIds = settings.teams.map(t => t.id);
+           const orphans = teamFiles.filter(f => f.name.endsWith('.json')).filter(f => !registeredIds.includes(f.name.replace('.json', '')));
+           orphans.forEach(f => {
+             issuesFound++;
+             html += `<tr><td>Orphan Team (in ${leagueId}): ${f.name}</td><td style="text-align:right"><button onclick="attachTeam('${leagueId}', '${f.name}')" style="color:#007bff">Attach</button> | <button onclick="deleteOrphanFile('${leagueId}', '${f.name}')" style="color:red">Delete</button></td></tr>`;
+           });
+        }
+      }
+      html += '</table>';
+      if (issuesFound === 0) els.scanResults.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
+      else els.scanResults.innerHTML = html;
+    } catch (e) { els.scanResults.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`; }
+  });
+}
+window.attachTeam = async (leagueId, filename) => {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+     const teamId = filename.replace('.json', '');
+     const team = await apiGet(PATHS.team(leagueId, teamId));
+     const settings = await apiGet(PATHS.leagueSettings(leagueId));
+     settings.teams.push({ id: team.id, name: team.name, race: team.race, coachName: team.coachName });
+     await apiSave(PATHS.leagueSettings(leagueId), settings, `Attach orphan ${teamId}`, key);
+     els.buttons.scanBtn.click();
+     setStatus(`Attached ${team.name}`, 'ok');
+  } catch(e) { alert(e.message); }
+};
+window.restoreLeague = async (leagueId) => {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    const settings = await apiGet(PATHS.leagueSettings(leagueId));
+    const index = await apiGet(PATHS.leaguesIndex) || [];
+    index.push({ id: settings.id, name: settings.name, season: settings.season, status: settings.status });
+    await apiSave(PATHS.leaguesIndex, index, `Restored ghost league ${leagueId}`, key);
+    state.leaguesIndex = index;
+    renderLeagueList();
+    els.buttons.scanBtn.click();
+    setStatus(`Restored ${settings.name}`, 'ok');
+  } catch(e) { alert(e.message); }
+};
+window.deleteOrphanFile = async (leagueId, filename) => {
+  if(!confirm(`Delete ${filename}?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    await apiDelete(`data/leagues/${leagueId}/teams/${filename}`, `Clean orphan ${filename}`, key);
+    els.buttons.scanBtn.click();
+  } catch(e) { alert(e.message); }
+};
+window.deleteLeagueFolder = async (leagueId) => {
+  if(!confirm(`Delete Settings file for ${leagueId}?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    await apiDelete(PATHS.leagueSettings(leagueId), `Delete ghost league ${leagueId}`, key);
+    els.buttons.scanBtn.click();
+  } catch(e) { alert(e.message); }
+};
+
+// ============================================
+// BOOTSTRAP
+// ============================================
+
+window.handleOpenTeam = async (leagueId, teamId) => {
+  setStatus(`Loading team ${teamId}...`);
+  try {
+    const teamData = await apiGet(PATHS.team(leagueId, teamId));
+    if (!teamData) throw new Error("Team file not found.");
+    state.currentTeam = teamData;
+    state.viewTeamId = teamId;
+    renderTeamView();
+    showSection('team');
+    setStatus('Team loaded.', 'ok');
+  } catch (e) { setStatus(e.message, 'error'); }
+};
+
+function renderTeamView() {
+  const t = state.currentTeam;
+  document.getElementById('teamHeader').textContent = t.name;
+  els.containers.teamSummary.innerHTML = `Coach: ${t.coachName} | Race: ${t.race} | TV: ${t.teamValue || 0}`;
+  const rows = (t.players || []).map(p => `
+    <tr><td>${p.number||''}</td><td>${p.name}</td><td>${p.position}</td><td>${p.ma}</td><td>${p.st}</td><td>${p.ag}</td><td>${p.pa}</td><td>${p.av}</td><td>${(p.skills||[]).join(', ')}</td><td>${p.spp}</td></tr>
+  `).join('');
+  els.containers.teamRoster.innerHTML = `<table><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-// NOTE: Please keep the Scanner/Attach logic from the previous step at the end of the file.
 init();
