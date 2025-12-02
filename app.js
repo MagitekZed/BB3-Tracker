@@ -707,6 +707,7 @@ function renderTeamEditor() {
   const t = state.dirtyTeam;
   const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
   const isNewTeam = !state.editTeamId;
+  
   els.containers.manageTeamEditor.innerHTML = `
     <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
     <div class="form-grid">
@@ -715,15 +716,66 @@ function renderTeamEditor() {
       <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
       <div class="form-field"><label>Race</label><select onchange="changeTeamRace(this.value)">${raceOpts}</select></div>
     </div>
+    
     <h4>Roster</h4>
-    <table class="roster-editor-table"><thead><tr><th>No</th><th>Name</th><th>Position</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th><th></th></tr></thead><tbody id="editorRosterBody"></tbody></table>
+    <table class="roster-editor-table">
+      <thead>
+        <tr>
+          <th style="width:40px">#</th>
+          <th>Name</th>
+          <th>Position</th>
+          <th style="width:40px">MA</th><th style="width:40px">ST</th><th style="width:40px">AG</th><th style="width:40px">PA</th><th style="width:40px">AV</th>
+          <th>Skills</th>
+          <th style="width:50px">SPP</th>
+          <th style="width:30px"></th>
+        </tr>
+      </thead>
+      <tbody id="editorRosterBody"></tbody>
+    </table>
     <button onclick="addSmartPlayer()" class="primary-btn" style="margin-top:0.5rem">+ Add Player</button>
   `;
+
   const tbody = document.getElementById('editorRosterBody');
   const currentRaceObj = state.gameData?.races.find(r => r.name === t.race);
-  const positionalOptions = (currentRaceObj?.positionals || []).map(pos => `<option value="${pos.name}">${pos.name} (${pos.cost/1000}k)</option>`).join('');
+  
+  // Position Dropdown Options
+  const positionalOptions = (currentRaceObj?.positionals || []).map(pos => 
+    `<option value="${pos.name}">${pos.name} (${Math.floor(pos.cost/1000)}k)</option>`
+  ).join('');
+
+  // Skill Dropdown Options (Global)
+  let allSkillsHtml = '<option value="">+ Skill...</option>';
+  if (state.gameData?.skillCategories) {
+    Object.values(state.gameData.skillCategories).flat().forEach(s => {
+      const sName = (typeof s === 'object') ? s.name : s;
+      allSkillsHtml += `<option value="${sName}">${sName}</option>`;
+    });
+  }
+
   t.players.forEach((p, idx) => {
-    const posSelect = `<select style="width:100%" onchange="updatePlayerPos(${idx}, this.value)"><option value="" disabled>Select...</option>${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}</select>`;
+    // 1. Position Select
+    const posSelect = `<select style="width:100%; font-size:0.8rem;" onchange="updatePlayerPos(${idx}, this.value)">
+      <option value="" disabled>Pos...</option>
+      ${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}
+    </select>`;
+
+    // 2. Skill Pills Logic
+    const currentSkills = (p.skills || []).map((skill, sIdx) => `
+      <span class="skill-pill">
+        ${skill}
+        <span class="remove-skill" onclick="removePlayerSkill(${idx}, ${sIdx})">×</span>
+      </span>
+    `).join('');
+
+    const skillPicker = `
+      <div class="skill-editor-container">
+        ${currentSkills}
+        <select class="skill-select" onchange="addPlayerSkill(${idx}, this.value)">
+          ${allSkillsHtml}
+        </select>
+      </div>
+    `;
+
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="number" value="${p.number||''}" style="width:30px" onchange="updatePlayer(${idx}, 'number', this.value)"></td>
@@ -734,18 +786,43 @@ function renderTeamEditor() {
       <td><input type="number" value="${p.ag}" style="width:30px" onchange="updatePlayer(${idx}, 'ag', this.value)"></td>
       <td><input type="number" value="${p.pa}" style="width:30px" onchange="updatePlayer(${idx}, 'pa', this.value)"></td>
       <td><input type="number" value="${p.av}" style="width:30px" onchange="updatePlayer(${idx}, 'av', this.value)"></td>
-      <td><input type="text" value="${(p.skills||[]).join(',')}" list="skillList" onchange="updatePlayer(${idx}, 'skills', this.value)"></td>
+      <td>${skillPicker}</td>
       <td><input type="number" value="${p.spp}" style="width:40px" onchange="updatePlayer(${idx}, 'spp', this.value)"></td>
-      <td><button onclick="removePlayer(${idx})" style="color:red;border:none;background:none;cursor:pointer">X</button></td>
+      <td><button onclick="removePlayer(${idx})" style="color:red;border:none;background:none;cursor:pointer;font-weight:bold;">×</button></td>
     `;
     tbody.appendChild(row);
   });
+
+  // Name -> ID binding
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
-    if (isNewTeam) { state.dirtyTeam.id = normalizeName(this.value); els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id; }
+    if (isNewTeam) {
+      state.dirtyTeam.id = normalizeName(this.value);
+      els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
+    }
   };
 }
+
+// ---- Updated Helper Functions ----
+
+window.addPlayerSkill = (playerIdx, skillName) => {
+  if (!skillName) return;
+  const p = state.dirtyTeam.players[playerIdx];
+  if (!p.skills) p.skills = [];
+  
+  // Avoid duplicates
+  if (!p.skills.includes(skillName)) {
+    p.skills.push(skillName);
+  }
+  
+  renderTeamEditor(); // Re-render to show new pill
+};
+
+window.removePlayerSkill = (playerIdx, skillIdx) => {
+  state.dirtyTeam.players[playerIdx].skills.splice(skillIdx, 1);
+  renderTeamEditor();
+};
 
 window.changeTeamRace = (newRace) => {
   if (state.dirtyTeam.players.length > 0 && !confirm("Changing race will potentially break existing player positions. Continue?")) { renderTeamEditor(); return; }
