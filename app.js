@@ -671,4 +671,81 @@ function populateSkillList() {
   });
 }
 
+// ---- Admin Scanner Logic ----
+
+const scanBtn = document.getElementById('scanBtn');
+const scanResults = document.getElementById('scanResults');
+
+if (scanBtn) {
+  scanBtn.addEventListener('click', async () => {
+    if (!state.currentLeague) {
+      scanResults.innerHTML = '<div class="status error">Please Open a League first to scan it.</div>';
+      return;
+    }
+
+    scanResults.innerHTML = '<div class="small">Scanning GitHub files...</div>';
+    
+    try {
+      const leagueId = state.currentLeague.id;
+      const folderPath = `data/leagues/${leagueId}/teams`;
+      
+      // 1. Get list of files in the teams folder
+      const files = await apiGet(folderPath);
+      if (!Array.isArray(files)) {
+        throw new Error("Failed to get file list (Worker might need update).");
+      }
+      
+      const fileNames = files.map(f => f.name); // e.g. "team_1.json"
+      
+      // 2. Get list of IDs the league *thinks* it has
+      const registeredIds = state.currentLeague.teams.map(t => `${t.id}.json`);
+      
+      // 3. Find Orphans (File exists, but not in registry)
+      const orphans = fileNames.filter(f => !registeredIds.includes(f));
+      
+      if (orphans.length === 0) {
+        scanResults.innerHTML = '<div class="status ok">No orphaned files found. System clean.</div>';
+        return;
+      }
+      
+      // 4. Render Orphans with Delete Option
+      scanResults.innerHTML = `
+        <div class="status error">Found ${orphans.length} orphaned file(s).</div>
+        <table>
+          <thead><tr><th>Filename</th><th>Action</th></tr></thead>
+          <tbody>
+            ${orphans.map(f => `
+              <tr>
+                <td>${f}</td>
+                <td><button onclick="deleteOrphan('${leagueId}', '${f}')" style="color:red">Delete File</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+    } catch (e) {
+      scanResults.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`;
+    }
+  });
+}
+
+window.deleteOrphan = async (leagueId, filename) => {
+  if(!confirm(`Permanently delete orphaned file "${filename}"?`)) return;
+  
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+
+  const path = `data/leagues/${leagueId}/teams/${filename}`; // filename includes .json
+  
+  try {
+    await apiDelete(path, `Delete orphan ${filename}`, key);
+    // Re-scan
+    scanBtn.click();
+    setStatus(`Deleted ${filename}`, 'ok');
+  } catch(e) {
+    alert(e.message);
+  }
+};
+
 init();
