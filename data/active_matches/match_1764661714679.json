@@ -24,7 +24,7 @@
         "spp": 0,
         "live": {
           "used": false,
-          "injured": false,
+          "injured": true,
           "sentOff": false,
           "td": 1,
           "cas": 2,
