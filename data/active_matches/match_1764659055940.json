@@ -1,0 +1,87 @@
+{
+  "matchId": "match_1764659055940",
+  "leagueId": "test_league",
+  "round": 1,
+  "status": "in_progress",
+  "home": {
+    "id": "teat_1",
+    "name": "teat 1",
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Player",
+        "position": "Blocker",
+        "ma": 4,
+        "st": 3,
+        "ag": 4,
+        "pa": 5,
+        "av": 10,
+        "skills": [
+          "Block",
+          "Tackle",
+          "Thick Skull"
+        ],
+        "spp": 0
+      },
+      {
+        "number": 2,
+        "name": "Player",
+        "position": "Norse Raider Lineman",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "spp": 0
+      }
+    ]
+  },
+  "away": {
+    "id": "asdfafdas",
+    "name": "asdfafdas",
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Player",
+        "position": "Eagle Warrior Linewoman",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "spp": 0
+      },
+      {
+        "number": 2,
+        "name": "Player",
+        "position": "Eagle Warrior Linewoman",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "spp": 0
+      }
+    ]
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
