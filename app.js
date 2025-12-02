@@ -5,9 +5,7 @@ const API_BASE = 'https://bb3-tracker-api.zedt-ninja.workers.dev';
 const PATHS = {
   gameData: 'data/gameData.json',
   leaguesIndex: 'data/leagues/index.json',
-  leaguesDir: 'data/leagues',
   leagueSettings: (id) => `data/leagues/${id}/settings.json`,
-  leagueTeamsDir: (id) => `data/leagues/${id}/teams`,
   team: (leagueId, teamId) => `data/leagues/${leagueId}/teams/${teamId}.json`
 };
 
@@ -57,8 +55,7 @@ const els = {
     sbBack: document.getElementById('scoreboardBackToMatchBtn'),
     adminLoad: document.getElementById('loadBtn'),
     adminSave: document.getElementById('saveBtn'),
-    rememberKey: document.getElementById('rememberKeyBtn'),
-    scanBtn: document.getElementById('scanBtn')
+    rememberKey: document.getElementById('rememberKeyBtn')
   },
   inputs: {
     editKey: document.getElementById('editKeyInput'),
@@ -78,8 +75,7 @@ const els = {
     leagueTeams: document.getElementById('leagueTeamsCard'),
     teamEditor: document.getElementById('teamEditorCard')
   },
-  datalist: document.getElementById('skillList'),
-  scanResults: document.getElementById('scanResults')
+  datalist: document.getElementById('skillList')
 };
 
 // ---- Utility: ID Normalization ----
@@ -403,7 +399,6 @@ function renderManageForm() {
     els.cards.teamEditor.classList.add('hidden');
     renderManageTeamsList();
     
-    // Delete Button Logic
     let delBtn = document.getElementById('deleteLeagueBtn');
     if (!delBtn) {
        delBtn = document.createElement('button');
@@ -440,8 +435,6 @@ function renderManageTeamsList() {
     </table>
   `;
 }
-
-// ---- Manage: Team Editor Logic ----
 
 window.handleEditTeam = async (teamId) => {
   state.editMode = 'team';
@@ -513,7 +506,6 @@ function renderTeamEditor() {
   if(select) select.value = t.race;
 }
 
-// ---- Player Editing Helpers ----
 window.updatePlayer = (idx, field, value) => {
   const p = state.dirtyTeam.players[idx];
   if (field === 'skills') p.skills = value.split(',').map(s=>s.trim()).filter(Boolean);
@@ -529,8 +521,6 @@ window.removePlayer = (idx) => {
   renderTeamEditor();
 };
 
-// ---- Delete Logic ----
-
 window.handleDeleteTeam = async (teamId) => {
   if(!confirm(`Are you sure you want to delete team "${teamId}"? This cannot be undone.`)) return;
   const key = els.inputs.editKey.value;
@@ -543,27 +533,24 @@ window.handleDeleteTeam = async (teamId) => {
     
     const idx = l.teams.findIndex(t => t.id === teamId);
     if(idx !== -1) l.teams.splice(idx, 1);
-    await apiSave(PATHS.leagueSettings(l.id), l, `Remove team ${teamId} from registry`, key);
 
+    await apiSave(PATHS.leagueSettings(l.id), l, `Remove team ${teamId} from registry`, key);
     renderManageTeamsList();
     setStatus('Team deleted.', 'ok');
-  } catch(e) {
-    setStatus(`Delete failed: ${e.message}`, 'error');
-  }
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
 
 window.handleDeleteLeague = async () => {
   const l = state.dirtyLeague;
-  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?\nThis will PERMANENTLY delete the league and ALL associated teams.\n(Team count: ${l.teams.length})`)) return;
+  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?\nThis will PERMANENTLY delete the league and ALL associated teams.`)) return;
   
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
 
-  setStatus(`Deleting league ${l.id} and all its teams...`);
+  setStatus(`Deleting league ${l.id}...`);
   try {
     for (const t of l.teams) {
-        try { await apiDelete(PATHS.team(l.id, t.id), `Delete team ${t.id} (League deletion)`, key); }
-        catch (e) { console.warn(`Failed to delete team ${t.id}`, e); }
+        try { await apiDelete(PATHS.team(l.id, t.id), `Delete team ${t.id}`, key); } catch (e) {}
     }
     await apiDelete(PATHS.leagueSettings(l.id), `Delete league ${l.id}`, key);
     
@@ -573,17 +560,11 @@ window.handleDeleteLeague = async () => {
     
     state.leaguesIndex = newIndex;
     state.editMode = 'league';
-    state.currentLeague = null;
-    state.viewLeagueId = null;
     showSection('list');
     renderLeagueList();
-    setStatus('League and all teams deleted.', 'ok');
-  } catch(e) {
-    setStatus(`Delete failed: ${e.message}`, 'error');
-  }
+    setStatus('League deleted.', 'ok');
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
-
-// ---- Save Logic ----
 
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
@@ -651,108 +632,6 @@ els.buttons.manageBack.addEventListener('click', () => {
 });
 els.buttons.teamBack.addEventListener('click', () => showSection('view'));
 
-// ---- GLOBAL SCANNER LOGIC ----
-
-if (els.buttons.scanBtn) {
-  els.buttons.scanBtn.textContent = 'Scan System Health (Global)';
-  els.buttons.scanBtn.onclick = handleGlobalScan;
-}
-
-async function handleGlobalScan() {
-  const resDiv = els.scanResults;
-  resDiv.innerHTML = '<div class="small">Scanning entire system...</div>';
-  
-  try {
-    // 1. Scan Leagues Directory (Find Abandoned Leagues)
-    const leagueDirs = await apiGet(PATHS.leaguesDir);
-    if (!Array.isArray(leagueDirs)) throw new Error('Failed to list leagues directory.');
-    
-    const validLeagueIds = state.leaguesIndex.map(l => l.id);
-    const orphanLeagues = leagueDirs.filter(d => d.type === 'dir' && d.name !== 'index.json' && !validLeagueIds.includes(d.name));
-    
-    // 2. Scan Teams in Valid Leagues (Find Abandoned Teams)
-    const orphanTeams = [];
-    
-    for (const l of state.leaguesIndex) {
-      try {
-        const teamFiles = await apiGet(PATHS.leagueTeamsDir(l.id));
-        if (Array.isArray(teamFiles)) {
-           // We need to fetch settings to be sure (state.leaguesIndex is just summary)
-           const settings = await apiGet(PATHS.leagueSettings(l.id));
-           const validTeamIds = (settings?.teams || []).map(t => t.id + '.json');
-           
-           teamFiles.forEach(f => {
-             if (!validTeamIds.includes(f.name)) {
-               orphanTeams.push({ leagueId: l.id, filename: f.name, path: f.path });
-             }
-           });
-        }
-      } catch(e) { console.warn(`Skipped league ${l.id}`, e); }
-    }
-    
-    if (orphanLeagues.length === 0 && orphanTeams.length === 0) {
-      resDiv.innerHTML = '<div class="status ok">System clean. No orphans found.</div>';
-      return;
-    }
-    
-    let html = '';
-    
-    if (orphanLeagues.length > 0) {
-      html += `<div class="status error">Found ${orphanLeagues.length} orphaned league folders.</div><ul>`;
-      orphanLeagues.forEach(d => {
-        html += `<li><b>${d.name}</b> <button onclick="deleteOrphanLeagueFolder('${d.name}')" style="color:red">Purge Folder</button></li>`;
-      });
-      html += '</ul>';
-    }
-    
-    if (orphanTeams.length > 0) {
-      html += `<div class="status error">Found ${orphanTeams.length} orphaned team files.</div><ul>`;
-      orphanTeams.forEach(t => {
-        html += `<li>${t.leagueId} / <b>${t.filename}</b> <button onclick="deleteOrphanTeam('${t.path}')" style="color:red">Delete File</button></li>`;
-      });
-      html += '</ul>';
-    }
-    
-    resDiv.innerHTML = html;
-    
-  } catch(e) {
-    resDiv.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`;
-  }
-}
-
-window.deleteOrphanTeam = async (path) => {
-  if(!confirm(`Delete file "${path}"?`)) return;
-  const key = els.inputs.editKey.value;
-  try {
-    await apiDelete(path, `Delete orphan team`, key);
-    handleGlobalScan();
-  } catch(e) { alert(e.message); }
-};
-
-window.deleteOrphanLeagueFolder = async (folderName) => {
-  if(!confirm(`Purge entire folder "data/leagues/${folderName}"?`)) return;
-  const key = els.inputs.editKey.value;
-  const basePath = `data/leagues/${folderName}`;
-  
-  try {
-    // 1. List contents
-    const files = await apiGet(basePath);
-    // 2. Delete contents recursively (simplified: assumes 1 level deep + teams folder)
-    if(Array.isArray(files)) {
-      for (const f of files) {
-        if (f.type === 'file') await apiDelete(f.path, 'Purge league', key);
-        else if (f.type === 'dir' && f.name === 'teams') {
-           const tFiles = await apiGet(f.path);
-           if(Array.isArray(tFiles)) {
-             for(const tf of tFiles) await apiDelete(tf.path, 'Purge league team', key);
-           }
-        }
-      }
-    }
-    handleGlobalScan();
-  } catch(e) { alert("Purge failed (check console): " + e.message); console.error(e); }
-};
-
 function populateSkillList() {
   if (!state.gameData?.skillCategories) return;
   const list = els.datalist;
@@ -763,5 +642,156 @@ function populateSkillList() {
     list.appendChild(opt);
   });
 }
+
+// ============================================
+// GLOBAL SCANNER & ATTACH LOGIC
+// ============================================
+
+const scanBtn = document.getElementById('scanBtn');
+const scanResults = document.getElementById('scanResults');
+
+if (scanBtn) {
+  scanBtn.addEventListener('click', async () => {
+    scanResults.innerHTML = '<div class="small">Scanning all leagues...</div>';
+    
+    try {
+      // 1. Get ALL folders in data/leagues
+      const rootContents = await apiGet('data/leagues');
+      if (!Array.isArray(rootContents)) throw new Error("Could not list directories.");
+      
+      const leagueDirs = rootContents.filter(x => x.type === 'dir').map(x => x.name);
+      const indexIds = state.leaguesIndex.map(l => l.id);
+      
+      let html = '<table style="width:100%; font-size:0.9rem;">';
+      let issuesFound = 0;
+
+      // 2. Iterate every league directory found on the server
+      for (const leagueId of leagueDirs) {
+        // A. Check for "Ghost" Leagues (Folder exists, but not in Index)
+        if (!indexIds.includes(leagueId)) {
+           // Verify it has settings
+           const settings = await apiGet(`data/leagues/${leagueId}/settings.json`);
+           if (settings) {
+              issuesFound++;
+              html += `<tr style="background:#fff0f0">
+                <td><strong>GHOST LEAGUE</strong>: ${leagueId}</td>
+                <td style="text-align:right">
+                   <button onclick="restoreLeague('${leagueId}')" style="color:green">Restore</button> | 
+                   <button onclick="deleteLeagueFolder('${leagueId}')" style="color:red">Delete</button>
+                </td>
+              </tr>`;
+           }
+        }
+
+        // B. Check for Orphaned Teams (File exists, but not in Settings)
+        const teamFiles = await apiGet(`data/leagues/${leagueId}/teams`);
+        const settings = await apiGet(`data/leagues/${leagueId}/settings.json`);
+        
+        if (Array.isArray(teamFiles) && settings) {
+           const registeredIds = settings.teams.map(t => t.id);
+           
+           const orphans = teamFiles
+             .filter(f => f.name.endsWith('.json'))
+             .filter(f => !registeredIds.includes(f.name.replace('.json', '')));
+             
+           orphans.forEach(f => {
+             issuesFound++;
+             html += `<tr>
+               <td>Orphan Team (in ${leagueId}): ${f.name}</td>
+               <td style="text-align:right">
+                 <button onclick="attachTeam('${leagueId}', '${f.name}')" style="color:#007bff">Attach</button> | 
+                 <button onclick="deleteOrphanFile('${leagueId}', '${f.name}')" style="color:red">Delete</button>
+               </td>
+             </tr>`;
+           });
+        }
+      }
+      
+      html += '</table>';
+      
+      if (issuesFound === 0) {
+        scanResults.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
+      } else {
+        scanResults.innerHTML = html;
+      }
+      
+    } catch (e) {
+      scanResults.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`;
+    }
+  });
+}
+
+// -- Actions for Scanner --
+
+window.attachTeam = async (leagueId, filename) => {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  
+  try {
+     const teamId = filename.replace('.json', '');
+     // 1. Fetch team data
+     const team = await apiGet(PATHS.team(leagueId, teamId));
+     // 2. Fetch settings
+     const settings = await apiGet(PATHS.leagueSettings(leagueId));
+     
+     // 3. Attach
+     settings.teams.push({
+       id: team.id,
+       name: team.name,
+       race: team.race,
+       coachName: team.coachName
+     });
+     
+     // 4. Save
+     await apiSave(PATHS.leagueSettings(leagueId), settings, `Attach orphan ${teamId}`, key);
+     
+     scanBtn.click(); // Refresh
+     setStatus(`Attached ${team.name}`, 'ok');
+  } catch(e) { alert(e.message); }
+};
+
+window.restoreLeague = async (leagueId) => {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+
+  try {
+    const settings = await apiGet(PATHS.leagueSettings(leagueId));
+    // Add to index
+    const index = await apiGet(PATHS.leaguesIndex) || [];
+    index.push({ id: settings.id, name: settings.name, season: settings.season, status: settings.status });
+    
+    await apiSave(PATHS.leaguesIndex, index, `Restored ghost league ${leagueId}`, key);
+    
+    state.leaguesIndex = index;
+    renderLeagueList();
+    scanBtn.click();
+    setStatus(`Restored ${settings.name}`, 'ok');
+  } catch(e) { alert(e.message); }
+};
+
+window.deleteOrphanFile = async (leagueId, filename) => {
+  if(!confirm(`Delete ${filename}?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  
+  try {
+    await apiDelete(`data/leagues/${leagueId}/teams/${filename}`, `Clean orphan ${filename}`, key);
+    scanBtn.click();
+  } catch(e) { alert(e.message); }
+};
+
+window.deleteLeagueFolder = async (leagueId) => {
+  // Simple delete settings file (teams technically remain, but league is gone)
+  // For "Ghost" cleanup, this is usually enough to stop it appearing. 
+  // A Deep Delete would look like the main delete function.
+  if(!confirm(`Delete Settings file for ${leagueId}?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+
+  try {
+    await apiDelete(PATHS.leagueSettings(leagueId), `Delete ghost league ${leagueId}`, key);
+    scanBtn.click();
+  } catch(e) { alert(e.message); }
+};
 
 init();
