@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>BB3 League Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,21 +14,21 @@
 
   <div id="globalStatus" class="status"></div>
 
-  <div class="nav" style="align-items: center;">
-    <button id="navLeague" class="active">Leagues</button>
-    <button id="navAdmin">Admin / Raw JSON</button>
+  <div class="nav">
+    <div class="nav-group">
+      <button id="navLeague" class="active">Leagues</button>
+      <button id="navAdmin">Admin</button>
+    </div>
     
-    <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
-      <input type="password" id="editKeyInput" placeholder="Edit Key" style="padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px;" />
-      <button id="rememberKeyBtn" title="Remember on this device" style="padding: 0.4rem 0.8rem;">💾</button>
+    <div class="auth-group">
+      <input type="password" id="editKeyInput" placeholder="Edit Key" />
+      <button id="rememberKeyBtn" title="Save Key">💾</button>
     </div>
   </div>
 
   <section id="leagueListSection">
     <h2>Leagues</h2>
-    <div class="small">
-      Select a league to view standings, or manage leagues below.
-    </div>
+    <div class="small">Select a league or manage below.</div>
     <div style="margin: 0.5rem 0 1rem;">
       <button id="leagueCreateBtn" class="primary-btn">+ Create New League</button>
     </div>
@@ -38,18 +38,14 @@
   <section id="leagueViewSection" class="hidden">
     <div class="card">
       <div class="card-header">
-        <div>
-          <button id="leagueBackBtn">← Back to Leagues</button>
-        </div>
+        <div><button id="leagueBackBtn">← Back to Leagues</button></div>
       </div>
       <div id="leagueHeader"></div>
     </div>
 
     <section id="leagueTeamsSection">
       <h2>Teams & Standings</h2>
-      <div class="small">
-        Standings are calculated from completed matches only.
-      </div>
+      <div class="small">Standings calculated from completed matches.</div>
       <div id="rosterQuickViewContainer"></div>
       <div id="standingsContainer"></div>
     </section>
@@ -60,10 +56,10 @@
         <h3>Schedule Match</h3>
         <div class="inline-input">
           <label>Round: <input type="number" id="schedRound" value="1" style="width:50px"></label>
-          <select id="schedHome"><option>Home Team...</option></select>
+          <select id="schedHome"><option>Home...</option></select>
           <span style="font-weight:bold">vs</span>
-          <select id="schedAway"><option>Away Team...</option></select>
-          <button id="schedAddBtn">Add to Schedule</button>
+          <select id="schedAway"><option>Away...</option></select>
+          <button id="schedAddBtn">Add</button>
         </div>
       </div>
       <div id="inProgressContainer"></div>
@@ -208,17 +204,24 @@
   <section id="coachSection" class="hidden">
     <div class="coach-header">
       <div class="coach-header-top">
-        <div class="coach-team-name" id="coachTeamName">My Team</div>
+        <button class="secondary-btn small-btn" onclick="exitCoachMode()">← Exit</button>
         <div class="coach-score" id="coachScoreDisplay">0 - 0</div>
-      </div>
-      <div class="coach-resources">
         <div class="resource-group">
-          <span>Rerolls:</span>
-          <div id="coachRerolls" class="reroll-pips"></div>
+          <span>Turn <span id="coachTurnDisplay" style="font-weight:bold;">0</span></span>
         </div>
-        <div class="resource-group">
-          <span>Turn:</span>
-          <span id="coachTurnDisplay" style="font-weight:bold; margin-left:5px">0</span>
+      </div>
+      
+      <div class="coach-subheader">
+        <div class="coach-team-name" id="coachTeamName">My Team</div>
+        <div class="coach-resources">
+          <div class="resource-item">
+            <span>RR:</span>
+            <div id="coachRerolls" class="reroll-pips"></div>
+          </div>
+          <div class="resource-item">
+            <span>Apo:</span>
+            <input type="checkbox" id="coachApoCheck" onchange="toggleApothecary()">
+          </div>
         </div>
       </div>
     </div>
@@ -228,8 +231,7 @@
     </div>
 
     <div class="coach-footer">
-      <button class="secondary-btn" onclick="exitCoachMode()">Exit</button>
-      <button class="primary-btn" id="coachEndTurnBtn" style="width:60%">End Turn</button>
+      <button class="primary-btn" id="coachEndTurnBtn" style="width:100%">End Turn</button>
     </div>
   </section>
 
@@ -259,6 +261,36 @@
         <button class="close-btn" onclick="closeSkillModal()">×</button>
       </div>
       <div id="skillModalBody">Description goes here...</div>
+    </div>
+  </div>
+
+  <div id="actionModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="actionModalTitle">Player Actions</h3>
+        <button class="close-btn" onclick="closeActionModal()">×</button>
+      </div>
+      <div class="action-grid">
+        <div class="action-group">
+          <h4>Stats (SPP)</h4>
+          <div class="stat-controls">
+            <button class="action-btn-large" onclick="doPlayerAction('td', 1)">Touchdown (3)</button>
+            <button class="action-btn-large" onclick="doPlayerAction('cas', 1)">Casualty (2)</button>
+            <button class="action-btn-large" onclick="doPlayerAction('int', 1)">Intercept (2)</button>
+            <button class="action-btn-large" onclick="doPlayerAction('comp', 1)">Completion (1)</button>
+            <button class="action-btn-large" onclick="doPlayerAction('mvp', 1)">MVP (4)</button>
+          </div>
+        </div>
+        <div class="action-group" style="margin-top:1rem; border-top:1px solid #eee; padding-top:1rem;">
+          <h4>Status</h4>
+          <div class="status-controls">
+            <button class="status-btn" id="btnStatusHealthy" onclick="setPlayerStatus('healthy')">Healthy</button>
+            <button class="status-btn" id="btnStatusKO" onclick="setPlayerStatus('ko')" style="background:#fff3cd; color:#856404;">Knocked Out</button>
+            <button class="status-btn" id="btnStatusCAS" onclick="setPlayerStatus('cas')" style="background:#f8d7da; color:#721c24;">Casualty</button>
+            <button class="status-btn" id="btnStatusSentOff" onclick="setPlayerStatus('sentOff')" style="background:#e2e3e5; color:#383d41;">Sent Off</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   
