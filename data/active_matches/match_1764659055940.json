@@ -63,7 +63,8 @@
         "spp": 0,
         "live": {
           "used": false,
-          "td": null
+          "td": null,
+          "cas": null
         }
       },
       {
