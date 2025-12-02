@@ -1,0 +1,28 @@
+{
+  "id": "league_one",
+  "name": "league one",
+  "season": 1,
+  "status": "upcoming",
+  "settings": {
+    "pointsWin": 3,
+    "pointsDraw": 1,
+    "pointsLoss": 0,
+    "maxTeams": 16,
+    "lockTeams": false
+  },
+  "teams": [
+    {
+      "id": "team_one",
+      "name": "team one",
+      "race": "Amazon",
+      "coachName": "wer"
+    },
+    {
+      "id": "team_two",
+      "name": "team two",
+      "race": "Khorne",
+      "coachName": "zer"
+    }
+  ],
+  "matches": []
+}
