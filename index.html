@@ -56,7 +56,6 @@
 
     <section id="leagueMatchesSection">
       <h2>Matches</h2>
-      
       <div class="card">
         <h3>Schedule Match</h3>
         <div class="inline-input">
@@ -67,7 +66,6 @@
           <button id="schedAddBtn">Add to Schedule</button>
         </div>
       </div>
-
       <div id="inProgressContainer"></div>
       <div id="matchesContainer"></div>
     </section>
@@ -166,28 +164,21 @@
         <h2 id="scoreboardHeader">Live Match</h2>
         <div>
           <button id="scoreboardRefreshBtn" title="Force Refresh">↻</button>
-          <button id="scoreboardBackToMatchBtn">Exit View</button>
+          <button id="scoreboardBackToMatchBtn">Exit</button>
         </div>
       </div>
-      <div id="scoreboardMeta" class="small" style="text-align:center; margin-bottom:0.5rem"></div>
       
       <div class="scoreboard-layout">
         <div class="team-control">
           <div id="sbHomeName" class="team-name">Home</div>
-          <div class="score-box">
-            <button class="score-btn" onclick="updateLiveScore('home', -1)">-</button>
-            <span id="sbHomeScore" class="score-display">0</span>
-            <button class="score-btn" onclick="updateLiveScore('home', 1)">+</button>
-          </div>
-          <div class="turn-box">
-            Turn: <span id="sbHomeTurn">0</span>
-            <button class="small-btn" onclick="updateLiveTurn('home', 1)">Next</button>
-          </div>
+          <div id="sbHomeScore" class="score-display">0</div>
+          <div class="turn-box">Turn: <span id="sbHomeTurn">0</span></div>
+          <button class="primary-btn" style="margin-top:1rem; width:100%" onclick="enterCoachMode('home')">Play as Home</button>
         </div>
 
         <div class="match-control">
           <div class="vs-tag">VS</div>
-          <div style="margin-top:1rem;">
+          <div style="margin-top:2rem;">
             <button id="endGameBtn" class="primary-btn" style="background:#0a0;">End Game</button>
             <button id="cancelGameBtn" class="danger-btn" style="margin-top:0.5rem; background:#d33;">Cancel</button>
           </div>
@@ -195,15 +186,9 @@
 
         <div class="team-control">
           <div id="sbAwayName" class="team-name">Away</div>
-          <div class="score-box">
-            <button class="score-btn" onclick="updateLiveScore('away', -1)">-</button>
-            <span id="sbAwayScore" class="score-display">0</span>
-            <button class="score-btn" onclick="updateLiveScore('away', 1)">+</button>
-          </div>
-          <div class="turn-box">
-            Turn: <span id="sbAwayTurn">0</span>
-            <button class="small-btn" onclick="updateLiveTurn('away', 1)">Next</button>
-          </div>
+          <div id="sbAwayScore" class="score-display">0</div>
+          <div class="turn-box">Turn: <span id="sbAwayTurn">0</span></div>
+          <button class="primary-btn" style="margin-top:1rem; width:100%" onclick="enterCoachMode('away')">Play as Away</button>
         </div>
       </div>
     </div>
@@ -217,6 +202,34 @@
         <h3>Away Roster</h3>
         <div id="scoreboardAwayRoster" class="live-roster"></div>
       </div>
+    </div>
+  </section>
+
+  <section id="coachSection" class="hidden">
+    <div class="coach-header">
+      <div class="coach-header-top">
+        <div class="coach-team-name" id="coachTeamName">My Team</div>
+        <div class="coach-score" id="coachScoreDisplay">0 - 0</div>
+      </div>
+      <div class="coach-resources">
+        <div class="resource-group">
+          <span>Rerolls:</span>
+          <div id="coachRerolls" class="reroll-pips"></div>
+        </div>
+        <div class="resource-group">
+          <span>Turn:</span>
+          <span id="coachTurnDisplay" style="font-weight:bold; margin-left:5px">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="coach-main">
+      <div id="coachRosterList" class="live-roster"></div>
+    </div>
+
+    <div class="coach-footer">
+      <button class="secondary-btn" onclick="exitCoachMode()">Exit</button>
+      <button class="primary-btn" id="coachEndTurnBtn" style="width:60%">End Turn</button>
     </div>
   </section>
 
