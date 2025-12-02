@@ -449,12 +449,20 @@ window.handleEditTeam = async (teamId) => {
 };
 
 function createEmptyTeam(id) {
-  return { id, name: 'New Team', race: 'Human', coachName: '', players: [] };
+  // Default to first race if available
+  const defaultRace = state.gameData?.races?.[0]?.name || 'Human';
+  return { id, name: 'New Team', race: defaultRace, coachName: '', players: [] };
 }
+
+// ------------------------------------------
+// SMART TEAM EDITOR
+// ------------------------------------------
 
 function renderTeamEditor() {
   const t = state.dirtyTeam;
-  const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}">${r.name}</option>`).join('');
+  const raceOpts = (state.gameData?.races || []).map(r => 
+    `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`
+  ).join('');
   const isNewTeam = !state.editTeamId;
   
   els.containers.manageTeamEditor.innerHTML = `
@@ -463,25 +471,37 @@ function renderTeamEditor() {
       <div class="form-field"><label>File ID</label><input type="text" value="${t.id}" readonly class="faded" placeholder="Auto-generated"></div>
       <div class="form-field"><label>Name</label><input type="text" value="${t.name}" id="teamEditNameInput"></div>
       <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
-      <div class="form-field"><label>Race</label><select onchange="state.dirtyTeam.race = this.value;">${raceOpts}</select></div>
+      <div class="form-field"><label>Race</label><select onchange="changeTeamRace(this.value)">${raceOpts}</select></div>
     </div>
     
     <h4>Roster</h4>
-    <div class="small">Stats, Skills (comma separated), SPP</div>
+    <div class="small">Changing position will auto-set stats.</div>
     <table class="roster-editor-table">
-      <thead><tr><th>No</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th><th></th></tr></thead>
+      <thead><tr><th>No</th><th>Name</th><th>Position</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th><th></th></tr></thead>
       <tbody id="editorRosterBody"></tbody>
     </table>
-    <button onclick="addPlaceholderPlayer()" style="margin-top:0.5rem">+ Add Player</button>
+    <button onclick="addSmartPlayer()" style="margin-top:0.5rem">+ Add Player</button>
   `;
 
   const tbody = document.getElementById('editorRosterBody');
+  // Get positions for current race
+  const currentRaceObj = state.gameData?.races.find(r => r.name === t.race);
+  const positionalOptions = (currentRaceObj?.positionals || []).map(pos => 
+    `<option value="${pos.name}">${pos.name} (${pos.cost/1000}k)</option>`
+  ).join('');
+
   t.players.forEach((p, idx) => {
+    // Ensure current position is selected
+    const posSelect = `<select style="width:100%" onchange="updatePlayerPos(${idx}, this.value)">
+      <option value="" disabled>Select...</option>
+      ${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}
+    </select>`;
+
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="number" value="${p.number||''}" style="width:30px" onchange="updatePlayer(${idx}, 'number', this.value)"></td>
       <td><input type="text" value="${p.name}" onchange="updatePlayer(${idx}, 'name', this.value)"></td>
-      <td><input type="text" value="${p.position}" onchange="updatePlayer(${idx}, 'position', this.value)"></td>
+      <td>${posSelect}</td>
       <td><input type="number" value="${p.ma}" style="width:30px" onchange="updatePlayer(${idx}, 'ma', this.value)"></td>
       <td><input type="number" value="${p.st}" style="width:30px" onchange="updatePlayer(${idx}, 'st', this.value)"></td>
       <td><input type="number" value="${p.ag}" style="width:30px" onchange="updatePlayer(${idx}, 'ag', this.value)"></td>
@@ -494,6 +514,7 @@ function renderTeamEditor() {
     tbody.appendChild(row);
   });
 
+  // Name -> ID binding
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
@@ -502,9 +523,21 @@ function renderTeamEditor() {
       els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
     }
   };
-  const select = els.containers.manageTeamEditor.querySelector('select');
-  if(select) select.value = t.race;
 }
+
+// ---- Editor Actions ----
+
+window.changeTeamRace = (newRace) => {
+  if (state.dirtyTeam.players.length > 0) {
+    if(!confirm("Changing race will potentially break existing player positions. Continue?")) {
+        // Revert select (requires re-render)
+        renderTeamEditor();
+        return;
+    }
+  }
+  state.dirtyTeam.race = newRace;
+  renderTeamEditor();
+};
 
 window.updatePlayer = (idx, field, value) => {
   const p = state.dirtyTeam.players[idx];
@@ -512,10 +545,55 @@ window.updatePlayer = (idx, field, value) => {
   else if (['number','ma','st','ag','pa','av','spp'].includes(field)) p[field] = parseInt(value) || 0;
   else p[field] = value;
 };
-window.addPlaceholderPlayer = () => {
-  state.dirtyTeam.players.push({ name: 'Player', position: 'Lineman', ma:6, st:3, ag:3, pa:4, av:9, skills:[], spp:0 });
+
+window.updatePlayerPos = (idx, newPosName) => {
+  const p = state.dirtyTeam.players[idx];
+  p.position = newPosName;
+  
+  // Lookup Stats
+  const raceObj = state.gameData.races.find(r => r.name === state.dirtyTeam.race);
+  if (!raceObj) return;
+  const posObj = raceObj.positionals.find(pos => pos.name === newPosName);
+  
+  if (posObj) {
+    p.ma = posObj.ma;
+    p.st = posObj.st;
+    p.ag = posObj.ag;
+    p.pa = posObj.pa;
+    p.av = posObj.av;
+    p.skills = [...posObj.skills]; // Copy skills array
+    // We could also copy cost, primary/secondary access, etc. here if the data model supported it
+  }
+  
+  // Re-render row to show new stats (or just let inputs update? Re-render is safer for values)
   renderTeamEditor();
 };
+
+window.addSmartPlayer = () => {
+  const t = state.dirtyTeam;
+  const raceObj = state.gameData?.races.find(r => r.name === t.race);
+  
+  // Default to first positional (usually Lineman)
+  const defaultPos = raceObj?.positionals?.[0] || { name: 'Lineman', ma:6, st:3, ag:3, pa:4, av:9, skills:[] };
+  
+  // Auto-increment number
+  const nextNum = (t.players.length > 0) ? Math.max(...t.players.map(p => p.number || 0)) + 1 : 1;
+
+  t.players.push({
+    number: nextNum,
+    name: 'Player',
+    position: defaultPos.name,
+    ma: defaultPos.ma,
+    st: defaultPos.st,
+    ag: defaultPos.ag,
+    pa: defaultPos.pa,
+    av: defaultPos.av,
+    skills: [...defaultPos.skills],
+    spp: 0
+  });
+  renderTeamEditor();
+};
+
 window.removePlayer = (idx) => {
   state.dirtyTeam.players.splice(idx, 1);
   renderTeamEditor();
@@ -643,151 +721,84 @@ function populateSkillList() {
   });
 }
 
-// ============================================
-// GLOBAL SCANNER & ATTACH LOGIC
-// ============================================
-
+// Global Scanner Code (Same as previous turn)
 const scanBtn = document.getElementById('scanBtn');
 const scanResults = document.getElementById('scanResults');
-
 if (scanBtn) {
   scanBtn.addEventListener('click', async () => {
     scanResults.innerHTML = '<div class="small">Scanning all leagues...</div>';
-    
     try {
-      // 1. Get ALL folders in data/leagues
       const rootContents = await apiGet('data/leagues');
       if (!Array.isArray(rootContents)) throw new Error("Could not list directories.");
-      
       const leagueDirs = rootContents.filter(x => x.type === 'dir').map(x => x.name);
       const indexIds = state.leaguesIndex.map(l => l.id);
-      
       let html = '<table style="width:100%; font-size:0.9rem;">';
       let issuesFound = 0;
-
-      // 2. Iterate every league directory found on the server
       for (const leagueId of leagueDirs) {
-        // A. Check for "Ghost" Leagues (Folder exists, but not in Index)
         if (!indexIds.includes(leagueId)) {
-           // Verify it has settings
            const settings = await apiGet(`data/leagues/${leagueId}/settings.json`);
            if (settings) {
               issuesFound++;
-              html += `<tr style="background:#fff0f0">
-                <td><strong>GHOST LEAGUE</strong>: ${leagueId}</td>
-                <td style="text-align:right">
-                   <button onclick="restoreLeague('${leagueId}')" style="color:green">Restore</button> | 
-                   <button onclick="deleteLeagueFolder('${leagueId}')" style="color:red">Delete</button>
-                </td>
-              </tr>`;
+              html += `<tr style="background:#fff0f0"><td><strong>GHOST LEAGUE</strong>: ${leagueId}</td><td style="text-align:right"><button onclick="restoreLeague('${leagueId}')" style="color:green">Restore</button> | <button onclick="deleteLeagueFolder('${leagueId}')" style="color:red">Delete</button></td></tr>`;
            }
         }
-
-        // B. Check for Orphaned Teams (File exists, but not in Settings)
         const teamFiles = await apiGet(`data/leagues/${leagueId}/teams`);
         const settings = await apiGet(`data/leagues/${leagueId}/settings.json`);
-        
         if (Array.isArray(teamFiles) && settings) {
            const registeredIds = settings.teams.map(t => t.id);
-           
-           const orphans = teamFiles
-             .filter(f => f.name.endsWith('.json'))
-             .filter(f => !registeredIds.includes(f.name.replace('.json', '')));
-             
+           const orphans = teamFiles.filter(f => f.name.endsWith('.json')).filter(f => !registeredIds.includes(f.name.replace('.json', '')));
            orphans.forEach(f => {
              issuesFound++;
-             html += `<tr>
-               <td>Orphan Team (in ${leagueId}): ${f.name}</td>
-               <td style="text-align:right">
-                 <button onclick="attachTeam('${leagueId}', '${f.name}')" style="color:#007bff">Attach</button> | 
-                 <button onclick="deleteOrphanFile('${leagueId}', '${f.name}')" style="color:red">Delete</button>
-               </td>
-             </tr>`;
+             html += `<tr><td>Orphan Team (in ${leagueId}): ${f.name}</td><td style="text-align:right"><button onclick="attachTeam('${leagueId}', '${f.name}')" style="color:#007bff">Attach</button> | <button onclick="deleteOrphanFile('${leagueId}', '${f.name}')" style="color:red">Delete</button></td></tr>`;
            });
         }
       }
-      
       html += '</table>';
-      
-      if (issuesFound === 0) {
-        scanResults.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
-      } else {
-        scanResults.innerHTML = html;
-      }
-      
-    } catch (e) {
-      scanResults.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`;
-    }
+      if (issuesFound === 0) scanResults.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
+      else scanResults.innerHTML = html;
+    } catch (e) { scanResults.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`; }
   });
 }
-
-// -- Actions for Scanner --
-
 window.attachTeam = async (leagueId, filename) => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
-  
   try {
      const teamId = filename.replace('.json', '');
-     // 1. Fetch team data
      const team = await apiGet(PATHS.team(leagueId, teamId));
-     // 2. Fetch settings
      const settings = await apiGet(PATHS.leagueSettings(leagueId));
-     
-     // 3. Attach
-     settings.teams.push({
-       id: team.id,
-       name: team.name,
-       race: team.race,
-       coachName: team.coachName
-     });
-     
-     // 4. Save
+     settings.teams.push({ id: team.id, name: team.name, race: team.race, coachName: team.coachName });
      await apiSave(PATHS.leagueSettings(leagueId), settings, `Attach orphan ${teamId}`, key);
-     
-     scanBtn.click(); // Refresh
+     scanBtn.click();
      setStatus(`Attached ${team.name}`, 'ok');
   } catch(e) { alert(e.message); }
 };
-
 window.restoreLeague = async (leagueId) => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
-
   try {
     const settings = await apiGet(PATHS.leagueSettings(leagueId));
-    // Add to index
     const index = await apiGet(PATHS.leaguesIndex) || [];
     index.push({ id: settings.id, name: settings.name, season: settings.season, status: settings.status });
-    
     await apiSave(PATHS.leaguesIndex, index, `Restored ghost league ${leagueId}`, key);
-    
     state.leaguesIndex = index;
     renderLeagueList();
     scanBtn.click();
     setStatus(`Restored ${settings.name}`, 'ok');
   } catch(e) { alert(e.message); }
 };
-
 window.deleteOrphanFile = async (leagueId, filename) => {
   if(!confirm(`Delete ${filename}?`)) return;
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
-  
   try {
     await apiDelete(`data/leagues/${leagueId}/teams/${filename}`, `Clean orphan ${filename}`, key);
     scanBtn.click();
   } catch(e) { alert(e.message); }
 };
-
 window.deleteLeagueFolder = async (leagueId) => {
-  // Simple delete settings file (teams technically remain, but league is gone)
-  // For "Ghost" cleanup, this is usually enough to stop it appearing. 
-  // A Deep Delete would look like the main delete function.
   if(!confirm(`Delete Settings file for ${leagueId}?`)) return;
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
-
   try {
     await apiDelete(PATHS.leagueSettings(leagueId), `Delete ghost league ${leagueId}`, key);
     scanBtn.click();
