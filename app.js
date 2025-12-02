@@ -23,6 +23,7 @@ const state = {
   currentTeam: null,
   activeMatchData: null,
   activeMatchPollInterval: null,
+  coachSide: null, // 'home' or 'away'
   
   // Navigation State
   viewLeagueId: null,
@@ -49,6 +50,7 @@ const els = {
     manage: document.getElementById('leagueManageSection'),
     team: document.getElementById('teamViewSection'),
     scoreboard: document.getElementById('scoreboardSection'),
+    coach: document.getElementById('coachSection'),
     admin: document.getElementById('adminSection')
   },
   containers: {
@@ -61,8 +63,7 @@ const els = {
     manageTeamEditor: document.getElementById('leagueManageTeamEditor'),
     teamSummary: document.getElementById('teamSummary'),
     teamRoster: document.getElementById('teamRosterContainer'),
-    // Scoreboard
-    sbMeta: document.getElementById('scoreboardMeta'),
+    // Jumbotron
     sbHomeName: document.getElementById('sbHomeName'),
     sbAwayName: document.getElementById('sbAwayName'),
     sbHomeScore: document.getElementById('sbHomeScore'),
@@ -71,9 +72,15 @@ const els = {
     sbAwayTurn: document.getElementById('sbAwayTurn'),
     sbHomeRoster: document.getElementById('scoreboardHomeRoster'),
     sbAwayRoster: document.getElementById('scoreboardAwayRoster'),
-    sbScoreMain: document.getElementById('scoreboardScoreMain'),
-    sbScoreMeta: document.getElementById('scoreboardScoreMeta'),
-    delLeagueBtn: document.getElementById('deleteLeagueContainer')
+    // Coach Dashboard
+    coachTeamName: document.getElementById('coachTeamName'),
+    coachScore: document.getElementById('coachScoreDisplay'),
+    coachRerolls: document.getElementById('coachRerolls'),
+    coachTurn: document.getElementById('coachTurnDisplay'),
+    coachRoster: document.getElementById('coachRosterList'),
+    // Admin
+    delLeagueBtn: document.getElementById('deleteLeagueContainer'),
+    scanResults: document.getElementById('scanResults')
   },
   buttons: {
     createLeague: document.getElementById('leagueCreateBtn'),
@@ -89,6 +96,7 @@ const els = {
     cancelGame: document.getElementById('cancelGameBtn'),
     schedAdd: document.getElementById('schedAddBtn'),
     rememberKey: document.getElementById('rememberKeyBtn'),
+    coachEndTurn: document.getElementById('coachEndTurnBtn'),
     // Admin
     scanBtn: document.getElementById('scanBtn'),
     loadBtn: document.getElementById('loadBtn'),
@@ -121,8 +129,7 @@ const els = {
     title: document.getElementById('skillModalTitle'),
     body: document.getElementById('skillModalBody')
   },
-  datalist: document.getElementById('skillList'),
-  scanResults: document.getElementById('scanResults')
+  datalist: document.getElementById('skillList')
 };
 
 // ============================================
@@ -395,11 +402,12 @@ window.handleStartMatch = async (matchId) => {
     const matchIdx = l.matches.findIndex(m => m.id === matchId);
     if(matchIdx === -1) throw new Error("Match not found");
     const m = l.matches[matchIdx];
+    
     const homeTeam = await apiGet(PATHS.team(l.id, m.homeTeamId));
     const awayTeam = await apiGet(PATHS.team(l.id, m.awayTeamId));
     if(!homeTeam || !awayTeam) throw new Error("Could not load team files.");
     
-    // Initialize roster with live props
+    // Initialize Live Data (Rerolls, Apothecary)
     const initRoster = (players) => (players||[]).map(p => ({
         ...p,
         live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
@@ -410,21 +418,30 @@ window.handleStartMatch = async (matchId) => {
       leagueId: l.id,
       round: m.round,
       status: 'in_progress',
-      home: { id: homeTeam.id, name: homeTeam.name, score: 0, roster: initRoster(homeTeam.players) },
-      away: { id: awayTeam.id, name: awayTeam.name, score: 0, roster: initRoster(awayTeam.players) },
+      home: { 
+        id: homeTeam.id, name: homeTeam.name, score: 0, roster: initRoster(homeTeam.players),
+        rerolls: homeTeam.rerolls || 0, apothecary: true 
+      },
+      away: { 
+        id: awayTeam.id, name: awayTeam.name, score: 0, roster: initRoster(awayTeam.players),
+        rerolls: awayTeam.rerolls || 0, apothecary: true
+      },
       turn: { home: 0, away: 0 },
       log: []
     };
+    
     await apiSave(PATHS.activeMatch(m.id), activeData, `Start match ${m.id}`, key);
+    
     m.status = 'in_progress';
     await apiSave(PATHS.leagueSettings(l.id), l, `Set match ${m.id} to in_progress`, key);
+    
     handleOpenScoreboard(m.id);
     setStatus('Match started!', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
 };
 
 // ============================================
-// LIVE SCOREBOARD ENGINE
+// MATCH ENGINE: JUMBOTRON & COACH
 // ============================================
 
 window.handleOpenScoreboard = async (matchId) => {
@@ -433,16 +450,17 @@ window.handleOpenScoreboard = async (matchId) => {
     const data = await apiGet(PATHS.activeMatch(matchId));
     if (!data) throw new Error("Active match file not found.");
     state.activeMatchData = data;
-    renderScoreboard();
+    renderJumbotron();
     showSection('scoreboard');
     
+    // Auto-refresh for Spectators
     if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
     state.activeMatchPollInterval = setInterval(async () => {
         try {
             const fresh = await apiGet(PATHS.activeMatch(matchId));
             if (fresh) {
                 state.activeMatchData = fresh;
-                renderScoreboard();
+                renderJumbotron();
             }
         } catch(e) { console.warn("Poll failed", e); }
     }, 5000); 
@@ -450,7 +468,8 @@ window.handleOpenScoreboard = async (matchId) => {
   } catch (e) { setStatus(e.message, 'error'); }
 };
 
-function renderScoreboard() {
+// ---- Jumbotron Renderer ----
+function renderJumbotron() {
   const d = state.activeMatchData;
   els.containers.sbHomeName.textContent = d.home.name;
   els.containers.sbAwayName.textContent = d.away.name;
@@ -458,69 +477,103 @@ function renderScoreboard() {
   els.containers.sbAwayScore.textContent = d.away.score;
   els.containers.sbHomeTurn.textContent = d.turn.home;
   els.containers.sbAwayTurn.textContent = d.turn.away;
-  els.containers.sbMeta.textContent = `Round ${d.round} • Match ID: ${d.matchId}`;
 
-  els.containers.sbHomeRoster.innerHTML = renderLiveRoster(d.home.roster, 'home');
-  els.containers.sbAwayRoster.innerHTML = renderLiveRoster(d.away.roster, 'away');
+  // Read-only Rosters
+  els.containers.sbHomeRoster.innerHTML = renderLiveRoster(d.home.roster, 'home', true);
+  els.containers.sbAwayRoster.innerHTML = renderLiveRoster(d.away.roster, 'away', true);
 }
 
-function renderLiveRoster(roster, side) {
+// ---- Coach Mode Logic ----
+window.enterCoachMode = (side) => {
+  state.coachSide = side; // 'home' or 'away'
+  renderCoachView();
+  showSection('coach');
+  // NOTE: We do NOT poll in coach mode to avoid overwriting local changes before save
+  if (state.activeMatchPollInterval) {
+    clearInterval(state.activeMatchPollInterval);
+    state.activeMatchPollInterval = null;
+  }
+};
+
+window.exitCoachMode = () => {
+  handleOpenScoreboard(state.activeMatchData.matchId); // Go back to Jumbotron
+};
+
+function renderCoachView() {
+  const d = state.activeMatchData;
+  const side = state.coachSide;
+  const team = d[side];
+  const oppSide = side === 'home' ? 'away' : 'home';
+  const oppTeam = d[oppSide];
+
+  // Header
+  els.containers.coachTeamName.textContent = team.name;
+  els.containers.coachScore.textContent = `${team.score} - ${oppTeam.score}`;
+  els.containers.coachTurn.textContent = d.turn[side];
+
+  // Rerolls (Interactive Pips)
+  let pips = '';
+  for(let i=0; i<team.rerolls; i++) {
+    pips += `<div class="reroll-pip ${i < (team.rerolls) ? 'active' : ''}" onclick="toggleReroll('${side}', ${i})"></div>`;
+  }
+  els.containers.coachRerolls.innerHTML = pips;
+
+  // Main Roster
+  els.containers.coachRoster.innerHTML = renderLiveRoster(team.roster, side, false);
+}
+
+function renderLiveRoster(roster, side, readOnly) {
   return roster.map((p, idx) => {
     const live = p.live || {};
     const usedClass = live.used ? 'used' : '';
     const injClass = live.injured ? 'injured' : '';
+    
     let badges = '';
     if(live.td > 0) badges += `<span class="stat-badge">TD:${live.td}</span>`;
     if(live.cas > 0) badges += `<span class="stat-badge">CAS:${live.cas}</span>`;
     if(live.int > 0) badges += `<span class="stat-badge">INT:${live.int}</span>`;
-    if(live.sentOff) badges += `<span class="stat-badge" style="background:#faa">Sent Off</span>`;
+    if(live.sentOff) badges += `<span class="stat-badge" style="background:#faa">Off</span>`;
 
-    // Skill tags with onclick handler
     const skillTags = (p.skills || []).map(s => 
-      `<span class="skill-tag" onclick="showSkill('${s}')">${s}</span>`
+      `<span class="skill-tag" onclick="event.stopPropagation(); showSkill('${s}')">${s}</span>`
     ).join(' ');
 
+    if (readOnly) {
+        return `
+          <div class="live-player-row ${usedClass} ${injClass}">
+            <div class="player-info">
+              <span class="player-name">#${p.number} ${p.name} ${badges}</span>
+              <span class="player-pos">${p.position} | ${skillTags}</span>
+            </div>
+          </div>`;
+    }
+
+    // Interactive Row
     return `
-      <div class="live-player-row ${usedClass} ${injClass}">
+      <div class="live-player-row ${usedClass} ${injClass}" onclick="togglePlayerStatus('${side}', ${idx}, 'used')">
         <div class="player-info">
           <span class="player-name">#${p.number} ${p.name} ${badges}</span>
           <span class="player-pos">${p.position} | ${skillTags}</span>
         </div>
-        <div class="player-actions">
-          <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'used')">${live.used ? 'Done' : 'Act'}</button>
-          <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'td')">TD</button>
-          <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'cas')">CAS</button>
-          <button class="action-btn" onclick="togglePlayerStatus('${side}', ${idx}, 'injured')" style="color:red">Inj</button>
+        <div class="player-actions" onclick="event.stopPropagation()">
+          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'td')">TD</button>
+          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'cas')">CAS</button>
+          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'injured')" style="color:red">Inj</button>
         </div>
       </div>
     `;
   }).join('');
 }
 
+// ---- Live Actions ----
+
 async function updateLiveMatch(actionDesc) {
   const key = els.inputs.editKey.value;
-  if(!key) return setStatus("Edit Key needed to update match.", "error");
+  if(!key) return setStatus("Edit Key needed.", "error");
   try {
     await apiSave(PATHS.activeMatch(state.activeMatchData.matchId), state.activeMatchData, actionDesc, key);
   } catch(e) { console.error(e); setStatus("Sync failed!", "error"); }
 }
-
-window.updateLiveScore = (side, delta) => {
-  const d = state.activeMatchData;
-  d[side].score = Math.max(0, d[side].score + delta);
-  renderScoreboard();
-  updateLiveMatch(`Score update: ${side} ${delta}`);
-};
-
-window.updateLiveTurn = (side, delta) => {
-  const d = state.activeMatchData;
-  d.turn[side] = Math.max(0, d.turn[side] + delta);
-  if (delta > 0) {
-    d[side].roster.forEach(p => { if(p.live) p.live.used = false; });
-  }
-  renderScoreboard();
-  updateLiveMatch(`Turn update: ${side}`);
-};
 
 window.togglePlayerStatus = (side, idx, type) => {
   const p = state.activeMatchData[side].roster[idx];
@@ -534,32 +587,51 @@ window.togglePlayerStatus = (side, idx, type) => {
   }
   else if (type === 'cas') p.live.cas++;
   
-  renderScoreboard();
-  updateLiveMatch(`Player update: ${p.name} ${type}`);
+  renderCoachView();
+  updateLiveMatch(`Update ${p.name} ${type}`);
 };
 
+window.toggleReroll = (side, idx) => {
+  const team = state.activeMatchData[side];
+  if (team.rerolls > 0) {
+      team.rerolls--;
+      renderCoachView();
+      updateLiveMatch(`${side} used Reroll`);
+  }
+};
+
+if(els.buttons.coachEndTurn) {
+  els.buttons.coachEndTurn.addEventListener('click', async () => {
+    const side = state.coachSide;
+    const d = state.activeMatchData;
+    d[side].roster.forEach(p => { if(p.live) p.live.used = false; });
+    d.turn[side]++;
+    renderCoachView();
+    await updateLiveMatch(`End Turn: ${side}`);
+    setStatus("Turn ended. Status synced.", "ok");
+  });
+}
+
+// ---- Admin Match End/Cancel ----
+
 els.buttons.cancelGame.addEventListener('click', async () => {
-  if(!confirm("Cancel this match? All progress will be lost.")) return;
+  if(!confirm("Cancel match?")) return;
   const key = els.inputs.editKey.value;
-  if (!key) return setStatus('Edit key required', 'error');
   try {
     const mId = state.activeMatchData.matchId;
     const lId = state.activeMatchData.leagueId;
-    await apiDelete(PATHS.activeMatch(mId), `Cancel match ${mId}`, key);
+    await apiDelete(PATHS.activeMatch(mId), `Cancel ${mId}`, key);
     const l = await apiGet(PATHS.leagueSettings(lId));
     const m = l.matches.find(x => x.id === mId);
     if(m) m.status = 'scheduled';
-    await apiSave(PATHS.leagueSettings(lId), l, `Revert match ${mId} status`, key);
+    await apiSave(PATHS.leagueSettings(lId), l, `Revert ${mId}`, key);
     handleOpenLeague(lId);
-    setStatus('Match cancelled.', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
 });
 
 els.buttons.endGame.addEventListener('click', async () => {
-  if(!confirm("End the game? This will save the final score to the league.")) return;
+  if(!confirm("End game? Saves results.")) return;
   const key = els.inputs.editKey.value;
-  if (!key) return setStatus('Edit key required', 'error');
-  setStatus('Finalizing match...');
   try {
     const d = state.activeMatchData;
     const l = await apiGet(PATHS.leagueSettings(d.leagueId));
@@ -572,10 +644,9 @@ els.buttons.endGame.addEventListener('click', async () => {
         awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
       };
     }
-    await apiSave(PATHS.leagueSettings(d.leagueId), l, `Complete match ${d.matchId}`, key);
-    await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup completed match ${d.matchId}`, key);
+    await apiSave(PATHS.leagueSettings(d.leagueId), l, `Complete ${d.matchId}`, key);
+    await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
     handleOpenLeague(d.leagueId);
-    setStatus('Match completed successfully!', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
 });
 
@@ -599,7 +670,6 @@ window.showSkill = (skillName) => {
       if (found) { desc = found.description; break; }
     }
   } else if (state.gameData?.Traits) {
-      // Fallback for traits if they are in root
       const found = state.gameData.Traits.find(s => s.name.startsWith(cleanName));
       if (found) desc = found.description;
   }
@@ -707,7 +777,6 @@ function renderTeamEditor() {
   const t = state.dirtyTeam;
   const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
   const isNewTeam = !state.editTeamId;
-  
   els.containers.manageTeamEditor.innerHTML = `
     <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
     <div class="form-grid">
@@ -716,34 +785,15 @@ function renderTeamEditor() {
       <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
       <div class="form-field"><label>Race</label><select onchange="changeTeamRace(this.value)">${raceOpts}</select></div>
     </div>
-    
     <h4>Roster</h4>
-    <table class="roster-editor-table">
-      <thead>
-        <tr>
-          <th style="width:40px">#</th>
-          <th>Name</th>
-          <th>Position</th>
-          <th style="width:40px">MA</th><th style="width:40px">ST</th><th style="width:40px">AG</th><th style="width:40px">PA</th><th style="width:40px">AV</th>
-          <th>Skills</th>
-          <th style="width:50px">SPP</th>
-          <th style="width:30px"></th>
-        </tr>
-      </thead>
-      <tbody id="editorRosterBody"></tbody>
-    </table>
+    <table class="roster-editor-table"><thead><tr><th style="width:40px">#</th><th>Name</th><th>Position</th><th style="width:40px">MA</th><th style="width:40px">ST</th><th style="width:40px">AG</th><th style="width:40px">PA</th><th style="width:40px">AV</th><th>Skills</th><th style="width:50px">SPP</th><th style="width:30px"></th></tr></thead><tbody id="editorRosterBody"></tbody></table>
     <button onclick="addSmartPlayer()" class="primary-btn" style="margin-top:0.5rem">+ Add Player</button>
   `;
-
   const tbody = document.getElementById('editorRosterBody');
   const currentRaceObj = state.gameData?.races.find(r => r.name === t.race);
+  const positionalOptions = (currentRaceObj?.positionals || []).map(pos => `<option value="${pos.name}">${pos.name} (${Math.floor(pos.cost/1000)}k)</option>`).join('');
   
-  // Position Dropdown Options
-  const positionalOptions = (currentRaceObj?.positionals || []).map(pos => 
-    `<option value="${pos.name}">${pos.name} (${Math.floor(pos.cost/1000)}k)</option>`
-  ).join('');
-
-  // Skill Dropdown Options (Global)
+  // Skill Dropdown Options
   let allSkillsHtml = '<option value="">+ Skill...</option>';
   if (state.gameData?.skillCategories) {
     Object.values(state.gameData.skillCategories).flat().forEach(s => {
@@ -753,28 +803,14 @@ function renderTeamEditor() {
   }
 
   t.players.forEach((p, idx) => {
-    // 1. Position Select
-    const posSelect = `<select style="width:100%; font-size:0.8rem;" onchange="updatePlayerPos(${idx}, this.value)">
-      <option value="" disabled>Pos...</option>
-      ${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}
-    </select>`;
-
-    // 2. Skill Pills Logic
+    const posSelect = `<select style="width:100%; font-size:0.8rem;" onchange="updatePlayerPos(${idx}, this.value)"><option value="" disabled>Pos...</option>${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}</select>`;
+    
+    // Skill Pills Logic
     const currentSkills = (p.skills || []).map((skill, sIdx) => `
-      <span class="skill-pill">
-        ${skill}
-        <span class="remove-skill" onclick="removePlayerSkill(${idx}, ${sIdx})">×</span>
-      </span>
+      <span class="skill-pill">${skill}<span class="remove-skill" onclick="removePlayerSkill(${idx}, ${sIdx})">×</span></span>
     `).join('');
-
-    const skillPicker = `
-      <div class="skill-editor-container">
-        ${currentSkills}
-        <select class="skill-select" onchange="addPlayerSkill(${idx}, this.value)">
-          ${allSkillsHtml}
-        </select>
-      </div>
-    `;
+    
+    const skillPicker = `<div class="skill-editor-container">${currentSkills}<select class="skill-select" onchange="addPlayerSkill(${idx}, this.value)">${allSkillsHtml}</select></div>`;
 
     const row = document.createElement('tr');
     row.innerHTML = `
@@ -792,67 +828,50 @@ function renderTeamEditor() {
     `;
     tbody.appendChild(row);
   });
-
-  // Name -> ID binding
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
-    if (isNewTeam) {
-      state.dirtyTeam.id = normalizeName(this.value);
-      els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
-    }
+    if (isNewTeam) { state.dirtyTeam.id = normalizeName(this.value); els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id; }
   };
 }
-
-// ---- Updated Helper Functions ----
-
-window.addPlayerSkill = (playerIdx, skillName) => {
-  if (!skillName) return;
-  const p = state.dirtyTeam.players[playerIdx];
-  if (!p.skills) p.skills = [];
-  
-  // Avoid duplicates
-  if (!p.skills.includes(skillName)) {
-    p.skills.push(skillName);
-  }
-  
-  renderTeamEditor(); // Re-render to show new pill
-};
-
-window.removePlayerSkill = (playerIdx, skillIdx) => {
-  state.dirtyTeam.players[playerIdx].skills.splice(skillIdx, 1);
-  renderTeamEditor();
-};
 
 window.changeTeamRace = (newRace) => {
   if (state.dirtyTeam.players.length > 0 && !confirm("Changing race will potentially break existing player positions. Continue?")) { renderTeamEditor(); return; }
   state.dirtyTeam.race = newRace;
   renderTeamEditor();
 };
-window.updatePlayer = (idx, field, value) => {
-  const p = state.dirtyTeam.players[idx];
-  if (field === 'skills') p.skills = value.split(',').map(s=>s.trim()).filter(Boolean);
-  else if (['number','ma','st','ag','pa','av','spp'].includes(field)) p[field] = parseInt(value) || 0;
-  else p[field] = value;
+window.updatePlayer = (idx, f, v) => { 
+  const p=state.dirtyTeam.players[idx]; 
+  if (f==='skills') return; // Handled by pills now
+  if (['number','ma','st','ag','pa','av','spp'].includes(f)) p[f] = parseInt(v) || 0;
+  else p[f] = v;
 };
-window.updatePlayerPos = (idx, newPosName) => {
-  const p = state.dirtyTeam.players[idx];
-  p.position = newPosName;
-  const raceObj = state.gameData.races.find(r => r.name === state.dirtyTeam.race);
-  if (!raceObj) return;
-  const posObj = raceObj.positionals.find(pos => pos.name === newPosName);
-  if (posObj) { p.ma = posObj.ma; p.st = posObj.st; p.ag = posObj.ag; p.pa = posObj.pa; p.av = posObj.av; p.skills = [...posObj.skills]; }
+window.updatePlayerPos = (idx, v) => { 
+  const p=state.dirtyTeam.players[idx]; p.position=v; 
+  const r=state.gameData.races.find(r=>r.name===state.dirtyTeam.race); 
+  const pos=r?.positionals.find(x=>x.name===v);
+  if(pos) Object.assign(p, {ma:pos.ma, st:pos.st, ag:pos.ag, pa:pos.pa, av:pos.av, skills:[...pos.skills]});
   renderTeamEditor();
 };
-window.addSmartPlayer = () => {
-  const t = state.dirtyTeam;
-  const raceObj = state.gameData?.races.find(r => r.name === t.race);
-  const defaultPos = raceObj?.positionals?.[0] || { name: 'Lineman', ma:6, st:3, ag:3, pa:4, av:9, skills:[] };
+window.addSmartPlayer = () => { 
+  const t=state.dirtyTeam; const r=state.gameData.races.find(r=>r.name===t.race); 
+  const def=r?.positionals[0]||{name:'L',ma:6,st:3,ag:3,pa:4,av:8,skills:[]};
   const nextNum = (t.players.length > 0) ? Math.max(...t.players.map(p => p.number || 0)) + 1 : 1;
-  t.players.push({ number: nextNum, name: 'Player', position: defaultPos.name, ma: defaultPos.ma, st: defaultPos.st, ag: defaultPos.ag, pa: defaultPos.pa, av: defaultPos.av, skills: [...defaultPos.skills], spp: 0 });
+  t.players.push({number:nextNum, name:'Player', position:def.name, ...def, skills:[...def.skills], spp:0});
   renderTeamEditor();
 };
-window.removePlayer = (idx) => { state.dirtyTeam.players.splice(idx, 1); renderTeamEditor(); };
+window.removePlayer = (idx) => { state.dirtyTeam.players.splice(idx,1); renderTeamEditor(); };
+window.addPlayerSkill = (playerIdx, skillName) => {
+  if (!skillName) return;
+  const p = state.dirtyTeam.players[playerIdx];
+  if (!p.skills) p.skills = [];
+  if (!p.skills.includes(skillName)) p.skills.push(skillName);
+  renderTeamEditor();
+};
+window.removePlayerSkill = (playerIdx, skillIdx) => {
+  state.dirtyTeam.players[playerIdx].skills.splice(skillIdx, 1);
+  renderTeamEditor();
+};
 
 window.handleDeleteTeam = async (teamId) => {
   if(!confirm(`Delete team "${teamId}"?`)) return;
@@ -941,6 +960,36 @@ els.buttons.leagueBack.addEventListener('click', () => showSection('list'));
 els.buttons.manageBack.addEventListener('click', () => { if (state.editMode === 'team') { state.editMode = 'league'; renderManageForm(); } else showSection('list'); });
 els.buttons.teamBack.addEventListener('click', () => showSection('view'));
 
+// Wire up Manage Team button (Specific fix request)
+els.buttons.teamManage.addEventListener('click', async () => {
+  if (!state.currentLeague || !state.currentTeam) return;
+  await handleManageLeague(state.currentLeague.id);
+  await handleEditTeam(state.currentTeam.id);
+});
+
+window.handleOpenTeam = async (leagueId, teamId) => {
+  setStatus(`Loading team ${teamId}...`);
+  try {
+    const teamData = await apiGet(PATHS.team(leagueId, teamId));
+    if (!teamData) throw new Error("Team file not found.");
+    state.currentTeam = teamData;
+    state.viewTeamId = teamId;
+    renderTeamView();
+    showSection('team');
+    setStatus('Team loaded.', 'ok');
+  } catch (e) { setStatus(e.message, 'error'); }
+};
+
+function renderTeamView() {
+  const t = state.currentTeam;
+  document.getElementById('teamHeader').textContent = t.name;
+  els.containers.teamSummary.innerHTML = `Coach: ${t.coachName} | Race: ${t.race} | TV: ${t.teamValue || 0}`;
+  const rows = (t.players || []).map(p => `
+    <tr><td>${p.number||''}</td><td>${p.name}</td><td>${p.position}</td><td>${p.ma}</td><td>${p.st}</td><td>${p.ag}</td><td>${p.pa}</td><td>${p.av}</td><td>${(p.skills||[]).join(', ')}</td><td>${p.spp}</td></tr>
+  `).join('');
+  els.containers.teamRoster.innerHTML = `<table><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
 // ============================================
 // ADMIN SCANNER
 // ============================================
@@ -1025,35 +1074,5 @@ window.deleteLeagueFolder = async (leagueId) => {
     els.buttons.scanBtn.click();
   } catch(e) { alert(e.message); }
 };
-
-// Wire up Manage Team button (Specific fix request)
-els.buttons.teamManage.addEventListener('click', async () => {
-  if (!state.currentLeague || !state.currentTeam) return;
-  await handleManageLeague(state.currentLeague.id);
-  await handleEditTeam(state.currentTeam.id);
-});
-
-window.handleOpenTeam = async (leagueId, teamId) => {
-  setStatus(`Loading team ${teamId}...`);
-  try {
-    const teamData = await apiGet(PATHS.team(leagueId, teamId));
-    if (!teamData) throw new Error("Team file not found.");
-    state.currentTeam = teamData;
-    state.viewTeamId = teamId;
-    renderTeamView();
-    showSection('team');
-    setStatus('Team loaded.', 'ok');
-  } catch (e) { setStatus(e.message, 'error'); }
-};
-
-function renderTeamView() {
-  const t = state.currentTeam;
-  document.getElementById('teamHeader').textContent = t.name;
-  els.containers.teamSummary.innerHTML = `Coach: ${t.coachName} | Race: ${t.race} | TV: ${t.teamValue || 0}`;
-  const rows = (t.players || []).map(p => `
-    <tr><td>${p.number||''}</td><td>${p.name}</td><td>${p.position}</td><td>${p.ma}</td><td>${p.st}</td><td>${p.ag}</td><td>${p.pa}</td><td>${p.av}</td><td>${(p.skills||[]).join(', ')}</td><td>${p.spp}</td></tr>
-  `).join('');
-  els.containers.teamRoster.innerHTML = `<table><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
 
 init();
