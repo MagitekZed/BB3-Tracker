@@ -264,3 +264,133 @@ button {
   color: #555;
   margin-top: 0.15rem;
 }
+
+/* Scoreboard specific */
+.scoreboard-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.team-control {
+  text-align: center;
+  flex: 1;
+}
+
+.team-name {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.score-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.score-display {
+  font-size: 2.5rem;
+  font-weight: 800;
+  width: 60px;
+  text-align: center;
+}
+
+.score-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.turn-box {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.match-control {
+  padding: 0 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.vs-tag {
+  font-weight: 900;
+  color: #999;
+  font-size: 1.5rem;
+}
+
+.scoreboard-rosters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .scoreboard-rosters { grid-template-columns: 1fr; }
+}
+
+.live-player-row {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 0.4rem;
+  margin-bottom: 0.4rem;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.live-player-row.used {
+  opacity: 0.5;
+  background: #f0f0f0;
+}
+
+.live-player-row.injured {
+  background: #ffe6e6;
+  border-color: #ffcccc;
+}
+
+.player-info { font-size: 0.85rem; }
+.player-name { font-weight: 600; display: block; }
+.player-pos { color: #666; font-size: 0.75rem; }
+
+.player-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.action-btn {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.action-btn.active {
+  background: #333;
+  color: white;
+  border-color: #333;
+}
+
+.stat-badge {
+  font-size: 0.7rem;
+  background: #eee;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 2px;
+}
