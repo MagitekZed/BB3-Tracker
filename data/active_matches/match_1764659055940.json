@@ -45,7 +45,7 @@
   "away": {
     "id": "asdfafdas",
     "name": "asdfafdas",
-    "score": 0,
+    "score": 1,
     "roster": [
       {
         "number": 1,
@@ -62,7 +62,8 @@
         ],
         "spp": 0,
         "live": {
-          "used": false
+          "used": false,
+          "td": null
         }
       },
       {
