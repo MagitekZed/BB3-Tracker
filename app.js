@@ -4,178 +4,147 @@
 // CONFIGURATION & STATE
 // ============================================
 
-// UPDATE THIS URL TO YOUR WORKER URL
 const API_BASE = 'https://bb3-tracker-api.zedt-ninja.workers.dev';
-
 const PATHS = {
   gameData: 'data/gameData.json',
   leaguesIndex: 'data/leagues/index.json',
   leagueSettings: (id) => `data/leagues/${id}/settings.json`,
-  team: (lid, tid) => `data/leagues/${lid}/teams/${tid}.json`,
-  activeMatch: (mid) => `data/active_matches/${mid}.json`
+  team: (leagueId, teamId) => `data/leagues/${leagueId}/teams/${teamId}.json`,
+  activeMatch: (matchId) => `data/active_matches/${matchId}.json`
 };
 
 const state = {
-  leagues: [],
+  // Global Data
+  leaguesIndex: [],
   gameData: null,
+  
+  // Current View Data
   currentLeague: null,
   currentTeam: null,
-  activeMatch: null,
-  pollInterval: null,
-  dirtyData: null,
-  coachSide: null,
-  selectedPlayerIdx: null
+  activeMatchData: null,
+  activeMatchPollInterval: null,
+  coachSide: null, // 'home' or 'away'
+  
+  // Navigation State
+  viewLeagueId: null,
+  viewTeamId: null,
+  
+  // Editing State
+  editLeagueId: null,
+  editTeamId: null,
+  editMode: 'league',
+  dirtyLeague: null,
+  dirtyTeam: null
+};
+
+// ---- DOM Elements ----
+const els = {
+  globalStatus: document.getElementById('globalStatus'),
+  nav: {
+    league: document.getElementById('navLeague'),
+    admin: document.getElementById('navAdmin')
+  },
+  sections: {
+    list: document.getElementById('leagueListSection'),
+    view: document.getElementById('leagueViewSection'),
+    manage: document.getElementById('leagueManageSection'),
+    team: document.getElementById('teamViewSection'),
+    scoreboard: document.getElementById('scoreboardSection'),
+    coach: document.getElementById('coachSection'),
+    admin: document.getElementById('adminSection')
+  },
+  containers: {
+    leagueList: document.getElementById('leagueListContainer'),
+    standings: document.getElementById('standingsContainer'),
+    matches: document.getElementById('matchesContainer'),
+    inProgress: document.getElementById('inProgressContainer'),
+    rosterQuick: document.getElementById('rosterQuickViewContainer'),
+    manageTeams: document.getElementById('leagueManageTeamsList'),
+    manageTeamEditor: document.getElementById('leagueManageTeamEditor'),
+    teamSummary: document.getElementById('teamSummary'),
+    teamRoster: document.getElementById('teamRosterContainer'),
+    // Jumbotron
+    sbHomeName: document.getElementById('sbHomeName'),
+    sbAwayName: document.getElementById('sbAwayName'),
+    sbHomeScore: document.getElementById('sbHomeScore'),
+    sbAwayScore: document.getElementById('sbAwayScore'),
+    sbHomeTurn: document.getElementById('sbHomeTurn'),
+    sbAwayTurn: document.getElementById('sbAwayTurn'),
+    sbHomeRoster: document.getElementById('scoreboardHomeRoster'),
+    sbAwayRoster: document.getElementById('scoreboardAwayRoster'),
+    // Coach Dashboard
+    coachTeamName: document.getElementById('coachTeamName'),
+    coachScore: document.getElementById('coachScoreDisplay'),
+    coachRerolls: document.getElementById('coachRerolls'),
+    coachTurn: document.getElementById('coachTurnDisplay'),
+    coachRoster: document.getElementById('coachRosterList'),
+    // Admin
+    delLeagueBtn: document.getElementById('deleteLeagueContainer'),
+    scanResults: document.getElementById('scanResults')
+  },
+  buttons: {
+    createLeague: document.getElementById('leagueCreateBtn'),
+    leagueBack: document.getElementById('leagueBackBtn'),
+    manageBack: document.getElementById('leagueManageBackBtn'),
+    manageSave: document.getElementById('leagueManageSaveBtn'),
+    manageAddTeam: document.getElementById('leagueManageAddNewTeamBtn'),
+    teamBack: document.getElementById('teamBackBtn'),
+    teamManage: document.getElementById('teamManageBtn'),
+    sbBack: document.getElementById('scoreboardBackToMatchBtn'),
+    sbRefresh: document.getElementById('scoreboardRefreshBtn'),
+    endGame: document.getElementById('endGameBtn'),
+    cancelGame: document.getElementById('cancelGameBtn'),
+    schedAdd: document.getElementById('schedAddBtn'),
+    rememberKey: document.getElementById('rememberKeyBtn'),
+    coachEndTurn: document.getElementById('coachEndTurnBtn'),
+    // Admin
+    scanBtn: document.getElementById('scanBtn'),
+    loadBtn: document.getElementById('loadBtn'),
+    saveBtn: document.getElementById('saveBtn')
+  },
+  inputs: {
+    editKey: document.getElementById('editKeyInput'),
+    leagueId: document.getElementById('leagueManageIdInput'),
+    leagueName: document.getElementById('leagueManageNameInput'),
+    leagueSeason: document.getElementById('leagueManageSeasonInput'),
+    leagueStatus: document.getElementById('leagueManageStatusSelect'),
+    ptsWin: document.getElementById('leagueManagePointsWinInput'),
+    ptsDraw: document.getElementById('leagueManagePointsDrawInput'),
+    ptsLoss: document.getElementById('leagueManagePointsLossInput'),
+    maxTeams: document.getElementById('leagueManageMaxTeamsInput'),
+    lockTeams: document.getElementById('leagueManageLockTeamsInput'),
+    // Sched
+    schedRound: document.getElementById('schedRound'),
+    schedHome: document.getElementById('schedHome'),
+    schedAway: document.getElementById('schedAway'),
+    adminText: document.getElementById('leagueTextarea')
+  },
+  cards: {
+    leagueInfo: document.getElementById('leagueInfoCard'),
+    leagueTeams: document.getElementById('leagueTeamsCard'),
+    teamEditor: document.getElementById('teamEditorCard')
+  },
+  modal: {
+    el: document.getElementById('skillModal'),
+    title: document.getElementById('skillModalTitle'),
+    body: document.getElementById('skillModalBody')
+  },
+  datalist: document.getElementById('skillList')
 };
 
 // ============================================
-// INITIALIZATION & ROUTING
+// UTILITIES & API
 // ============================================
 
-async function init() {
-  const storedKey = localStorage.getItem('bb3_edit_key');
-  if (storedKey) document.getElementById('editKeyInput').value = storedKey;
-  
-  showStatus('Initializing...', 'info');
-  try {
-    state.gameData = await apiGet(PATHS.gameData);
-    state.leagues = await apiGet(PATHS.leaguesIndex) || [];
-    populateSkillList();
-    
-    // Listen for hash changes
-    window.addEventListener('hashchange', handleRouting);
-    
-    // Initial Route
-    handleRouting(); 
-    showStatus('Ready.', 'ok');
-  } catch(e) { 
-    console.error(e); 
-    showStatus("Init Failed: " + e.message, 'error'); 
-  }
+function normalizeName(name) {
+  if (!name) return '';
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
 }
 
-async function handleRouting() {
-  const hash = window.location.hash.substring(1);
-  const parts = hash.split('/'); // e.g. ['league', 'id', 'team', 'id']
-  
-  hideAllSections();
-  stopPolling();
-
-  // DEFAULT: LEAGUE LIST
-  if (!parts[0]) {
-    state.leagues = await apiGet(PATHS.leaguesIndex) || [];
-    renderLeagueList();
-    updateBreadcrumbs(['Home']);
-    document.getElementById('leagueListSection').classList.remove('hidden');
-    return;
-  }
-
-  // LEAGUE ROUTES
-  if (parts[0] === 'league' && parts[1]) {
-    const lId = parts[1];
-    
-    // Load League Data if needed
-    if (!state.currentLeague || state.currentLeague.id !== lId) {
-      showStatus(`Loading league ${lId}...`);
-      state.currentLeague = await apiGet(PATHS.leagueSettings(lId));
-    }
-    
-    // SUB-ROUTE: EDIT TEAM
-    if (parts[2] === 'edit-team' && parts[3]) {
-      const tId = parts[3];
-      if(tId === 'new') state.dirtyData = createEmptyTeam();
-      else state.dirtyData = await apiGet(PATHS.team(lId, tId));
-      
-      renderTeamEditor();
-      updateBreadcrumbs(['Home', state.currentLeague.name, 'Edit Team']);
-      document.getElementById('teamEditorSection').classList.remove('hidden');
-    }
-    // SUB-ROUTE: TEAM VIEW
-    else if (parts[2] === 'team' && parts[3]) {
-      const tId = parts[3];
-      showStatus(`Loading team ${tId}...`);
-      state.currentTeam = await apiGet(PATHS.team(lId, tId));
-      renderTeamView();
-      updateBreadcrumbs(['Home', state.currentLeague.name, state.currentTeam.name], [`#`, `#league/${lId}`, null]);
-      document.getElementById('teamViewSection').classList.remove('hidden');
-      showStatus('Team loaded.', 'ok');
-    } 
-    // DEFAULT: LEAGUE VIEW
-    else {
-      renderLeagueView();
-      updateBreadcrumbs(['Home', state.currentLeague.name], ['#', null]);
-      document.getElementById('leagueViewSection').classList.remove('hidden');
-      showStatus('League loaded.', 'ok');
-    }
-  }
-  
-  // MANAGE LEAGUE ROUTE
-  else if (parts[0] === 'manage-league') {
-    const lId = parts[1];
-    if (lId === 'new') {
-      state.dirtyData = { id: '', name: '', season: 1, status: 'upcoming', settings: { pointsWin:3, pointsDraw:1, pointsLoss:0 }, teams: [], matches: [] };
-      document.getElementById('leagueManageIdInput').value = "Auto-generated";
-    } else {
-      if (!state.currentLeague || state.currentLeague.id !== lId) {
-        state.currentLeague = await apiGet(PATHS.leagueSettings(lId));
-      }
-      state.dirtyData = JSON.parse(JSON.stringify(state.currentLeague));
-      document.getElementById('leagueManageIdInput').value = state.dirtyData.id;
-    }
-    renderLeagueManager();
-    updateBreadcrumbs(['Home', 'Manage League']);
-    document.getElementById('leagueManageSection').classList.remove('hidden');
-  }
-
-  // MATCH ROUTES
-  else if (parts[0] === 'match' && parts[1]) {
-    const mId = parts[1];
-    await loadActiveMatch(mId);
-    
-    // SUB-ROUTE: COACH MODE
-    if (parts[2] === 'coach' && parts[3]) {
-      state.coachSide = parts[3]; // 'home' or 'away'
-      renderCoachView();
-      document.getElementById('coachSection').classList.remove('hidden');
-    } 
-    // DEFAULT: JUMBOTRON
-    else {
-      renderScoreboard();
-      startPolling(mId);
-      document.getElementById('scoreboardSection').classList.remove('hidden');
-    }
-  }
-  
-  // ADMIN SCANNER ROUTE
-  else if (parts[0] === 'admin-tools') {
-    updateBreadcrumbs(['Home', 'Admin Tools']);
-    document.getElementById('adminSection').classList.remove('hidden');
-  }
-}
-
-function hideAllSections() {
-  document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-}
-
-function updateBreadcrumbs(labels, links = []) {
-  const el = document.getElementById('breadcrumbs');
-  if(!el) return;
-  el.innerHTML = labels.map((l, i) => {
-    if (links[i]) return `<span onclick="location.hash='${links[i]}'">${l}</span>`;
-    return l;
-  }).join(' > ');
-}
-
-// ============================================
-// API FUNCTIONS
-// ============================================
-
-function showStatus(msg, type='info') {
-  const el = document.getElementById('globalStatus');
-  if(!el) return;
-  el.textContent = msg;
-  el.className = `status ${type}`;
-  // Auto-hide 'ok' messages after 3s
-  if(type === 'ok') setTimeout(() => { el.textContent=''; el.className='status'; }, 3000);
+function setStatus(msg, type = 'info') {
+  if (!els.globalStatus) return;
+  els.globalStatus.textContent = msg;
+  els.globalStatus.className = `status ${type}`;
 }
 
 async function apiGet(path) {
@@ -211,488 +180,828 @@ async function apiDelete(path, message, key) {
 }
 
 // ============================================
-// LEAGUE VIEWS
+// INITIALIZATION & NAVIGATION
+// ============================================
+
+async function init() {
+  setStatus('Initializing...');
+  const storedKey = localStorage.getItem('bb3_edit_key');
+  if (storedKey && els.inputs.editKey) els.inputs.editKey.value = storedKey;
+
+  try {
+    state.gameData = await apiGet(PATHS.gameData);
+    populateSkillList();
+    const index = await apiGet(PATHS.leaguesIndex);
+    state.leaguesIndex = index || [];
+    renderLeagueList();
+    showSection('list');
+    setStatus('Ready.', 'ok');
+  } catch (e) {
+    console.error(e);
+    setStatus(`Init Failed: ${e.message}`, 'error');
+  }
+}
+
+function showSection(name) {
+  if (state.activeMatchPollInterval) {
+    clearInterval(state.activeMatchPollInterval);
+    state.activeMatchPollInterval = null;
+  }
+  Object.values(els.sections).forEach(el => el.classList.add('hidden'));
+  els.sections[name].classList.remove('hidden');
+  
+  if (name === 'admin') {
+    els.nav.league.classList.remove('active');
+    els.nav.admin.classList.add('active');
+  } else {
+    els.nav.league.classList.add('active');
+    els.nav.admin.classList.remove('active');
+  }
+}
+
+function populateSkillList() {
+  if (!state.gameData?.skillCategories) return;
+  const list = els.datalist;
+  list.innerHTML = '';
+  Object.values(state.gameData.skillCategories).flat().forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = (typeof s === 'object' && s.name) ? s.name : s; 
+    list.appendChild(opt);
+  });
+}
+
+// Nav Listeners
+els.nav.league.addEventListener('click', () => { showSection('list'); renderLeagueList(); });
+els.nav.admin.addEventListener('click', () => showSection('admin'));
+if(els.buttons.rememberKey) {
+  els.buttons.rememberKey.addEventListener('click', () => {
+    const k = els.inputs.editKey.value;
+    if(k) { localStorage.setItem('bb3_edit_key', k); setStatus('Key saved.', 'ok'); }
+  });
+}
+
+// ============================================
+// LEAGUE VIEWS & LOGIC
 // ============================================
 
 function renderLeagueList() {
-  const container = document.getElementById('leagueListContainer');
-  if (!state.leagues.length) {
-    container.innerHTML = `<div style="padding:1rem; color:#666;">No leagues found. Create one!</div>`;
+  if (!state.leaguesIndex.length) {
+    els.containers.leagueList.innerHTML = `<div class="small">No leagues found. Create one to get started.</div>`;
     return;
   }
-  container.innerHTML = state.leagues.map(l => `
-    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <div style="font-weight:bold; font-size:1.1rem; color:var(--primary-red)">${l.name}</div>
-        <div style="font-size:0.85rem; color:#666;">Season ${l.season} • ${l.status}</div>
+  els.containers.leagueList.innerHTML = state.leaguesIndex.map(l => `
+    <div class="league-card">
+      <div class="league-card-main">
+        <div class="league-card-title">${l.name}</div>
+        <div class="league-meta">
+          <span class="tag ${l.status === 'active' ? 'in_progress' : 'scheduled'}">${l.status}</span>
+          Season ${l.season} • ID: ${l.id}
+        </div>
       </div>
-      <div style="display:flex; gap:0.5rem">
-        <button class="primary-btn" onclick="location.hash='#league/${l.id}'">Open</button>
-        <button class="secondary-btn" onclick="location.hash='#manage-league/${l.id}'">Manage</button>
+      <div>
+        <button class="link-button" onclick="handleOpenLeague('${l.id}')">Open</button>
+        &nbsp;|&nbsp;
+        <button class="link-button" onclick="handleManageLeague('${l.id}')">Manage</button>
       </div>
     </div>
   `).join('');
-  
-  // Also add Admin Tools button to the list view
-  const adminDiv = document.createElement('div');
-  adminDiv.style.marginTop = '2rem';
-  adminDiv.innerHTML = `<button class="secondary-btn" onclick="location.hash='#admin-tools'">🔧 Admin Tools (Scanner)</button>`;
-  container.appendChild(adminDiv);
-  
-  document.getElementById('leagueCreateBtn').onclick = () => location.hash = '#manage-league/new';
 }
+
+window.handleOpenLeague = async (id) => {
+  setStatus(`Loading league ${id}...`);
+  try {
+    const settings = await apiGet(PATHS.leagueSettings(id));
+    if (!settings) throw new Error("League settings file not found.");
+    state.currentLeague = settings;
+    state.viewLeagueId = id;
+    renderLeagueView();
+    showSection('view');
+    setStatus('League loaded.', 'ok');
+  } catch (e) { setStatus(e.message, 'error'); }
+};
 
 function renderLeagueView() {
   const l = state.currentLeague;
-  document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div style="color:#666">Season ${l.season} (${l.status})</div>`;
+  document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
   
-  // Standings Calculation
-  const teamsMap = new Map();
-  l.teams.forEach(t => teamsMap.set(t.id, { ...t, w:0, d:0, l:0, pts:0 }));
-  (l.matches||[]).filter(m => m.status === 'completed').forEach(m => {
-    const h = teamsMap.get(m.homeTeamId); const a = teamsMap.get(m.awayTeamId);
-    if (!h || !a) return;
-    if (m.score.home > m.score.away) { h.w++; a.l++; h.pts += l.settings.pointsWin; a.pts += l.settings.pointsLoss; }
-    else if (m.score.home < m.score.away) { a.w++; h.l++; a.pts += l.settings.pointsWin; h.pts += l.settings.pointsLoss; }
-    else { h.d++; a.d++; h.pts += l.settings.pointsDraw; a.pts += l.settings.pointsDraw; }
-  });
-  
-  const sorted = Array.from(teamsMap.values()).sort((a,b) => b.pts - a.pts);
-  document.getElementById('standingsContainer').innerHTML = `<table><thead><tr><th>#</th><th>Team</th><th>W-D-L</th><th>Pts</th></tr></thead><tbody>
-    ${sorted.map((t, i) => `<tr><td>${i+1}</td><td><a href="#league/${l.id}/team/${t.id}" style="color:var(--text-main); font-weight:bold; text-decoration:none">${t.name}</a></td><td>${t.w}-${t.d}-${t.l}</td><td style="font-weight:bold">${t.pts}</td></tr>`).join('')}
+  // Standings
+  const standings = computeStandings(l);
+  els.containers.standings.innerHTML = `<table><thead><tr><th>#</th><th>Team</th><th>W-D-L</th><th>Pts</th><th>Diff</th></tr></thead><tbody>
+    ${standings.map((s, i) => `<tr><td>${i+1}</td><td><button class="team-link" onclick="handleOpenTeam('${l.id}', '${s.teamId}')">${s.name}</button></td><td>${s.wins}-${s.draws}-${s.losses}</td><td>${s.points}</td><td>${s.tdDiff}/${s.casDiff}</td></tr>`).join('')}
   </tbody></table>`;
-
-  // Roster Quick View
-  document.getElementById('rosterQuickViewContainer').innerHTML = `<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:0.5rem; margin-top:0.5rem">
-    ${l.teams.map(t => `<button class="secondary-btn" onclick="location.hash='#league/${l.id}/team/${t.id}'">${t.name}</button>`).join('')}
-  </div>`;
-
-  // Scheduling Dropdowns
-  const schedOpts = l.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-  document.getElementById('schedHome').innerHTML = `<option value="">Home...</option>${schedOpts}`;
-  document.getElementById('schedAway').innerHTML = `<option value="">Away...</option>${schedOpts}`;
   
-  // Matches List
-  const matches = (l.matches||[]);
-  document.getElementById('inProgressContainer').innerHTML = matches.filter(m => m.status === 'in_progress')
-    .map(m => `<button class="primary-btn full-width" onclick="location.hash='#match/${m.id}'" style="background:var(--primary-red)">🔴 LIVE: ${getTeamName(m.homeTeamId)} vs ${getTeamName(m.awayTeamId)}</button>`).join('');
-    
-  document.getElementById('matchesContainer').innerHTML = matches.filter(m => m.status !== 'in_progress').sort((a,b) => a.round - b.round)
-    .map(m => {
-      const label = `Rd ${m.round}: ${getTeamName(m.homeTeamId)} vs ${getTeamName(m.awayTeamId)}`;
-      if (m.status === 'completed') return `<div class="card" style="padding:0.5rem; font-size:0.9rem; background:#eee">${label} <strong>(${m.score.home}-${m.score.away})</strong></div>`;
-      return `<div class="card" style="padding:0.5rem; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:0.9rem">${label}</span> <button class="primary-btn" style="padding:0.2rem 0.5rem; font-size:0.8rem" onclick="setupMatch('${m.id}')">Start</button>
-      </div>`;
-    }).join('');
+  // Quick Roster Tiles
+  if (els.containers.rosterQuick) {
+    els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
+      ${l.teams.map(t => `<div class="roster-tile"><div class="roster-tile-title"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div><div class="roster-tile-meta">${t.race} | ${t.coachName}</div></div>`).join('')}
+    </div>`;
+  }
 
-  // Admin Tab Button
-  document.getElementById('leagueManageBtn').onclick = () => location.hash = `#manage-league/${l.id}`;
+  // Populate Schedule Dropdowns
+  const homeSel = els.inputs.schedHome;
+  const awaySel = els.inputs.schedAway;
+  homeSel.innerHTML = '<option value="">Home Team...</option>';
+  awaySel.innerHTML = '<option value="">Away Team...</option>';
+  l.teams.forEach(t => {
+    const opt = `<option value="${t.id}">${t.name}</option>`;
+    homeSel.innerHTML += opt;
+    awaySel.innerHTML += opt;
+  });
 
-  // Schedule Add Handler
-  document.getElementById('schedAddBtn').onclick = async () => {
-    const r = parseInt(document.getElementById('schedRound').value);
-    const h = document.getElementById('schedHome').value;
-    const a = document.getElementById('schedAway').value;
-    if(!h || !a || h === a) return alert("Invalid selection");
-    
-    l.matches = l.matches || [];
-    l.matches.push({ id: `match_${Date.now()}`, round: r, homeTeamId: h, awayTeamId: a, status: 'scheduled' });
-    const key = document.getElementById('editKeyInput').value;
-    await apiSave(PATHS.leagueSettings(l.id), l, "Add match", key);
-    renderLeagueView();
-  };
+  renderMatchesList(l);
+}
+
+function renderMatchesList(league) {
+  if(!league.matches || !league.matches.length) {
+    els.containers.matches.innerHTML = '<div class="small">No matches scheduled.</div>';
+    return;
+  }
+  
+  const active = league.matches.filter(m => m.status === 'in_progress');
+  const others = league.matches.filter(m => m.status !== 'in_progress').sort((a,b) => a.round - b.round);
+
+  let inProgHtml = '';
+  if (active.length > 0) {
+    inProgHtml = '<div class="card"><h4 style="color:#0066cc">Live Matches</h4><ul>' + 
+      active.map(m => {
+        const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
+        const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
+        return `<li>Round ${m.round}: ${h} vs ${a} <button class="link-button" onclick="handleOpenScoreboard('${m.id}')"><strong>View Board</strong></button></li>`;
+      }).join('') + 
+    '</ul></div>';
+  }
+  els.containers.inProgress.innerHTML = inProgHtml;
+
+  const rows = others.map(m => {
+    const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
+    const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
+    const score = m.status === 'completed' ? `${m.score.home}-${m.score.away}` : '';
+    let action = m.status;
+    if (m.status === 'scheduled') action = `<button class="link-button" onclick="handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
+    return `<tr><td>${m.round}</td><td>${h}</td><td>${a}</td><td>${score}</td><td>${action}</td></tr>`;
+  }).join('');
+  
+  els.containers.matches.innerHTML = `<table><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
+}
+
+function computeStandings(league) {
+  const map = new Map();
+  league.teams.forEach(t => map.set(t.id, { ...t, wins:0, draws:0, losses:0, points:0, tdDiff:0, casDiff:0 }));
+  (league.matches||[]).filter(m => m.status === 'completed').forEach(m => {
+    const h = map.get(m.homeTeamId);
+    const a = map.get(m.awayTeamId);
+    if(!h || !a) return;
+    const hf = m.score?.home || 0;
+    const af = m.score?.away || 0;
+    const hCas = m.casualties?.homeInflicted || 0;
+    const aCas = m.casualties?.awayInflicted || 0;
+    h.tdDiff += (hf - af); a.tdDiff += (af - hf);
+    h.casDiff += (hCas - aCas); a.casDiff += (aCas - hCas);
+    if (hf > af) { h.wins++; a.losses++; h.points += (league.settings.pointsWin||3); a.points += (league.settings.pointsLoss||0); }
+    else if (hf < af) { a.wins++; h.losses++; a.points += (league.settings.pointsWin||3); h.points += (league.settings.pointsLoss||0); }
+    else { h.draws++; a.draws++; h.points += (league.settings.pointsDraw||1); a.points += (league.settings.pointsDraw||1); }
+  });
+  return Array.from(map.values()).sort((a,b) => b.points - a.points);
 }
 
 // ============================================
-// TEAM VIEWS & EDITOR
+// MATCH SCHEDULING & STARTING
 // ============================================
 
-function renderTeamView() {
-  const t = state.currentTeam;
-  const tv = calculateTV(t);
-  document.getElementById('teamHeaderName').innerText = t.name;
-  document.getElementById('teamTVBadge').innerText = `TV: ${Math.floor(tv/1000)}k`;
-  document.getElementById('teamSummary').innerHTML = `Race: ${t.race} | Coach: ${t.coachName} | Treasury: ${t.treasury||0}k | Rerolls: ${t.rerolls||0}`;
+els.buttons.schedAdd.addEventListener('click', async () => {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
   
-  document.getElementById('teamRosterContainer').innerHTML = `<table>
-    <thead><tr><th>#</th><th>Name</th><th>Pos</th><th>Stats</th><th>Skills</th><th>SPP</th></tr></thead>
-    <tbody>${t.players.map(p => `
-      <tr>
-        <td>${p.number}</td>
-        <td style="font-weight:bold">${p.name}</td>
-        <td style="font-size:0.8rem; color:#666">${p.position}</td>
-        <td><span class="${getStatClass('ma', p.ma)}">${p.ma}</span>-<span class="${getStatClass('st', p.st)}">${p.st}</span>-<span class="${getStatClass('ag', p.ag)}">${p.ag}+</span>-<span class="${getStatClass('av', p.av)}">${p.av}+</span></td>
-        <td>${p.skills.map(s => `<span class="skill-pill ${getSkillClass(s)}" onclick="showSkill('${s}')">${s}</span>`).join('')}</td>
-        <td>${p.spp}</td>
-      </tr>`).join('')}</tbody></table>`;
-      
-  document.getElementById('teamEditBtn').onclick = () => location.hash = `#league/${state.currentLeague.id}/edit-team/${t.id}`;
-}
-
-function renderTeamEditor() {
-  const t = state.dirtyData;
-  const tv = calculateTV(t);
-  document.getElementById('teamEditName').value = t.name;
-  document.getElementById('teamEditCoach').value = t.coachName;
-  document.getElementById('teamEditRerolls').value = t.rerolls || 0;
-  document.getElementById('teamEditTreasury').value = t.treasury || 0;
-  document.getElementById('teamEditTVBar').innerText = `Current TV: ${Math.floor(tv/1000)}k`;
-  
-  const raceOpts = state.gameData.races.map(r => `<option value="${r.name}">${r.name}</option>`).join('');
-  document.getElementById('teamEditRace').innerHTML = raceOpts;
-  document.getElementById('teamEditRace').value = t.race;
-
-  document.getElementById('teamEditorRosterBody').innerHTML = t.players.map((p, i) => `
-    <tr>
-      <td><input type="number" style="width:30px" value="${p.number}" onchange="updatePlayer(${i}, 'number', this.value)"></td>
-      <td><input value="${p.name}" onchange="updatePlayer(${i}, 'name', this.value)"></td>
-      <td><span style="font-size:0.8rem">${p.position}</span></td>
-      <td style="font-size:0.8rem">${p.ma}-${p.st}-${p.ag}+-${p.av}+</td>
-      <td>${p.skills.map((s, si) => `<span class="skill-pill ${getSkillClass(s)}">${s} <span onclick="removeSkill(${i}, ${si})" style="color:red;cursor:pointer">×</span></span>`).join('')} 
-          <button style="font-size:0.7rem; padding:0 4px" onclick="addSkillPrompt(${i})">+</button></td>
-      <td><input type="number" style="width:40px" value="${p.spp}" onchange="updatePlayer(${i}, 'spp', this.value)"></td>
-      <td><button onclick="deletePlayer(${i})" style="color:red;border:none;background:none;font-weight:bold">×</button></td>
-    </tr>
-  `).join('');
-  
-  // Bind Inputs
-  document.getElementById('teamEditName').onchange = (e) => t.name = e.target.value;
-  document.getElementById('teamEditRerolls').onchange = (e) => { t.rerolls = parseInt(e.target.value); renderTeamEditor(); };
-  document.getElementById('teamEditTreasury').onchange = (e) => t.treasury = parseInt(e.target.value);
-  
-  // Save Action
-  document.getElementById('teamSaveBtn').onclick = async () => {
-    const key = document.getElementById('editKeyInput').value;
-    if(!key) return showStatus("Edit key required", 'error');
-    
-    if(!t.id) t.id = normalizeName(t.name);
-    
-    // Check if new team
-    if(state.currentLeague && !state.currentLeague.teams.find(x => x.id === t.id)) {
-      state.currentLeague.teams.push({ id: t.id, name: t.name, race: t.race, coachName: t.coachName });
-      await apiSave(PATHS.leagueSettings(state.currentLeague.id), state.currentLeague, "Add team", key);
-    }
-    
-    await apiSave(PATHS.team(state.currentLeague.id, t.id), t, "Update Team", key);
-    showStatus("Team Saved", 'ok');
-    window.history.back();
-  };
-  
-  // Delete Action
-  document.getElementById('teamDeleteBtn').onclick = () => {
-    safeDelete(t.name, async () => {
-      const key = document.getElementById('editKeyInput').value;
-      await apiDelete(PATHS.team(state.currentLeague.id, t.id), "Delete Team", key);
-      
-      const idx = state.currentLeague.teams.findIndex(x => x.id === t.id);
-      if (idx !== -1) {
-        state.currentLeague.teams.splice(idx, 1);
-        await apiSave(PATHS.leagueSettings(state.currentLeague.id), state.currentLeague, "Remove team from league", key);
-      }
-      location.hash = `#league/${state.currentLeague.id}`;
-    });
-  };
-}
-
-// ============================================
-// MATCH SETUP & PLAY
-// ============================================
-
-window.setupMatch = async (matchId) => {
   const l = state.currentLeague;
-  const m = l.matches.find(x => x.id === matchId);
-  if(!m) return;
+  const round = parseInt(els.inputs.schedRound.value);
+  const homeId = els.inputs.schedHome.value;
+  const awayId = els.inputs.schedAway.value;
   
-  showStatus("Setting up match...");
+  if (!homeId || !awayId || homeId === awayId) return alert("Invalid team selection");
+  
+  setStatus('Scheduling match...');
   try {
-    const home = await apiGet(PATHS.team(l.id, m.homeTeamId));
-    const away = await apiGet(PATHS.team(l.id, m.awayTeamId));
-    
-    // Check for existing active match
-    const existing = await apiGet(PATHS.activeMatch(matchId));
-    if (existing) { location.hash = `#match/${matchId}`; return; }
-    
-    // Pre-Match Screen
-    const hTV = calculateTV(home);
-    const aTV = calculateTV(away);
-    const diff = hTV - aTV;
-    
-    document.getElementById('pmHomeName').innerText = home.name;
-    document.getElementById('pmAwayName').innerText = away.name;
-    document.getElementById('pmHomeTV').innerText = `TV ${Math.floor(hTV/1000)}k`;
-    document.getElementById('pmAwayTV').innerText = `TV ${Math.floor(aTV/1000)}k`;
-    
-    const txt = document.getElementById('pmInducementText');
-    if (diff < 0) txt.innerText = `${home.name} receives ${Math.floor(Math.abs(diff)/1000)}k petty cash.`;
-    else if (diff > 0) txt.innerText = `${away.name} receives ${Math.floor(diff/1000)}k petty cash.`;
-    else txt.innerText = "Teams are even.";
+    const matchId = `match_${Date.now()}`;
+    const newMatch = { id: matchId, round: round, homeTeamId: homeId, awayTeamId: awayId, status: 'scheduled', date: new Date().toISOString().split('T')[0] };
+    l.matches = l.matches || [];
+    l.matches.push(newMatch);
+    await apiSave(PATHS.leagueSettings(l.id), l, `Schedule match ${homeId} vs ${awayId}`, key);
+    renderLeagueView();
+    setStatus('Match scheduled.', 'ok');
+  } catch(e) { setStatus(e.message, 'error'); }
+});
 
-    document.getElementById('preMatchSection').classList.remove('hidden');
-    document.getElementById('leagueViewSection').classList.add('hidden');
+window.handleStartMatch = async (matchId) => {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  if(!confirm("Start this match?")) return;
+  
+  setStatus('Initializing live match...');
+  try {
+    const l = state.currentLeague;
+    const matchIdx = l.matches.findIndex(m => m.id === matchId);
+    if(matchIdx === -1) throw new Error("Match not found");
+    const m = l.matches[matchIdx];
     
-    document.getElementById('pmStartBtn').onclick = async () => {
-       await createActiveMatch(m, home, away);
-       location.hash = `#match/${matchId}`;
-    };
-    showStatus("Ready.", 'ok');
-  } catch(e) { showStatus(e.message, 'error'); }
-};
-
-async function createActiveMatch(match, homeTeam, awayTeam) {
-    const key = document.getElementById('editKeyInput').value;
-    if (!key) return showStatus("Edit key required", 'error');
-
+    const homeTeam = await apiGet(PATHS.team(l.id, m.homeTeamId));
+    const awayTeam = await apiGet(PATHS.team(l.id, m.awayTeamId));
+    if(!homeTeam || !awayTeam) throw new Error("Could not load team files.");
+    
+    // Initialize Live Data (Rerolls, Apothecary)
     const initRoster = (players) => (players||[]).map(p => ({
-        ...p, live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, mvp: false }
+        ...p,
+        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
     }));
 
     const activeData = {
-      matchId: match.id, leagueId: state.currentLeague.id, round: match.round, status: 'in_progress',
-      home: { id: homeTeam.id, name: homeTeam.name, score: 0, roster: initRoster(homeTeam.players), rerolls: homeTeam.rerolls || 0 },
-      away: { id: awayTeam.id, name: awayTeam.name, score: 0, roster: initRoster(awayTeam.players), rerolls: awayTeam.rerolls || 0 },
-      turn: { home: 0, away: 0 }, log: []
+      matchId: m.id,
+      leagueId: l.id,
+      round: m.round,
+      status: 'in_progress',
+      home: { 
+        id: homeTeam.id, name: homeTeam.name, score: 0, roster: initRoster(homeTeam.players),
+        rerolls: homeTeam.rerolls || 0, apothecary: true 
+      },
+      away: { 
+        id: awayTeam.id, name: awayTeam.name, score: 0, roster: initRoster(awayTeam.players),
+        rerolls: awayTeam.rerolls || 0, apothecary: true
+      },
+      turn: { home: 0, away: 0 },
+      log: []
     };
     
-    await apiSave(PATHS.activeMatch(match.id), activeData, `Start match ${match.id}`, key);
+    await apiSave(PATHS.activeMatch(m.id), activeData, `Start match ${m.id}`, key);
     
-    const l = state.currentLeague;
-    const mIdx = l.matches.findIndex(x => x.id === match.id);
-    if(mIdx !== -1) l.matches[mIdx].status = 'in_progress';
-    await apiSave(PATHS.leagueSettings(l.id), l, `Set match ${match.id} in_progress`, key);
+    m.status = 'in_progress';
+    await apiSave(PATHS.leagueSettings(l.id), l, `Set match ${m.id} to in_progress`, key);
     
-    state.activeMatch = activeData;
-}
+    handleOpenScoreboard(m.id);
+    setStatus('Match started!', 'ok');
+  } catch(e) { setStatus(e.message, 'error'); }
+};
 
 // ============================================
-// LIVE MATCH (SCOREBOARD & COACH)
+// MATCH ENGINE: JUMBOTRON & COACH
 // ============================================
 
-async function loadActiveMatch(mid) {
-  showStatus("Syncing match data...");
-  state.activeMatch = await apiGet(PATHS.activeMatch(mid));
-  if (!state.activeMatch) throw new Error("Match not found");
-  showStatus("Synced.", 'ok');
+window.handleOpenScoreboard = async (matchId) => {
+  setStatus('Loading live match...');
+  try {
+    const data = await apiGet(PATHS.activeMatch(matchId));
+    if (!data) throw new Error("Active match file not found.");
+    state.activeMatchData = data;
+    renderJumbotron();
+    showSection('scoreboard');
+    
+    // Auto-refresh for Spectators
+    if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
+    state.activeMatchPollInterval = setInterval(async () => {
+        try {
+            const fresh = await apiGet(PATHS.activeMatch(matchId));
+            if (fresh) {
+                state.activeMatchData = fresh;
+                renderJumbotron();
+            }
+        } catch(e) { console.warn("Poll failed", e); }
+    }, 5000); 
+    setStatus('Live connection active.', 'ok');
+  } catch (e) { setStatus(e.message, 'error'); }
+};
+
+// ---- Jumbotron Renderer ----
+function renderJumbotron() {
+  const d = state.activeMatchData;
+  els.containers.sbHomeName.textContent = d.home.name;
+  els.containers.sbAwayName.textContent = d.away.name;
+  els.containers.sbHomeScore.textContent = d.home.score;
+  els.containers.sbAwayScore.textContent = d.away.score;
+  els.containers.sbHomeTurn.textContent = d.turn.home;
+  els.containers.sbAwayTurn.textContent = d.turn.away;
+
+  // Read-only Rosters
+  els.containers.sbHomeRoster.innerHTML = renderLiveRoster(d.home.roster, 'home', true);
+  els.containers.sbAwayRoster.innerHTML = renderLiveRoster(d.away.roster, 'away', true);
 }
 
-function renderScoreboard() {
-  const d = state.activeMatch;
-  if(!d) return;
-  document.getElementById('sbHomeName').textContent = d.home.name;
-  document.getElementById('sbAwayName').textContent = d.away.name;
-  document.getElementById('sbHomeScore').textContent = d.home.score;
-  document.getElementById('sbAwayScore').textContent = d.away.score;
-  document.getElementById('sbTurn').textContent = `${d.turn.home} - ${d.turn.away}`;
+// ---- Coach Mode Logic ----
+window.enterCoachMode = (side) => {
+  state.coachSide = side; // 'home' or 'away'
+  renderCoachView();
+  showSection('coach');
+  // NOTE: We do NOT poll in coach mode to avoid overwriting local changes before save
+  if (state.activeMatchPollInterval) {
+    clearInterval(state.activeMatchPollInterval);
+    state.activeMatchPollInterval = null;
+  }
+};
 
-  const renderSimpleRoster = (roster) => roster.map(p => `
-    <div style="font-size:0.8rem; padding:4px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; ${p.live.used?'opacity:0.5':''} ${p.live.injured?'background:#fee;color:red':''}">
-        <span>#${p.number} ${p.name}</span>
-        <span>${p.position}</span>
-    </div>
-  `).join('');
-  
-  document.getElementById('sbHomeRoster').innerHTML = renderSimpleRoster(d.home.roster);
-  document.getElementById('sbAwayRoster').innerHTML = renderSimpleRoster(d.away.roster);
-  
-  // Refresh Handler
-  document.getElementById('sbRefreshBtn').onclick = () => loadActiveMatch(d.matchId).then(renderScoreboard);
-  
-  // End Game Handler
-  document.getElementById('endGameBtn').onclick = async () => {
-    if(!confirm("End Game? This will save results and delete the live match.")) return;
-    const key = document.getElementById('editKeyInput').value;
-    const l = await apiGet(PATHS.leagueSettings(d.leagueId));
-    const m = l.matches.find(x => x.id === d.matchId);
-    if(m) {
-      m.status = 'completed';
-      m.score = { home: d.home.score, away: d.away.score };
-    }
-    await apiSave(PATHS.leagueSettings(d.leagueId), l, `End match ${d.matchId}`, key);
-    await apiDelete(PATHS.activeMatch(d.matchId), "Clean up match", key);
-    location.hash = `#league/${d.leagueId}`;
-  };
-}
+window.exitCoachMode = () => {
+  handleOpenScoreboard(state.activeMatchData.matchId); // Go back to Jumbotron
+};
 
 function renderCoachView() {
+  const d = state.activeMatchData;
   const side = state.coachSide;
-  const team = state.activeMatch[side];
-  const opp = state.activeMatch[side === 'home' ? 'away' : 'home'];
-  
-  document.getElementById('coachTeamName').innerText = team.name;
-  document.getElementById('coachScoreDisplay').innerText = `${team.score} - ${opp.score}`;
-  document.getElementById('coachTurnDisplay').innerText = state.activeMatch.turn[side];
-  
-  // Rerolls
-  let pips = '';
-  for(let i=0; i<team.rerolls; i++) pips += `<span class="pip active" onclick="useReroll()"></span>`;
-  document.getElementById('coachRerolls').innerHTML = pips || '<span style="font-size:0.8rem">None</span>';
-  
-  // Cards
-  document.getElementById('coachRosterList').innerHTML = team.roster.map((p, idx) => {
-    const live = p.live || {};
-    let badges = '';
-    if(live.td) badges += `<span class="badge">TD:${live.td}</span>`;
-    if(live.cas) badges += `<span class="badge">CAS:${live.cas}</span>`;
-    if(live.int) badges += `<span class="badge">INT:${live.int}</span>`;
-    
-    let classes = 'coach-card';
-    if(live.used) classes += ' used';
-    if(live.injured || live.sentOff) classes += ' injured';
+  const team = d[side];
+  const oppSide = side === 'home' ? 'away' : 'home';
+  const oppTeam = d[oppSide];
 
+  // Header
+  els.containers.coachTeamName.textContent = team.name;
+  els.containers.coachScore.textContent = `${team.score} - ${oppTeam.score}`;
+  els.containers.coachTurn.textContent = d.turn[side];
+
+  // Rerolls (Interactive Pips)
+  let pips = '';
+  for(let i=0; i<team.rerolls; i++) {
+    pips += `<div class="reroll-pip ${i < (team.rerolls) ? 'active' : ''}" onclick="toggleReroll('${side}', ${i})"></div>`;
+  }
+  els.containers.coachRerolls.innerHTML = pips;
+
+  // Main Roster
+  els.containers.coachRoster.innerHTML = renderLiveRoster(team.roster, side, false);
+}
+
+function renderLiveRoster(roster, side, readOnly) {
+  return roster.map((p, idx) => {
+    const live = p.live || {};
+    const usedClass = live.used ? 'used' : '';
+    const injClass = live.injured ? 'injured' : '';
+    
+    let badges = '';
+    if(live.td > 0) badges += `<span class="stat-badge">TD:${live.td}</span>`;
+    if(live.cas > 0) badges += `<span class="stat-badge">CAS:${live.cas}</span>`;
+    if(live.int > 0) badges += `<span class="stat-badge">INT:${live.int}</span>`;
+    if(live.sentOff) badges += `<span class="stat-badge" style="background:#faa">Off</span>`;
+
+    const skillTags = (p.skills || []).map(s => 
+      `<span class="skill-tag" onclick="event.stopPropagation(); showSkill('${s}')">${s}</span>`
+    ).join(' ');
+
+    if (readOnly) {
+        return `
+          <div class="live-player-row ${usedClass} ${injClass}">
+            <div class="player-info">
+              <span class="player-name">#${p.number} ${p.name} ${badges}</span>
+              <span class="player-pos">${p.position} | ${skillTags}</span>
+            </div>
+          </div>`;
+    }
+
+    // Interactive Row
     return `
-      <div class="${classes}" onclick="openActionSheet(${idx})">
-        <div class="coach-card-top">
-          <span class="player-name">#${p.number} ${p.name}</span>
-          <span class="player-pos">${p.position}</span>
+      <div class="live-player-row ${usedClass} ${injClass}" onclick="togglePlayerStatus('${side}', ${idx}, 'used')">
+        <div class="player-info">
+          <span class="player-name">#${p.number} ${p.name} ${badges}</span>
+          <span class="player-pos">${p.position} | ${skillTags}</span>
         </div>
-        <div style="font-size:0.85rem; color:#444;">${p.skills.join(', ')}</div>
-        <div class="card-badges">${badges}</div>
+        <div class="player-actions" onclick="event.stopPropagation()">
+          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'td')">TD</button>
+          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'cas')">CAS</button>
+          <button class="action-btn-large" onclick="togglePlayerStatus('${side}', ${idx}, 'injured')" style="color:red">Inj</button>
+        </div>
       </div>
     `;
   }).join('');
 }
 
-// Coach Actions
-window.openActionSheet = (idx) => {
-  state.selectedPlayerIdx = idx;
-  const p = state.activeMatch[state.coachSide].roster[idx];
-  document.getElementById('actionSheetTitle').innerText = `#${p.number} ${p.name}`;
-  document.getElementById('actionSheet').classList.remove('hidden');
-};
+// ---- Live Actions ----
 
-window.doAction = async (type) => {
-  const p = state.activeMatch[state.coachSide].roster[state.selectedPlayerIdx];
+async function updateLiveMatch(actionDesc) {
+  const key = els.inputs.editKey.value;
+  if(!key) return setStatus("Edit Key needed.", "error");
+  try {
+    await apiSave(PATHS.activeMatch(state.activeMatchData.matchId), state.activeMatchData, actionDesc, key);
+  } catch(e) { console.error(e); setStatus("Sync failed!", "error"); }
+}
+
+window.togglePlayerStatus = (side, idx, type) => {
+  const p = state.activeMatchData[side].roster[idx];
   p.live = p.live || {};
   
-  if (type === 'td') { p.live.td = (p.live.td||0)+1; state.activeMatch[state.coachSide].score++; }
-  else if (type === 'cas') p.live.cas = (p.live.cas||0)+1;
-  else if (type === 'int') p.live.int = (p.live.int||0)+1;
-  else if (type === 'inj') p.live.injured = !p.live.injured;
-  else if (type === 'sentOff') p.live.sentOff = !p.live.sentOff;
-
-  p.live.used = true;
+  if (type === 'used') p.live.used = !p.live.used;
+  else if (type === 'injured') p.live.injured = !p.live.injured;
+  else if (type === 'td') {
+    p.live.td++;
+    state.activeMatchData[side].score++;
+  }
+  else if (type === 'cas') p.live.cas++;
+  
   renderCoachView();
-  closeActionSheet();
-  await saveMatchState(`Player ${p.number} ${type}`);
+  updateLiveMatch(`Update ${p.name} ${type}`);
 };
 
-window.useReroll = async () => {
-  if (state.activeMatch[state.coachSide].rerolls > 0) {
-    state.activeMatch[state.coachSide].rerolls--;
-    renderCoachView();
-    await saveMatchState("Used Reroll");
+window.toggleReroll = (side, idx) => {
+  const team = state.activeMatchData[side];
+  if (team.rerolls > 0) {
+      team.rerolls--;
+      renderCoachView();
+      updateLiveMatch(`${side} used Reroll`);
   }
 };
 
-document.getElementById('coachEndTurnBtn').onclick = async () => {
-  const side = state.coachSide;
-  state.activeMatch[side].roster.forEach(p => { if(p.live) p.live.used = false; });
-  state.activeMatch.turn[side]++;
-  renderCoachView();
-  await saveMatchState(`End Turn ${side}`);
+if(els.buttons.coachEndTurn) {
+  els.buttons.coachEndTurn.addEventListener('click', async () => {
+    const side = state.coachSide;
+    const d = state.activeMatchData;
+    d[side].roster.forEach(p => { if(p.live) p.live.used = false; });
+    d.turn[side]++;
+    renderCoachView();
+    await updateLiveMatch(`End Turn: ${side}`);
+    setStatus("Turn ended. Status synced.", "ok");
+  });
+}
+
+// ---- Admin Match End/Cancel ----
+
+els.buttons.cancelGame.addEventListener('click', async () => {
+  if(!confirm("Cancel match?")) return;
+  const key = els.inputs.editKey.value;
+  try {
+    const mId = state.activeMatchData.matchId;
+    const lId = state.activeMatchData.leagueId;
+    await apiDelete(PATHS.activeMatch(mId), `Cancel ${mId}`, key);
+    const l = await apiGet(PATHS.leagueSettings(lId));
+    const m = l.matches.find(x => x.id === mId);
+    if(m) m.status = 'scheduled';
+    await apiSave(PATHS.leagueSettings(lId), l, `Revert ${mId}`, key);
+    handleOpenLeague(lId);
+  } catch(e) { setStatus(e.message, 'error'); }
+});
+
+els.buttons.endGame.addEventListener('click', async () => {
+  if(!confirm("End game? Saves results.")) return;
+  const key = els.inputs.editKey.value;
+  try {
+    const d = state.activeMatchData;
+    const l = await apiGet(PATHS.leagueSettings(d.leagueId));
+    const m = l.matches.find(x => x.id === d.matchId);
+    if(m) {
+      m.status = 'completed';
+      m.score = { home: d.home.score, away: d.away.score };
+      m.casualties = { 
+        homeInflicted: d.home.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0),
+        awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
+      };
+    }
+    await apiSave(PATHS.leagueSettings(d.leagueId), l, `Complete ${d.matchId}`, key);
+    await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
+    handleOpenLeague(d.leagueId);
+  } catch(e) { setStatus(e.message, 'error'); }
+});
+
+els.buttons.sbBack.addEventListener('click', () => {
+  if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
+  showSection('view');
+  if (state.viewLeagueId) handleOpenLeague(state.viewLeagueId);
+});
+els.buttons.sbRefresh.addEventListener('click', () => handleOpenScoreboard(state.activeMatchData.matchId));
+
+// ============================================
+// SKILL MODAL
+// ============================================
+
+window.showSkill = (skillName) => {
+  const cleanName = skillName.replace(/\(\+.*\)/, '').trim(); 
+  let desc = "No description available.";
+  if (state.gameData?.skillCategories) {
+    for (const cat in state.gameData.skillCategories) {
+      const found = state.gameData.skillCategories[cat].find(s => s.name.startsWith(cleanName));
+      if (found) { desc = found.description; break; }
+    }
+  } else if (state.gameData?.Traits) {
+      const found = state.gameData.Traits.find(s => s.name.startsWith(cleanName));
+      if (found) desc = found.description;
+  }
+  
+  els.modal.title.textContent = skillName;
+  els.modal.body.textContent = desc;
+  els.modal.el.classList.remove('hidden');
 };
 
-async function saveMatchState(msg) {
-  showToast("Saving...");
-  try {
-    const key = document.getElementById('editKeyInput').value;
-    await apiSave(PATHS.activeMatch(state.activeMatch.matchId), state.activeMatch, msg, key);
-    showToast("Saved!", 1000);
-  } catch(e) { showToast("Save Failed!"); }
+window.closeSkillModal = () => els.modal.el.classList.add('hidden');
+
+// ============================================
+// MANAGEMENT (Teams, Players, Orphans)
+// ============================================
+
+window.handleManageLeague = async (id) => {
+  state.editMode = 'league';
+  state.editLeagueId = id;
+  state.editTeamId = null;
+  state.dirtyLeague = null;
+  if (id) {
+    try {
+      const settings = await apiGet(PATHS.leagueSettings(id));
+      state.dirtyLeague = JSON.parse(JSON.stringify(settings));
+    } catch (e) { setStatus(e.message, 'error'); return; }
+  } else {
+    state.dirtyLeague = { id: '', name: '', season: 1, status: 'upcoming', settings: { pointsWin: 3, pointsDraw: 1, pointsLoss: 0, maxTeams: 16, lockTeams: false }, teams: [], matches: [] };
+  }
+  renderManageForm();
+  showSection('manage');
+};
+
+function renderManageForm() {
+  const l = state.dirtyLeague;
+  const isNewLeague = !state.editLeagueId;
+  els.inputs.leagueId.value = l.id;
+  if (isNewLeague) {
+    els.inputs.leagueId.placeholder = "Auto-generated from Name";
+    els.inputs.leagueId.readOnly = true;
+    els.inputs.leagueId.classList.add('faded');
+  } else {
+    els.inputs.leagueId.readOnly = true;
+    els.inputs.leagueId.classList.remove('faded');
+  }
+  els.inputs.leagueName.value = l.name;
+  els.inputs.leagueName.oninput = function() {
+    state.dirtyLeague.name = this.value;
+    if (isNewLeague) { state.dirtyLeague.id = normalizeName(this.value); els.inputs.leagueId.value = state.dirtyLeague.id; }
+  };
+  els.inputs.leagueSeason.value = l.season;
+  els.inputs.leagueStatus.value = l.status;
+  els.inputs.ptsWin.value = l.settings.pointsWin;
+  els.inputs.ptsDraw.value = l.settings.pointsDraw;
+  els.inputs.ptsLoss.value = l.settings.pointsLoss;
+
+  if (state.editMode === 'team') {
+    els.cards.leagueInfo.classList.add('hidden');
+    els.cards.leagueTeams.classList.add('hidden');
+    els.cards.teamEditor.classList.remove('hidden');
+    renderTeamEditor();
+  } else {
+    els.cards.leagueInfo.classList.remove('hidden');
+    els.cards.leagueTeams.classList.remove('hidden');
+    els.cards.teamEditor.classList.add('hidden');
+    renderManageTeamsList();
+    
+    let delBtn = document.getElementById('deleteLeagueBtn');
+    if (!delBtn) {
+       delBtn = document.createElement('button');
+       delBtn.id = 'deleteLeagueBtn';
+       delBtn.textContent = 'Delete Entire League';
+       delBtn.className = 'danger-btn'; // Use new class
+       delBtn.onclick = handleDeleteLeague;
+       els.containers.delLeagueBtn.appendChild(delBtn);
+    }
+    delBtn.classList.toggle('hidden', isNewLeague);
+  }
 }
 
-window.enterCoachMode = (side) => location.hash = `#match/${state.activeMatch.matchId}/coach/${side}`;
-
-// ============================================
-// MANAGERS (LEAGUE)
-// ============================================
-
-function renderLeagueManager() {
-  const l = state.dirtyData;
-  document.getElementById('leagueManageNameInput').value = l.name;
-  document.getElementById('leagueManageSeasonInput').value = l.season;
-  document.getElementById('leagueManageStatusSelect').value = l.status;
-  document.getElementById('leagueManagePointsWinInput').value = l.settings.pointsWin;
-  document.getElementById('leagueManagePointsDrawInput').value = l.settings.pointsDraw;
-  document.getElementById('leagueManagePointsLossInput').value = l.settings.pointsLoss;
-  
-  document.getElementById('leagueManageTeamsList').innerHTML = l.teams.map(t => `
-    <div style="display:flex; justify-content:space-between; padding:0.5rem; border-bottom:1px solid #eee">
-      <span>${t.name} (${t.race})</span>
-      <button class="secondary-btn" style="padding:0 0.5rem" onclick="location.hash='#league/${l.id}/edit-team/${t.id}'">Edit</button>
-    </div>
-  `).join('');
-
-  document.getElementById('leagueManageNameInput').onchange = (e) => {
-    l.name = e.target.value;
-    if(!l.id) { l.id = normalizeName(l.name); document.getElementById('leagueManageIdInput').value = l.id; }
-  };
-  
-  document.getElementById('leagueManageSaveBtn').onclick = async () => {
-    const key = document.getElementById('editKeyInput').value;
-    l.season = parseInt(document.getElementById('leagueManageSeasonInput').value);
-    l.status = document.getElementById('leagueManageStatusSelect').value;
-    l.settings.pointsWin = parseInt(document.getElementById('leagueManagePointsWinInput').value);
-    l.settings.pointsDraw = parseInt(document.getElementById('leagueManagePointsDrawInput').value);
-    l.settings.pointsLoss = parseInt(document.getElementById('leagueManagePointsLossInput').value);
-    
-    await apiSave(PATHS.leagueSettings(l.id), l, "Save League", key);
-    
-    // Update Index
-    const index = await apiGet(PATHS.leaguesIndex) || [];
-    const entry = { id: l.id, name: l.name, season: l.season, status: l.status };
-    const idx = index.findIndex(x => x.id === l.id);
-    if(idx >= 0) index[idx] = entry; else index.push(entry);
-    await apiSave(PATHS.leaguesIndex, index, "Update Index", key);
-    
-    showStatus("League saved", 'ok');
-    location.hash = `#league/${l.id}`;
-  };
-  
-  document.getElementById('leagueManageDeleteBtn').onclick = () => {
-    safeDelete(l.id, async () => {
-      const key = document.getElementById('editKeyInput').value;
-      await apiDelete(PATHS.leagueSettings(l.id), "Delete League", key);
-      const index = await apiGet(PATHS.leaguesIndex) || [];
-      const newIndex = index.filter(x => x.id !== l.id);
-      await apiSave(PATHS.leaguesIndex, newIndex, "Update Index", key);
-      location.hash = '';
-    });
-  };
-  
-  document.getElementById('leagueManageAddTeamBtn').onclick = () => location.hash = `#league/${l.id}/edit-team/new`;
+function renderManageTeamsList() {
+  const l = state.dirtyLeague;
+  els.containers.manageTeams.innerHTML = `<table><thead><tr><th>ID</th><th>Name</th><th>Action</th></tr></thead><tbody>
+    ${l.teams.map(t => `<tr><td>${t.id}</td><td>${t.name}</td><td><button class="link-button" onclick="handleEditTeam('${t.id}')">Edit</button> | <button class="link-button" onclick="handleDeleteTeam('${t.id}')" style="color:red">Delete</button></td></tr>`).join('')}
+  </tbody></table>`;
 }
 
-// ============================================
-// ADMIN & SCANNER TOOLS
-// ============================================
+window.handleEditTeam = async (teamId) => {
+  state.editMode = 'team';
+  state.editTeamId = teamId;
+  if (teamId) {
+    try {
+      const fullTeam = await apiGet(PATHS.team(state.dirtyLeague.id, teamId));
+      state.dirtyTeam = fullTeam || createEmptyTeam(teamId);
+    } catch(e) { console.error(e); state.dirtyTeam = createEmptyTeam(teamId); }
+  } else { state.dirtyTeam = createEmptyTeam(''); }
+  renderManageForm(); 
+};
 
-// If you add this to index.html: <section id="adminSection" class="hidden">...</section>
-// it needs this logic to work!
-if(document.getElementById('adminSection')) {
-  // We need to inject the scanner HTML if it wasn't statically in the new index.html
-  // But assuming we want to restore functionality:
-  const adminSec = document.getElementById('adminSection');
-  adminSec.innerHTML = `
-    <h2>Admin Tools</h2>
-    <div class="card">
-      <div class="card-header"><h3>Repository Health</h3></div>
-      <div class="small" style="margin-bottom:1rem">
-        Scans <code>data/leagues/</code> for "Ghost" leagues and "Orphan" teams.
-      </div>
-      <button id="scanBtn" class="primary-btn">Scan Repository</button>
-      <div id="scanResults" style="margin-top:1rem;"></div>
+function createEmptyTeam(id) {
+  const defaultRace = state.gameData?.races?.[0]?.name || 'Human';
+  return { id, name: 'New Team', race: defaultRace, coachName: '', players: [] };
+}
+
+function renderTeamEditor() {
+  const t = state.dirtyTeam;
+  const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
+  const isNewTeam = !state.editTeamId;
+  els.containers.manageTeamEditor.innerHTML = `
+    <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
+    <div class="form-grid">
+      <div class="form-field"><label>File ID</label><input type="text" value="${t.id}" readonly class="faded" placeholder="Auto-generated"></div>
+      <div class="form-field"><label>Name</label><input type="text" value="${t.name}" id="teamEditNameInput"></div>
+      <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
+      <div class="form-field"><label>Race</label><select onchange="changeTeamRace(this.value)">${raceOpts}</select></div>
     </div>
+    <h4>Roster</h4>
+    <table class="roster-editor-table"><thead><tr><th style="width:40px">#</th><th>Name</th><th>Position</th><th style="width:40px">MA</th><th style="width:40px">ST</th><th style="width:40px">AG</th><th style="width:40px">PA</th><th style="width:40px">AV</th><th>Skills</th><th style="width:50px">SPP</th><th style="width:30px"></th></tr></thead><tbody id="editorRosterBody"></tbody></table>
+    <button onclick="addSmartPlayer()" class="primary-btn" style="margin-top:0.5rem">+ Add Player</button>
   `;
+  const tbody = document.getElementById('editorRosterBody');
+  const currentRaceObj = state.gameData?.races.find(r => r.name === t.race);
+  const positionalOptions = (currentRaceObj?.positionals || []).map(pos => `<option value="${pos.name}">${pos.name} (${Math.floor(pos.cost/1000)}k)</option>`).join('');
   
-  document.getElementById('scanBtn').onclick = async () => {
-    const resEl = document.getElementById('scanResults');
-    resEl.innerHTML = '<div class="small">Scanning...</div>';
+  // Skill Dropdown Options
+  let allSkillsHtml = '<option value="">+ Skill...</option>';
+  if (state.gameData?.skillCategories) {
+    Object.values(state.gameData.skillCategories).flat().forEach(s => {
+      const sName = (typeof s === 'object') ? s.name : s;
+      allSkillsHtml += `<option value="${sName}">${sName}</option>`;
+    });
+  }
+
+  t.players.forEach((p, idx) => {
+    const posSelect = `<select style="width:100%; font-size:0.8rem;" onchange="updatePlayerPos(${idx}, this.value)"><option value="" disabled>Pos...</option>${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}</select>`;
+    
+    // Skill Pills Logic
+    const currentSkills = (p.skills || []).map((skill, sIdx) => `
+      <span class="skill-pill">${skill}<span class="remove-skill" onclick="removePlayerSkill(${idx}, ${sIdx})">×</span></span>
+    `).join('');
+    
+    const skillPicker = `<div class="skill-editor-container">${currentSkills}<select class="skill-select" onchange="addPlayerSkill(${idx}, this.value)">${allSkillsHtml}</select></div>`;
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="number" value="${p.number||''}" style="width:30px" onchange="updatePlayer(${idx}, 'number', this.value)"></td>
+      <td><input type="text" value="${p.name}" onchange="updatePlayer(${idx}, 'name', this.value)"></td>
+      <td>${posSelect}</td>
+      <td><input type="number" value="${p.ma}" style="width:30px" onchange="updatePlayer(${idx}, 'ma', this.value)"></td>
+      <td><input type="number" value="${p.st}" style="width:30px" onchange="updatePlayer(${idx}, 'st', this.value)"></td>
+      <td><input type="number" value="${p.ag}" style="width:30px" onchange="updatePlayer(${idx}, 'ag', this.value)"></td>
+      <td><input type="number" value="${p.pa}" style="width:30px" onchange="updatePlayer(${idx}, 'pa', this.value)"></td>
+      <td><input type="number" value="${p.av}" style="width:30px" onchange="updatePlayer(${idx}, 'av', this.value)"></td>
+      <td>${skillPicker}</td>
+      <td><input type="number" value="${p.spp}" style="width:40px" onchange="updatePlayer(${idx}, 'spp', this.value)"></td>
+      <td><button onclick="removePlayer(${idx})" style="color:red;border:none;background:none;cursor:pointer;font-weight:bold;">×</button></td>
+    `;
+    tbody.appendChild(row);
+  });
+  const nameInput = document.getElementById('teamEditNameInput');
+  nameInput.oninput = function() {
+    state.dirtyTeam.name = this.value;
+    if (isNewTeam) { state.dirtyTeam.id = normalizeName(this.value); els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id; }
+  };
+}
+
+window.changeTeamRace = (newRace) => {
+  if (state.dirtyTeam.players.length > 0 && !confirm("Changing race will potentially break existing player positions. Continue?")) { renderTeamEditor(); return; }
+  state.dirtyTeam.race = newRace;
+  renderTeamEditor();
+};
+window.updatePlayer = (idx, f, v) => { 
+  const p=state.dirtyTeam.players[idx]; 
+  if (f==='skills') return; // Handled by pills now
+  if (['number','ma','st','ag','pa','av','spp'].includes(f)) p[f] = parseInt(v) || 0;
+  else p[f] = v;
+};
+window.updatePlayerPos = (idx, v) => { 
+  const p=state.dirtyTeam.players[idx]; p.position=v; 
+  const r=state.gameData.races.find(r=>r.name===state.dirtyTeam.race); 
+  const pos=r?.positionals.find(x=>x.name===v);
+  if(pos) Object.assign(p, {ma:pos.ma, st:pos.st, ag:pos.ag, pa:pos.pa, av:pos.av, skills:[...pos.skills]});
+  renderTeamEditor();
+};
+window.addSmartPlayer = () => { 
+  const t=state.dirtyTeam; const r=state.gameData.races.find(r=>r.name===t.race); 
+  const def=r?.positionals[0]||{name:'L',ma:6,st:3,ag:3,pa:4,av:8,skills:[]};
+  const nextNum = (t.players.length > 0) ? Math.max(...t.players.map(p => p.number || 0)) + 1 : 1;
+  t.players.push({number:nextNum, name:'Player', position:def.name, ...def, skills:[...def.skills], spp:0});
+  renderTeamEditor();
+};
+window.removePlayer = (idx) => { state.dirtyTeam.players.splice(idx,1); renderTeamEditor(); };
+window.addPlayerSkill = (playerIdx, skillName) => {
+  if (!skillName) return;
+  const p = state.dirtyTeam.players[playerIdx];
+  if (!p.skills) p.skills = [];
+  if (!p.skills.includes(skillName)) p.skills.push(skillName);
+  renderTeamEditor();
+};
+window.removePlayerSkill = (playerIdx, skillIdx) => {
+  state.dirtyTeam.players[playerIdx].skills.splice(skillIdx, 1);
+  renderTeamEditor();
+};
+
+window.handleDeleteTeam = async (teamId) => {
+  if(!confirm(`Delete team "${teamId}"?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    const l = state.dirtyLeague;
+    await apiDelete(PATHS.team(l.id, teamId), `Delete team ${teamId}`, key);
+    const idx = l.teams.findIndex(t => t.id === teamId);
+    if(idx !== -1) l.teams.splice(idx, 1);
+    await apiSave(PATHS.leagueSettings(l.id), l, `Remove team ${teamId}`, key);
+    renderManageTeamsList();
+    setStatus('Team deleted.', 'ok');
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
+};
+
+window.handleDeleteLeague = async () => {
+  const l = state.dirtyLeague;
+  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    for (const t of l.teams) { try { await apiDelete(PATHS.team(l.id, t.id), `Delete team ${t.id}`, key); } catch (e) {} }
+    await apiDelete(PATHS.leagueSettings(l.id), `Delete league ${l.id}`, key);
+    const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
+    const newIndex = freshIndex.filter(x => x.id !== l.id);
+    await apiSave(PATHS.leaguesIndex, newIndex, `Remove league ${l.id} from index`, key);
+    state.leaguesIndex = newIndex;
+    state.editMode = 'league';
+    showSection('list');
+    renderLeagueList();
+    setStatus('League deleted.', 'ok');
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
+};
+
+els.buttons.manageSave.addEventListener('click', async () => {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  setStatus('Saving...', 'info');
+  try {
+    if (state.editMode === 'team') {
+      const t = state.dirtyTeam;
+      const l = state.dirtyLeague;
+      if (!t.id) return setStatus('Invalid team name.', 'error');
+      if (!state.editTeamId) {
+        if (l.teams.find(x => x.id === t.id)) return setStatus('Team ID exists.', 'error');
+      }
+      await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
+      const existingIdx = l.teams.findIndex(x => x.id === t.id);
+      const meta = { id: t.id, name: t.name, race: t.race, coachName: t.coachName };
+      if (existingIdx >= 0) l.teams[existingIdx] = meta;
+      else l.teams.push(meta);
+      state.editTeamId = t.id;
+      setStatus('Team saved locally. Save League to commit.', 'ok');
+      state.editMode = 'league';
+      renderManageForm();
+      return; 
+    }
+    const l = state.dirtyLeague;
+    if (!l.id) return setStatus('League ID required.', 'error');
+    if (!state.editLeagueId && state.leaguesIndex.find(x => x.id === l.id)) return setStatus('League ID exists.', 'error');
+    l.name = els.inputs.leagueName.value;
+    l.season = parseInt(els.inputs.leagueSeason.value);
+    l.status = els.inputs.leagueStatus.value;
+    l.settings.pointsWin = parseInt(els.inputs.ptsWin.value);
+    l.settings.pointsDraw = parseInt(els.inputs.ptsDraw.value);
+    l.settings.pointsLoss = parseInt(els.inputs.ptsLoss.value);
+    await apiSave(PATHS.leagueSettings(l.id), l, `Save league ${l.id}`, key);
+    const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
+    const idxEntry = { id: l.id, name: l.name, season: l.season, status: l.status };
+    const i = freshIndex.findIndex(x => x.id === l.id);
+    if (i >= 0) freshIndex[i] = idxEntry;
+    else freshIndex.push(idxEntry);
+    await apiSave(PATHS.leaguesIndex, freshIndex, `Update index for ${l.id}`, key);
+    state.leaguesIndex = freshIndex;
+    setStatus('League saved.', 'ok');
+    state.editMode = 'league';
+    showSection('list');
+    renderLeagueList();
+  } catch (e) { console.error(e); setStatus(`Save failed: ${e.message}`, 'error'); }
+});
+
+els.buttons.createLeague.addEventListener('click', () => handleManageLeague(null));
+els.buttons.manageAddTeam.addEventListener('click', () => handleEditTeam(null));
+els.buttons.leagueBack.addEventListener('click', () => showSection('list'));
+els.buttons.manageBack.addEventListener('click', () => { if (state.editMode === 'team') { state.editMode = 'league'; renderManageForm(); } else showSection('list'); });
+els.buttons.teamBack.addEventListener('click', () => showSection('view'));
+
+// Wire up Manage Team button (Specific fix request)
+els.buttons.teamManage.addEventListener('click', async () => {
+  if (!state.currentLeague || !state.currentTeam) return;
+  await handleManageLeague(state.currentLeague.id);
+  await handleEditTeam(state.currentTeam.id);
+});
+
+window.handleOpenTeam = async (leagueId, teamId) => {
+  setStatus(`Loading team ${teamId}...`);
+  try {
+    const teamData = await apiGet(PATHS.team(leagueId, teamId));
+    if (!teamData) throw new Error("Team file not found.");
+    state.currentTeam = teamData;
+    state.viewTeamId = teamId;
+    renderTeamView();
+    showSection('team');
+    setStatus('Team loaded.', 'ok');
+  } catch (e) { setStatus(e.message, 'error'); }
+};
+
+function renderTeamView() {
+  const t = state.currentTeam;
+  document.getElementById('teamHeader').textContent = t.name;
+  els.containers.teamSummary.innerHTML = `Coach: ${t.coachName} | Race: ${t.race} | TV: ${t.teamValue || 0}`;
+  const rows = (t.players || []).map(p => `
+    <tr><td>${p.number||''}</td><td>${p.name}</td><td>${p.position}</td><td>${p.ma}</td><td>${p.st}</td><td>${p.ag}</td><td>${p.pa}</td><td>${p.av}</td><td>${(p.skills||[]).join(', ')}</td><td>${p.spp}</td></tr>
+  `).join('');
+  els.containers.teamRoster.innerHTML = `<table><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ============================================
+// ADMIN SCANNER
+// ============================================
+
+if (els.buttons.scanBtn) {
+  els.buttons.scanBtn.addEventListener('click', async () => {
+    els.scanResults.innerHTML = '<div class="small">Scanning all leagues...</div>';
     try {
       const rootContents = await apiGet('data/leagues');
       if (!Array.isArray(rootContents)) throw new Error("Could not list directories.");
       const leagueDirs = rootContents.filter(x => x.type === 'dir').map(x => x.name);
-      const indexIds = state.leagues.map(l => l.id);
+      const indexIds = state.leaguesIndex.map(l => l.id);
       let html = '<table style="width:100%; font-size:0.9rem;">';
       let issuesFound = 0;
       for (const leagueId of leagueDirs) {
@@ -715,220 +1024,55 @@ if(document.getElementById('adminSection')) {
         }
       }
       html += '</table>';
-      if (issuesFound === 0) resEl.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
-      else resEl.innerHTML = html;
-    } catch (e) { resEl.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`; }
-  };
+      if (issuesFound === 0) els.scanResults.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
+      else els.scanResults.innerHTML = html;
+    } catch (e) { els.scanResults.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`; }
+  });
 }
-
 window.attachTeam = async (leagueId, filename) => {
-  const key = document.getElementById('editKeyInput').value;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
   try {
      const teamId = filename.replace('.json', '');
      const team = await apiGet(PATHS.team(leagueId, teamId));
      const settings = await apiGet(PATHS.leagueSettings(leagueId));
      settings.teams.push({ id: team.id, name: team.name, race: team.race, coachName: team.coachName });
      await apiSave(PATHS.leagueSettings(leagueId), settings, `Attach orphan ${teamId}`, key);
-     document.getElementById('scanBtn').click();
-     showStatus(`Attached ${team.name}`, 'ok');
+     els.buttons.scanBtn.click();
+     setStatus(`Attached ${team.name}`, 'ok');
   } catch(e) { alert(e.message); }
 };
-
 window.restoreLeague = async (leagueId) => {
-  const key = document.getElementById('editKeyInput').value;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
   try {
     const settings = await apiGet(PATHS.leagueSettings(leagueId));
     const index = await apiGet(PATHS.leaguesIndex) || [];
     index.push({ id: settings.id, name: settings.name, season: settings.season, status: settings.status });
     await apiSave(PATHS.leaguesIndex, index, `Restored ghost league ${leagueId}`, key);
-    state.leagues = index;
-    document.getElementById('scanBtn').click();
-    showStatus(`Restored ${settings.name}`, 'ok');
+    state.leaguesIndex = index;
+    renderLeagueList();
+    els.buttons.scanBtn.click();
+    setStatus(`Restored ${settings.name}`, 'ok');
   } catch(e) { alert(e.message); }
 };
-
 window.deleteOrphanFile = async (leagueId, filename) => {
   if(!confirm(`Delete ${filename}?`)) return;
-  const key = document.getElementById('editKeyInput').value;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
   try {
     await apiDelete(`data/leagues/${leagueId}/teams/${filename}`, `Clean orphan ${filename}`, key);
-    document.getElementById('scanBtn').click();
+    els.buttons.scanBtn.click();
   } catch(e) { alert(e.message); }
 };
-
 window.deleteLeagueFolder = async (leagueId) => {
   if(!confirm(`Delete Settings file for ${leagueId}?`)) return;
-  const key = document.getElementById('editKeyInput').value;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
   try {
     await apiDelete(PATHS.leagueSettings(leagueId), `Delete ghost league ${leagueId}`, key);
-    document.getElementById('scanBtn').click();
+    els.buttons.scanBtn.click();
   } catch(e) { alert(e.message); }
 };
 
-
-// ============================================
-// UTILITIES
-// ============================================
-
-function calculateTV(team) {
-  if (!team || !state.gameData) return 0;
-  const playersCost = (team.players||[]).reduce((sum, p) => sum + (p.cost||0), 0);
-  const race = state.gameData.races.find(r => r.name === team.race);
-  const rrCost = (team.rerolls || 0) * (race ? race.rerollCost : 50000);
-  return playersCost + rrCost;
-}
-
-function getStatClass(stat, val) {
-  if (stat === 'st') return val >= 4 ? 'stat-high' : (val <= 2 ? 'stat-low' : 'stat-avg');
-  if (stat === 'ag' || stat === 'av') return val <= 2 ? 'stat-high' : 'stat-avg'; 
-  return 'stat-avg';
-}
-
-function getSkillClass(skill) {
-  if(!state.gameData) return '';
-  const cats = state.gameData.skillCategories;
-  if(cats.General.find(x=>x.name===skill)) return 'skill-gen';
-  if(cats.Agility.find(x=>x.name===skill)) return 'skill-agi';
-  if(cats.Strength.find(x=>x.name===skill)) return 'skill-str';
-  if(cats.Passing.find(x=>x.name===skill)) return 'skill-pas';
-  if(cats.Mutation.find(x=>x.name===skill)) return 'skill-mut';
-  return '';
-}
-
-function normalizeName(name) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-}
-
-function showToast(msg, time) {
-  const el = document.getElementById('toast');
-  if(!el) return;
-  el.innerText = msg;
-  el.classList.remove('hidden');
-  if (time) setTimeout(() => el.classList.add('hidden'), time);
-}
-
-function populateSkillList() {
-  if (!state.gameData?.skillCategories) return;
-  const list = document.getElementById('skillList');
-  if(!list) return;
-  list.innerHTML = '';
-  Object.values(state.gameData.skillCategories).flat().forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = (typeof s === 'object') ? s.name : s; 
-    list.appendChild(opt);
-  });
-}
-
-function startPolling(matchId) {
-  stopPolling();
-  state.pollInterval = setInterval(async () => {
-    try {
-      const fresh = await apiGet(PATHS.activeMatch(matchId));
-      if (fresh) { state.activeMatch = fresh; renderScoreboard(); }
-    } catch(e) { console.warn("Poll failed", e); }
-  }, 5000);
-}
-
-function stopPolling() {
-  if (state.pollInterval) { clearInterval(state.pollInterval); state.pollInterval = null; }
-}
-
-function createEmptyTeam() {
-  const defaultRace = state.gameData?.races?.[0]?.name || 'Human';
-  return { id: '', name: 'New Team', race: defaultRace, coachName: '', players: [], treasury: 1000000, rerolls: 0 };
-}
-
-window.safeDelete = (name, callback) => {
-  const modal = document.getElementById('confirmModal');
-  const input = document.getElementById('confirmInput');
-  document.getElementById('confirmText').innerText = `Type "${name}" to confirm deletion.`;
-  input.classList.remove('hidden');
-  input.value = '';
-  modal.classList.remove('hidden');
-  document.getElementById('confirmBtn').onclick = () => {
-    if (input.value === name) { callback(); closeModal('confirmModal'); } 
-    else { alert("Name mismatch."); }
-  };
-};
-
-window.showSkill = (skillName) => {
-  const cleanName = skillName.replace(/\(\+.*\)/, '').trim(); 
-  let desc = "No description available.";
-  if (state.gameData?.skillCategories) {
-    for (const cat in state.gameData.skillCategories) {
-      const found = state.gameData.skillCategories[cat].find(s => s.name.startsWith(cleanName));
-      if (found) { desc = found.description; break; }
-    }
-  }
-  document.getElementById('skillModalTitle').textContent = skillName;
-  document.getElementById('skillModalBody').textContent = desc;
-  document.getElementById('skillModal').classList.remove('hidden');
-};
-
-window.changeTeamRace = (newRace) => {
-  if (state.dirtyData.players.length > 0 && !confirm("Changing race will create conflict with existing players. Continue?")) return;
-  state.dirtyData.race = newRace;
-  renderTeamEditor();
-}
-
-window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-window.closeActionSheet = () => document.getElementById('actionSheet').classList.add('hidden');
-window.switchLeagueTab = (tab) => {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById(`tab-${tab}`).classList.remove('hidden');
-  event.target.classList.add('active');
-};
-window.updatePlayer = (i, f, v) => {
-  if(['number','spp'].includes(f)) state.dirtyData.players[i][f] = parseInt(v);
-  else state.dirtyData.players[i][f] = v;
-};
-window.deletePlayer = (i) => { state.dirtyData.players.splice(i,1); renderTeamEditor(); };
-window.removeSkill = (pi, si) => { state.dirtyData.players[pi].skills.splice(si, 1); renderTeamEditor(); };
-window.addSkillPrompt = (pi) => {
-  const skill = prompt("Enter Skill Name (exact spelling):");
-  if(skill) { state.dirtyData.players[pi].skills.push(skill); renderTeamEditor(); }
-};
-window.openShopModal = () => {
-  const t = state.dirtyData;
-  const race = state.gameData.races.find(r => r.name === t.race);
-  if (!race) return alert("Invalid Race Data");
-  
-  document.getElementById('shopContainer').innerHTML = race.positionals.map(pos => `
-    <div class="shop-item" onclick="buyPlayer('${pos.name}')">
-      <div style="font-weight:bold">${pos.name}</div>
-      <div style="color:#666; font-size:0.8rem">${Math.floor(pos.cost/1000)}k</div>
-      <div style="font-size:0.8rem; margin-top:5px">MA${pos.ma} ST${pos.st} AG${pos.ag}+ AV${pos.av}+</div>
-      <div style="font-size:0.75rem; color:#888; font-style:italic">${pos.skills.join(', ')}</div>
-    </div>
-  `).join('');
-  document.getElementById('shopModal').classList.remove('hidden');
-};
-window.buyPlayer = (posName) => {
-  const t = state.dirtyData;
-  const race = state.gameData.races.find(r => r.name === t.race);
-  const pos = race.positionals.find(p => p.name === posName);
-  
-  if ((t.treasury || 0) < pos.cost) {
-    if(!confirm("Not enough treasury. Buy anyway?")) return;
-  }
-  
-  t.treasury = (t.treasury || 1000000) - pos.cost;
-  const nextNum = t.players.reduce((max, p) => Math.max(max, p.number||0), 0) + 1;
-  t.players.push({
-    number: nextNum, name: 'Rookie', position: pos.name,
-    ma: pos.ma, st: pos.st, ag: pos.ag, pa: pos.pa, av: pos.av,
-    skills: [...pos.skills], spp: 0, cost: pos.cost
-  });
-  
-  closeModal('shopModal');
-  renderTeamEditor();
-};
-
-document.getElementById('rememberKeyBtn').onclick = () => {
-  localStorage.setItem('bb3_edit_key', document.getElementById('editKeyInput').value);
-  showToast("Key Saved", 1000);
-};
-
-// Start
 init();
