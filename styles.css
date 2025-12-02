@@ -517,3 +517,45 @@ input.faded {
   cursor: pointer;
   padding: 0 0.5rem;
 }
+
+/* Skill Pills Editor */
+.skill-editor-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  min-height: 30px;
+}
+
+.skill-pill {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border: 1px solid #bbdefb;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: default;
+}
+
+.skill-pill .remove-skill {
+  cursor: pointer;
+  color: #d32f2f;
+  font-weight: bold;
+  font-size: 1rem;
+  line-height: 0.8;
+  margin-left: 2px;
+}
+.skill-pill .remove-skill:hover {
+  color: #b71c1c;
+}
+
+.skill-select {
+  width: 120px;
+  padding: 2px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
