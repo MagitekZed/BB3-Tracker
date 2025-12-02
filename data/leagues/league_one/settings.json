@@ -22,6 +22,12 @@
       "name": "team two",
       "race": "Khorne",
       "coachName": "zer"
+    },
+    {
+      "id": "new_team",
+      "name": "New Team",
+      "race": "Amazon",
+      "coachName": ""
     }
   ],
   "matches": [
