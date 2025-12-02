@@ -30,7 +30,7 @@
       Select a league to view standings, or manage leagues below.
     </div>
     <div style="margin: 0.5rem 0 1rem;">
-      <button id="leagueCreateBtn">+ Create New League</button>
+      <button id="leagueCreateBtn" class="primary-btn">+ Create New League</button>
     </div>
     <div id="leagueListContainer"></div>
   </section>
@@ -136,7 +136,10 @@
     </div>
 
     <div class="card">
-      <button id="leagueManageSaveBtn">Save Changes</button>
+      <div class="button-group">
+        <button id="leagueManageSaveBtn" class="primary-btn">Save Changes</button>
+        <div id="deleteLeagueContainer"></div> 
+      </div>
     </div>
   </section>
 
@@ -235,6 +238,16 @@
       <textarea id="leagueTextarea" placeholder="JSON content..."></textarea>
     </div>
   </section>
+  
+  <div id="skillModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="skillModalTitle">Skill Name</h3>
+        <button class="close-btn" onclick="closeSkillModal()">×</button>
+      </div>
+      <div id="skillModalBody">Description goes here...</div>
+    </div>
+  </div>
   
   <datalist id="skillList"></datalist>
   <script src="app.js"></script>
