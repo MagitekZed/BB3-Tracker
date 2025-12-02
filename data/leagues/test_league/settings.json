@@ -16,12 +16,6 @@
       "name": "team one",
       "race": "Human",
       "coachName": ""
-    },
-    {
-      "id": "team_two",
-      "name": "team two",
-      "race": "Human",
-      "coachName": ""
     }
   ],
   "matches": []
