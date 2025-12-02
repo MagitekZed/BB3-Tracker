@@ -9,7 +9,7 @@ const PATHS = {
   team: (leagueId, teamId) => `data/leagues/${leagueId}/teams/${teamId}.json`
 };
 
-// ---- DOM Elements (Cached for performance) ----
+// ---- DOM Elements ----
 const els = {
   globalStatus: document.getElementById('globalStatus'),
   nav: {
@@ -82,30 +82,22 @@ const els = {
 function normalizeName(name) {
   if (!name) return '';
   return name.toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_') // Replace non-alphanumeric with underscore
-    .replace(/^_+|_+$/g, '');    // Trim leading/trailing underscores
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
 }
 
 // ---- State Management ----
 const state = {
-  leaguesIndex: [],        // loaded from data/leagues/index.json
-  gameData: null,          // loaded from data/gameData.json
-  
-  // Loaded on demand
-  currentLeague: null,     // content of settings.json
-  currentTeam: null,       // content of teams/{id}.json
-  
-  // Navigation State
+  leaguesIndex: [],
+  gameData: null,
+  currentLeague: null,
+  currentTeam: null,
   viewLeagueId: null,
   viewTeamId: null,
   viewMatchId: null,
-  
-  // Editing State
-  editLeagueId: null,      // if null, creating new league
-  editTeamId: null,        // if null, creating new team
-  editMode: 'league',      // 'league' or 'team'
-  
-  // Dirty Data (unsaved changes in UI)
+  editLeagueId: null,
+  editTeamId: null,
+  editMode: 'league',
   dirtyLeague: null,
   dirtyTeam: null
 };
@@ -115,8 +107,7 @@ const state = {
 async function apiGet(path) {
   const url = `${API_BASE}/api/file?path=${encodeURIComponent(path)}`;
   const res = await fetch(url);
-  
-  if (res.status === 404) return null; // File doesn't exist yet
+  if (res.status === 404) return null;
   if (!res.ok) {
     throw new Error(`GET ${path} failed: ${res.status}`);
   }
@@ -129,10 +120,7 @@ async function apiSave(path, content, message, key) {
   const url = `${API_BASE}/api/file?path=${encodeURIComponent(path)}`;
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Edit-Key': key
-    },
+    headers: { 'Content-Type': 'application/json', 'X-Edit-Key': key },
     body: JSON.stringify({ content, message })
   });
 
@@ -147,14 +135,18 @@ async function apiSave(path, content, message, key) {
 
 async function init() {
   setStatus('Initializing...');
+  
+  // 1. Restore Edit Key
+  const storedKey = localStorage.getItem('bb3_edit_key');
+  if (storedKey && els.inputs.editKey) els.inputs.editKey.value = storedKey;
+
   try {
-    // 1. Load Game Data (Reference)
+    // 2. Load Data
     state.gameData = await apiGet(PATHS.gameData);
     populateSkillList();
 
-    // 2. Load League Index
     const index = await apiGet(PATHS.leaguesIndex);
-    state.leaguesIndex = index || []; // Default to empty array if 404
+    state.leaguesIndex = index || [];
 
     renderLeagueList();
     showSection('list');
@@ -177,7 +169,6 @@ function showSection(name) {
   Object.values(els.sections).forEach(el => el.classList.add('hidden'));
   els.sections[name].classList.remove('hidden');
   
-  // Toggle Nav Active State
   if (name === 'admin') {
     els.nav.league.classList.remove('active');
     els.nav.admin.classList.add('active');
@@ -185,6 +176,25 @@ function showSection(name) {
     els.nav.league.classList.add('active');
     els.nav.admin.classList.remove('active');
   }
+}
+
+els.nav.league.addEventListener('click', () => {
+  showSection('list');
+  renderLeagueList();
+});
+els.nav.admin.addEventListener('click', () => showSection('admin'));
+
+// ---- Key Management ----
+if(els.buttons.rememberKey) {
+  els.buttons.rememberKey.addEventListener('click', () => {
+    const k = els.inputs.editKey.value;
+    if(k) {
+      localStorage.setItem('bb3_edit_key', k);
+      setStatus('Key saved to this device.', 'ok');
+    } else {
+      setStatus('Enter a key first.', 'error');
+    }
+  });
 }
 
 // ---- View: League List ----
@@ -237,17 +247,15 @@ window.handleManageLeague = async (id) => {
   state.dirtyLeague = null;
 
   if (id) {
-    // Edit existing
     setStatus(`Loading settings for ${id}...`);
     try {
       const settings = await apiGet(PATHS.leagueSettings(id));
-      state.dirtyLeague = JSON.parse(JSON.stringify(settings)); // Deep copy
+      state.dirtyLeague = JSON.parse(JSON.stringify(settings));
     } catch (e) {
       setStatus(e.message, 'error');
       return;
     }
   } else {
-    // Create new
     state.dirtyLeague = {
       id: '', name: '', season: 1, status: 'upcoming',
       settings: { pointsWin: 3, pointsDraw: 1, pointsLoss: 0, maxTeams: 16, lockTeams: false },
@@ -269,7 +277,6 @@ function renderLeagueView() {
     <div class="small">Season ${l.season} (${l.status})</div>
   `;
 
-  // Standings
   const standings = computeStandings(l);
   els.containers.standings.innerHTML = `
     <table>
@@ -288,7 +295,6 @@ function renderLeagueView() {
     </table>
   `;
   
-  // Roster Tiles
   if (els.containers.rosterQuick) {
     els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
       ${l.teams.map(t => `
@@ -299,8 +305,6 @@ function renderLeagueView() {
       `).join('')}
     </div>`;
   }
-
-  // Matches
   renderMatchesList(l);
 }
 
@@ -348,7 +352,6 @@ function renderMatchesList(league) {
   }
   
   const rows = league.matches.map(m => {
-    // Attempt to resolve team names from ID
     const homeT = league.teams.find(t => t.id === m.homeTeamId);
     const awayT = league.teams.find(t => t.id === m.awayTeamId);
     const hName = homeT ? homeT.name : m.homeTeamId;
@@ -417,10 +420,8 @@ function renderManageForm() {
   const l = state.dirtyLeague;
   const isNewLeague = !state.editLeagueId;
   
-  // Bind inputs to dirtyLeague state
   els.inputs.leagueId.value = l.id;
   
-  // Special Handling: ID Field
   if (isNewLeague) {
     els.inputs.leagueId.placeholder = "Auto-generated from Name";
     els.inputs.leagueId.readOnly = true;
@@ -441,13 +442,10 @@ function renderManageForm() {
 
   els.inputs.leagueSeason.value = l.season;
   els.inputs.leagueStatus.value = l.status;
-  
-  // Settings
   els.inputs.ptsWin.value = l.settings.pointsWin;
   els.inputs.ptsDraw.value = l.settings.pointsDraw;
   els.inputs.ptsLoss.value = l.settings.pointsLoss;
   
-  // Toggles visibility
   if (state.editMode === 'team') {
     els.cards.leagueInfo.classList.add('hidden');
     els.cards.leagueTeams.classList.add('hidden');
@@ -487,21 +485,19 @@ window.handleEditTeam = async (teamId) => {
   state.editMode = 'team';
   state.editTeamId = teamId;
   
-  // If we are editing an existing team, we need to fetch its full file
   if (teamId) {
     try {
       const fullTeam = await apiGet(PATHS.team(state.dirtyLeague.id, teamId));
       state.dirtyTeam = fullTeam || createEmptyTeam(teamId);
     } catch(e) {
       console.error(e);
-      state.dirtyTeam = createEmptyTeam(teamId); // Fallback
+      state.dirtyTeam = createEmptyTeam(teamId); 
     }
   } else {
-    // Creating new team - ID starts empty, filled by Name
     state.dirtyTeam = createEmptyTeam('');
   }
   
-  renderManageForm(); // Updates visibility
+  renderManageForm(); 
 };
 
 function createEmptyTeam(id) {
@@ -536,13 +532,11 @@ function renderTeamEditor() {
     </div>
   `;
   
-  // Wire up Name -> ID logic for new teams
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
     if (isNewTeam) {
       state.dirtyTeam.id = normalizeName(this.value);
-      // Update the readonly ID field visually
       els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
     }
   };
@@ -556,7 +550,7 @@ window.addPlaceholderPlayer = () => {
   renderTeamEditor();
 };
 
-// ---- Save Logic (The Complex Part) ----
+// ---- Save Logic ----
 
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
@@ -565,52 +559,42 @@ els.buttons.manageSave.addEventListener('click', async () => {
   setStatus('Saving...', 'info');
   
   try {
-    // 1. If in Team Mode, save Team File AND update League Meta
     if (state.editMode === 'team') {
       const t = state.dirtyTeam;
       const l = state.dirtyLeague;
       
-      // Validation: Check ID
       if (!t.id) return setStatus('Team name cannot be empty/invalid.', 'error');
       
-      // Collision Check (Only if new)
       if (!state.editTeamId) {
         const conflict = l.teams.find(x => x.id === t.id);
         if (conflict) return setStatus(`A team with ID "${t.id}" already exists in this league.`, 'error');
       }
 
-      // Save Team JSON file
       await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
       
-      // Update League Metadata (teams array)
       const existingIdx = l.teams.findIndex(x => x.id === t.id);
       const meta = { id: t.id, name: t.name, race: t.race, coachName: t.coachName };
       
       if (existingIdx >= 0) l.teams[existingIdx] = meta;
       else l.teams.push(meta);
       
-      state.editTeamId = t.id; // ensure ID is set
+      state.editTeamId = t.id;
       setStatus('Team saved locally. You must Save League to commit metadata.', 'ok');
       
-      // Switch back to league mode
       state.editMode = 'league';
       renderManageForm();
       return; 
     }
 
-    // 2. Save League Logic
     const l = state.dirtyLeague;
     
-    // Validation
     if (!l.id) return setStatus('League ID required (Name cannot be empty).', 'error');
     
-    // Collision Check (Only if new)
     if (!state.editLeagueId) {
        const conflict = state.leaguesIndex.find(x => x.id === l.id);
        if (conflict) return setStatus(`League with ID "${l.id}" already exists.`, 'error');
     }
 
-    // Update settings object from inputs
     l.name = els.inputs.leagueName.value;
     l.season = parseInt(els.inputs.leagueSeason.value);
     l.status = els.inputs.leagueStatus.value;
@@ -618,25 +602,20 @@ els.buttons.manageSave.addEventListener('click', async () => {
     l.settings.pointsDraw = parseInt(els.inputs.ptsDraw.value);
     l.settings.pointsLoss = parseInt(els.inputs.ptsLoss.value);
 
-    // A. Save Settings File
     await apiSave(PATHS.leagueSettings(l.id), l, `Save league ${l.id}`, key);
     
-    // B. Update Index File
     const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
     const idxEntry = { id: l.id, name: l.name, season: l.season, status: l.status };
     
-    // Find if updating or pushing new
     const i = freshIndex.findIndex(x => x.id === l.id);
     if (i >= 0) freshIndex[i] = idxEntry;
     else freshIndex.push(idxEntry);
     
     await apiSave(PATHS.leaguesIndex, freshIndex, `Update index for ${l.id}`, key);
 
-    // Done
     state.leaguesIndex = freshIndex;
     setStatus('League saved successfully.', 'ok');
     
-    // Reset Navigation
     state.editMode = 'league';
     showSection('list');
     renderLeagueList();
@@ -647,17 +626,14 @@ els.buttons.manageSave.addEventListener('click', async () => {
   }
 });
 
-// ---- Create New League Button ----
 els.buttons.createLeague.addEventListener('click', () => {
   handleManageLeague(null);
 });
 
-// ---- Add New Team Button ----
 els.buttons.manageAddTeam.addEventListener('click', () => {
   handleEditTeam(null);
 });
 
-// ---- Back Buttons ----
 els.buttons.leagueBack.addEventListener('click', () => showSection('list'));
 els.buttons.manageBack.addEventListener('click', () => {
   if (state.editMode === 'team') {
@@ -671,18 +647,15 @@ els.buttons.teamBack.addEventListener('click', () => {
   showSection('view');
 });
 
-// ---- Datalist Helpers ----
 function populateSkillList() {
   if (!state.gameData?.skillCategories) return;
   const list = els.datalist;
   list.innerHTML = '';
   Object.values(state.gameData.skillCategories).flat().forEach(s => {
     const opt = document.createElement('option');
-    // If gameData uses objects {name: "Block"}, use that. Else string.
     opt.value = (typeof s === 'object' && s.name) ? s.name : s; 
     list.appendChild(opt);
   });
 }
 
-// ---- Boot ----
 init();
