@@ -60,7 +60,10 @@
           "Dodge",
           "Dodge"
         ],
-        "spp": 0
+        "spp": 0,
+        "live": {
+          "used": true
+        }
       },
       {
         "number": 2,
