@@ -14,9 +14,14 @@
 
   <div id="globalStatus" class="status"></div>
 
-  <div class="nav">
+  <div class="nav" style="align-items: center;">
     <button id="navLeague" class="active">Leagues</button>
     <button id="navAdmin">Admin / Raw JSON</button>
+    
+    <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
+      <input type="password" id="editKeyInput" placeholder="Edit Key" style="padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px;" />
+      <button id="rememberKeyBtn" title="Remember on this device" style="padding: 0.4rem 0.8rem;">💾</button>
+    </div>
   </div>
 
   <section id="leagueListSection">
@@ -45,9 +50,7 @@
       <div class="small">
         Standings are calculated from completed matches only. Click a team name to view its roster.
       </div>
-
       <div id="rosterQuickViewContainer"></div>
-
       <div id="standingsContainer"></div>
     </section>
 
@@ -112,7 +115,7 @@
         <div class="form-field">
           <label>
             <input id="leagueManageLockTeamsInput" type="checkbox" />
-            Lock teams (no new teams can join)
+            Lock teams
           </label>
         </div>
       </div>
@@ -133,7 +136,7 @@
     <div class="card">
       <button id="leagueManageSaveBtn">Save Changes</button>
       <div class="small">
-        Changes are saved to GitHub and apply to all users once committed.
+        Changes are saved to GitHub. Requires Edit Key.
       </div>
     </div>
   </section>
@@ -205,32 +208,17 @@
   <section id="adminSection" class="hidden">
     <h2>Admin / Raw JSON Editor</h2>
     <p class="small">
-      Use this to inspect or manually fix data. Changes require the edit key and will create a commit in the GitHub repo.
+      Use this to inspect or manually fix data.
     </p>
     <div class="card">
       <div class="card-header">
-        <h3>Authentication</h3>
-      </div>
-      <div class="inline-input">
-        <label for="editKeyInput">Edit key:</label>
-        <input type="password" id="editKeyInput" placeholder="Enter edit key" />
-        <button id="rememberKeyBtn">Remember on this device</button>
-      </div>
-      <div class="small">
-        The edit key is only needed for saving; loading is read-only.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h3>league.json</h3>
+        <h3>Raw JSON Editor</h3>
         <div>
-          <button id="loadBtn">Load league.json</button>
-          <button id="saveBtn">Save league.json</button>
+          <button id="loadBtn">Load</button>
+          <button id="saveBtn">Save</button>
         </div>
       </div>
-      <p id="adminStatus" class="status"></p>
-      <textarea id="leagueTextarea" placeholder="League JSON will appear here..."></textarea>
+      <textarea id="leagueTextarea" placeholder="JSON content..."></textarea>
     </div>
   </section>
   
