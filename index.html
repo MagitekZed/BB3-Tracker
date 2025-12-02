@@ -160,25 +160,59 @@
   <section id="scoreboardSection" class="hidden">
     <div class="card">
       <div class="card-header">
-        <h2 id="scoreboardHeader">Scoreboard (Live)</h2>
+        <h2 id="scoreboardHeader">Live Match</h2>
         <div>
-          <button id="scoreboardBackToMatchBtn">← Back to League</button>
+          <button id="scoreboardRefreshBtn" title="Force Refresh">↻</button>
+          <button id="scoreboardBackToMatchBtn">Exit View</button>
         </div>
       </div>
-      <div id="scoreboardMeta" class="small"></div>
+      <div id="scoreboardMeta" class="small" style="text-align:center; margin-bottom:0.5rem"></div>
+      
+      <div class="scoreboard-layout">
+        <div class="team-control">
+          <div id="sbHomeName" class="team-name">Home</div>
+          <div class="score-box">
+            <button class="score-btn" onclick="updateLiveScore('home', -1)">-</button>
+            <span id="sbHomeScore" class="score-display">0</span>
+            <button class="score-btn" onclick="updateLiveScore('home', 1)">+</button>
+          </div>
+          <div class="turn-box">
+            Turn: <span id="sbHomeTurn">0</span>
+            <button class="small-btn" onclick="updateLiveTurn('home', 1)">Next</button>
+          </div>
+        </div>
+
+        <div class="match-control">
+          <div class="vs-tag">VS</div>
+          <div style="margin-top:1rem;">
+            <button id="endGameBtn" class="primary-btn" style="background:#0a0;">End Game</button>
+            <button id="cancelGameBtn" class="danger-btn" style="margin-top:0.5rem; background:#d33;">Cancel</button>
+          </div>
+        </div>
+
+        <div class="team-control">
+          <div id="sbAwayName" class="team-name">Away</div>
+          <div class="score-box">
+            <button class="score-btn" onclick="updateLiveScore('away', -1)">-</button>
+            <span id="sbAwayScore" class="score-display">0</span>
+            <button class="score-btn" onclick="updateLiveScore('away', 1)">+</button>
+          </div>
+          <div class="turn-box">
+            Turn: <span id="sbAwayTurn">0</span>
+            <button class="small-btn" onclick="updateLiveTurn('away', 1)">Next</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="scoreboardContent" class="card">
-      <div class="scoreboard-layout" style="text-align:center; margin-bottom:1rem;">
-        <div class="scoreboard-score">
-          <h1 id="scoreboardScoreMain" class="scoreboard-score-main">0 - 0</h1>
-          <div id="scoreboardScoreMeta" class="scoreboard-score-meta"></div>
-        </div>
+    <div class="scoreboard-rosters">
+      <div class="roster-col">
+        <h3>Home Roster</h3>
+        <div id="scoreboardHomeRoster" class="live-roster"></div>
       </div>
-      
-      <div class="scoreboard-rosters" style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-        <div id="scoreboardHomeRoster"></div>
-        <div id="scoreboardAwayRoster"></div>
+      <div class="roster-col">
+        <h3>Away Roster</h3>
+        <div id="scoreboardAwayRoster" class="live-roster"></div>
       </div>
     </div>
   </section>
