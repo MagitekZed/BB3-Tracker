@@ -1,15 +1,65 @@
 {
   "races": [
     {
-      "name": "Orc",
+      "name": "Amazon",
       "tier": 1,
-      "rerollCost": 60000,
-      "specialRules": ["Badlands Brawl"],
+      "rerollCost": 50000,
+      "specialRules": ["Lustrian Superleague"],
       "positionals": [
-        { "name": "Lineman", "qty": 16, "cost": 50000, "ma": 5, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": [], "primary": ["G"], "secondary": ["A","S","P"] },
-        { "name": "Blitzer", "qty": 4,  "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": ["Block"], "primary": ["G","S"], "secondary": ["A","P"] },
-        { "name": "Black Orc", "qty": 4, "cost": 85000, "ma": 4, "st": 4, "ag": 4, "pa": 5, "av": 10, "skills": ["Brawler", "Grab"], "primary": ["G","S"], "secondary": ["A","P"] },
-        { "name": "Thrower", "qty": 2,  "cost": 65000, "ma": 5, "st": 3, "ag": 3, "pa": 3, "av": 9,  "skills": ["Sure Hands", "Pass"], "primary": ["G","P"], "secondary": ["A","S"] }
+        { "name": "Eagle Warrior Linewoman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Dodge"], "primary": ["G"], "secondary": ["A","S"] },
+        { "name": "Piranha Warrior Blitzer", "qty": 2, "cost": 90000, "ma": 7, "st": 3, "ag": 3, "pa": 5, "av": 8, "skills": ["Dodge", "Hit and Run", "Jump Up"], "primary": ["A","G"], "secondary": ["S"] },
+        { "name": "Python Warrior Thrower", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Dodge", "On the Ball", "Pass", "Safe Pass"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Jaguar Warrior Blocker", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 3, "pa": 5, "av": 9, "skills": ["Defensive", "Dodge"], "primary": ["G","S"], "secondary": ["A"] }
+      ]
+    },
+    {
+      "name": "Black Orc",
+      "tier": 2,
+      "rerollCost": 60000,
+      "specialRules": ["Badlands Brawl", "Bribery and Corruption"],
+      "positionals": [
+        { "name": "Goblin Bruiser", "qty": 12, "cost": 45000, "ma": 6, "st": 2, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Right Stuff", "Stunty", "Thick Skull"], "primary": ["A"], "secondary": ["G","S","P"] },
+        { "name": "Black Orc", "qty": 6, "cost": 90000, "ma": 4, "st": 4, "ag": 4, "pa": 5, "av": 10, "skills": ["Brawler", "Grab"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Trained Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P","M"] }
+      ]
+    },
+    {
+      "name": "Chaos Chosen",
+      "tier": 2,
+      "rerollCost": 60000,
+      "specialRules": ["Favoured of Chaos"],
+      "positionals": [
+        { "name": "Beastman Runner", "qty": 16, "cost": 60000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Horns"], "primary": ["G","S","M"], "secondary": ["A","P"] },
+        { "name": "Chosen Blocker", "qty": 4, "cost": 100000, "ma": 5, "st": 4, "ag": 3, "pa": 5, "av": 10, "skills": [], "primary": ["G","S","M"], "secondary": ["A","P"] },
+        { "name": "Chaos Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S","M"], "secondary": ["A","G","P"] },
+        { "name": "Chaos Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (3+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S","M"], "secondary": ["A","G","P"] },
+        { "name": "Minotaur", "qty": 1, "cost": 150000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Loner (3+)", "Frenzy", "Horns", "Mighty Blow (+1)", "Thick Skull", "Unchannelled Fury"], "primary": ["S","M"], "secondary": ["A","G"] }
+      ]
+    },
+    {
+      "name": "Dark Elf",
+      "tier": 1,
+      "rerollCost": 50000,
+      "specialRules": ["Elven Kingdoms League"],
+      "positionals": [
+        { "name": "Lineman", "qty": 16, "cost": 70000, "ma": 6, "st": 3, "ag": 2, "pa": 4, "av": 9, "skills": [], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Runner", "qty": 2, "cost": 80000, "ma": 7, "st": 3, "ag": 2, "pa": 3, "av": 8, "skills": ["Dump-off"], "primary": ["G","A","P"], "secondary": ["S"] },
+        { "name": "Assassin", "qty": 2, "cost": 85000, "ma": 6, "st": 3, "ag": 2, "pa": 5, "av": 8, "skills": ["Shadowing", "Stab"], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Blitzer", "qty": 4, "cost": 100000, "ma": 7, "st": 3, "ag": 2, "pa": 4, "av": 9, "skills": ["Block"], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Witch Elf", "qty": 2, "cost": 110000, "ma": 7, "st": 3, "ag": 2, "pa": 5, "av": 8, "skills": ["Dodge", "Frenzy", "Jump Up"], "primary": ["G","A"], "secondary": ["S","P"] }
+      ]
+    },
+    {
+      "name": "Dwarf",
+      "tier": 1,
+      "rerollCost": 50000,
+      "specialRules": ["Worlds Edge Superleague"],
+      "positionals": [
+        { "name": "Blocker", "qty": 16, "cost": 70000, "ma": 4, "st": 3, "ag": 4, "pa": 5, "av": 10, "skills": ["Block", "Tackle", "Thick Skull"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Runner", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Sure Hands", "Thick Skull"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Blitzer", "qty": 2, "cost": 85000, "ma": 5, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": ["Block", "Thick Skull"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Troll Slayer", "qty": 2, "cost": 90000, "ma": 5, "st": 3, "ag": 4, "pa": -1, "av": 9, "skills": ["Block", "Dauntless", "Frenzy", "Thick Skull"], "primary": ["G","S"], "secondary": ["A"] },
+        { "name": "Deathroller", "qty": 1, "cost": 170000, "ma": 4, "st": 7, "ag": 5, "pa": -1, "av": 11, "skills": ["Break Tackle", "Dirty Player (+2)", "Juggernaut", "Loner (4+)", "Mighty Blow (+1)", "No Hands", "Secret Weapon", "Stand Firm"], "primary": ["S"], "secondary": ["G","A"] }
       ]
     },
     {
@@ -17,37 +67,181 @@
       "tier": 1,
       "rerollCost": 50000,
       "specialRules": ["Old World Classic"],
-      "positionals": []
+      "positionals": [
+        { "name": "Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": [], "primary": ["G"], "secondary": ["A","S","P"] },
+        { "name": "Catcher", "qty": 4, "cost": 65000, "ma": 8, "st": 2, "ag": 3, "pa": 5, "av": 8, "skills": ["Catch", "Dodge"], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Thrower", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 2, "av": 9, "skills": ["Pass", "Sure Hands"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Blitzer", "qty": 4, "cost": 85000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Block"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Halfling Hopeful", "qty": 3, "cost": 30000, "ma": 5, "st": 2, "ag": 3, "pa": 4, "av": 7, "skills": ["Dodge", "Right Stuff", "Stunty"], "primary": ["A"], "secondary": ["G","S","P"] },
+        { "name": "Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (4+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] }
+      ]
+    },
+    {
+      "name": "Imperial Nobility",
+      "tier": 2,
+      "rerollCost": 70000,
+      "specialRules": ["Old World Classic"],
+      "positionals": [
+        { "name": "Retainer Lineman", "qty": 12, "cost": 45000, "ma": 6, "st": 3, "ag": 4, "pa": 4, "av": 8, "skills": ["Fend"], "primary": ["G"], "secondary": ["A","S","P"] },
+        { "name": "Noble Blitzer", "qty": 2, "cost": 105000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Block", "Catch"], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Noble Thrower", "qty": 2, "cost": 70000, "ma": 6, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Pass", "Running Pass"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Bodyguard", "qty": 4, "cost": 90000, "ma": 6, "st": 3, "ag": 4, "pa": 5, "av": 9, "skills": ["Stand Firm", "Wrestle"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (4+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] }
+      ]
+    },
+    {
+      "name": "Khorne",
+      "tier": 1,
+      "rerollCost": 60000,
+      "specialRules": ["Favoured of Khorne"],
+      "positionals": [
+        { "name": "Bloodborn Marauder Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Frenzy"], "primary": ["G","M"], "secondary": ["A","S"] },
+        { "name": "Khorngor", "qty": 2, "cost": 70000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Horns", "Juggernaut", "Jump Up", "Thick Skull"], "primary": ["G","S","M"], "secondary": ["A","P"] },
+        { "name": "Bloodseeker", "qty": 4, "cost": 110000, "ma": 5, "st": 4, "ag": 4, "pa": 6, "av": 10, "skills": ["Frenzy"], "primary": ["G","S","M"], "secondary": ["A"] },
+        { "name": "Bloodspawn", "qty": 1, "cost": 160000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Claws", "Frenzy", "Loner (4+)", "Mighty Blow (+1)", "Unchannelled Fury"], "primary": ["S","M"], "secondary": ["A","G"] }
+      ]
+    },
+    {
+      "name": "Necromantic Horror",
+      "tier": 1,
+      "rerollCost": 70000,
+      "specialRules": ["Masters of Undeath", "Sylvanian Spotlight"],
+      "positionals": [
+        { "name": "Zombie Lineman", "qty": 16, "cost": 40000, "ma": 4, "st": 3, "ag": 4, "pa": -1, "av": 9, "skills": ["Regeneration"], "primary": ["G"], "secondary": ["A","S"] },
+        { "name": "Ghoul Runner", "qty": 2, "cost": 75000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge"], "primary": ["A","G"], "secondary": ["S","P"] },
+        { "name": "Wraith", "qty": 2, "cost": 95000, "ma": 6, "st": 3, "ag": 3, "pa": -1, "av": 9, "skills": ["Block", "Foul Appearance", "No Hands", "Regeneration", "Side Step"], "primary": ["G","S"], "secondary": ["A"] },
+        { "name": "Werewolf", "qty": 2, "cost": 125000, "ma": 8, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Claws", "Frenzy", "Regeneration"], "primary": ["A","G"], "secondary": ["S","P"] },
+        { "name": "Flesh Golem", "qty": 2, "cost": 115000, "ma": 4, "st": 4, "ag": 4, "pa": -1, "av": 10, "skills": ["Regeneration", "Stand Firm", "Thick Skull"], "primary": ["G","S"], "secondary": ["A"] }
+      ]
+    },
+    {
+      "name": "Norse",
+      "tier": 1,
+      "rerollCost": 60000,
+      "specialRules": ["Old World Classic"],
+      "positionals": [
+        { "name": "Norse Raider Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Block", "Drunkard", "Thick Skull"], "primary": ["G"], "secondary": ["A","S","P"] },
+        { "name": "Beer Boar", "qty": 2, "cost": 20000, "ma": 5, "st": 1, "ag": 3, "pa": -1, "av": 6, "skills": ["Dodge", "No Hands", "Pick-me-up", "Stunty", "Titchy"], "primary": [], "secondary": ["A"] },
+        { "name": "Norse Berserker", "qty": 2, "cost": 90000, "ma": 6, "st": 3, "ag": 3, "pa": 5, "av": 8, "skills": ["Block", "Frenzy", "Jump Up"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Valkyrie", "qty": 2, "cost": 95000, "ma": 7, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Catch", "Dauntless", "Pass", "Strip Ball"], "primary": ["A","G","P"], "secondary": ["S"] },
+        { "name": "Ulfwerener", "qty": 2, "cost": 105000, "ma": 6, "st": 4, "ag": 4, "pa": -1, "av": 9, "skills": ["Frenzy"], "primary": ["G","S"], "secondary": ["A"] },
+        { "name": "Yhetee", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Claws", "Disturbing Presence", "Frenzy", "Loner (4+)", "Unchannelled Fury"], "primary": ["S"], "secondary": ["A","G"] }
+      ]
+    },
+    {
+      "name": "Orc",
+      "tier": 1,
+      "rerollCost": 60000,
+      "specialRules": ["Badlands Brawl"],
+      "positionals": [
+        { "name": "Lineman", "qty": 16, "cost": 50000, "ma": 5, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": [], "primary": ["G"], "secondary": ["A","S","P"] },
+        { "name": "Goblin", "qty": 4, "cost": 40000, "ma": 6, "st": 2, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Right Stuff", "Stunty"], "primary": ["A"], "secondary": ["G","S","P"] },
+        { "name": "Thrower", "qty": 2, "cost": 65000, "ma": 5, "st": 3, "ag": 3, "pa": 3, "av": 9, "skills": ["Pass", "Sure Hands"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Blitzer", "qty": 4, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": ["Block"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Big Un Blocker", "qty": 4, "cost": 90000, "ma": 4, "st": 4, "ag": 4, "pa": 5, "av": 10, "skills": [], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Untrained Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] }
+      ]
+    },
+    {
+      "name": "Vampire",
+      "tier": 2,
+      "rerollCost": 60000,
+      "specialRules": ["Sylvanian Spotlight", "Masters of Undeath"],
+      "positionals": [
+        { "name": "Thrall Lineman", "qty": 16, "cost": 40000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": [], "primary": ["G"], "secondary": ["A","S"] },
+        { "name": "Vampire Runner", "qty": 2, "cost": 100000, "ma": 8, "st": 3, "ag": 2, "pa": 3, "av": 8, "skills": ["Bloodlust (2+)", "Hypnotic Gaze", "Regeneration"], "primary": ["A","G"], "secondary": ["P","S"] },
+        { "name": "Vampire Thrower", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 2, "pa": 2, "av": 9, "skills": ["Bloodlust (2+)", "Hypnotic Gaze", "Pass", "Regeneration"], "primary": ["A","G","P"], "secondary": ["S"] },
+        { "name": "Vampire Blitzer", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 2, "pa": 4, "av": 9, "skills": ["Bloodlust (3+)", "Hypnotic Gaze", "Juggernaut", "Regeneration"], "primary": ["G","A","S"], "secondary": ["P"] },
+        { "name": "Vargheist", "qty": 1, "cost": 150000, "ma": 5, "st": 5, "ag": 4, "pa": 6, "av": 10, "skills": ["Bloodlust (3+)", "Claws", "Frenzy", "Loner (4+)", "Regeneration"], "primary": ["S"], "secondary": ["A","G"] }
+      ]
     }
   ],
   "skillCategories": {
     "General": [
-      {
-        "name": "Block",
-        "description": "The player is not Knocked Down when a Both Down result is applied."
-      },
-      {
-        "name": "Dauntless",
-        "description": "Capable of taking on stronger opponents. Roll 1D6..."
-      }
+      { "name": "Block", "description": "The player is not Knocked Down when a Both Down result is applied. " },
+      { "name": "Dauntless", "description": "When this player performs a Block or Blitz against a stronger opponent, roll a D6 and add it to Strength. If total is higher than opponent's Strength, use that total instead." },
+      { "name": "Dirty Player (+1/+2)", "description": "Add +1 (or +2) to the Armour roll or Injury roll when this player commits a Foul." },
+      { "name": "Fend", "description": "Opponents cannot follow-up when this player is Pushed Back. Re-roll 1s on Armor saves." },
+      { "name": "Frenzy", "description": "Must follow up blocks. If the first block is a Push/Stumble/Knockdown, must throw a second block." },
+      { "name": "Kick", "description": "If this player is set up to kick, you may halve the scatter deviation of the ball." },
+      { "name": "Pro", "description": "Once per turn, you may re-roll any single dice roll (except Armor/Injury/Casualty) on a 3+." },
+      { "name": "Shadowing", "description": "When an opponent leaves a square in this player's tackle zone, roll D6 + MA. If you beat their roll, you may move into the vacated square." },
+      { "name": "Strip Ball", "description": "When this player pushes an opponent with the ball, the ball is knocked loose." },
+      { "name": "Sure Hands", "description": "Player can re-roll failed Pick-up tests. Immunity to Strip Ball." },
+      { "name": "Tackle", "description": "Opponents cannot use Dodge when blocked by this player." },
+      { "name": "Wrestle", "description": "On a Both Down result, both players are Placed Prone without Turnover or Armor rolls." }
     ],
     "Agility": [
-      {
-        "name": "Dodge",
-        "description": "Allows a re-roll on a failed Dodge test. Stumbles result becomes a Push."
-      }
+      { "name": "Catch", "description": "Re-roll failed Catch tests." },
+      { "name": "Defensive", "description": "Opponents in your tackle zone cannot use Guard." },
+      { "name": "Diving Catch", "description": "Can catch accurate passes in adjacent squares. +1 to Catch accurate passes." },
+      { "name": "Diving Tackle", "description": "-2 to opponent's Agility test when they dodge out of your tackle zone. Place this player Prone." },
+      { "name": "Dodge", "description": "Re-roll failed Dodge tests. Stumbles results become Pushes." },
+      { "name": "Jump Up", "description": "Can Stand Up for free (no movement cost). Can Block from Prone on a 2+ Agility test." },
+      { "name": "Leap", "description": "Can move to any empty square within movement range by making an Agility test, ignoring tackle zones." },
+      { "name": "Safe Pair of Hands", "description": "If knocked down with the ball, you can place the ball in an adjacent square instead of scattering." },
+      { "name": "Side Step", "description": "When Pushed Back, you choose the destination square (must be empty)." },
+      { "name": "Sneaky Git", "description": "You are not sent off for fouling if you roll doubles on the Armor/Injury roll." },
+      { "name": "Sprint", "description": "You can Rush 3 times instead of 2." },
+      { "name": "Sure Feet", "description": "Re-roll failed Rush tests." }
+    ],
+    "Passing": [
+      { "name": "Accurate", "description": "+1 to Passing tests." },
+      { "name": "Cannoneer", "description": "+1 to Long Pass and Long Bomb tests." },
+      { "name": "Cloud Burster", "description": "When attempting to interfere with your pass, opponents must re-roll successful Interceptions." },
+      { "name": "Dump-off", "description": "When blocked, can make a Quick Pass before the block is resolved." },
+      { "name": "Fumblerooskie", "description": "Can drop the ball in an empty square during movement without turnover." },
+      { "name": "Hail Mary Pass", "description": "Can throw to any square on the pitch. 2+ to scatter, 1 is a fumble. Not accurate." },
+      { "name": "Leader", "description": "Team gets 1 extra Reroll as long as this player is on the pitch." },
+      { "name": "Nerves of Steel", "description": "Ignore Tackle Zone modifiers when Passing, Catching, or Interfering." },
+      { "name": "On the Ball", "description": "Can move 3 squares when the Kick-off is declared." },
+      { "name": "Pass", "description": "Re-roll failed Passing tests." },
+      { "name": "Running Pass", "description": "Can move after passing." },
+      { "name": "Safe Pass", "description": "Fumbled passes do not cause a turnover unless a natural 1 was rolled." }
     ],
     "Strength": [
-      {
-        "name": "Guard",
-        "description": "Offers assists even when marked."
-      },
-      {
-        "name": "Mighty Blow (+1)",
-        "description": "Add +1 to Armor or Injury roll."
-      }
+      { "name": "Arm Bar", "description": "+1 to Armor/Injury when an opponent fails a Dodge in your tackle zone." },
+      { "name": "Brawler", "description": "Re-roll one Both Down result when blocking." },
+      { "name": "Break Tackle", "description": "Use Strength instead of Agility for one Dodge per turn." },
+      { "name": "Grab", "description": "Negates Side Step. You can choose any empty adjacent square to push the opponent to." },
+      { "name": "Guard", "description": "Assist blocks even when in another tackle zone." },
+      { "name": "Juggernaut", "description": "When Blitzing: convert Both Down to Push. Negates Stand Firm, Fend, Wrestle." },
+      { "name": "Mighty Blow (+1)", "description": "+1 to Armor or Injury roll when blocking." },
+      { "name": "Multiple Block", "description": "Can block two opponents at once (Strength -2)." },
+      { "name": "Pile Driver", "description": "Can make a free Foul action against a player you just knocked down." },
+      { "name": "Stand Firm", "description": "Cannot be Pushed Back." },
+      { "name": "Strong Arm", "description": "+1 to Throw Team-mate tests." },
+      { "name": "Thick Skull", "description": "Treat 'KO' results on the Injury table as 'Stunned' on a roll of 4+ (usually 8+ on D8)." }
     ],
-    "Passing": [],
-    "Mutation": []
+    "Mutation": [
+      { "name": "Big Hand", "description": "Ignore tackle zones when picking up the ball. Ignore weather modifiers." },
+      { "name": "Claws", "description": "Armor breaks on a roll of 8+ regardless of AV." },
+      { "name": "Disturbing Presence", "description": "-1 to opponent's Pass/Catch/Interfere within 3 squares." },
+      { "name": "Extra Arms", "description": "+1 to Pick-up, Catch, and Interfere tests." },
+      { "name": "Foul Appearance", "description": "Opponent must roll D6 (2+) to block this player. On a 1, the action is wasted." },
+      { "name": "Horns", "description": "+1 Strength when Blitzing." },
+      { "name": "Iron Hard Skin", "description": "Opponent cannot modify Armor roll (negates Claws/Mighty Blow)." },
+      { "name": "Monstrous Mouth", "description": "Re-roll failed Catch. Strip Ball has no effect." },
+      { "name": "Prehensile Tail", "description": "-1 to opponent's Dodge/Jump/Leap tests in your tackle zone." },
+      { "name": "Tentacles", "description": "Opponent must roll D6 + ST > Your ST + D6 to leave your tackle zone." },
+      { "name": "Two Heads", "description": "+1 to Dodge tests." },
+      { "name": "Very Long Legs", "description": "+1 to Intercept. +1 to Jump. Ignores Cloud Burster." }
+    ],
+    "Traits": [
+      { "name": "Always Hungry", "description": "When throwing a team-mate, roll D6. On a 1, try to eat them." },
+      { "name": "Animal Savagery", "description": "On 1-3 (D6) when activating, must hit an adjacent friendly or turn ends." },
+      { "name": "Animosity", "description": "Roll D6 (2+) to hand-off or pass to a teammate of a different race." },
+      { "name": "Bone Head", "description": "Roll D6 (2+) to activate. On a 1, lose tackle zone and turn ends." },
+      { "name": "Hypnotic Gaze", "description": "Special Action: Agility test to remove opponent's Tackle Zone." },
+      { "name": "Loner (3+/4+)", "description": "Must roll 3+ (or 4+) to use a Team Reroll." },
+      { "name": "No Hands", "description": "Cannot pick up, catch, or intercept the ball." },
+      { "name": "Really Stupid", "description": "Like Bone Head, but needs a teammate adjacent to roll 2+. Otherwise 4+." },
+      { "name": "Regeneration", "description": "On a Casualty, roll D6. On a 4+, the player is placed in Reserves instead." },
+      { "name": "Right Stuff", "description": "Can be thrown by a player with Throw Team-mate." },
+      { "name": "Stunty", "description": "Ignores tackle zones when dodging (always 3+). Prone to injury." },
+      { "name": "Throw Team-mate", "description": "Can throw players with the Right Stuff trait." },
+      { "name": "Titchy", "description": "+1 to Dodge. -1 to opponent's Dodge. Does not block line of sight." },
+      { "name": "Unchannelled Fury", "description": "Roll D6 (2+) to attack. On a 1, turn ends." }
+    ]
   }
 }
