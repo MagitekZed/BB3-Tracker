@@ -1,0 +1,19 @@
+{
+  "id": "team_2",
+  "name": "team 2",
+  "race": "Human",
+  "coachName": "",
+  "players": [
+    {
+      "name": "Player",
+      "position": "Lineman",
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "spp": 0
+    }
+  ]
+}
