@@ -210,12 +210,12 @@
     
     <div class="card">
       <div class="card-header">
-        <h3>System Health</h3>
+        <h3>Repository Health</h3>
       </div>
       <div class="small" style="margin-bottom:1rem">
-        Scan currently selected league for orphaned team files (files that exist in the repo but are not linked to the league).
+        Scans the entire <code>data/leagues/</code> structure for "Ghost" leagues (not in index) and "Orphan" teams (not in league roster).
       </div>
-      <button id="scanBtn">Scan Current League for Orphans</button>
+      <button id="scanBtn">Scan Repository</button>
       <div id="scanResults" style="margin-top:1rem;"></div>
     </div>
 
