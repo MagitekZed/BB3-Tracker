@@ -8,163 +8,167 @@
 </head>
 <body>
   <h1>Blood Bowl 3 League Tracker</h1>
-  <div class="subtitle">
-    Simple online tracker for in-person leagues. Data stored in GitHub via Cloudflare Worker.
+  
+  <div class="nav-bar-container">
+    <div id="breadcrumbs" class="breadcrumbs">Home</div>
+    <div class="user-controls">
+      <input type="password" id="editKeyInput" placeholder="Edit Key" />
+      <button id="rememberKeyBtn" title="Save Key">💾</button>
+    </div>
   </div>
 
   <div id="globalStatus" class="status"></div>
 
-  <div class="nav" style="align-items: center;">
-    <button id="navLeague" class="active">Leagues</button>
-    <button id="navAdmin">Admin / Raw JSON</button>
-    
-    <div style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
-      <input type="password" id="editKeyInput" placeholder="Edit Key" style="padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px;" />
-      <button id="rememberKeyBtn" title="Remember on this device" style="padding: 0.4rem 0.8rem;">💾</button>
-    </div>
-  </div>
-
   <section id="leagueListSection">
-    <h2>Leagues</h2>
-    <div class="small">
-      Select a league to view standings, or manage leagues below.
-    </div>
-    <div style="margin: 0.5rem 0 1rem;">
-      <button id="leagueCreateBtn" class="primary-btn">+ Create New League</button>
+    <div class="section-header">
+      <h2>Leagues</h2>
+      <button id="leagueCreateBtn" class="primary-btn">+ New League</button>
     </div>
     <div id="leagueListContainer"></div>
   </section>
 
   <section id="leagueViewSection" class="hidden">
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <button id="leagueBackBtn">← Back to Leagues</button>
-        </div>
-      </div>
-      <div id="leagueHeader"></div>
+    <div id="leagueHeader" class="page-header"></div>
+    
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchLeagueTab('standings')">Standings</button>
+      <button class="tab-btn" onclick="switchLeagueTab('matches')">Schedule</button>
+      <button class="tab-btn" onclick="switchLeagueTab('admin')">Admin</button>
     </div>
 
-    <section id="leagueTeamsSection">
-      <h2>Teams & Standings</h2>
-      <div class="small">
-        Standings are calculated from completed matches only.
-      </div>
-      <div id="rosterQuickViewContainer"></div>
+    <div id="tab-standings" class="tab-content">
       <div id="standingsContainer"></div>
-    </section>
+      <h3>Teams</h3>
+      <div id="rosterQuickViewContainer"></div>
+    </div>
 
-    <section id="leagueMatchesSection">
-      <h2>Matches</h2>
+    <div id="tab-matches" class="tab-content hidden">
       <div class="card">
         <h3>Schedule Match</h3>
         <div class="inline-input">
-          <label>Round: <input type="number" id="schedRound" value="1" style="width:50px"></label>
-          <select id="schedHome"><option>Home Team...</option></select>
-          <span style="font-weight:bold">vs</span>
-          <select id="schedAway"><option>Away Team...</option></select>
-          <button id="schedAddBtn">Add to Schedule</button>
+          <label>Rd: <input type="number" id="schedRound" value="1" style="width:40px"></label>
+          <select id="schedHome"><option>Home...</option></select>
+          <span style="font-weight:bold; color:#888;">vs</span>
+          <select id="schedAway"><option>Away...</option></select>
+          <button id="schedAddBtn" class="primary-btn">Add</button>
         </div>
       </div>
       <div id="inProgressContainer"></div>
       <div id="matchesContainer"></div>
-    </section>
+    </div>
+
+    <div id="tab-admin" class="tab-content hidden">
+      <button id="leagueManageBtn" class="secondary-btn">Edit League Settings</button>
+    </div>
   </section>
 
   <section id="leagueManageSection" class="hidden">
     <div class="card">
-      <div class="card-header">
-        <h2 id="leagueManageHeader">Manage League</h2>
-        <button id="leagueManageBackBtn">← Back</button>
-      </div>
-      <div id="leagueManageStatus" class="small"></div>
-    </div>
-
-    <div class="card" id="leagueInfoCard">
-      <div class="card-header"><h3>League Info</h3></div>
+      <h2>Manage League</h2>
       <div class="form-grid">
-        <div class="form-field">
-          <label>League ID</label>
-          <input id="leagueManageIdInput" type="text" placeholder="league_1" />
-        </div>
-        <div class="form-field">
-          <label>Name</label>
-          <input id="leagueManageNameInput" type="text" placeholder="Local League" />
-        </div>
-        <div class="form-field">
-          <label>Season</label>
-          <input id="leagueManageSeasonInput" type="number" min="1" />
-        </div>
-        <div class="form-field">
-          <label>Status</label>
+        <div class="form-field"><label>ID</label><input id="leagueManageIdInput" readonly class="faded" /></div>
+        <div class="form-field"><label>Name</label><input id="leagueManageNameInput" /></div>
+        <div class="form-field"><label>Season</label><input type="number" id="leagueManageSeasonInput" /></div>
+        <div class="form-field"><label>Status</label>
           <select id="leagueManageStatusSelect">
-            <option value="active">active</option>
-            <option value="upcoming">upcoming</option>
-            <option value="completed">completed</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
           </select>
         </div>
         <div class="form-field">
           <label>Points (W/D/L)</label>
-          <div style="display:flex; gap:0.5rem">
-            <input id="leagueManagePointsWinInput" type="number" placeholder="W" style="width:50px" />
-            <input id="leagueManagePointsDrawInput" type="number" placeholder="D" style="width:50px" />
-            <input id="leagueManagePointsLossInput" type="number" placeholder="L" style="width:50px" />
+          <div style="display:flex; gap:5px">
+            <input id="leagueManagePointsWinInput" type="number" placeholder="W" />
+            <input id="leagueManagePointsDrawInput" type="number" placeholder="D" />
+            <input id="leagueManagePointsLossInput" type="number" placeholder="L" />
           </div>
         </div>
-        <div class="form-field">
-          <label>Max Teams</label>
-          <input id="leagueManageMaxTeamsInput" type="number" min="2" />
-        </div>
-        <div class="form-field">
-          <label><input id="leagueManageLockTeamsInput" type="checkbox" /> Lock teams</label>
-        </div>
+      </div>
+      <div class="button-group">
+        <button id="leagueManageSaveBtn" class="primary-btn">Save League</button>
+        <button id="leagueManageDeleteBtn" class="danger-btn">Delete League</button>
       </div>
     </div>
-
-    <div class="card" id="leagueTeamsCard">
+    <div class="card">
       <div class="card-header">
-        <h3>Teams in League</h3>
-        <button id="leagueManageAddNewTeamBtn">+ Add New Team</button>
+        <h3>Teams</h3>
+        <button id="leagueManageAddTeamBtn" class="secondary-btn">+ Add Team</button>
       </div>
       <div id="leagueManageTeamsList"></div>
-    </div>
-
-    <div class="card" id="teamEditorCard">
-      <div id="leagueManageTeamEditor"></div>
-    </div>
-
-    <div class="card">
-      <div class="button-group">
-        <button id="leagueManageSaveBtn" class="primary-btn">Save Changes</button>
-        <div id="deleteLeagueContainer"></div> 
-      </div>
     </div>
   </section>
 
   <section id="teamViewSection" class="hidden">
-    <div class="card">
-      <div class="card-header">
-        <h2 id="teamHeader">Team Detail</h2>
-        <div>
-          <button id="teamBackBtn">← Back to League</button>
-          <button id="teamManageBtn">Manage Team</button>
-        </div>
+    <div class="card team-header-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 id="teamHeaderName">Team Name</h2>
+        <div id="teamTVBadge" class="tv-badge">TV: 1000k</div>
       </div>
       <div id="teamSummary" class="small"></div>
+      <div style="margin-top:1rem;">
+        <button id="teamEditBtn" class="secondary-btn">Edit / Manage Team</button>
+      </div>
     </div>
-    <section id="teamRosterSection">
-      <h3>Roster</h3>
-      <div id="teamRosterContainer"></div>
-    </section>
+    <div id="teamRosterContainer"></div>
+  </section>
+
+  <section id="teamEditorSection" class="hidden">
+    <div class="card">
+      <h2>Edit Team</h2>
+      <div class="form-grid">
+        <div class="form-field"><label>Name</label><input id="teamEditName" /></div>
+        <div class="form-field"><label>Coach</label><input id="teamEditCoach" /></div>
+        <div class="form-field"><label>Race</label><select id="teamEditRace" onchange="changeTeamRace(this.value)"></select></div>
+        <div class="form-field"><label>Rerolls</label><input type="number" id="teamEditRerolls" style="width:60px" /></div>
+        <div class="form-field"><label>Treasury (k)</label><input type="number" id="teamEditTreasury" /></div>
+      </div>
+      <div class="tv-bar" id="teamEditTVBar">Current TV: 0k</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Roster</h3>
+        <button class="primary-btn" onclick="openShopModal()">+ Buy Player</button>
+      </div>
+      <table class="roster-editor-table">
+        <thead><tr><th>#</th><th>Name</th><th>Pos</th><th>Stats</th><th>Skills</th><th>SPP</th><th></th></tr></thead>
+        <tbody id="teamEditorRosterBody"></tbody>
+      </table>
+    </div>
+    
+    <div class="button-group">
+      <button id="teamSaveBtn" class="primary-btn">Save Changes</button>
+      <button id="teamDeleteBtn" class="danger-btn">Delete Team</button>
+    </div>
+  </section>
+
+  <section id="preMatchSection" class="hidden">
+    <h2>Match Setup</h2>
+    <div class="versus-card">
+      <div class="vs-team">
+        <h3 id="pmHomeName">Home</h3>
+        <div class="tv-display" id="pmHomeTV">TV 1000</div>
+      </div>
+      <div class="vs-divider">VS</div>
+      <div class="vs-team">
+        <h3 id="pmAwayName">Away</h3>
+        <div class="tv-display" id="pmAwayTV">TV 1200</div>
+      </div>
+    </div>
+    <div class="inducement-box">
+      <h4>Inducements / Petty Cash</h4>
+      <div id="pmInducementText">Home receives 200k gold.</div>
+    </div>
+    <button id="pmStartBtn" class="primary-btn full-width">START MATCH</button>
   </section>
 
   <section id="scoreboardSection" class="hidden">
     <div class="card">
       <div class="card-header">
-        <h2 id="scoreboardHeader">Live Match</h2>
+        <h2>Live Match</h2>
         <div>
-          <button id="scoreboardRefreshBtn" title="Force Refresh">↻</button>
-          <button id="scoreboardBackToMatchBtn">Exit</button>
+          <button id="sbRefreshBtn" class="secondary-btn">↻</button>
         </div>
       </div>
       
@@ -172,96 +176,93 @@
         <div class="team-control">
           <div id="sbHomeName" class="team-name">Home</div>
           <div id="sbHomeScore" class="score-display">0</div>
-          <div class="turn-box">Turn: <span id="sbHomeTurn">0</span></div>
-          <button class="primary-btn" style="margin-top:1rem; width:100%" onclick="enterCoachMode('home')">Play as Home</button>
+          <button class="primary-btn" onclick="enterCoachMode('home')">Coach Mode</button>
         </div>
-
         <div class="match-control">
           <div class="vs-tag">VS</div>
-          <div style="margin-top:2rem;">
-            <button id="endGameBtn" class="primary-btn" style="background:#0a0;">End Game</button>
-            <button id="cancelGameBtn" class="danger-btn" style="margin-top:0.5rem; background:#d33;">Cancel</button>
-          </div>
+          <div class="turn-box">Turn: <span id="sbTurn">0</span></div>
+          <button id="endGameBtn" class="primary-btn">End Game</button>
         </div>
-
         <div class="team-control">
           <div id="sbAwayName" class="team-name">Away</div>
           <div id="sbAwayScore" class="score-display">0</div>
-          <div class="turn-box">Turn: <span id="sbAwayTurn">0</span></div>
-          <button class="primary-btn" style="margin-top:1rem; width:100%" onclick="enterCoachMode('away')">Play as Away</button>
+          <button class="primary-btn" onclick="enterCoachMode('away')">Coach Mode</button>
         </div>
       </div>
     </div>
-
     <div class="scoreboard-rosters">
-      <div class="roster-col">
-        <h3>Home Roster</h3>
-        <div id="scoreboardHomeRoster" class="live-roster"></div>
-      </div>
-      <div class="roster-col">
-        <h3>Away Roster</h3>
-        <div id="scoreboardAwayRoster" class="live-roster"></div>
-      </div>
+      <div class="roster-col"><h3>Home</h3><div id="sbHomeRoster"></div></div>
+      <div class="roster-col"><h3>Away</h3><div id="sbAwayRoster"></div></div>
     </div>
   </section>
 
   <section id="coachSection" class="hidden">
     <div class="coach-header">
       <div class="coach-header-top">
-        <div class="coach-team-name" id="coachTeamName">My Team</div>
-        <div class="coach-score" id="coachScoreDisplay">0 - 0</div>
+        <div id="coachTeamName" class="coach-team-name">My Team</div>
+        <div id="coachScoreDisplay" class="coach-score">0 - 0</div>
       </div>
       <div class="coach-resources">
-        <div class="resource-group">
-          <span>Rerolls:</span>
-          <div id="coachRerolls" class="reroll-pips"></div>
-        </div>
-        <div class="resource-group">
-          <span>Turn:</span>
-          <span id="coachTurnDisplay" style="font-weight:bold; margin-left:5px">0</span>
-        </div>
+        <div>Rerolls: <span id="coachRerolls" class="reroll-pips"></span></div>
+        <div>Turn: <span id="coachTurnDisplay" style="font-weight:bold">0</span></div>
       </div>
     </div>
 
-    <div class="coach-main">
-      <div id="coachRosterList" class="live-roster"></div>
-    </div>
+    <div id="coachRosterList" class="coach-card-grid"></div>
 
     <div class="coach-footer">
-      <button class="secondary-btn" onclick="exitCoachMode()">Exit</button>
-      <button class="primary-btn" id="coachEndTurnBtn" style="width:60%">End Turn</button>
+      <button class="secondary-btn" onclick="window.history.back()">Exit</button>
+      <button class="primary-btn" id="coachEndTurnBtn">End Turn</button>
     </div>
   </section>
 
-  <section id="adminSection" class="hidden">
-    <h2>Admin Tools</h2>
-    <div class="card">
-      <div class="card-header"><h3>Repository Health</h3></div>
-      <div class="small" style="margin-bottom:1rem">
-        Scans <code>data/leagues/</code> for "Ghost" leagues and "Orphan" teams.
-      </div>
-      <button id="scanBtn">Scan Repository</button>
-      <div id="scanResults" style="margin-top:1rem;"></div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <h3>Raw JSON Editor</h3>
-        <div><button id="loadBtn">Load</button> <button id="saveBtn">Save</button></div>
-      </div>
-      <textarea id="leagueTextarea" placeholder="JSON content..."></textarea>
-    </div>
-  </section>
-  
-  <div id="skillModal" class="modal hidden">
+  <div id="confirmModal" class="modal hidden">
     <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="skillModalTitle">Skill Name</h3>
-        <button class="close-btn" onclick="closeSkillModal()">×</button>
+      <h3>Confirm Action</h3>
+      <p id="confirmText">Are you sure?</p>
+      <input type="text" id="confirmInput" placeholder="Type name to confirm" class="hidden" />
+      <div class="button-group" style="margin-top:1rem;">
+        <button id="confirmBtn" class="danger-btn">Confirm</button>
+        <button onclick="closeModal('confirmModal')" class="secondary-btn">Cancel</button>
       </div>
-      <div id="skillModalBody">Description goes here...</div>
     </div>
   </div>
-  
+
+  <div id="shopModal" class="modal hidden">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h3>Recruit Player</h3>
+        <button class="close-btn" onclick="closeModal('shopModal')">×</button>
+      </div>
+      <div id="shopContainer" class="shop-grid"></div>
+    </div>
+  </div>
+
+  <div id="skillModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="skillModalTitle">Skill</h3>
+      <p id="skillModalBody"></p>
+      <button onclick="closeModal('skillModal')" class="secondary-btn full-width">Close</button>
+    </div>
+  </div>
+
+  <div id="actionSheet" class="action-sheet hidden">
+    <div class="action-sheet-header">
+      <h3 id="actionSheetTitle">Player Name</h3>
+      <button onclick="closeActionSheet()">×</button>
+    </div>
+    <div class="action-grid">
+      <button class="big-action-btn td" onclick="doAction('td')">Touchdown</button>
+      <button class="big-action-btn cas" onclick="doAction('cas')">Casualty (CAS)</button>
+      <button class="big-action-btn int" onclick="doAction('int')">Interception</button>
+      <button class="big-action-btn inj" onclick="doAction('inj')">Injury / KO</button>
+      <button class="big-action-btn foul" onclick="doAction('sentOff')">Sent Off</button>
+      <button class="big-action-btn mvp" onclick="doAction('mvp')">MVP</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden">Saving...</div>
+
   <datalist id="skillList"></datalist>
   <script src="app.js"></script>
 </body>
