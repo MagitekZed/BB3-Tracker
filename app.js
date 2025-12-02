@@ -131,7 +131,6 @@ async function apiSave(path, content, message, key) {
   return res.json();
 }
 
-// NEW: Delete API Helper
 async function apiDelete(path, message, key) {
   if (!key) throw new Error("Missing Edit Key");
   
@@ -400,12 +399,12 @@ function renderManageForm() {
     els.cards.teamEditor.classList.add('hidden');
     renderManageTeamsList();
     
-    // NEW: Add Delete League Button if editing existing
+    // Delete Button Logic
     let delBtn = document.getElementById('deleteLeagueBtn');
     if (!delBtn) {
        delBtn = document.createElement('button');
        delBtn.id = 'deleteLeagueBtn';
-       delBtn.textContent = 'Delete League';
+       delBtn.textContent = 'Delete Entire League';
        delBtn.style.backgroundColor = '#d33';
        delBtn.style.color = 'white';
        delBtn.style.float = 'right';
@@ -527,7 +526,7 @@ window.removePlayer = (idx) => {
   renderTeamEditor();
 };
 
-// ---- Delete Logic (New) ----
+// ---- Delete Logic ----
 
 window.handleDeleteTeam = async (teamId) => {
   if(!confirm(`Are you sure you want to delete team "${teamId}"? This cannot be undone.`)) return;
@@ -556,29 +555,38 @@ window.handleDeleteTeam = async (teamId) => {
 
 window.handleDeleteLeague = async () => {
   const l = state.dirtyLeague;
-  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?\nThis will remove the league from the index and delete its settings file.\nTeam files will remain orphaned in the repo.`)) return;
+  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?\nThis will PERMANENTLY delete the league and ALL associated teams.\n(Team count: ${l.teams.length})`)) return;
   
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
 
-  setStatus(`Deleting league ${l.id}...`);
+  setStatus(`Deleting league ${l.id} and all its teams...`);
   try {
-    // 1. Delete Settings File
+    // 1. Delete All Teams First
+    for (const t of l.teams) {
+        try {
+            // We use the ID from the team list to construct the path
+            await apiDelete(PATHS.team(l.id, t.id), `Delete team ${t.id} (League deletion)`, key);
+        } catch (e) {
+            console.warn(`Failed to delete team ${t.id}`, e);
+        }
+    }
+
+    // 2. Delete Settings File
     await apiDelete(PATHS.leagueSettings(l.id), `Delete league ${l.id}`, key);
     
-    // 2. Remove from Index
+    // 3. Remove from Index
     const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
     const newIndex = freshIndex.filter(x => x.id !== l.id);
     await apiSave(PATHS.leaguesIndex, newIndex, `Remove league ${l.id} from index`, key);
     
-    // Done
     state.leaguesIndex = newIndex;
     state.editMode = 'league';
     state.currentLeague = null;
     state.viewLeagueId = null;
     showSection('list');
     renderLeagueList();
-    setStatus('League deleted.', 'ok');
+    setStatus('League and all teams deleted.', 'ok');
   } catch(e) {
     setStatus(`Delete failed: ${e.message}`, 'error');
   }
