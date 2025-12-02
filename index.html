@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Blood Bowl 3 League Tracker</h1>
   
   <div class="nav-bar-container">
     <div id="breadcrumbs" class="breadcrumbs">Home</div>
@@ -33,7 +32,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchLeagueTab('standings')">Standings</button>
       <button class="tab-btn" onclick="switchLeagueTab('matches')">Schedule</button>
-      <button class="tab-btn" onclick="switchLeagueTab('admin')">Admin</button>
+      <button class="tab-btn" onclick="switchLeagueTab('settings')">Settings</button>
     </div>
 
     <div id="tab-standings" class="tab-content">
@@ -57,7 +56,7 @@
       <div id="matchesContainer"></div>
     </div>
 
-    <div id="tab-admin" class="tab-content hidden">
+    <div id="tab-settings" class="tab-content hidden">
       <button id="leagueManageBtn" class="secondary-btn">Edit League Settings</button>
     </div>
   </section>
@@ -215,6 +214,9 @@
       <button class="primary-btn" id="coachEndTurnBtn">End Turn</button>
     </div>
   </section>
+  
+  <section id="adminSection" class="hidden">
+    </section>
 
   <div id="confirmModal" class="modal hidden">
     <div class="modal-content">
@@ -257,7 +259,6 @@
       <button class="big-action-btn int" onclick="doAction('int')">Interception</button>
       <button class="big-action-btn inj" onclick="doAction('inj')">Injury / KO</button>
       <button class="big-action-btn foul" onclick="doAction('sentOff')">Sent Off</button>
-      <button class="big-action-btn mvp" onclick="doAction('mvp')">MVP</button>
     </div>
   </div>
 
