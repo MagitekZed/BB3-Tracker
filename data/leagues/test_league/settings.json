@@ -36,5 +36,14 @@
       "coachName": ""
     }
   ],
-  "matches": []
+  "matches": [
+    {
+      "id": "match_1764659055940",
+      "round": 1,
+      "homeTeamId": "teat_1",
+      "awayTeamId": "asdfafdas",
+      "status": "scheduled",
+      "date": "2025-12-02"
+    }
+  ]
 }
