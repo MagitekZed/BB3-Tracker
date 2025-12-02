@@ -24,5 +24,14 @@
       "coachName": "zer"
     }
   ],
-  "matches": []
+  "matches": [
+    {
+      "id": "match_1764661714679",
+      "round": 1,
+      "homeTeamId": "team_one",
+      "awayTeamId": "team_two",
+      "status": "scheduled",
+      "date": "2025-12-02"
+    }
+  ]
 }
