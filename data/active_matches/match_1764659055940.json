@@ -64,7 +64,8 @@
         "live": {
           "used": false,
           "td": null,
-          "cas": null
+          "cas": null,
+          "injured": true
         }
       },
       {
