@@ -46,6 +46,14 @@
         "homeInflicted": 0,
         "awayInflicted": 0
       }
+    },
+    {
+      "id": "match_1764748847645",
+      "round": 2,
+      "homeTeamId": "team_one",
+      "awayTeamId": "new_team",
+      "status": "scheduled",
+      "date": "2025-12-03"
     }
   ]
 }
