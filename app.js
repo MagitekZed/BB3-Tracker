@@ -40,10 +40,25 @@ const state = {
 // ---- DOM Elements ----
 const els = {
   globalStatus: document.getElementById('globalStatus'),
+  
+  // NAVIGATION ELEMENTS (New for Shell)
   nav: {
-    league: document.getElementById('navLeague'),
-    admin: document.getElementById('navAdmin')
+    deskLeagues: document.getElementById('navDeskLeagues'),
+    deskAdmin: document.getElementById('navDeskAdmin'),
+    mobLeagues: document.getElementById('navMobLeagues'),
+    mobMatch: document.getElementById('navMobMatch'),
+    mobAdmin: document.getElementById('navMobAdmin'),
+    breadcrumbs: document.getElementById('breadcrumbs')
   },
+
+  // Mobile Key Modal
+  mobileKey: {
+    btn: document.getElementById('mobileKeyToggle'),
+    modal: document.getElementById('mobileKeyModal'),
+    input: document.getElementById('mobileKeyInput'),
+    save: document.getElementById('mobileKeySaveBtn')
+  },
+
   sections: {
     list: document.getElementById('leagueListSection'),
     view: document.getElementById('leagueViewSection'),
@@ -84,7 +99,7 @@ const els = {
   },
   buttons: {
     createLeague: document.getElementById('leagueCreateBtn'),
-    leagueBack: document.getElementById('leagueBackBtn'),
+    // Note: Some back buttons are deprecated by Breadcrumbs but kept for compatibility within sections
     manageBack: document.getElementById('leagueManageBackBtn'),
     manageSave: document.getElementById('leagueManageSaveBtn'),
     manageAddTeam: document.getElementById('leagueManageAddNewTeamBtn'),
@@ -93,7 +108,6 @@ const els = {
     sbBack: document.getElementById('scoreboardBackToMatchBtn'),
     sbRefresh: document.getElementById('scoreboardRefreshBtn'),
     endGame: document.getElementById('endGameBtn'),
-    cancelGame: document.getElementById('cancelGameBtn'),
     schedAdd: document.getElementById('schedAddBtn'),
     rememberKey: document.getElementById('rememberKeyBtn'),
     coachEndTurn: document.getElementById('coachEndTurnBtn'),
@@ -145,6 +159,8 @@ function setStatus(msg, type = 'info') {
   if (!els.globalStatus) return;
   els.globalStatus.textContent = msg;
   els.globalStatus.className = `status ${type}`;
+  if(msg) els.globalStatus.classList.remove('hidden');
+  else els.globalStatus.classList.add('hidden');
 }
 
 async function apiGet(path) {
@@ -180,25 +196,54 @@ async function apiDelete(path, message, key) {
 }
 
 // ============================================
-// INITIALIZATION & NAVIGATION
+// NAVIGATION & BREADCRUMBS (NEW)
 // ============================================
 
-async function init() {
-  setStatus('Initializing...');
-  const storedKey = localStorage.getItem('bb3_edit_key');
-  if (storedKey && els.inputs.editKey) els.inputs.editKey.value = storedKey;
+function updateBreadcrumbs(path) {
+  // path is array: [{label: 'Home', action: fn}, {label: 'League', action: fn}]
+  const container = els.nav.breadcrumbs;
+  container.innerHTML = '';
+  
+  const inner = document.createElement('div');
+  inner.className = 'breadcrumbs-inner';
+  
+  path.forEach((step, index) => {
+    if (index > 0) {
+      const sep = document.createElement('span');
+      sep.className = 'crumb-sep';
+      sep.textContent = ' / ';
+      inner.appendChild(sep);
+    }
+    
+    const span = document.createElement('span');
+    if (step.action) {
+      span.className = 'crumb-link';
+      span.textContent = step.label;
+      span.onclick = step.action;
+    } else {
+      span.className = 'crumb';
+      span.textContent = step.label;
+    }
+    inner.appendChild(span);
+  });
+  
+  container.appendChild(inner);
+}
 
-  try {
-    state.gameData = await apiGet(PATHS.gameData);
-    populateSkillList();
-    const index = await apiGet(PATHS.leaguesIndex);
-    state.leaguesIndex = index || [];
-    renderLeagueList();
-    showSection('list');
-    setStatus('Ready.', 'ok');
-  } catch (e) {
-    console.error(e);
-    setStatus(`Init Failed: ${e.message}`, 'error');
+function setActiveNav(tabName) {
+  // Reset all
+  ['deskLeagues', 'deskAdmin'].forEach(k => els.nav[k].classList.remove('active'));
+  ['mobLeagues', 'mobMatch', 'mobAdmin'].forEach(k => els.nav[k].classList.remove('active'));
+  
+  // Set Active
+  if (tabName === 'leagues') {
+    els.nav.deskLeagues.classList.add('active');
+    els.nav.mobLeagues.classList.add('active');
+  } else if (tabName === 'admin') {
+    els.nav.deskAdmin.classList.add('active');
+    els.nav.mobAdmin.classList.add('active');
+  } else if (tabName === 'match') {
+    els.nav.mobMatch.classList.add('active');
   }
 }
 
@@ -209,13 +254,81 @@ function showSection(name) {
   }
   Object.values(els.sections).forEach(el => el.classList.add('hidden'));
   els.sections[name].classList.remove('hidden');
-  
-  if (name === 'admin') {
-    els.nav.league.classList.remove('active');
-    els.nav.admin.classList.add('active');
+}
+
+function goHome() {
+  showSection('list');
+  renderLeagueList();
+  updateBreadcrumbs([{ label: 'Leagues' }]);
+  setActiveNav('leagues');
+}
+
+function goAdmin() {
+  showSection('admin');
+  updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: 'Admin Tools' }]);
+  setActiveNav('admin');
+}
+
+// Nav Listeners
+els.nav.deskLeagues.addEventListener('click', () => goHome());
+els.nav.mobLeagues.addEventListener('click', () => goHome());
+els.nav.deskAdmin.addEventListener('click', () => goAdmin());
+els.nav.mobAdmin.addEventListener('click', () => goAdmin());
+
+els.nav.mobMatch.addEventListener('click', () => {
+  if (state.activeMatchData) {
+    handleOpenScoreboard(state.activeMatchData.matchId);
+  } else if (state.currentLeague) {
+    showSection('view');
+    document.getElementById('leagueMatchesSection').scrollIntoView({behavior:'smooth'});
   } else {
-    els.nav.league.classList.add('active');
-    els.nav.admin.classList.remove('active');
+    goHome();
+  }
+  setActiveNav('match');
+});
+
+// Key Management (Desktop & Mobile)
+if(els.buttons.rememberKey) {
+  els.buttons.rememberKey.addEventListener('click', () => {
+    const k = els.inputs.editKey.value;
+    if(k) { localStorage.setItem('bb3_edit_key', k); alert('Key saved.'); }
+  });
+}
+// Mobile Key Logic
+els.mobileKey.btn.addEventListener('click', () => els.mobileKey.modal.classList.remove('hidden'));
+els.mobileKey.save.addEventListener('click', () => {
+  const k = els.mobileKey.input.value;
+  if(k) { 
+    localStorage.setItem('bb3_edit_key', k);
+    if(els.inputs.editKey) els.inputs.editKey.value = k; // Sync to desktop
+    els.mobileKey.modal.classList.add('hidden');
+    alert("Key Saved");
+  }
+});
+
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+async function init() {
+  setStatus('Initializing...');
+  const storedKey = localStorage.getItem('bb3_edit_key');
+  if (storedKey) {
+    if(els.inputs.editKey) els.inputs.editKey.value = storedKey;
+    if(els.mobileKey.input) els.mobileKey.input.value = storedKey;
+  }
+
+  try {
+    state.gameData = await apiGet(PATHS.gameData);
+    populateSkillList();
+    const index = await apiGet(PATHS.leaguesIndex);
+    state.leaguesIndex = index || [];
+    goHome(); // Use new home navigation
+    setStatus('Ready.', 'ok');
+  } catch (e) {
+    console.error(e);
+    setStatus(`Init Failed: ${e.message}`, 'error');
   }
 }
 
@@ -230,18 +343,8 @@ function populateSkillList() {
   });
 }
 
-// Nav Listeners
-els.nav.league.addEventListener('click', () => { showSection('list'); renderLeagueList(); });
-els.nav.admin.addEventListener('click', () => showSection('admin'));
-if(els.buttons.rememberKey) {
-  els.buttons.rememberKey.addEventListener('click', () => {
-    const k = els.inputs.editKey.value;
-    if(k) { localStorage.setItem('bb3_edit_key', k); setStatus('Key saved.', 'ok'); }
-  });
-}
-
 // ============================================
-// LEAGUE VIEWS & LOGIC
+// LEAGUE LOGIC
 // ============================================
 
 function renderLeagueList() {
@@ -274,8 +377,17 @@ window.handleOpenLeague = async (id) => {
     if (!settings) throw new Error("League settings file not found.");
     state.currentLeague = settings;
     state.viewLeagueId = id;
+    
     renderLeagueView();
     showSection('view');
+    
+    // Update Breadcrumbs
+    updateBreadcrumbs([
+      { label: 'Leagues', action: goHome },
+      { label: settings.name }
+    ]);
+    setActiveNav('leagues');
+
     setStatus('League loaded.', 'ok');
   } catch (e) { setStatus(e.message, 'error'); }
 };
@@ -290,7 +402,7 @@ function renderLeagueView() {
     ${standings.map((s, i) => `<tr><td>${i+1}</td><td><button class="team-link" onclick="handleOpenTeam('${l.id}', '${s.teamId}')">${s.name}</button></td><td>${s.wins}-${s.draws}-${s.losses}</td><td>${s.points}</td><td>${s.tdDiff}/${s.casDiff}</td></tr>`).join('')}
   </tbody></table>`;
   
-  // Quick Roster Tiles
+  // Quick Roster Tiles (moved to bottom of standings in new layout)
   if (els.containers.rosterQuick) {
     els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
       ${l.teams.map(t => `<div class="roster-tile"><div class="roster-tile-title"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div><div class="roster-tile-meta">${t.race} | ${t.coachName}</div></div>`).join('')}
@@ -300,13 +412,15 @@ function renderLeagueView() {
   // Populate Schedule Dropdowns
   const homeSel = els.inputs.schedHome;
   const awaySel = els.inputs.schedAway;
-  homeSel.innerHTML = '<option value="">Home Team...</option>';
-  awaySel.innerHTML = '<option value="">Away Team...</option>';
-  l.teams.forEach(t => {
-    const opt = `<option value="${t.id}">${t.name}</option>`;
-    homeSel.innerHTML += opt;
-    awaySel.innerHTML += opt;
-  });
+  if(homeSel && awaySel) {
+    homeSel.innerHTML = '<option value="">Home Team...</option>';
+    awaySel.innerHTML = '<option value="">Away Team...</option>';
+    l.teams.forEach(t => {
+      const opt = `<option value="${t.id}">${t.name}</option>`;
+      homeSel.innerHTML += opt;
+      awaySel.innerHTML += opt;
+    });
+  }
 
   renderMatchesList(l);
 }
@@ -365,7 +479,43 @@ function computeStandings(league) {
 }
 
 // ============================================
-// MATCH SCHEDULING & STARTING
+// TEAM LOGIC
+// ============================================
+
+window.handleOpenTeam = async (leagueId, teamId) => {
+  setStatus(`Loading team ${teamId}...`);
+  try {
+    const teamData = await apiGet(PATHS.team(leagueId, teamId));
+    if (!teamData) throw new Error("Team file not found.");
+    state.currentTeam = teamData;
+    state.viewTeamId = teamId;
+    
+    renderTeamView();
+    showSection('team');
+    
+    // Breadcrumbs: Leagues > [LeagueName] > [TeamName]
+    updateBreadcrumbs([
+      { label: 'Leagues', action: goHome },
+      { label: state.currentLeague.name, action: () => handleOpenLeague(leagueId) },
+      { label: teamData.name }
+    ]);
+
+    setStatus('Team loaded.', 'ok');
+  } catch (e) { setStatus(e.message, 'error'); }
+};
+
+function renderTeamView() {
+  const t = state.currentTeam;
+  document.getElementById('teamHeader').textContent = t.name;
+  els.containers.teamSummary.innerHTML = `Coach: ${t.coachName} | Race: ${t.race} | TV: ${t.teamValue || 0}`;
+  const rows = (t.players || []).map(p => `
+    <tr><td>${p.number||''}</td><td>${p.name}</td><td>${p.position}</td><td>${p.ma}</td><td>${p.st}</td><td>${p.ag}</td><td>${p.pa}</td><td>${p.av}</td><td>${(p.skills||[]).join(', ')}</td><td>${p.spp}</td></tr>
+  `).join('');
+  els.containers.teamRoster.innerHTML = `<table><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ============================================
+// MATCH ENGINE & COACH MODE
 // ============================================
 
 els.buttons.schedAdd.addEventListener('click', async () => {
@@ -440,10 +590,6 @@ window.handleStartMatch = async (matchId) => {
   } catch(e) { setStatus(e.message, 'error'); }
 };
 
-// ============================================
-// MATCH ENGINE: JUMBOTRON & COACH
-// ============================================
-
 window.handleOpenScoreboard = async (matchId) => {
   setStatus('Loading live match...');
   try {
@@ -452,6 +598,13 @@ window.handleOpenScoreboard = async (matchId) => {
     state.activeMatchData = data;
     renderJumbotron();
     showSection('scoreboard');
+    
+    updateBreadcrumbs([
+      { label: 'Leagues', action: goHome },
+      { label: state.currentLeague?.name || 'League', action: () => handleOpenLeague(state.activeMatchData.leagueId) },
+      { label: 'Live Match' }
+    ]);
+    setActiveNav('match');
     
     // Auto-refresh for Spectators
     if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
@@ -468,7 +621,6 @@ window.handleOpenScoreboard = async (matchId) => {
   } catch (e) { setStatus(e.message, 'error'); }
 };
 
-// ---- Jumbotron Renderer ----
 function renderJumbotron() {
   const d = state.activeMatchData;
   els.containers.sbHomeName.textContent = d.home.name;
@@ -486,6 +638,7 @@ function renderJumbotron() {
 // ---- Coach Mode Logic ----
 window.enterCoachMode = (side) => {
   state.coachSide = side; // 'home' or 'away'
+  document.body.classList.add('mode-coach'); // Hides nav shell
   renderCoachView();
   showSection('coach');
   // NOTE: We do NOT poll in coach mode to avoid overwriting local changes before save
@@ -496,6 +649,7 @@ window.enterCoachMode = (side) => {
 };
 
 window.exitCoachMode = () => {
+  document.body.classList.remove('mode-coach'); // Restores nav shell
   handleOpenScoreboard(state.activeMatchData.matchId); // Go back to Jumbotron
 };
 
@@ -700,6 +854,12 @@ window.handleManageLeague = async (id) => {
   }
   renderManageForm();
   showSection('manage');
+  
+  updateBreadcrumbs([
+      { label: 'Leagues', action: goHome },
+      { label: state.dirtyLeague.name || 'New League' },
+      { label: 'Manage' }
+  ]);
 };
 
 function renderManageForm() {
@@ -901,8 +1061,7 @@ window.handleDeleteLeague = async () => {
     await apiSave(PATHS.leaguesIndex, newIndex, `Remove league ${l.id} from index`, key);
     state.leaguesIndex = newIndex;
     state.editMode = 'league';
-    showSection('list');
-    renderLeagueList();
+    goHome();
     setStatus('League deleted.', 'ok');
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
@@ -949,16 +1108,20 @@ els.buttons.manageSave.addEventListener('click', async () => {
     state.leaguesIndex = freshIndex;
     setStatus('League saved.', 'ok');
     state.editMode = 'league';
-    showSection('list');
-    renderLeagueList();
+    goHome();
   } catch (e) { console.error(e); setStatus(`Save failed: ${e.message}`, 'error'); }
 });
 
 els.buttons.createLeague.addEventListener('click', () => handleManageLeague(null));
 els.buttons.manageAddTeam.addEventListener('click', () => handleEditTeam(null));
-els.buttons.leagueBack.addEventListener('click', () => showSection('list'));
-els.buttons.manageBack.addEventListener('click', () => { if (state.editMode === 'team') { state.editMode = 'league'; renderManageForm(); } else showSection('list'); });
-els.buttons.teamBack.addEventListener('click', () => showSection('view'));
+els.buttons.manageBack.addEventListener('click', () => { if (state.editMode === 'team') { state.editMode = 'league'; renderManageForm(); } else goHome(); });
+
+// Older back buttons (kept for robustness)
+if(els.buttons.leagueBack) els.buttons.leagueBack.addEventListener('click', () => goHome());
+if(els.buttons.teamBack) els.buttons.teamBack.addEventListener('click', () => {
+    if (state.currentLeague) handleOpenLeague(state.currentLeague.id);
+    else goHome();
+});
 
 // Wire up Manage Team button (Specific fix request)
 els.buttons.teamManage.addEventListener('click', async () => {
@@ -966,29 +1129,6 @@ els.buttons.teamManage.addEventListener('click', async () => {
   await handleManageLeague(state.currentLeague.id);
   await handleEditTeam(state.currentTeam.id);
 });
-
-window.handleOpenTeam = async (leagueId, teamId) => {
-  setStatus(`Loading team ${teamId}...`);
-  try {
-    const teamData = await apiGet(PATHS.team(leagueId, teamId));
-    if (!teamData) throw new Error("Team file not found.");
-    state.currentTeam = teamData;
-    state.viewTeamId = teamId;
-    renderTeamView();
-    showSection('team');
-    setStatus('Team loaded.', 'ok');
-  } catch (e) { setStatus(e.message, 'error'); }
-};
-
-function renderTeamView() {
-  const t = state.currentTeam;
-  document.getElementById('teamHeader').textContent = t.name;
-  els.containers.teamSummary.innerHTML = `Coach: ${t.coachName} | Race: ${t.race} | TV: ${t.teamValue || 0}`;
-  const rows = (t.players || []).map(p => `
-    <tr><td>${p.number||''}</td><td>${p.name}</td><td>${p.position}</td><td>${p.ma}</td><td>${p.st}</td><td>${p.ag}</td><td>${p.pa}</td><td>${p.av}</td><td>${(p.skills||[]).join(', ')}</td><td>${p.spp}</td></tr>
-  `).join('');
-  els.containers.teamRoster.innerHTML = `<table><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
 
 // ============================================
 // ADMIN SCANNER
@@ -1051,7 +1191,7 @@ window.restoreLeague = async (leagueId) => {
     index.push({ id: settings.id, name: settings.name, season: settings.season, status: settings.status });
     await apiSave(PATHS.leaguesIndex, index, `Restored ghost league ${leagueId}`, key);
     state.leaguesIndex = index;
-    renderLeagueList();
+    goHome();
     els.buttons.scanBtn.click();
     setStatus(`Restored ${settings.name}`, 'ok');
   } catch(e) { alert(e.message); }
