@@ -99,12 +99,11 @@ const els = {
   },
   buttons: {
     createLeague: document.getElementById('leagueCreateBtn'),
-    // Note: Some back buttons are deprecated by Breadcrumbs but kept for compatibility within sections
-    manageBack: document.getElementById('leagueManageBackBtn'),
     manageSave: document.getElementById('leagueManageSaveBtn'),
     manageAddTeam: document.getElementById('leagueManageAddNewTeamBtn'),
-    teamBack: document.getElementById('teamBackBtn'),
+    manageBack: document.getElementById('leagueManageBackBtn'),
     teamManage: document.getElementById('teamManageBtn'),
+    teamBack: document.getElementById('teamBackBtn'),
     sbBack: document.getElementById('scoreboardBackToMatchBtn'),
     sbRefresh: document.getElementById('scoreboardRefreshBtn'),
     endGame: document.getElementById('endGameBtn'),
@@ -344,7 +343,7 @@ function populateSkillList() {
 }
 
 // ============================================
-// LEAGUE LOGIC
+// LEAGUE LOGIC (UPDATED FOR RESPONSIVE TABLE)
 // ============================================
 
 function renderLeagueList() {
@@ -396,13 +395,22 @@ function renderLeagueView() {
   const l = state.currentLeague;
   document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
   
-  // Standings
+  // Standings with data-label for responsive view
   const standings = computeStandings(l);
-  els.containers.standings.innerHTML = `<table><thead><tr><th>#</th><th>Team</th><th>W-D-L</th><th>Pts</th><th>Diff</th></tr></thead><tbody>
-    ${standings.map((s, i) => `<tr><td>${i+1}</td><td><button class="team-link" onclick="handleOpenTeam('${l.id}', '${s.teamId}')">${s.name}</button></td><td>${s.wins}-${s.draws}-${s.losses}</td><td>${s.points}</td><td>${s.tdDiff}/${s.casDiff}</td></tr>`).join('')}
+  els.containers.standings.innerHTML = `<table class="responsive-table">
+    <thead><tr><th>#</th><th>Team</th><th>W-D-L</th><th>Pts</th><th>Diff</th></tr></thead>
+    <tbody>
+    ${standings.map((s, i) => `
+      <tr>
+        <td data-label="Rank">${i+1}</td>
+        <td data-label="Team"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${s.teamId}')">${s.name}</button></td>
+        <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
+        <td data-label="Points">${s.points}</td>
+        <td data-label="Diff">${s.tdDiff}/${s.casDiff}</td>
+      </tr>`).join('')}
   </tbody></table>`;
   
-  // Quick Roster Tiles (moved to bottom of standings in new layout)
+  // Quick Roster Tiles
   if (els.containers.rosterQuick) {
     els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
       ${l.teams.map(t => `<div class="roster-tile"><div class="roster-tile-title"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div><div class="roster-tile-meta">${t.race} | ${t.coachName}</div></div>`).join('')}
@@ -446,16 +454,24 @@ function renderMatchesList(league) {
   }
   els.containers.inProgress.innerHTML = inProgHtml;
 
+  // Matches with data-label
   const rows = others.map(m => {
     const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
     const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
     const score = m.status === 'completed' ? `${m.score.home}-${m.score.away}` : '';
     let action = m.status;
     if (m.status === 'scheduled') action = `<button class="link-button" onclick="handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
-    return `<tr><td>${m.round}</td><td>${h}</td><td>${a}</td><td>${score}</td><td>${action}</td></tr>`;
+    
+    return `<tr>
+      <td data-label="Round">${m.round}</td>
+      <td data-label="Home">${h}</td>
+      <td data-label="Away">${a}</td>
+      <td data-label="Score">${score}</td>
+      <td data-label="Status">${action}</td>
+    </tr>`;
   }).join('');
   
-  els.containers.matches.innerHTML = `<table><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
+  els.containers.matches.innerHTML = `<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
 }
 
 function computeStandings(league) {
@@ -479,7 +495,7 @@ function computeStandings(league) {
 }
 
 // ============================================
-// TEAM LOGIC
+// TEAM LOGIC (UPDATED FOR RESPONSIVE)
 // ============================================
 
 window.handleOpenTeam = async (leagueId, teamId) => {
@@ -508,11 +524,232 @@ function renderTeamView() {
   const t = state.currentTeam;
   document.getElementById('teamHeader').textContent = t.name;
   els.containers.teamSummary.innerHTML = `Coach: ${t.coachName} | Race: ${t.race} | TV: ${t.teamValue || 0}`;
+  
+  // Team Roster with data-label
   const rows = (t.players || []).map(p => `
-    <tr><td>${p.number||''}</td><td>${p.name}</td><td>${p.position}</td><td>${p.ma}</td><td>${p.st}</td><td>${p.ag}</td><td>${p.pa}</td><td>${p.av}</td><td>${(p.skills||[]).join(', ')}</td><td>${p.spp}</td></tr>
+    <tr>
+      <td data-label="#">${p.number||''}</td>
+      <td data-label="Name">${p.name}</td>
+      <td data-label="Pos">${p.position}</td>
+      <td data-label="MA">${p.ma}</td>
+      <td data-label="ST">${p.st}</td>
+      <td data-label="AG">${p.ag}</td>
+      <td data-label="PA">${p.pa}</td>
+      <td data-label="AV">${p.av}</td>
+      <td data-label="Skills">${(p.skills||[]).join(', ')}</td>
+      <td data-label="SPP">${p.spp}</td>
+    </tr>
   `).join('');
-  els.containers.teamRoster.innerHTML = `<table><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
+  els.containers.teamRoster.innerHTML = `<table class="responsive-table"><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
+
+// ============================================
+// TEAM EDITOR (NEW TOOLBAR)
+// ============================================
+
+function renderTeamEditor() {
+  const t = state.dirtyTeam;
+  const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
+  const isNewTeam = !state.editTeamId;
+  
+  // Toolbar + Form
+  els.containers.manageTeamEditor.innerHTML = `
+    <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
+    <div class="form-grid">
+      <div class="form-field"><label>File ID</label><input type="text" value="${t.id}" readonly class="faded" placeholder="Auto-generated"></div>
+      <div class="form-field"><label>Name</label><input type="text" value="${t.name}" id="teamEditNameInput"></div>
+      <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
+      <div class="form-field"><label>Race</label><select onchange="changeTeamRace(this.value)">${raceOpts}</select></div>
+    </div>
+    
+    <h4>Roster</h4>
+    <div class="manager-toolbar">
+      <button onclick="addSmartPlayer()" class="primary-btn">+ Hire Player</button>
+      <button onclick="alert('Inducements not implemented yet')" class="secondary-btn">+ Inducement</button>
+    </div>
+    
+    <table class="responsive-table roster-editor-table">
+      <thead><tr><th style="width:40px">#</th><th>Name</th><th>Position</th><th style="width:40px">MA</th><th style="width:40px">ST</th><th style="width:40px">AG</th><th style="width:40px">PA</th><th style="width:40px">AV</th><th>Skills</th><th style="width:50px">SPP</th><th style="width:30px"></th></tr></thead>
+      <tbody id="editorRosterBody"></tbody>
+    </table>
+  `;
+
+  const tbody = document.getElementById('editorRosterBody');
+  const currentRaceObj = state.gameData?.races.find(r => r.name === t.race);
+  const positionalOptions = (currentRaceObj?.positionals || []).map(pos => `<option value="${pos.name}">${pos.name} (${Math.floor(pos.cost/1000)}k)</option>`).join('');
+  let allSkillsHtml = '<option value="">+ Skill...</option>';
+  if (state.gameData?.skillCategories) {
+    Object.values(state.gameData.skillCategories).flat().forEach(s => { const sName = (typeof s === 'object') ? s.name : s; allSkillsHtml += `<option value="${sName}">${sName}</option>`; });
+  }
+
+  t.players.forEach((p, idx) => {
+    const posSelect = `<select style="width:100%; font-size:0.8rem;" onchange="updatePlayerPos(${idx}, this.value)"><option value="" disabled>Pos...</option>${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}</select>`;
+    const currentSkills = (p.skills || []).map((skill, sIdx) => `<span class="skill-pill">${skill}<span class="remove-skill" onclick="removePlayerSkill(${idx}, ${sIdx})">×</span></span>`).join('');
+    const skillPicker = `<div class="skill-editor-container">${currentSkills}<select class="skill-select" onchange="addPlayerSkill(${idx}, this.value)">${allSkillsHtml}</select></div>`;
+
+    const row = document.createElement('tr');
+    // Using data-label for mobile editor view
+    row.innerHTML = `
+      <td data-label="#"><input type="number" value="${p.number||''}" style="width:30px" onchange="updatePlayer(${idx}, 'number', this.value)"></td>
+      <td data-label="Name"><input type="text" value="${p.name}" onchange="updatePlayer(${idx}, 'name', this.value)"></td>
+      <td data-label="Pos">${posSelect}</td>
+      <td data-label="MA"><input type="number" value="${p.ma}" style="width:30px" onchange="updatePlayer(${idx}, 'ma', this.value)"></td>
+      <td data-label="ST"><input type="number" value="${p.st}" style="width:30px" onchange="updatePlayer(${idx}, 'st', this.value)"></td>
+      <td data-label="AG"><input type="number" value="${p.ag}" style="width:30px" onchange="updatePlayer(${idx}, 'ag', this.value)"></td>
+      <td data-label="PA"><input type="number" value="${p.pa}" style="width:30px" onchange="updatePlayer(${idx}, 'pa', this.value)"></td>
+      <td data-label="AV"><input type="number" value="${p.av}" style="width:30px" onchange="updatePlayer(${idx}, 'av', this.value)"></td>
+      <td data-label="Skills">${skillPicker}</td>
+      <td data-label="SPP"><input type="number" value="${p.spp}" style="width:40px" onchange="updatePlayer(${idx}, 'spp', this.value)"></td>
+      <td data-label="Del"><button onclick="removePlayer(${idx})" style="color:red;border:none;background:none;cursor:pointer;font-weight:bold;">×</button></td>
+    `;
+    tbody.appendChild(row);
+  });
+  
+  const nameInput = document.getElementById('teamEditNameInput');
+  nameInput.oninput = function() {
+    state.dirtyTeam.name = this.value;
+    if (isNewTeam) { state.dirtyTeam.id = normalizeName(this.value); els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id; }
+  };
+}
+
+// ============================================
+// TEAM EDIT UTILS
+// ============================================
+
+window.changeTeamRace = (newRace) => {
+  if (state.dirtyTeam.players.length > 0 && !confirm("Changing race will potentially break existing player positions. Continue?")) { renderTeamEditor(); return; }
+  state.dirtyTeam.race = newRace;
+  renderTeamEditor();
+};
+window.updatePlayer = (idx, f, v) => { 
+  const p=state.dirtyTeam.players[idx]; 
+  if (f==='skills') return; // Handled by pills now
+  if (['number','ma','st','ag','pa','av','spp'].includes(f)) p[f] = parseInt(v) || 0;
+  else p[f] = v;
+};
+window.updatePlayerPos = (idx, v) => { 
+  const p=state.dirtyTeam.players[idx]; p.position=v; 
+  const r=state.gameData.races.find(r=>r.name===state.dirtyTeam.race); 
+  const pos=r?.positionals.find(x=>x.name===v);
+  if(pos) Object.assign(p, {ma:pos.ma, st:pos.st, ag:pos.ag, pa:pos.pa, av:pos.av, skills:[...pos.skills]});
+  renderTeamEditor();
+};
+window.addSmartPlayer = () => { 
+  const t=state.dirtyTeam; const r=state.gameData.races.find(r=>r.name===t.race); 
+  const def=r?.positionals[0]||{name:'L',ma:6,st:3,ag:3,pa:4,av:8,skills:[]};
+  const nextNum = (t.players.length > 0) ? Math.max(...t.players.map(p => p.number || 0)) + 1 : 1;
+  t.players.push({number:nextNum, name:'Player', position:def.name, ...def, skills:[...def.skills], spp:0});
+  renderTeamEditor();
+};
+window.removePlayer = (idx) => { state.dirtyTeam.players.splice(idx,1); renderTeamEditor(); };
+window.addPlayerSkill = (playerIdx, skillName) => {
+  if (!skillName) return;
+  const p = state.dirtyTeam.players[playerIdx];
+  if (!p.skills) p.skills = [];
+  if (!p.skills.includes(skillName)) p.skills.push(skillName);
+  renderTeamEditor();
+};
+window.removePlayerSkill = (playerIdx, skillIdx) => {
+  state.dirtyTeam.players[playerIdx].skills.splice(skillIdx, 1);
+  renderTeamEditor();
+};
+
+window.handleDeleteTeam = async (teamId) => {
+  if(!confirm(`Delete team "${teamId}"?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    const l = state.dirtyLeague;
+    await apiDelete(PATHS.team(l.id, teamId), `Delete team ${teamId}`, key);
+    const idx = l.teams.findIndex(t => t.id === teamId);
+    if(idx !== -1) l.teams.splice(idx, 1);
+    await apiSave(PATHS.leagueSettings(l.id), l, `Remove team ${teamId}`, key);
+    renderManageTeamsList();
+    setStatus('Team deleted.', 'ok');
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
+};
+
+window.handleDeleteLeague = async () => {
+  const l = state.dirtyLeague;
+  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    for (const t of l.teams) { try { await apiDelete(PATHS.team(l.id, t.id), `Delete team ${t.id}`, key); } catch (e) {} }
+    await apiDelete(PATHS.leagueSettings(l.id), `Delete league ${l.id}`, key);
+    const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
+    const newIndex = freshIndex.filter(x => x.id !== l.id);
+    await apiSave(PATHS.leaguesIndex, newIndex, `Remove league ${l.id} from index`, key);
+    state.leaguesIndex = newIndex;
+    state.editMode = 'league';
+    goHome();
+    setStatus('League deleted.', 'ok');
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
+};
+
+els.buttons.manageSave.addEventListener('click', async () => {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  setStatus('Saving...', 'info');
+  try {
+    if (state.editMode === 'team') {
+      const t = state.dirtyTeam;
+      const l = state.dirtyLeague;
+      if (!t.id) return setStatus('Invalid team name.', 'error');
+      if (!state.editTeamId) {
+        if (l.teams.find(x => x.id === t.id)) return setStatus('Team ID exists.', 'error');
+      }
+      await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
+      const existingIdx = l.teams.findIndex(x => x.id === t.id);
+      const meta = { id: t.id, name: t.name, race: t.race, coachName: t.coachName };
+      if (existingIdx >= 0) l.teams[existingIdx] = meta;
+      else l.teams.push(meta);
+      state.editTeamId = t.id;
+      setStatus('Team saved locally. Save League to commit.', 'ok');
+      state.editMode = 'league';
+      renderManageForm();
+      return; 
+    }
+    const l = state.dirtyLeague;
+    if (!l.id) return setStatus('League ID required.', 'error');
+    if (!state.editLeagueId && state.leaguesIndex.find(x => x.id === l.id)) return setStatus('League ID exists.', 'error');
+    l.name = els.inputs.leagueName.value;
+    l.season = parseInt(els.inputs.leagueSeason.value);
+    l.status = els.inputs.leagueStatus.value;
+    l.settings.pointsWin = parseInt(els.inputs.ptsWin.value);
+    l.settings.pointsDraw = parseInt(els.inputs.ptsDraw.value);
+    l.settings.pointsLoss = parseInt(els.inputs.ptsLoss.value);
+    await apiSave(PATHS.leagueSettings(l.id), l, `Save league ${l.id}`, key);
+    const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
+    const idxEntry = { id: l.id, name: l.name, season: l.season, status: l.status };
+    const i = freshIndex.findIndex(x => x.id === l.id);
+    if (i >= 0) freshIndex[i] = idxEntry;
+    else freshIndex.push(idxEntry);
+    await apiSave(PATHS.leaguesIndex, freshIndex, `Update index for ${l.id}`, key);
+    state.leaguesIndex = freshIndex;
+    setStatus('League saved.', 'ok');
+    state.editMode = 'league';
+    goHome();
+  } catch (e) { console.error(e); setStatus(`Save failed: ${e.message}`, 'error'); }
+});
+
+els.buttons.createLeague.addEventListener('click', () => handleManageLeague(null));
+els.buttons.manageAddTeam.addEventListener('click', () => handleEditTeam(null));
+els.buttons.manageBack.addEventListener('click', () => { if (state.editMode === 'team') { state.editMode = 'league'; renderManageForm(); } else goHome(); });
+
+// Older back buttons (kept for robustness)
+if(els.buttons.leagueBack) els.buttons.leagueBack.addEventListener('click', () => goHome());
+if(els.buttons.teamBack) els.buttons.teamBack.addEventListener('click', () => {
+    if (state.currentLeague) handleOpenLeague(state.currentLeague.id);
+    else goHome();
+});
+
+// Wire up Manage Team button (Specific fix request)
+els.buttons.teamManage.addEventListener('click', async () => {
+  if (!state.currentLeague || !state.currentTeam) return;
+  await handleManageLeague(state.currentLeague.id);
+  await handleEditTeam(state.currentTeam.id);
+});
 
 // ============================================
 // MATCH ENGINE & COACH MODE
@@ -836,307 +1073,12 @@ window.showSkill = (skillName) => {
 window.closeSkillModal = () => els.modal.el.classList.add('hidden');
 
 // ============================================
-// MANAGEMENT (Teams, Players, Orphans)
-// ============================================
-
-window.handleManageLeague = async (id) => {
-  state.editMode = 'league';
-  state.editLeagueId = id;
-  state.editTeamId = null;
-  state.dirtyLeague = null;
-  if (id) {
-    try {
-      const settings = await apiGet(PATHS.leagueSettings(id));
-      state.dirtyLeague = JSON.parse(JSON.stringify(settings));
-    } catch (e) { setStatus(e.message, 'error'); return; }
-  } else {
-    state.dirtyLeague = { id: '', name: '', season: 1, status: 'upcoming', settings: { pointsWin: 3, pointsDraw: 1, pointsLoss: 0, maxTeams: 16, lockTeams: false }, teams: [], matches: [] };
-  }
-  renderManageForm();
-  showSection('manage');
-  
-  updateBreadcrumbs([
-      { label: 'Leagues', action: goHome },
-      { label: state.dirtyLeague.name || 'New League' },
-      { label: 'Manage' }
-  ]);
-};
-
-function renderManageForm() {
-  const l = state.dirtyLeague;
-  const isNewLeague = !state.editLeagueId;
-  els.inputs.leagueId.value = l.id;
-  if (isNewLeague) {
-    els.inputs.leagueId.placeholder = "Auto-generated from Name";
-    els.inputs.leagueId.readOnly = true;
-    els.inputs.leagueId.classList.add('faded');
-  } else {
-    els.inputs.leagueId.readOnly = true;
-    els.inputs.leagueId.classList.remove('faded');
-  }
-  els.inputs.leagueName.value = l.name;
-  els.inputs.leagueName.oninput = function() {
-    state.dirtyLeague.name = this.value;
-    if (isNewLeague) { state.dirtyLeague.id = normalizeName(this.value); els.inputs.leagueId.value = state.dirtyLeague.id; }
-  };
-  els.inputs.leagueSeason.value = l.season;
-  els.inputs.leagueStatus.value = l.status;
-  els.inputs.ptsWin.value = l.settings.pointsWin;
-  els.inputs.ptsDraw.value = l.settings.pointsDraw;
-  els.inputs.ptsLoss.value = l.settings.pointsLoss;
-
-  if (state.editMode === 'team') {
-    els.cards.leagueInfo.classList.add('hidden');
-    els.cards.leagueTeams.classList.add('hidden');
-    els.cards.teamEditor.classList.remove('hidden');
-    renderTeamEditor();
-  } else {
-    els.cards.leagueInfo.classList.remove('hidden');
-    els.cards.leagueTeams.classList.remove('hidden');
-    els.cards.teamEditor.classList.add('hidden');
-    renderManageTeamsList();
-    
-    let delBtn = document.getElementById('deleteLeagueBtn');
-    if (!delBtn) {
-       delBtn = document.createElement('button');
-       delBtn.id = 'deleteLeagueBtn';
-       delBtn.textContent = 'Delete Entire League';
-       delBtn.className = 'danger-btn'; // Use new class
-       delBtn.onclick = handleDeleteLeague;
-       els.containers.delLeagueBtn.appendChild(delBtn);
-    }
-    delBtn.classList.toggle('hidden', isNewLeague);
-  }
-}
-
-function renderManageTeamsList() {
-  const l = state.dirtyLeague;
-  els.containers.manageTeams.innerHTML = `<table><thead><tr><th>ID</th><th>Name</th><th>Action</th></tr></thead><tbody>
-    ${l.teams.map(t => `<tr><td>${t.id}</td><td>${t.name}</td><td><button class="link-button" onclick="handleEditTeam('${t.id}')">Edit</button> | <button class="link-button" onclick="handleDeleteTeam('${t.id}')" style="color:red">Delete</button></td></tr>`).join('')}
-  </tbody></table>`;
-}
-
-window.handleEditTeam = async (teamId) => {
-  state.editMode = 'team';
-  state.editTeamId = teamId;
-  if (teamId) {
-    try {
-      const fullTeam = await apiGet(PATHS.team(state.dirtyLeague.id, teamId));
-      state.dirtyTeam = fullTeam || createEmptyTeam(teamId);
-    } catch(e) { console.error(e); state.dirtyTeam = createEmptyTeam(teamId); }
-  } else { state.dirtyTeam = createEmptyTeam(''); }
-  renderManageForm(); 
-};
-
-function createEmptyTeam(id) {
-  const defaultRace = state.gameData?.races?.[0]?.name || 'Human';
-  return { id, name: 'New Team', race: defaultRace, coachName: '', players: [] };
-}
-
-function renderTeamEditor() {
-  const t = state.dirtyTeam;
-  const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
-  const isNewTeam = !state.editTeamId;
-  els.containers.manageTeamEditor.innerHTML = `
-    <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
-    <div class="form-grid">
-      <div class="form-field"><label>File ID</label><input type="text" value="${t.id}" readonly class="faded" placeholder="Auto-generated"></div>
-      <div class="form-field"><label>Name</label><input type="text" value="${t.name}" id="teamEditNameInput"></div>
-      <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
-      <div class="form-field"><label>Race</label><select onchange="changeTeamRace(this.value)">${raceOpts}</select></div>
-    </div>
-    <h4>Roster</h4>
-    <table class="roster-editor-table"><thead><tr><th style="width:40px">#</th><th>Name</th><th>Position</th><th style="width:40px">MA</th><th style="width:40px">ST</th><th style="width:40px">AG</th><th style="width:40px">PA</th><th style="width:40px">AV</th><th>Skills</th><th style="width:50px">SPP</th><th style="width:30px"></th></tr></thead><tbody id="editorRosterBody"></tbody></table>
-    <button onclick="addSmartPlayer()" class="primary-btn" style="margin-top:0.5rem">+ Add Player</button>
-  `;
-  const tbody = document.getElementById('editorRosterBody');
-  const currentRaceObj = state.gameData?.races.find(r => r.name === t.race);
-  const positionalOptions = (currentRaceObj?.positionals || []).map(pos => `<option value="${pos.name}">${pos.name} (${Math.floor(pos.cost/1000)}k)</option>`).join('');
-  
-  // Skill Dropdown Options
-  let allSkillsHtml = '<option value="">+ Skill...</option>';
-  if (state.gameData?.skillCategories) {
-    Object.values(state.gameData.skillCategories).flat().forEach(s => {
-      const sName = (typeof s === 'object') ? s.name : s;
-      allSkillsHtml += `<option value="${sName}">${sName}</option>`;
-    });
-  }
-
-  t.players.forEach((p, idx) => {
-    const posSelect = `<select style="width:100%; font-size:0.8rem;" onchange="updatePlayerPos(${idx}, this.value)"><option value="" disabled>Pos...</option>${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}</select>`;
-    
-    // Skill Pills Logic
-    const currentSkills = (p.skills || []).map((skill, sIdx) => `
-      <span class="skill-pill">${skill}<span class="remove-skill" onclick="removePlayerSkill(${idx}, ${sIdx})">×</span></span>
-    `).join('');
-    
-    const skillPicker = `<div class="skill-editor-container">${currentSkills}<select class="skill-select" onchange="addPlayerSkill(${idx}, this.value)">${allSkillsHtml}</select></div>`;
-
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="number" value="${p.number||''}" style="width:30px" onchange="updatePlayer(${idx}, 'number', this.value)"></td>
-      <td><input type="text" value="${p.name}" onchange="updatePlayer(${idx}, 'name', this.value)"></td>
-      <td>${posSelect}</td>
-      <td><input type="number" value="${p.ma}" style="width:30px" onchange="updatePlayer(${idx}, 'ma', this.value)"></td>
-      <td><input type="number" value="${p.st}" style="width:30px" onchange="updatePlayer(${idx}, 'st', this.value)"></td>
-      <td><input type="number" value="${p.ag}" style="width:30px" onchange="updatePlayer(${idx}, 'ag', this.value)"></td>
-      <td><input type="number" value="${p.pa}" style="width:30px" onchange="updatePlayer(${idx}, 'pa', this.value)"></td>
-      <td><input type="number" value="${p.av}" style="width:30px" onchange="updatePlayer(${idx}, 'av', this.value)"></td>
-      <td>${skillPicker}</td>
-      <td><input type="number" value="${p.spp}" style="width:40px" onchange="updatePlayer(${idx}, 'spp', this.value)"></td>
-      <td><button onclick="removePlayer(${idx})" style="color:red;border:none;background:none;cursor:pointer;font-weight:bold;">×</button></td>
-    `;
-    tbody.appendChild(row);
-  });
-  const nameInput = document.getElementById('teamEditNameInput');
-  nameInput.oninput = function() {
-    state.dirtyTeam.name = this.value;
-    if (isNewTeam) { state.dirtyTeam.id = normalizeName(this.value); els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id; }
-  };
-}
-
-window.changeTeamRace = (newRace) => {
-  if (state.dirtyTeam.players.length > 0 && !confirm("Changing race will potentially break existing player positions. Continue?")) { renderTeamEditor(); return; }
-  state.dirtyTeam.race = newRace;
-  renderTeamEditor();
-};
-window.updatePlayer = (idx, f, v) => { 
-  const p=state.dirtyTeam.players[idx]; 
-  if (f==='skills') return; // Handled by pills now
-  if (['number','ma','st','ag','pa','av','spp'].includes(f)) p[f] = parseInt(v) || 0;
-  else p[f] = v;
-};
-window.updatePlayerPos = (idx, v) => { 
-  const p=state.dirtyTeam.players[idx]; p.position=v; 
-  const r=state.gameData.races.find(r=>r.name===state.dirtyTeam.race); 
-  const pos=r?.positionals.find(x=>x.name===v);
-  if(pos) Object.assign(p, {ma:pos.ma, st:pos.st, ag:pos.ag, pa:pos.pa, av:pos.av, skills:[...pos.skills]});
-  renderTeamEditor();
-};
-window.addSmartPlayer = () => { 
-  const t=state.dirtyTeam; const r=state.gameData.races.find(r=>r.name===t.race); 
-  const def=r?.positionals[0]||{name:'L',ma:6,st:3,ag:3,pa:4,av:8,skills:[]};
-  const nextNum = (t.players.length > 0) ? Math.max(...t.players.map(p => p.number || 0)) + 1 : 1;
-  t.players.push({number:nextNum, name:'Player', position:def.name, ...def, skills:[...def.skills], spp:0});
-  renderTeamEditor();
-};
-window.removePlayer = (idx) => { state.dirtyTeam.players.splice(idx,1); renderTeamEditor(); };
-window.addPlayerSkill = (playerIdx, skillName) => {
-  if (!skillName) return;
-  const p = state.dirtyTeam.players[playerIdx];
-  if (!p.skills) p.skills = [];
-  if (!p.skills.includes(skillName)) p.skills.push(skillName);
-  renderTeamEditor();
-};
-window.removePlayerSkill = (playerIdx, skillIdx) => {
-  state.dirtyTeam.players[playerIdx].skills.splice(skillIdx, 1);
-  renderTeamEditor();
-};
-
-window.handleDeleteTeam = async (teamId) => {
-  if(!confirm(`Delete team "${teamId}"?`)) return;
-  const key = els.inputs.editKey.value;
-  if (!key) return setStatus('Edit key required', 'error');
-  try {
-    const l = state.dirtyLeague;
-    await apiDelete(PATHS.team(l.id, teamId), `Delete team ${teamId}`, key);
-    const idx = l.teams.findIndex(t => t.id === teamId);
-    if(idx !== -1) l.teams.splice(idx, 1);
-    await apiSave(PATHS.leagueSettings(l.id), l, `Remove team ${teamId}`, key);
-    renderManageTeamsList();
-    setStatus('Team deleted.', 'ok');
-  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
-};
-
-window.handleDeleteLeague = async () => {
-  const l = state.dirtyLeague;
-  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?`)) return;
-  const key = els.inputs.editKey.value;
-  if (!key) return setStatus('Edit key required', 'error');
-  try {
-    for (const t of l.teams) { try { await apiDelete(PATHS.team(l.id, t.id), `Delete team ${t.id}`, key); } catch (e) {} }
-    await apiDelete(PATHS.leagueSettings(l.id), `Delete league ${l.id}`, key);
-    const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
-    const newIndex = freshIndex.filter(x => x.id !== l.id);
-    await apiSave(PATHS.leaguesIndex, newIndex, `Remove league ${l.id} from index`, key);
-    state.leaguesIndex = newIndex;
-    state.editMode = 'league';
-    goHome();
-    setStatus('League deleted.', 'ok');
-  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
-};
-
-els.buttons.manageSave.addEventListener('click', async () => {
-  const key = els.inputs.editKey.value;
-  if (!key) return setStatus('Edit key required', 'error');
-  setStatus('Saving...', 'info');
-  try {
-    if (state.editMode === 'team') {
-      const t = state.dirtyTeam;
-      const l = state.dirtyLeague;
-      if (!t.id) return setStatus('Invalid team name.', 'error');
-      if (!state.editTeamId) {
-        if (l.teams.find(x => x.id === t.id)) return setStatus('Team ID exists.', 'error');
-      }
-      await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
-      const existingIdx = l.teams.findIndex(x => x.id === t.id);
-      const meta = { id: t.id, name: t.name, race: t.race, coachName: t.coachName };
-      if (existingIdx >= 0) l.teams[existingIdx] = meta;
-      else l.teams.push(meta);
-      state.editTeamId = t.id;
-      setStatus('Team saved locally. Save League to commit.', 'ok');
-      state.editMode = 'league';
-      renderManageForm();
-      return; 
-    }
-    const l = state.dirtyLeague;
-    if (!l.id) return setStatus('League ID required.', 'error');
-    if (!state.editLeagueId && state.leaguesIndex.find(x => x.id === l.id)) return setStatus('League ID exists.', 'error');
-    l.name = els.inputs.leagueName.value;
-    l.season = parseInt(els.inputs.leagueSeason.value);
-    l.status = els.inputs.leagueStatus.value;
-    l.settings.pointsWin = parseInt(els.inputs.ptsWin.value);
-    l.settings.pointsDraw = parseInt(els.inputs.ptsDraw.value);
-    l.settings.pointsLoss = parseInt(els.inputs.ptsLoss.value);
-    await apiSave(PATHS.leagueSettings(l.id), l, `Save league ${l.id}`, key);
-    const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
-    const idxEntry = { id: l.id, name: l.name, season: l.season, status: l.status };
-    const i = freshIndex.findIndex(x => x.id === l.id);
-    if (i >= 0) freshIndex[i] = idxEntry;
-    else freshIndex.push(idxEntry);
-    await apiSave(PATHS.leaguesIndex, freshIndex, `Update index for ${l.id}`, key);
-    state.leaguesIndex = freshIndex;
-    setStatus('League saved.', 'ok');
-    state.editMode = 'league';
-    goHome();
-  } catch (e) { console.error(e); setStatus(`Save failed: ${e.message}`, 'error'); }
-});
-
-els.buttons.createLeague.addEventListener('click', () => handleManageLeague(null));
-els.buttons.manageAddTeam.addEventListener('click', () => handleEditTeam(null));
-els.buttons.manageBack.addEventListener('click', () => { if (state.editMode === 'team') { state.editMode = 'league'; renderManageForm(); } else goHome(); });
-
-// Older back buttons (kept for robustness)
-if(els.buttons.leagueBack) els.buttons.leagueBack.addEventListener('click', () => goHome());
-if(els.buttons.teamBack) els.buttons.teamBack.addEventListener('click', () => {
-    if (state.currentLeague) handleOpenLeague(state.currentLeague.id);
-    else goHome();
-});
-
-// Wire up Manage Team button (Specific fix request)
-els.buttons.teamManage.addEventListener('click', async () => {
-  if (!state.currentLeague || !state.currentTeam) return;
-  await handleManageLeague(state.currentLeague.id);
-  await handleEditTeam(state.currentTeam.id);
-});
-
-// ============================================
 // ADMIN SCANNER
 // ============================================
 
 if (els.buttons.scanBtn) {
   els.buttons.scanBtn.addEventListener('click', async () => {
-    els.scanResults.innerHTML = '<div class="small">Scanning all leagues...</div>';
+    els.containers.scanResults.innerHTML = '<div class="small">Scanning all leagues...</div>';
     try {
       const rootContents = await apiGet('data/leagues');
       if (!Array.isArray(rootContents)) throw new Error("Could not list directories.");
@@ -1164,9 +1106,9 @@ if (els.buttons.scanBtn) {
         }
       }
       html += '</table>';
-      if (issuesFound === 0) els.scanResults.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
-      else els.scanResults.innerHTML = html;
-    } catch (e) { els.scanResults.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`; }
+      if (issuesFound === 0) els.containers.scanResults.innerHTML = '<div class="status ok">Repository is clean. No orphans found.</div>';
+      else els.containers.scanResults.innerHTML = html;
+    } catch (e) { els.containers.scanResults.innerHTML = `<div class="status error">Scan failed: ${e.message}</div>`; }
   });
 }
 window.attachTeam = async (leagueId, filename) => {
