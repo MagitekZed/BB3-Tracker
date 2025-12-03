@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>BB3 League Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" /> <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
@@ -25,7 +26,7 @@
       </div>
     </div>
     <div id="breadcrumbs" class="breadcrumbs">
-      <span class="crumb">Home</span>
+      <div class="breadcrumbs-inner"><span class="crumb">Home</span></div>
     </div>
   </header>
 
@@ -68,39 +69,42 @@
       </section>
 
       <section id="leagueMatchesSection">
-        <h3>Matches & Schedule</h3>
-        <div class="card desktop-only">
-          <h4>Schedule Match</h4>
-          <div class="inline-input">
-            <input type="number" id="schedRound" value="1" style="width:50px">
-            <select id="schedHome"><option>Home...</option></select>
-            <span>vs</span>
-            <select id="schedAway"><option>Away...</option></select>
-            <button id="schedAddBtn">Add</button>
-          </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h3>Matches</h3>
+          <button id="desktopSchedBtn" class="primary-btn desktop-only">+ Schedule Match</button>
         </div>
-        <button id="mobileAddMatchBtn" class="fab-btn mobile-only">+</button>
-
+        
         <div id="inProgressContainer"></div>
         <div id="matchesContainer"></div>
+        
+        <button id="mobileAddMatchBtn" class="fab-btn mobile-only">+</button>
       </section>
     </section>
 
     <section id="leagueManageSection" class="hidden">
        <div class="card"><div class="card-header"><h2 id="leagueManageHeader">Manage League</h2><button id="leagueManageBackBtn">← Back</button></div><div id="leagueManageStatus"></div></div>
-       <div id="leagueInfoCard" class="card">... (Content populated by JS) ...</div>
+       <div id="leagueInfoCard" class="card">
+         <div class="form-grid">
+            <div class="form-field"><label>ID</label><input id="leagueManageIdInput"></div>
+            <div class="form-field"><label>Name</label><input id="leagueManageNameInput"></div>
+            <div class="form-field"><label>Season</label><input id="leagueManageSeasonInput" type="number"></div>
+            <div class="form-field"><label>Status</label><select id="leagueManageStatusSelect"><option value="upcoming">Upcoming</option><option value="active">Active</option><option value="completed">Completed</option></select></div>
+         </div>
+         <div class="form-grid" style="margin-top:1rem">
+            <div class="form-field"><label>Win Pts</label><input id="leagueManagePointsWinInput" type="number"></div>
+            <div class="form-field"><label>Draw Pts</label><input id="leagueManagePointsDrawInput" type="number"></div>
+            <div class="form-field"><label>Loss Pts</label><input id="leagueManagePointsLossInput" type="number"></div>
+            <div class="form-field"><label>Max Teams</label><input id="leagueManageMaxTeamsInput" type="number"></div>
+         </div>
+         <div style="margin-top:1rem"><label><input id="leagueManageLockTeamsInput" type="checkbox"> Lock Teams</label></div>
+       </div>
        <div id="leagueTeamsCard" class="card"><div id="leagueManageTeamsList"></div><button id="leagueManageAddNewTeamBtn">+ Team</button></div>
        <div id="teamEditorCard" class="card"><div id="leagueManageTeamEditor"></div></div>
        <div class="card"><button id="leagueManageSaveBtn" class="primary-btn">Save Changes</button><div id="deleteLeagueContainer"></div></div>
-       <div class="hidden">
-         <input id="leagueManageIdInput"><input id="leagueManageNameInput"><input id="leagueManageSeasonInput"><select id="leagueManageStatusSelect"></select>
-         <input id="leagueManagePointsWinInput"><input id="leagueManagePointsDrawInput"><input id="leagueManagePointsLossInput">
-         <input id="leagueManageMaxTeamsInput"><input id="leagueManageLockTeamsInput">
-       </div>
     </section>
 
     <section id="teamViewSection" class="hidden">
-      <div class="card">
+       <div class="card">
         <div class="card-header"><h2 id="teamHeader">Team</h2><div><button id="teamBackBtn">← Back</button> <button id="teamManageBtn">Manage</button></div></div>
         <div id="teamSummary"></div>
       </div>
@@ -112,7 +116,7 @@
         <div class="card-header"><h2>Live Match</h2><div><button id="scoreboardRefreshBtn">↻</button><button id="scoreboardBackToMatchBtn">Exit</button></div></div>
         <div class="scoreboard-layout">
            <div class="team-control"><div id="sbHomeName">Home</div><div id="sbHomeScore" class="score-display">0</div><div class="turn-box">Turn: <span id="sbHomeTurn">0</span></div><button class="primary-btn" onclick="enterCoachMode('home')">Play as Home</button></div>
-           <div class="match-control"><button id="endGameBtn" class="primary-btn">End Game</button></div>
+           <div class="match-control"><button id="endGameBtn" class="primary-btn">End Game</button><button id="cancelGameBtn" class="danger-btn" style="margin-top:1rem">Cancel</button></div>
            <div class="team-control"><div id="sbAwayName">Away</div><div id="sbAwayScore" class="score-display">0</div><div class="turn-box">Turn: <span id="sbAwayTurn">0</span></div><button class="primary-btn" onclick="enterCoachMode('away')">Play as Away</button></div>
         </div>
       </div>
@@ -145,19 +149,49 @@
   </main>
 
   <nav id="mobileNavBar" class="mobile-only">
-    <button id="navMobLeagues" class="tab-btn active">
-      <span class="tab-icon">🏆</span>
-      <span class="tab-label">Leagues</span>
-    </button>
-    <button id="navMobMatch" class="tab-btn">
-      <span class="tab-icon">⚔️</span>
-      <span class="tab-label">Match</span>
-    </button>
-    <button id="navMobAdmin" class="tab-btn">
-      <span class="tab-icon">⚙️</span>
-      <span class="tab-label">Admin</span>
-    </button>
+    <button id="navMobLeagues" class="tab-btn active"><span class="tab-icon">🏆</span><span class="tab-label">Leagues</span></button>
+    <button id="navMobMatch" class="tab-btn"><span class="tab-icon">⚔️</span><span class="tab-label">Match</span></button>
+    <button id="navMobAdmin" class="tab-btn"><span class="tab-icon">⚙️</span><span class="tab-label">Admin</span></button>
   </nav>
+
+  <div id="scheduleModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header"><h3>Schedule Match</h3><button class="close-btn" onclick="closeScheduleModal()">×</button></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Round</label><input type="number" id="schedModalRound" value="1"></div>
+        <div class="form-field"><label>Home Team</label><select id="schedModalHome"></select></div>
+        <div class="form-field"><label>Away Team</label><select id="schedModalAway"></select></div>
+      </div>
+      <div class="modal-actions" style="margin-top:1.5rem">
+        <button onclick="closeScheduleModal()" class="secondary-btn">Cancel</button>
+        <button id="schedModalAddBtn" class="primary-btn">Schedule Match</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="playerActionSheet" class="action-sheet hidden">
+    <div class="action-sheet-backdrop" onclick="closeActionSheet()"></div>
+    <div class="action-sheet-content">
+      <div class="action-sheet-header">
+        <h3 id="actionSheetTitle">Player Name</h3>
+        <button class="close-btn" onclick="closeActionSheet()">×</button>
+      </div>
+      <div class="sheet-grid">
+        <button class="sheet-btn btn-td" onclick="handleSheetAction('td')">
+          <div class="emoji">🏈</div> Touchdown
+        </button>
+        <button class="sheet-btn btn-cas" onclick="handleSheetAction('cas')">
+          <div class="emoji">💥</div> Casualty
+        </button>
+        <button class="sheet-btn btn-inj" onclick="handleSheetAction('injured')">
+          <div class="emoji">🤕</div> Injury
+        </button>
+         <button class="sheet-btn btn-used" onclick="handleSheetAction('used')">
+          <div class="emoji">💤</div> Toggle Used
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div id="skillModal" class="modal hidden">
     <div class="modal-content"><div class="modal-header"><h3 id="skillModalTitle"></h3><button class="close-btn" onclick="closeSkillModal()">×</button></div><div id="skillModalBody"></div></div>
