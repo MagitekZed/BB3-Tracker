@@ -14,9 +14,8 @@
   
   --border-color: #ddd;
   --shadow-card: 0 2px 5px rgba(0,0,0,0.05);
-  --shadow-hover: 0 4px 10px rgba(0,0,0,0.1);
-
-  /* Layout Dimensions */
+  
+  /* Dimensions */
   --nav-height-desktop: 60px;
   --nav-height-mobile: 60px;
 }
@@ -25,15 +24,16 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-main);
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   /* Add padding to bottom so content isn't hidden behind mobile nav */
   padding-bottom: calc(var(--nav-height-mobile) + 20px); 
 }
 
 /* =========================================
-   2. DESKTOP HEADER & BREADCRUMBS
+   2. APP SHELL (Header & Nav)
    ========================================= */
+
+/* Desktop Header */
 #desktopHeader {
   background: #222;
   color: white;
@@ -46,12 +46,12 @@ body {
   align-items: center;
   justify-content: space-between;
   height: var(--nav-height-desktop);
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .brand {
-  font-family: Impact, "Arial Narrow", sans-serif;
+  font-family: Impact, sans-serif;
   font-size: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -78,30 +78,6 @@ body {
 .nav-link:hover { color: white; background: #333; }
 .nav-link.active { color: var(--gold-accent); background: #333; }
 
-/* Key Dropdown */
-.header-tools { position: relative; }
-.key-details { position: relative; }
-.key-summary { 
-  cursor: pointer; 
-  list-style: none; 
-  font-weight: bold; 
-  color: #ddd; 
-  padding: 0.5rem;
-}
-.key-dropdown {
-  position: absolute;
-  top: 100%; right: 0;
-  background: white;
-  padding: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  width: 250px;
-  z-index: 1000;
-  display: flex; gap: 0.5rem;
-  border: 1px solid #ccc;
-}
-.key-dropdown input { width: 100%; padding: 0.4rem; border:1px solid #ddd; border-radius:4px; }
-
 /* Breadcrumbs */
 .breadcrumbs {
   background: #e9e9e9;
@@ -110,22 +86,20 @@ body {
   font-size: 0.9rem;
   color: #555;
   display: flex;
-  gap: 0.5rem;
-  justify-content: center; /* Center on large screens if desired */
+  justify-content: center;
 }
 .breadcrumbs-inner {
-  max-width: 1000px;
+  max-width: 1200px;
   width: 100%;
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 .crumb { color: #555; }
 .crumb-link { color: #0056b3; cursor: pointer; text-decoration: underline; }
 .crumb-sep { color: #999; }
 
-/* =========================================
-   3. MOBILE NAVIGATION (Bottom Bar)
-   ========================================= */
+/* Mobile Bottom Nav */
 #mobileNavBar {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -136,7 +110,6 @@ body {
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -157,7 +130,7 @@ body {
 .tab-icon { font-size: 1.4rem; margin-bottom: 2px; }
 .tab-label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
 
-/* Mobile Header (Top) */
+/* Mobile Top Header */
 #mobileHeader {
   background: #222;
   color: white;
@@ -165,12 +138,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   height: 50px;
 }
 .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: white; }
 
-/* Mobile Key Modal */
+/* Key Modal (Mobile) */
 .mobile-key-modal {
   position: fixed; top:0; left:0; width:100%; height:100%;
   background: rgba(0,0,0,0.8);
@@ -183,20 +155,95 @@ body {
   border-radius: 8px;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   position: relative;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 .large-input { padding: 0.8rem; font-size: 1.2rem; width: 100%; margin: 1rem 0; box-sizing: border-box; border:1px solid #ccc; border-radius:4px; }
-.modal-actions { display: flex; gap: 1rem; justify-content: flex-end; }
+.modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem; }
+
+/* Desktop Key Dropdown */
+.header-tools { position: relative; }
+.key-details { position: relative; list-style: none; }
+.key-summary { cursor: pointer; font-weight: bold; color: #ddd; padding: 0.5rem; }
+.key-dropdown {
+  position: absolute;
+  top: 100%; right: 0;
+  background: white;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  width: 250px;
+  z-index: 1000;
+  display: flex; gap: 0.5rem;
+  border: 1px solid #ccc;
+}
+.key-dropdown input { width: 100%; padding: 0.4rem; border:1px solid #ddd; border-radius:4px; }
+
+/* Visibility Toggles */
+.hidden { display: none !important; }
+
+@media (min-width: 769px) {
+  .mobile-only { display: none !important; }
+  body { padding-bottom: 2rem; } /* Reset bottom padding on desktop */
+}
+
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  #mainContent { padding: 0.5rem; }
+  h1 { font-size: 1.8rem; }
+}
+
+/* Coach Mode Overrides (Full Screen) */
+body.mode-coach {
+  padding: 0 !important;
+  overflow: hidden;
+}
+body.mode-coach #mobileNavBar,
+body.mode-coach #desktopHeader,
+body.mode-coach #mobileHeader,
+body.mode-coach .breadcrumbs {
+  display: none !important;
+}
+
 
 /* =========================================
-   4. LAYOUT & RESPONSIVENESS
+   3. LAYOUT GRID (PHASE 2 NEW)
    ========================================= */
 #mainContent {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
 }
+
+/* League Dashboard Grid (Desktop Split Pane) */
+@media (min-width: 900px) {
+  #leagueViewSection {
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Fixed Sidebar, Flexible Main */
+    gap: 1.5rem;
+    grid-template-areas: 
+      "header header"
+      "standings schedule";
+    align-items: start;
+  }
+  
+  #leagueHeader { grid-area: header; }
+  #leagueTeamsSection { grid-area: standings; }
+  #leagueMatchesSection { grid-area: schedule; }
+}
+
+/* Mobile Stack (Default) */
+@media (max-width: 899px) {
+  #leagueViewSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+/* =========================================
+   4. COMPONENT STYLES
+   ========================================= */
 
 /* Typography */
 h1, h2, h3 {
@@ -207,8 +254,8 @@ h1, h2, h3 {
   margin-top: 0;
 }
 h1 { color: var(--primary-red); font-size: 2.5rem; margin-bottom: 0.25rem; }
-h2 { font-size: 1.8rem; border-bottom: 2px solid var(--gold-accent); padding-bottom: 0.25rem; margin-bottom: 1rem; }
-h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #444; }
+h2 { font-size: 1.5rem; margin: 0; color: #333; border: none; }
+h3 { margin: 0 0 1rem 0; font-size: 1.2rem; color: #444; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .subtitle {
   color: var(--text-muted);
@@ -218,7 +265,45 @@ h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #444; }
   padding-left: 0.75rem;
 }
 
-/* FAB (Floating Action Button) */
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-card);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+/* Buttons & Inputs */
+button {
+  cursor: pointer; border-radius: 4px; border: 1px solid #ccc;
+  background: #f8f8f8; padding: 0.4rem 0.8rem; font-size: 0.9rem;
+  transition: background 0.1s; font-family: inherit;
+}
+button:hover { background: #eee; }
+
+.primary-btn { background: var(--pitch-green); color: white; border: none; font-weight: bold; }
+.primary-btn:hover { background: #244a20; }
+.danger-btn { background: var(--primary-red); color: white; border: none; }
+.danger-btn:hover { background: #6b1515; }
+.secondary-btn { background: #6c757d; color: white; border: none; }
+.secondary-btn:hover { background: #5a6268; }
+
+.link-button {
+  background: none; border: none; color: #0056b3;
+  text-decoration: none; padding: 0; font-weight: 500;
+}
+.link-button:hover { text-decoration: underline; }
+
 .fab-btn {
   position: fixed;
   bottom: calc(var(--nav-height-mobile) + 20px);
@@ -235,135 +320,85 @@ h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #444; }
   cursor: pointer;
 }
 
-/* Visibility Utilities */
-.hidden { display: none !important; }
-
-/* Desktop Only / Mobile Only Toggles */
-@media (min-width: 769px) {
-  .mobile-only { display: none !important; }
-  body { padding-bottom: 2rem; } /* Reset bottom padding on desktop */
-}
-
-@media (max-width: 768px) {
-  .desktop-only { display: none !important; }
-  /* Tweaks for mobile layout */
-  h1 { font-size: 1.8rem; }
-  .card { 
-    border-radius: 0; 
-    box-shadow: none; 
-    border-left: none; 
-    border-right: none; 
-    margin-left: -1rem; 
-    margin-right: -1rem; 
-    padding: 1rem;
-  }
-}
-
-/* Coach Mode Overrides (Full Screen) */
-body.mode-coach {
-  padding: 0 !important;
-  overflow: hidden; /* Prevent scrolling the shell */
-}
-body.mode-coach #mobileNavBar,
-body.mode-coach #desktopHeader,
-body.mode-coach #mobileHeader,
-body.mode-coach .breadcrumbs {
-  display: none !important;
-}
-
-/* =========================================
-   5. COMPONENT STYLES (Cards, Buttons, Tables)
-   ========================================= */
-
-/* Cards */
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
-  box-shadow: var(--shadow-card);
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-.card-header h2, .card-header h3 { border: none; margin: 0; padding: 0; }
+input, select { padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+input.faded { background: #f9f9f9; color: #777; }
+.inline-input { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.form-field { display: flex; flex-direction: column; }
+.form-field label { font-size: 0.85rem; font-weight: bold; color: #555; margin-bottom: 0.25rem; }
 
 /* Status Messages */
-.status {
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border-radius: 4px;
-  background: #eee;
-  border-left: 4px solid #ccc;
-}
+.status { padding: 0.75rem; margin-bottom: 1rem; border-radius: 4px; background: #eee; border-left: 4px solid #ccc; }
 .status.error { background: #fee; color: #a00; border-left-color: #a00; }
 .status.ok { background: #efe; color: var(--pitch-green); border-left-color: var(--pitch-green); }
 
-/* Tables */
+/* =========================================
+   5. RESPONSIVE TABLES (PHASE 2 NEW)
+   ========================================= */
 table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-th {
-  text-align: left; background: #f4f4f4; color: #555;
-  font-weight: 600; text-transform: uppercase; font-size: 0.8rem;
-  padding: 0.5rem; border-bottom: 2px solid #ddd;
-}
+th { text-align: left; background: #f4f4f4; color: #555; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; padding: 0.5rem; border-bottom: 2px solid #ddd; }
 td { padding: 0.5rem; border-bottom: 1px solid #eee; }
-/* Monospace for Stats Columns */
+
+/* Stat Columns Monospace */
 td:nth-child(n+4):nth-child(-n+8), 
 th:nth-child(n+4):nth-child(-n+8) {
   font-family: Consolas, monospace; text-align: center;
 }
 
-/* Buttons */
-button {
-  cursor: pointer; border-radius: 4px; border: 1px solid #ccc;
-  background: #f8f8f8; padding: 0.4rem 0.8rem; font-size: 0.9rem;
-  transition: background 0.1s; font-family: inherit;
+/* "Card View" for Tables on Mobile */
+@media (max-width: 768px) {
+  /* Hide standard headers */
+  .responsive-table thead { display: none; }
+  
+  /* Make rows blocks */
+  .responsive-table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: 0.5rem;
+  }
+  
+  /* Make cells flex rows */
+  .responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .responsive-table td:last-child { border-bottom: none; }
+  
+  /* Inject labels using data-label attribute */
+  .responsive-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #888;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-right: 1rem;
+  }
+  
+  /* Special styling for Name/Position to pop */
+  .responsive-table td[data-label="Name"] { font-weight: bold; font-size: 1.1rem; color: var(--primary-red); border-bottom: 2px solid #eee; }
+  .responsive-table td[data-label="Pos"] { font-style: italic; color: #555; }
+  .responsive-table td[data-label="Skills"] { display: block; }
+  .responsive-table td[data-label="Skills"]::before { display: block; margin-bottom: 0.25rem; }
 }
-button:hover { background: #eee; }
 
-.primary-btn { background: var(--pitch-green); color: white; border: none; }
-.primary-btn:hover { background: #244a20; }
-.danger-btn { background: var(--primary-red); color: white; border: none; }
-.danger-btn:hover { background: #6b1515; }
-.secondary-btn { background: #6c757d; color: white; border: none; }
-.secondary-btn:hover { background: #5a6268; }
-
-.link-button {
-  background: none; border: none; color: #0056b3;
-  text-decoration: none; padding: 0; font-weight: 500;
+/* Manager Toolbar (Desktop) */
+.manager-toolbar {
+  display: flex; gap: 0.5rem; margin-bottom: 1rem;
+  background: #f8f8f8; padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;
 }
-.link-button:hover { text-decoration: underline; }
-
-/* Forms */
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-.form-field { display: flex; flex-direction: column; }
-.form-field label { font-size: 0.85rem; font-weight: bold; color: #555; margin-bottom: 0.25rem; }
-input, select { padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
-input.faded { background: #f9f9f9; color: #777; }
-.inline-input { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-
-/* Roster Tiles */
-.roster-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
-.roster-tile {
-  background: white; border: 1px solid #eee; border-left: 4px solid var(--primary-red);
-  padding: 0.75rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.roster-tile-title button { font-weight: bold; font-size: 1.1rem; color: #333; }
-.roster-tile-meta { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
-
-/* Match Tags */
-.tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-.tag.completed { background: #e0f2f1; color: #00695c; }
-.tag.in_progress { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
-.tag.scheduled { background: #f5f5f5; color: #616161; }
 
 /* =========================================
-   6. SCOREBOARD & COACH SPECIFIC
+   6. SCOREBOARD & MISC
    ========================================= */
+
+/* Scoreboard */
 .scoreboard-layout {
   display: flex; justify-content: space-between; align-items: flex-start;
   background: #222; color: white; padding: 1.5rem;
@@ -384,6 +419,7 @@ input.faded { background: #f9f9f9; color: #777; }
   .match-control { order: -1; margin-bottom: 0; }
 }
 
+/* Live Roster */
 .live-roster { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem; }
 .live-player-row { border-bottom: 1px solid #eee; padding: 0.6rem 0.4rem; display: flex; justify-content: space-between; align-items: center; }
 .live-player-row.used { opacity: 0.4; background: #f9f9f9; filter: grayscale(100%); }
@@ -398,14 +434,10 @@ input.faded { background: #f9f9f9; color: #777; }
 }
 .stat-badge { font-size: 0.65rem; background: var(--gold-accent); color: black; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left:4px; }
 
-/* COACH VIEW SPECIFIC */
-#coachSection {
-  /* No padding-bottom here because body.mode-coach handles it */
-}
+/* Coach Header & Footer */
 .coach-header {
   position: sticky; top: 0; background: #222; color: white; padding: 0.8rem; z-index: 100;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  width: 100%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3); width: 100%; box-sizing: border-box;
 }
 .coach-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
 .coach-team-name { font-family: Impact, sans-serif; font-size: 1.4rem; text-transform: uppercase; }
@@ -421,7 +453,7 @@ input.faded { background: #f9f9f9; color: #777; }
   box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 100; box-sizing: border-box;
 }
 
-/* LEAGUE CARD & SKILLS */
+/* League Card */
 .league-card {
   display: flex; justify-content: space-between; align-items: center;
   background: white; border: 1px solid #ddd; border-left: 5px solid var(--primary-red);
@@ -429,7 +461,21 @@ input.faded { background: #f9f9f9; color: #777; }
 }
 .league-card-title { font-family: Impact, sans-serif; font-size: 1.2rem; color: #333; margin-bottom: 0.3rem; }
 .league-meta { font-size: 0.85rem; color: #666; }
+.tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+.tag.completed { background: #e0f2f1; color: #00695c; }
+.tag.in_progress { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+.tag.scheduled { background: #f5f5f5; color: #616161; }
 
+/* Roster Tiles */
+.roster-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+.roster-tile {
+  background: white; border: 1px solid #eee; border-left: 4px solid var(--primary-red);
+  padding: 0.75rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.roster-tile-title button { font-weight: bold; font-size: 1.1rem; color: #333; }
+.roster-tile-meta { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
+
+/* Skills */
 .skill-tag {
   display: inline-block; background: #eef; color: #336; padding: 1px 5px;
   border-radius: 4px; border: 1px solid #cce; font-size: 0.8rem; margin: 0 2px;
@@ -437,7 +483,7 @@ input.faded { background: #f9f9f9; color: #777; }
 }
 .skill-pill {
   background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; border-radius: 12px;
-  padding: 2px 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; margin: 2px;
 }
 .skill-pill .remove-skill { cursor: pointer; color: #d32f2f; font-weight: bold; font-size: 1rem; }
 .skill-editor-container { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-height: 30px; }
