@@ -54,6 +54,14 @@
       "awayTeamId": "new_team",
       "status": "scheduled",
       "date": "2025-12-03"
+    },
+    {
+      "id": "match_1764748860305",
+      "round": 3,
+      "homeTeamId": "team_two",
+      "awayTeamId": "new_team",
+      "status": "scheduled",
+      "date": "2025-12-03"
     }
   ]
 }
