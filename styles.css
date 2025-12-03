@@ -1,4 +1,8 @@
+/* =========================================
+   1. CORE VARIABLES & RESET
+   ========================================= */
 :root {
+  /* Colors */
   --bg-color: #fcfbf7; /* Parchment White */
   --card-bg: #ffffff;
   --text-main: #222;
@@ -11,15 +15,187 @@
   --border-color: #ddd;
   --shadow-card: 0 2px 5px rgba(0,0,0,0.05);
   --shadow-hover: 0 4px 10px rgba(0,0,0,0.1);
+
+  /* Layout Dimensions */
+  --nav-height-desktop: 60px;
+  --nav-height-mobile: 60px;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  /* Add padding to bottom so content isn't hidden behind mobile nav */
+  padding-bottom: calc(var(--nav-height-mobile) + 20px); 
+}
+
+/* =========================================
+   2. DESKTOP HEADER & BREADCRUMBS
+   ========================================= */
+#desktopHeader {
+  background: #222;
+  color: white;
+  padding: 0 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--nav-height-desktop);
   max-width: 1000px;
   margin: 0 auto;
-  padding: 1rem 1rem 4rem;
+}
+
+.brand {
+  font-family: Impact, "Arial Narrow", sans-serif;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.header-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: color 0.2s;
+  font-family: inherit;
+}
+.nav-link:hover { color: white; background: #333; }
+.nav-link.active { color: var(--gold-accent); background: #333; }
+
+/* Key Dropdown */
+.header-tools { position: relative; }
+.key-details { position: relative; }
+.key-summary { 
+  cursor: pointer; 
+  list-style: none; 
+  font-weight: bold; 
+  color: #ddd; 
+  padding: 0.5rem;
+}
+.key-dropdown {
+  position: absolute;
+  top: 100%; right: 0;
+  background: white;
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  width: 250px;
+  z-index: 1000;
+  display: flex; gap: 0.5rem;
+  border: 1px solid #ccc;
+}
+.key-dropdown input { width: 100%; padding: 0.4rem; border:1px solid #ddd; border-radius:4px; }
+
+/* Breadcrumbs */
+.breadcrumbs {
+  background: #e9e9e9;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.9rem;
+  color: #555;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center; /* Center on large screens if desired */
+}
+.breadcrumbs-inner {
+  max-width: 1000px;
+  width: 100%;
+  display: flex;
+  gap: 0.5rem;
+}
+.crumb { color: #555; }
+.crumb-link { color: #0056b3; cursor: pointer; text-decoration: underline; }
+.crumb-sep { color: #999; }
+
+/* =========================================
+   3. MOBILE NAVIGATION (Bottom Bar)
+   ========================================= */
+#mobileNavBar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-height-mobile);
+  background: #fff;
+  border-top: 1px solid #ccc;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  cursor: pointer;
+}
+.tab-btn.active { color: var(--primary-red); }
+.tab-icon { font-size: 1.4rem; margin-bottom: 2px; }
+.tab-label { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+
+/* Mobile Header (Top) */
+#mobileHeader {
+  background: #222;
+  color: white;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  height: 50px;
+}
+.icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: white; }
+
+/* Mobile Key Modal */
+.mobile-key-modal {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 2000;
+  display: flex; justify-content: center; align-items: center;
+}
+.modal-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  position: relative;
+}
+.large-input { padding: 0.8rem; font-size: 1.2rem; width: 100%; margin: 1rem 0; box-sizing: border-box; border:1px solid #ccc; border-radius:4px; }
+.modal-actions { display: flex; gap: 1rem; justify-content: flex-end; }
+
+/* =========================================
+   4. LAYOUT & RESPONSIVENESS
+   ========================================= */
+#mainContent {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 /* Typography */
@@ -30,7 +206,6 @@ h1, h2, h3 {
   letter-spacing: 0.5px;
   margin-top: 0;
 }
-
 h1 { color: var(--primary-red); font-size: 2.5rem; margin-bottom: 0.25rem; }
 h2 { font-size: 1.8rem; border-bottom: 2px solid var(--gold-accent); padding-bottom: 0.25rem; margin-bottom: 1rem; }
 h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #444; }
@@ -43,40 +218,64 @@ h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #444; }
   padding-left: 0.75rem;
 }
 
-/* Navigation */
-.nav {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  padding: 0.5rem;
-  background: #e9e9e9;
-  border-radius: 6px;
-  align-items: center;
-}
-
-.nav button {
-  padding: 0.5rem 1rem;
+/* FAB (Floating Action Button) */
+.fab-btn {
+  position: fixed;
+  bottom: calc(var(--nav-height-mobile) + 20px);
+  right: 20px;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--primary-red);
+  color: white;
+  font-size: 2rem;
   border: none;
-  background: transparent;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 900;
   cursor: pointer;
-  font-weight: bold;
-  font-family: inherit;
-  color: #555;
-  border-radius: 4px;
-  transition: all 0.2s;
 }
 
-.nav button.active {
-  background: white;
-  color: var(--primary-red);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* Visibility Utilities */
+.hidden { display: none !important; }
+
+/* Desktop Only / Mobile Only Toggles */
+@media (min-width: 769px) {
+  .mobile-only { display: none !important; }
+  body { padding-bottom: 2rem; } /* Reset bottom padding on desktop */
 }
 
-.nav button:hover:not(.active) {
-  background: #ddd;
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  /* Tweaks for mobile layout */
+  h1 { font-size: 1.8rem; }
+  .card { 
+    border-radius: 0; 
+    box-shadow: none; 
+    border-left: none; 
+    border-right: none; 
+    margin-left: -1rem; 
+    margin-right: -1rem; 
+    padding: 1rem;
+  }
 }
 
-/* Layout & Cards */
+/* Coach Mode Overrides (Full Screen) */
+body.mode-coach {
+  padding: 0 !important;
+  overflow: hidden; /* Prevent scrolling the shell */
+}
+body.mode-coach #mobileNavBar,
+body.mode-coach #desktopHeader,
+body.mode-coach #mobileHeader,
+body.mode-coach .breadcrumbs {
+  display: none !important;
+}
+
+/* =========================================
+   5. COMPONENT STYLES (Cards, Buttons, Tables)
+   ========================================= */
+
+/* Cards */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -85,21 +284,13 @@ h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #444; }
   margin-bottom: 1rem;
   box-shadow: var(--shadow-card);
 }
-
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
 }
-
-.card-header h2, .card-header h3 {
-  border: none;
-  margin: 0;
-  padding: 0;
-}
-
-.hidden { display: none !important; }
+.card-header h2, .card-header h3 { border: none; margin: 0; padding: 0; }
 
 /* Status Messages */
 .status {
@@ -113,236 +304,79 @@ h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: #444; }
 .status.ok { background: #efe; color: var(--pitch-green); border-left-color: var(--pitch-green); }
 
 /* Tables */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 th {
-  text-align: left;
-  background: #f4f4f4;
-  color: #555;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  padding: 0.5rem;
-  border-bottom: 2px solid #ddd;
+  text-align: left; background: #f4f4f4; color: #555;
+  font-weight: 600; text-transform: uppercase; font-size: 0.8rem;
+  padding: 0.5rem; border-bottom: 2px solid #ddd;
 }
-
-td {
-  padding: 0.5rem;
-  border-bottom: 1px solid #eee;
-}
-
+td { padding: 0.5rem; border-bottom: 1px solid #eee; }
 /* Monospace for Stats Columns */
 td:nth-child(n+4):nth-child(-n+8), 
 th:nth-child(n+4):nth-child(-n+8) {
-  font-family: Consolas, monospace;
-  text-align: center;
+  font-family: Consolas, monospace; text-align: center;
 }
-
-/* Stat Highlighting */
-.stat-good { color: var(--pitch-green); font-weight: bold; }
-.stat-bad  { color: var(--primary-red); font-weight: bold; }
 
 /* Buttons */
 button {
-  cursor: pointer;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background: #f8f8f8;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  transition: background 0.1s;
+  cursor: pointer; border-radius: 4px; border: 1px solid #ccc;
+  background: #f8f8f8; padding: 0.4rem 0.8rem; font-size: 0.9rem;
+  transition: background 0.1s; font-family: inherit;
 }
 button:hover { background: #eee; }
 
-.primary-btn {
-  background: var(--pitch-green);
-  color: white;
-  border: none;
-}
+.primary-btn { background: var(--pitch-green); color: white; border: none; }
 .primary-btn:hover { background: #244a20; }
-
-.danger-btn {
-  background: var(--primary-red);
-  color: white;
-  border: none;
-}
+.danger-btn { background: var(--primary-red); color: white; border: none; }
 .danger-btn:hover { background: #6b1515; }
+.secondary-btn { background: #6c757d; color: white; border: none; }
+.secondary-btn:hover { background: #5a6268; }
 
 .link-button {
-  background: none;
-  border: none;
-  color: #0056b3;
-  text-decoration: none;
-  padding: 0;
-  font-weight: 500;
+  background: none; border: none; color: #0056b3;
+  text-decoration: none; padding: 0; font-weight: 500;
 }
 .link-button:hover { text-decoration: underline; }
 
 /* Forms */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.form-field { display: flex; flex-direction: column; }
+.form-field label { font-size: 0.85rem; font-weight: bold; color: #555; margin-bottom: 0.25rem; }
+input, select { padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+input.faded { background: #f9f9f9; color: #777; }
+.inline-input { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
+/* Roster Tiles */
+.roster-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+.roster-tile {
+  background: white; border: 1px solid #eee; border-left: 4px solid var(--primary-red);
+  padding: 0.75rem; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-
-.form-field label {
-  font-size: 0.85rem;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 0.25rem;
-}
-
-input, select {
-  padding: 0.4rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-input.faded {
-  background: #f9f9f9;
-  color: #777;
-}
+.roster-tile-title button { font-weight: bold; font-size: 1.1rem; color: #333; }
+.roster-tile-meta { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
 
 /* Match Tags */
-.tag {
-  display: inline-block;
-  padding: 0.15rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
+.tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
 .tag.completed { background: #e0f2f1; color: #00695c; }
 .tag.in_progress { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
 .tag.scheduled { background: #f5f5f5; color: #616161; }
 
-/* Roster Tiles */
-.roster-tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.roster-tile {
-  background: white;
-  border: 1px solid #eee;
-  border-left: 4px solid var(--primary-red);
-  padding: 0.75rem;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.roster-tile-title button {
-  font-weight: bold;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.roster-tile-meta {
-  font-size: 0.85rem;
-  color: #666;
-  margin-top: 0.25rem;
-}
-
-/* SCOREBOARD SPECIFIC STYLES 
-   (Updated for the live view)
-*/
+/* =========================================
+   6. SCOREBOARD & COACH SPECIFIC
+   ========================================= */
 .scoreboard-layout {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  background: #222; /* Dark board */
-  color: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  background: #222; color: white; padding: 1.5rem;
+  border-radius: 8px; margin-bottom: 1.5rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-
-.team-control {
-  text-align: center;
-  flex: 1;
-}
-
-.team-name {
-  font-family: Impact, sans-serif;
-  letter-spacing: 1px;
-  font-size: 1.4rem;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-  color: #ddd;
-}
-
-.score-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.score-display {
-  font-size: 3.5rem;
-  font-weight: 700;
-  width: 80px;
-  font-family: Consolas, monospace;
-  color: var(--gold-accent);
-}
-
-.score-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid #555;
-  background: #333;
-  color: white;
-  font-weight: bold;
-  font-size: 1.2rem;
-  line-height: 1;
-}
-.score-btn:hover { background: #444; border-color: #777; }
-
-.turn-box {
-  font-size: 0.9rem;
-  color: #aaa;
-  background: #333;
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-}
-
-.match-control {
-  padding: 0 2rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.vs-tag {
-  font-weight: 900;
-  color: #555;
-  font-size: 2rem;
-  font-family: Impact, sans-serif;
-  opacity: 0.5;
-}
-
-.scoreboard-rosters {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
+.team-control { text-align: center; flex: 1; }
+.team-name { font-family: Impact, sans-serif; font-size: 1.4rem; text-transform: uppercase; margin-bottom: 0.5rem; color: #ddd; }
+.score-display { font-size: 3.5rem; font-weight: 700; font-family: Consolas, monospace; color: var(--gold-accent); }
+.turn-box { font-size: 0.9rem; color: #aaa; background: #333; display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; }
+.match-control { padding: 0 2rem; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+.vs-tag { font-weight: 900; color: #555; font-size: 2rem; font-family: Impact, sans-serif; opacity: 0.5; }
+.scoreboard-rosters { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 
 @media (max-width: 700px) {
   .scoreboard-rosters { grid-template-columns: 1fr; }
@@ -350,311 +384,69 @@ input.faded {
   .match-control { order: -1; margin-bottom: 0; }
 }
 
-.live-roster {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 0.5rem;
+.live-roster { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem; }
+.live-player-row { border-bottom: 1px solid #eee; padding: 0.6rem 0.4rem; display: flex; justify-content: space-between; align-items: center; }
+.live-player-row.used { opacity: 0.4; background: #f9f9f9; filter: grayscale(100%); }
+.live-player-row.injured { background: #fff0f0; border-left: 3px solid var(--primary-red); }
+.player-info { font-size: 0.9rem; }
+.player-name { font-weight: 700; display: block; color: #333; }
+.player-pos { color: #777; font-size: 0.75rem; font-family: monospace; }
+.player-actions { display: flex; gap: 4px; }
+.action-btn-large {
+  width: 44px; height: 44px; border-radius: 4px; border: 1px solid #ccc;
+  background: white; font-weight: bold; font-size: 0.9rem; margin-left: 4px;
 }
-
-.live-player-row {
-  border-bottom: 1px solid #eee;
-  padding: 0.6rem 0.4rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.2s;
-}
-.live-player-row:last-child { border-bottom: none; }
-
-/* Dim used players */
-.live-player-row.used {
-  opacity: 0.4;
-  background: #f9f9f9;
-  filter: grayscale(100%);
-}
-
-.live-player-row.injured {
-  background: #fff0f0;
-  border-left: 3px solid var(--primary-red);
-}
-
-.player-info {
-  font-size: 0.9rem;
-}
-.player-name {
-  font-weight: 700;
-  display: block;
-  color: #333;
-}
-.player-pos {
-  color: #777;
-  font-size: 0.75rem;
-  font-family: monospace;
-}
-
-.player-actions {
-  display: flex;
-  gap: 4px;
-}
-
-.action-btn {
-  font-size: 0.75rem;
-  padding: 0.2rem 0.5rem;
-  border: 1px solid #ccc;
-  background: white;
-  color: #444;
-  font-weight: 600;
-  min-width: 32px;
-}
-
-.action-btn.active {
-  background: #333;
-  color: white;
-  border-color: #333;
-}
-
-.stat-badge {
-  font-size: 0.65rem;
-  background: var(--gold-accent);
-  color: black;
-  padding: 1px 4px;
-  border-radius: 3px;
-  margin-left: 4px;
-  vertical-align: middle;
-  font-weight: bold;
-}
-
-/* Button Group Alignment */
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-}
-
-/* Enhanced League Card */
-.league-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  border: 1px solid #ddd;
-  border-left: 5px solid var(--primary-red);
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 0.8rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.1s;
-}
-.league-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-
-.league-card-title {
-  font-family: Impact, sans-serif;
-  font-size: 1.2rem;
-  color: #333;
-  margin-bottom: 0.3rem;
-}
-
-.league-meta {
-  font-size: 0.85rem;
-  color: #666;
-}
-
-/* Skill Tags */
-.skill-tag {
-  display: inline-block;
-  background: #eef;
-  color: #336;
-  padding: 1px 5px;
-  border-radius: 4px;
-  border: 1px solid #cce;
-  font-size: 0.8rem;
-  margin: 0 2px;
-  cursor: pointer;
-  border-bottom: 1px dotted #88a;
-}
-.skill-tag:hover {
-  background: #ddf;
-  border-color: #99c;
-}
-
-/* Modal Popup */
-.modal {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-.modal.hidden { display: none !important; }
-
-.modal-content {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  position: relative;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  border-bottom: 2px solid var(--gold-accent);
-  padding-bottom: 0.5rem;
-}
-
-.close-btn {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 0.5rem;
-}
-
-/* Skill Pills Editor */
-.skill-editor-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-  min-height: 30px;
-}
-
-.skill-pill {
-  background: #e3f2fd;
-  color: #0d47a1;
-  border: 1px solid #bbdefb;
-  border-radius: 12px;
-  padding: 2px 8px;
-  font-size: 0.8rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  cursor: default;
-}
-
-.skill-pill .remove-skill {
-  cursor: pointer;
-  color: #d32f2f;
-  font-weight: bold;
-  font-size: 1rem;
-  line-height: 0.8;
-  margin-left: 2px;
-}
-.skill-pill .remove-skill:hover {
-  color: #b71c1c;
-}
-
-.skill-select {
-  width: 120px;
-  padding: 2px;
-  font-size: 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+.stat-badge { font-size: 0.65rem; background: var(--gold-accent); color: black; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left:4px; }
 
 /* COACH VIEW SPECIFIC */
 #coachSection {
-  padding-bottom: 80px; /* Space for sticky footer */
+  /* No padding-bottom here because body.mode-coach handles it */
 }
-
 .coach-header {
-  position: sticky;
-  top: 0;
-  background: #222;
-  color: white;
-  padding: 0.8rem;
-  z-index: 100;
+  position: sticky; top: 0; background: #222; color: white; padding: 0.8rem; z-index: 100;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  margin: -2rem -1rem 1rem -1rem; /* Break out of body padding */
+  width: 100%;
 }
-
-.coach-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.coach-team-name {
-  font-family: Impact, sans-serif;
-  font-size: 1.4rem;
-  text-transform: uppercase;
-}
-
-.coach-score {
-  font-family: Consolas, monospace;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--gold-accent);
-}
-
-.coach-resources {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-
-.reroll-pips {
-  display: inline-flex;
-  gap: 4px;
-  margin-left: 8px;
-}
-
-.reroll-pip {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid #666;
-  background: #444;
-  cursor: pointer;
-}
-.reroll-pip.active {
-  background: var(--gold-accent);
-  border-color: #fff;
-  box-shadow: 0 0 4px var(--gold-accent);
-}
-
+.coach-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.coach-team-name { font-family: Impact, sans-serif; font-size: 1.4rem; text-transform: uppercase; }
+.coach-score { font-family: Consolas, monospace; font-size: 1.5rem; font-weight: bold; color: var(--gold-accent); }
+.coach-resources { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: #ccc; }
+.reroll-pips { display: inline-flex; gap: 4px; margin-left: 8px; }
+.reroll-pip { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #666; background: #444; cursor: pointer; }
+.reroll-pip.active { background: var(--gold-accent); border-color: #fff; box-shadow: 0 0 4px var(--gold-accent); }
 .coach-footer {
-  position: fixed;
-  bottom: 0; left: 0; width: 100%;
-  background: white;
-  border-top: 1px solid #ddd;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-  z-index: 100;
+  position: fixed; bottom: 0; left: 0; width: 100%;
+  background: white; border-top: 1px solid #ddd; padding: 1rem;
+  display: flex; justify-content: space-between; gap: 1rem;
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 100; box-sizing: border-box;
 }
 
-/* Secondary Button Style */
-.secondary-btn {
-  background: #6c757d;
-  color: white;
-  border: none;
+/* LEAGUE CARD & SKILLS */
+.league-card {
+  display: flex; justify-content: space-between; align-items: center;
+  background: white; border: 1px solid #ddd; border-left: 5px solid var(--primary-red);
+  padding: 1rem; border-radius: 6px; margin-bottom: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
-.secondary-btn:hover { background: #5a6268; }
+.league-card-title { font-family: Impact, sans-serif; font-size: 1.2rem; color: #333; margin-bottom: 0.3rem; }
+.league-meta { font-size: 0.85rem; color: #666; }
 
-/* Large Action Buttons for Mobile */
-.action-btn-large {
-  width: 32px; height: 32px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background: white;
-  font-weight: bold;
-  font-size: 0.8rem;
-  margin-left: 4px;
+.skill-tag {
+  display: inline-block; background: #eef; color: #336; padding: 1px 5px;
+  border-radius: 4px; border: 1px solid #cce; font-size: 0.8rem; margin: 0 2px;
+  cursor: pointer; border-bottom: 1px dotted #88a;
 }
-.action-btn-large.active {
-  background: #333; color: white;
+.skill-pill {
+  background: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; border-radius: 12px;
+  padding: 2px 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;
 }
+.skill-pill .remove-skill { cursor: pointer; color: #d32f2f; font-weight: bold; font-size: 1rem; }
+.skill-editor-container { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-height: 30px; }
+.skill-select { width: 120px; padding: 2px; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px; }
+
+/* Modal */
+.modal {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 2px solid var(--gold-accent); padding-bottom: 0.5rem; }
+.close-btn { font-size: 1.5rem; background: none; border: none; cursor: pointer; padding: 0 0.5rem; }
