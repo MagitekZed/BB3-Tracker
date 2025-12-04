@@ -56,8 +56,16 @@
       "round": 2,
       "homeTeamId": "team_one",
       "awayTeamId": "new_team",
-      "status": "in_progress",
-      "date": "2025-12-03"
+      "status": "completed",
+      "date": "2025-12-03",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "casualties": {
+        "homeInflicted": 0,
+        "awayInflicted": 0
+      }
     },
     {
       "id": "match_1764748860305",
