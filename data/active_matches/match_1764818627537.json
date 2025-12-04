@@ -1,0 +1,220 @@
+{
+  "matchId": "match_1764818627537",
+  "leagueId": "league_three",
+  "round": 2,
+  "status": "in_progress",
+  "home": {
+    "id": "team_three",
+    "name": "Team Three",
+    "colors": {
+      "primary": "#1100ff",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": true
+  },
+  "away": {
+    "id": "team_four",
+    "name": "Team Four",
+    "colors": {
+      "primary": "#222222",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": true
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
