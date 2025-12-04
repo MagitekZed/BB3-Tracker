@@ -10,5 +10,11 @@
     "name": "test league",
     "season": 1,
     "status": "upcoming"
+  },
+  {
+    "id": "league_four",
+    "name": "League Four",
+    "season": 1,
+    "status": "upcoming"
   }
 ]
