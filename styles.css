@@ -137,9 +137,17 @@ body {
 @media (max-width: 768px) { .desktop-only { display: none !important; } #mainContent { padding: 0.5rem; } h1 { font-size: 1.8rem; } }
 
 /* Coach Mode Overrides */
-body.mode-coach { padding: 0 !important; overflow: hidden; background: #222; background-image: none; }
-body.mode-coach #mobileNavBar, body.mode-coach #desktopHeader, 
-body.mode-coach #mobileHeader, body.mode-coach .breadcrumbs { display: none !important; }
+body.mode-coach { 
+  padding: 0 !important; 
+  /* FIXED: Removed background overrides to let texture show through */
+  /* FIXED: Removed overflow:hidden to allow roster scrolling */
+}
+body.mode-coach #mobileNavBar, 
+body.mode-coach #desktopHeader, 
+body.mode-coach #mobileHeader, 
+body.mode-coach .breadcrumbs { 
+  display: none !important; 
+}
 
 /* =========================================
    3. LAYOUT GRID
@@ -157,7 +165,7 @@ body.mode-coach #mobileHeader, body.mode-coach .breadcrumbs { display: none !imp
 }
 @media (max-width: 899px) { #leagueViewSection { display: flex; flex-direction: column; gap: 1rem; } }
 
-/* Panel Styling */
+/* Panel Styling (The "Paper") */
 .panel-styled, .card, .page-header-panel {
   background: var(--card-bg);
   border: 1px solid #aaa;
@@ -184,7 +192,7 @@ h3 { margin: 0 0 1rem 0; font-size: 1.2rem; color: #444; font-family: Impact, sa
 
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ccc; }
 
-/* --- IMPROVED BUTTONS --- */
+/* Buttons */
 button {
   cursor: pointer; border-radius: 4px; 
   border: 1px solid #888; border-bottom-width: 4px; /* Tactile 3D feel */
@@ -276,6 +284,45 @@ td:nth-child(n+4):nth-child(-n+8), th:nth-child(n+4):nth-child(-n+8) { font-fami
 .roster-tile-title button { font-weight: 800; font-size: 1.2rem; color: #222; text-transform: uppercase; letter-spacing: 0.5px; }
 .roster-tile-meta { font-size: 0.9rem; color: #555; margin-top: 0.5rem; display: flex; flex-direction: column; }
 
+/* Team Header Style (Desktop View) */
+.team-header-styled {
+  font-family: 'Russo One', sans-serif;
+  font-size: 2.2rem;
+  /* Secondary color as Background Banner */
+  background-color: var(--team-secondary) !important;
+  /* Primary Color as Text */
+  color: var(--team-primary) !important;
+  text-transform: uppercase;
+  border-bottom: 4px solid #000;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
+}
+
+/* TEAM HEADER CARD (MOBILE REDESIGN) */
+.team-header-card {
+  /* Default Desktop: Row */
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--team-primary); color: var(--team-text);
+  padding: 1rem; border-radius: 4px; border: 1px solid #000;
+  margin-bottom: 1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.team-header-card h2 { color: inherit; border: none; margin: 0; font-size: 2rem; text-shadow: 1px 1px 0 rgba(0,0,0,0.5); }
+.team-header-actions { display: flex; gap: 0.5rem; }
+
+@media (max-width: 768px) {
+  .team-header-card {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  .team-header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* Scoreboard */
 .scoreboard-layout {
   display: flex; justify-content: space-between; align-items: flex-start;
@@ -339,7 +386,9 @@ body.mode-coach .coach-header {
   position: sticky; top: 0; z-index: 100; width: 100%; box-sizing: border-box;
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
 }
-.coach-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.coach-header-row1 { margin-bottom: 0.5rem; text-align: left; }
+.coach-header-row2 { display: flex; justify-content: space-between; align-items: center; }
+
 /* Use same 3D style for coach view */
 .coach-team-name { 
   font-family: 'Russo One', sans-serif; font-size: 1.6rem; text-transform: uppercase; 
@@ -358,29 +407,6 @@ body.mode-coach .coach-header {
 .reroll-pips { display: inline-flex; gap: 4px; margin-bottom: 4px; }
 .reroll-pip { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #fff; background: rgba(0,0,0,0.5); cursor: pointer; }
 .reroll-pip.active { background: var(--gold-accent); border-color: #fff; box-shadow: 0 0 6px var(--gold-accent); }
-
-/* TEAM HEADER CARD (MOBILE REDESIGN) */
-.team-header-card {
-  /* Default Desktop: Row */
-  display: flex; justify-content: space-between; align-items: center;
-  background: var(--team-primary); color: var(--team-text);
-  padding: 1rem; border-radius: 4px; border: 1px solid #000;
-  margin-bottom: 1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-.team-header-card h2 { color: inherit; border: none; margin: 0; font-size: 2rem; text-shadow: 1px 1px 0 rgba(0,0,0,0.5); }
-.team-header-actions { display: flex; gap: 0.5rem; }
-
-@media (max-width: 768px) {
-  .team-header-card {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-  .team-header-actions {
-    width: 100%;
-    justify-content: center;
-  }
-}
 
 /* Skills & Modals */
 .skill-pill { background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9; border-radius: 12px; padding: 2px 8px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px; margin: 2px; }
