@@ -45,7 +45,6 @@ const state = {
 // ============================================
 const els = {
   globalStatus: document.getElementById('globalStatus'),
-  
   nav: {
     deskLeagues: document.getElementById('navDeskLeagues'),
     deskAdmin: document.getElementById('navDeskAdmin'),
@@ -54,8 +53,6 @@ const els = {
     mobAdmin: document.getElementById('navMobAdmin'),
     breadcrumbs: document.getElementById('breadcrumbs')
   },
-
-  // Modals & Sheets
   mobileKey: {
     btn: document.getElementById('mobileKeyToggle'),
     modal: document.getElementById('mobileKeyModal'),
@@ -73,8 +70,6 @@ const els = {
     el: document.getElementById('playerActionSheet'),
     title: document.getElementById('actionSheetTitle')
   },
-
-  // Sections
   sections: {
     list: document.getElementById('leagueListSection'),
     view: document.getElementById('leagueViewSection'),
@@ -84,8 +79,6 @@ const els = {
     coach: document.getElementById('coachSection'),
     admin: document.getElementById('adminSection')
   },
-  
-  // Containers
   containers: {
     leagueList: document.getElementById('leagueListContainer'),
     standings: document.getElementById('standingsContainer'),
@@ -96,8 +89,6 @@ const els = {
     manageTeamEditor: document.getElementById('leagueManageTeamEditor'),
     teamSummary: document.getElementById('teamSummary'),
     teamRoster: document.getElementById('teamRosterContainer'),
-    
-    // Jumbotron
     sbHomeName: document.getElementById('sbHomeName'),
     sbAwayName: document.getElementById('sbAwayName'),
     sbHomeScore: document.getElementById('sbHomeScore'),
@@ -106,20 +97,14 @@ const els = {
     sbAwayTurn: document.getElementById('sbAwayTurn'),
     sbHomeRoster: document.getElementById('scoreboardHomeRoster'),
     sbAwayRoster: document.getElementById('scoreboardAwayRoster'),
-    
-    // Coach Dashboard
     coachTeamName: document.getElementById('coachTeamName'),
     coachScore: document.getElementById('coachScoreDisplay'),
     coachRerolls: document.getElementById('coachRerolls'),
     coachTurn: document.getElementById('coachTurnDisplay'),
     coachRoster: document.getElementById('coachRosterList'),
-    
-    // Admin
     delLeagueBtn: document.getElementById('deleteLeagueContainer'),
     scanResults: document.getElementById('scanResults')
   },
-  
-  // Buttons
   buttons: {
     createLeague: document.getElementById('leagueCreateBtn'),
     manageSave: document.getElementById('leagueManageSaveBtn'),
@@ -135,14 +120,10 @@ const els = {
     scanBtn: document.getElementById('scanBtn'),
     loadBtn: document.getElementById('loadBtn'),
     saveBtn: document.getElementById('saveBtn'),
-    
-    // Scheduling Triggers
     deskSchedBtn: document.getElementById('desktopSchedBtn'),
     mobSchedBtn: document.getElementById('mobileAddMatchBtn'),
     cancelGame: document.getElementById('cancelGameBtn')
   },
-  
-  // Inputs
   inputs: {
     editKey: document.getElementById('editKeyInput'),
     leagueId: document.getElementById('leagueManageIdInput'),
@@ -156,8 +137,6 @@ const els = {
     lockTeams: document.getElementById('leagueManageLockTeamsInput'),
     adminText: document.getElementById('leagueTextarea')
   },
-  
-  // Cards & Modal
   cards: {
     leagueInfo: document.getElementById('leagueInfoCard'),
     leagueTeams: document.getElementById('leagueTeamsCard'),
@@ -177,7 +156,6 @@ const els = {
 
 function getContrastColor(hex) {
   if(!hex) return '#ffffff';
-  // Simple YIQ brightness check
   const r = parseInt(hex.substr(1, 2), 16);
   const g = parseInt(hex.substr(3, 2), 16);
   const b = parseInt(hex.substr(5, 2), 16);
@@ -192,7 +170,6 @@ function applyTeamTheme(team) {
     root.style.setProperty('--team-secondary', team.colors.secondary || '#c5a059');
     root.style.setProperty('--team-text', getContrastColor(team.colors.primary || '#222'));
   } else {
-    // Revert to defaults
     root.style.setProperty('--team-primary', '#222222');
     root.style.setProperty('--team-secondary', '#c5a059');
     root.style.setProperty('--team-text', '#ffffff');
@@ -214,7 +191,7 @@ function setStatus(msg, type = 'info') {
 
 async function apiGet(path) {
   const url = `${API_BASE}/api/file?path=${encodeURIComponent(path)}`;
-  // Disable Cache to prevent cross-league bleeding
+  // Disable Cache to prevent stale data issues
   const res = await fetch(url, { cache: 'no-store' });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
@@ -278,23 +255,15 @@ function updateBreadcrumbs(path) {
 }
 
 function setActiveNav(tabName) {
-  // Reset all
   ['deskLeagues', 'deskAdmin'].forEach(k => els.nav[k].classList.remove('active'));
   ['mobLeagues', 'mobMatch', 'mobAdmin'].forEach(k => els.nav[k].classList.remove('active'));
-  
-  // Set Active
-  if (tabName === 'leagues') {
-    els.nav.deskLeagues.classList.add('active');
-    els.nav.mobLeagues.classList.add('active');
-  } else if (tabName === 'admin') {
-    els.nav.deskAdmin.classList.add('active');
-    els.nav.mobAdmin.classList.add('active');
-  } else if (tabName === 'match') {
-    els.nav.mobMatch.classList.add('active');
-  }
+  if (tabName === 'leagues') { els.nav.deskLeagues.classList.add('active'); els.nav.mobLeagues.classList.add('active'); }
+  else if (tabName === 'admin') { els.nav.deskAdmin.classList.add('active'); els.nav.mobAdmin.classList.add('active'); }
+  else if (tabName === 'match') { els.nav.mobMatch.classList.add('active'); }
 }
 
 function showSection(name) {
+  // CRITICAL: Always clear polling when switching views
   if (state.activeMatchPollInterval) {
     clearInterval(state.activeMatchPollInterval);
     state.activeMatchPollInterval = null;
@@ -304,7 +273,7 @@ function showSection(name) {
 }
 
 function goHome() {
-  applyTeamTheme(null); // Reset theme
+  applyTeamTheme(null);
   showSection('list');
   renderLeagueList();
   updateBreadcrumbs([{ label: 'Leagues' }]);
@@ -318,7 +287,6 @@ function goAdmin() {
   setActiveNav('admin');
 }
 
-// Navigation Listeners
 els.nav.deskLeagues.addEventListener('click', () => goHome());
 els.nav.mobLeagues.addEventListener('click', () => goHome());
 els.nav.deskAdmin.addEventListener('click', () => goAdmin());
@@ -336,7 +304,6 @@ els.nav.mobMatch.addEventListener('click', () => {
   setActiveNav('match');
 });
 
-// Key Management Listeners
 els.mobileKey.btn.addEventListener('click', () => els.mobileKey.modal.classList.remove('hidden'));
 els.mobileKey.save.addEventListener('click', () => {
   const k = els.mobileKey.input.value;
@@ -424,8 +391,7 @@ function renderLeagueList() {
 window.handleOpenLeague = async (id) => {
   setStatus(`Loading league ${id}...`);
   try {
-    // Clear current state to prevent bleeding
-    state.currentLeague = null;
+    state.currentLeague = null; // Clear to prevent bleed
     
     const settings = await apiGet(PATHS.leagueSettings(id));
     if (!settings) throw new Error("League settings file not found.");
@@ -443,11 +409,9 @@ window.handleOpenLeague = async (id) => {
 
 function renderLeagueView() {
   const l = state.currentLeague;
-  if (!l) return; // Guard
+  if (!l) return;
   
   document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
-  
-  // Add styling classes for differentiation
   document.getElementById('leagueTeamsSection').className = 'panel-styled';
   document.getElementById('leagueMatchesSection').className = 'panel-styled';
 
@@ -515,7 +479,6 @@ function renderMatchesList(league) {
       <td data-label="Status"><span class="tag ${m.status}">${action}</span> <button onclick="handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete">🗑️</button></td>
     </tr>`;
   }).join('');
-  
   els.containers.matches.innerHTML = `<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
 }
 
@@ -572,20 +535,15 @@ window.handleOpenTeam = async (leagueId, teamId) => {
     applyTeamTheme(teamData);
     
     renderTeamView();
-    showSection('team');
     
-    // Apply Header style manually for Desktop View
     const hdr = document.getElementById('teamHeader');
     if(hdr && teamData.colors) {
         hdr.className = "team-header-styled";
         hdr.style.borderBottomColor = teamData.colors.primary || '#222';
     }
 
-    updateBreadcrumbs([
-      { label: 'Leagues', action: goHome },
-      { label: state.currentLeague.name, action: () => handleOpenLeague(leagueId) },
-      { label: teamData.name }
-    ]);
+    showSection('team');
+    updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: state.currentLeague.name, action: () => handleOpenLeague(leagueId) }, { label: teamData.name }]);
     setStatus('Team loaded.', 'ok');
   } catch (e) { setStatus(e.message, 'error'); }
 };
@@ -599,7 +557,6 @@ function renderTeamView() {
     const skillsHtml = (p.skills||[]).map(s => 
       `<span class="skill-tag" onclick="showSkill('${s}')">${s}</span>`
     ).join(' ');
-    
     return `
     <tr>
       <td data-label="#">${p.number||''}</td>
@@ -623,26 +580,22 @@ function renderTeamView() {
 
 function openScheduleModal() {
   const l = state.currentLeague; if(!l) return;
-  
   const homeSel = els.scheduleModal.home;
   const awaySel = els.scheduleModal.away;
   homeSel.innerHTML = '<option value="">Home Team...</option>';
   awaySel.innerHTML = '<option value="">Away Team...</option>';
-  
   l.teams.forEach(t => {
     const opt = `<option value="${t.id}">${t.name}</option>`;
     homeSel.innerHTML += opt;
     awaySel.innerHTML += opt;
   });
   
-  // Auto-increment Round Logic
   let nextRound = 1;
   if(l.matches && l.matches.length > 0) {
       const maxR = Math.max(...l.matches.map(m => m.round));
       nextRound = maxR + 1;
   }
   els.scheduleModal.round.value = nextRound;
-  
   els.scheduleModal.el.classList.remove('hidden');
 }
 
@@ -666,19 +619,10 @@ if(els.scheduleModal.addBtn) {
     setStatus('Scheduling...');
     try {
       const matchId = `match_${Date.now()}`;
-      const newMatch = { 
-        id: matchId, 
-        round: round, 
-        homeTeamId: homeId, 
-        awayTeamId: awayId, 
-        status: 'scheduled', 
-        date: new Date().toISOString().split('T')[0] 
-      };
-      
+      const newMatch = { id: matchId, round: round, homeTeamId: homeId, awayTeamId: awayId, status: 'scheduled', date: new Date().toISOString().split('T')[0] };
       l.matches = l.matches || [];
       l.matches.push(newMatch);
       await apiSave(PATHS.leagueSettings(l.id), l, `Schedule match`, key);
-      
       closeScheduleModal();
       renderLeagueView();
       setStatus('Match scheduled.', 'ok');
@@ -710,18 +654,10 @@ window.handleStartMatch = async (matchId) => {
     }));
 
     const activeData = {
-      matchId: m.id,
-      leagueId: l.id,
-      round: m.round,
-      status: 'in_progress',
-      home: { 
-        id: homeTeam.id, name: homeTeam.name, colors: homeTeam.colors, score: 0, roster: initRoster(homeTeam.players), rerolls: homeTeam.rerolls || 0, apothecary: true 
-      },
-      away: { 
-        id: awayTeam.id, name: awayTeam.name, colors: awayTeam.colors, score: 0, roster: initRoster(awayTeam.players), rerolls: awayTeam.rerolls || 0, apothecary: true 
-      },
-      turn: { home: 0, away: 0 },
-      log: []
+      matchId: m.id, leagueId: l.id, round: m.round, status: 'in_progress',
+      home: { id: homeTeam.id, name: homeTeam.name, colors: homeTeam.colors, score: 0, roster: initRoster(homeTeam.players), rerolls: homeTeam.rerolls || 0, apothecary: true },
+      away: { id: awayTeam.id, name: awayTeam.name, colors: awayTeam.colors, score: 0, roster: initRoster(awayTeam.players), rerolls: awayTeam.rerolls || 0, apothecary: true },
+      turn: { home: 0, away: 0 }, log: []
     };
     
     await apiSave(PATHS.activeMatch(m.id), activeData, `Start match`, key);
@@ -749,11 +685,14 @@ window.handleOpenScoreboard = async (matchId) => {
     ]);
     setActiveNav('match');
     
+    // START POLLING
     if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
     state.activeMatchPollInterval = setInterval(async () => {
         try {
-            // Stability Fix: Stop polling if user left the screen
-            if(!document.getElementById('sbHomeName')) return; 
+            // FIX: Ensure we are still on the scoreboard screen
+            if(!document.getElementById('sbHomeName') || els.sections.scoreboard.classList.contains('hidden')) {
+                return;
+            }
             
             const fresh = await apiGet(PATHS.activeMatch(matchId));
             if (fresh) { state.activeMatchData = fresh; renderJumbotron(); }
@@ -765,16 +704,14 @@ window.handleOpenScoreboard = async (matchId) => {
 
 function renderJumbotron() {
   const d = state.activeMatchData;
-  els.containers.sbHomeName.innerHTML = `<div class="big-team-text" style="color:${d.home.colors?.primary}; text-shadow:2px 2px 0 ${d.home.colors?.secondary}">${d.home.name}</div>`;
-  els.containers.sbAwayName.innerHTML = `<div class="big-team-text" style="color:${d.away.colors?.primary}; text-shadow:2px 2px 0 ${d.away.colors?.secondary}">${d.away.name}</div>`;
+  els.containers.sbHomeName.innerHTML = `<div class="big-team-text" style="color:${d.home.colors?.primary}; text-shadow:2px 2px 0 ${d.home.colors?.secondary}, 4px 4px 0px rgba(0,0,0,0.5)">${d.home.name}</div>`;
+  els.containers.sbAwayName.innerHTML = `<div class="big-team-text" style="color:${d.away.colors?.primary}; text-shadow:2px 2px 0 ${d.away.colors?.secondary}, 4px 4px 0px rgba(0,0,0,0.5)">${d.away.name}</div>`;
   els.containers.sbHomeScore.textContent = d.home.score;
   els.containers.sbAwayScore.textContent = d.away.score;
   
-  // Moving "Play As" buttons to own row
   els.containers.sbHomeTurn.parentElement.innerHTML = `Turn: <span id="sbHomeTurn">${d.turn.home}</span>`;
   els.containers.sbAwayTurn.parentElement.innerHTML = `Turn: <span id="sbAwayTurn">${d.turn.away}</span>`;
   
-  // Render Unified Headers "Home - Team Name"
   const hCol = d.home.colors?.primary || '#222'; const hTxt = getContrastColor(hCol);
   const aCol = d.away.colors?.primary || '#222'; const aTxt = getContrastColor(aCol);
   
@@ -792,13 +729,10 @@ window.enterCoachMode = (side) => {
   state.coachSide = side;
   document.body.classList.add('mode-coach');
   const team = state.activeMatchData[side];
-  applyTeamTheme(team); // Apply Theme!
+  applyTeamTheme(team);
   renderCoachView();
   showSection('coach');
-  if (state.activeMatchPollInterval) {
-    clearInterval(state.activeMatchPollInterval);
-    state.activeMatchPollInterval = null;
-  }
+  if (state.activeMatchPollInterval) { clearInterval(state.activeMatchPollInterval); state.activeMatchPollInterval = null; }
 };
 
 window.exitCoachMode = () => {
@@ -814,7 +748,7 @@ function renderCoachView() {
   const oppSide = side === 'home' ? 'away' : 'home';
   const oppTeam = d[oppSide];
 
-  els.containers.coachTeamName.innerHTML = `<div class="big-team-text" style="color:${team.colors?.text}; text-shadow:none;">${team.name}</div>`;
+  els.containers.coachTeamName.innerHTML = `<div class="big-team-text" style="color:${team.colors?.text || '#fff'}; text-shadow:none;">${team.name}</div>`;
   els.containers.coachScore.textContent = `${team.score} - ${oppTeam.score}`;
   els.containers.coachTurn.textContent = `Turn: ${d.turn[side]}`;
 
@@ -860,7 +794,6 @@ function renderLiveRoster(roster, side, readOnly) {
   }).join('');
 }
 
-// Action Sheet Functions
 window.openPlayerActionSheet = (idx) => {
   state.selectedPlayerIdx = idx;
   const p = state.activeMatchData[state.coachSide].roster[idx];
@@ -922,8 +855,6 @@ if(els.buttons.coachEndTurn) {
     setStatus("Turn ended. Status synced.", "ok");
   });
 }
-
-// ---- Match Control Listeners ----
 
 if(els.buttons.cancelGame) {
   els.buttons.cancelGame.addEventListener('click', async () => {
@@ -1180,7 +1111,7 @@ function renderTeamEditor() {
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
-    if (!state.editTeamId) {
+    if (isNewTeam) {
       state.dirtyTeam.id = normalizeName(this.value);
       els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
     }
@@ -1271,7 +1202,7 @@ window.handleDeleteLeague = async () => {
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
 
-// --- Refactored Save Workflow (Fixes Double Save & Deep Copy) ---
+// --- Refactored Save Workflow ---
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
