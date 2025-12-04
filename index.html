@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>BB3 League Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -115,9 +116,19 @@
       <div class="card">
         <div class="card-header"><h2>Live Match</h2><div><button id="scoreboardRefreshBtn">↻</button><button id="scoreboardBackToMatchBtn">Exit</button></div></div>
         <div class="scoreboard-layout">
-           <div class="team-control"><div id="sbHomeName">Home</div><div id="sbHomeScore" class="score-display">0</div><div class="turn-box">Turn: <span id="sbHomeTurn">0</span></div><button class="primary-btn" onclick="enterCoachMode('home')">Play as Home</button></div>
+           <div class="team-control">
+             <div id="sbHomeName">Home</div>
+             <div id="sbHomeScore" class="score-display">0</div>
+             <div class="turn-box">Turn: <span id="sbHomeTurn">0</span></div>
+             <div style="margin-top:0.5rem"><button class="primary-btn" onclick="enterCoachMode('home')">Play as Home</button></div>
+           </div>
            <div class="match-control"><button id="endGameBtn" class="primary-btn">End Game</button><button id="cancelGameBtn" class="danger-btn" style="margin-top:1rem">Cancel</button></div>
-           <div class="team-control"><div id="sbAwayName">Away</div><div id="sbAwayScore" class="score-display">0</div><div class="turn-box">Turn: <span id="sbAwayTurn">0</span></div><button class="primary-btn" onclick="enterCoachMode('away')">Play as Away</button></div>
+           <div class="team-control">
+             <div id="sbAwayName">Away</div>
+             <div id="sbAwayScore" class="score-display">0</div>
+             <div class="turn-box">Turn: <span id="sbAwayTurn">0</span></div>
+             <div style="margin-top:0.5rem"><button class="primary-btn" onclick="enterCoachMode('away')">Play as Away</button></div>
+           </div>
         </div>
       </div>
       <div class="scoreboard-rosters"><div id="scoreboardHomeRoster"></div><div id="scoreboardAwayRoster"></div></div>
@@ -126,7 +137,7 @@
     <section id="coachSection" class="hidden">
       <div class="coach-header">
         <div class="coach-header-top"><div class="coach-team-name" id="coachTeamName">My Team</div><div class="coach-score" id="coachScoreDisplay">0-0</div></div>
-        <div class="coach-resources"><div id="coachRerolls"></div><span id="coachTurnDisplay">0</span></div>
+        <div class="coach-resources"><div id="coachRerolls"></div><span id="coachTurnDisplay">Turn: 0</span></div>
       </div>
       <div id="coachRosterList"></div>
       <div class="coach-footer"><button class="secondary-btn" onclick="exitCoachMode()">Exit</button><button class="primary-btn" id="coachEndTurnBtn">End Turn</button></div>
