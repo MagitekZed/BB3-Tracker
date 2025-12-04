@@ -214,7 +214,8 @@ function setStatus(msg, type = 'info') {
 
 async function apiGet(path) {
   const url = `${API_BASE}/api/file?path=${encodeURIComponent(path)}`;
-  const res = await fetch(url);
+  // Disable Cache to prevent cross-league bleeding
+  const res = await fetch(url, { cache: 'no-store' });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
   return res.json();
@@ -335,7 +336,7 @@ els.nav.mobMatch.addEventListener('click', () => {
   setActiveNav('match');
 });
 
-// Key Management
+// Key Management Listeners
 els.mobileKey.btn.addEventListener('click', () => els.mobileKey.modal.classList.remove('hidden'));
 els.mobileKey.save.addEventListener('click', () => {
   const k = els.mobileKey.input.value;
@@ -423,6 +424,9 @@ function renderLeagueList() {
 window.handleOpenLeague = async (id) => {
   setStatus(`Loading league ${id}...`);
   try {
+    // Clear current state to prevent bleeding
+    state.currentLeague = null;
+    
     const settings = await apiGet(PATHS.leagueSettings(id));
     if (!settings) throw new Error("League settings file not found.");
     state.currentLeague = settings;
@@ -439,6 +443,8 @@ window.handleOpenLeague = async (id) => {
 
 function renderLeagueView() {
   const l = state.currentLeague;
+  if (!l) return; // Guard
+  
   document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
   
   // Add styling classes for differentiation
@@ -565,16 +571,21 @@ window.handleOpenTeam = async (leagueId, teamId) => {
     
     applyTeamTheme(teamData);
     
-    // Apply Primary Color to Team Header Background
+    renderTeamView();
+    showSection('team');
+    
+    // Apply Header style manually for Desktop View
     const hdr = document.getElementById('teamHeader');
     if(hdr && teamData.colors) {
         hdr.className = "team-header-styled";
         hdr.style.borderBottomColor = teamData.colors.primary || '#222';
     }
 
-    renderTeamView();
-    showSection('team');
-    updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: state.currentLeague.name, action: () => handleOpenLeague(leagueId) }, { label: teamData.name }]);
+    updateBreadcrumbs([
+      { label: 'Leagues', action: goHome },
+      { label: state.currentLeague.name, action: () => handleOpenLeague(leagueId) },
+      { label: teamData.name }
+    ]);
     setStatus('Team loaded.', 'ok');
   } catch (e) { setStatus(e.message, 'error'); }
 };
@@ -588,6 +599,7 @@ function renderTeamView() {
     const skillsHtml = (p.skills||[]).map(s => 
       `<span class="skill-tag" onclick="showSkill('${s}')">${s}</span>`
     ).join(' ');
+    
     return `
     <tr>
       <td data-label="#">${p.number||''}</td>
@@ -611,6 +623,7 @@ function renderTeamView() {
 
 function openScheduleModal() {
   const l = state.currentLeague; if(!l) return;
+  
   const homeSel = els.scheduleModal.home;
   const awaySel = els.scheduleModal.away;
   homeSel.innerHTML = '<option value="">Home Team...</option>';
@@ -638,7 +651,8 @@ window.closeScheduleModal = () => els.scheduleModal.el.classList.add('hidden');
 if(els.buttons.deskSchedBtn) els.buttons.deskSchedBtn.addEventListener('click', openScheduleModal);
 if(els.buttons.mobSchedBtn) els.buttons.mobSchedBtn.addEventListener('click', openScheduleModal);
 
-if(els.scheduleModal.addBtn) els.scheduleModal.addBtn.addEventListener('click', async () => {
+if(els.scheduleModal.addBtn) {
+  els.scheduleModal.addBtn.addEventListener('click', async () => {
     const key = els.inputs.editKey.value;
     if (!key) return setStatus('Edit key required', 'error');
     
@@ -652,15 +666,27 @@ if(els.scheduleModal.addBtn) els.scheduleModal.addBtn.addEventListener('click', 
     setStatus('Scheduling...');
     try {
       const matchId = `match_${Date.now()}`;
-      const newMatch = { id: matchId, round: round, homeTeamId: homeId, awayTeamId: awayId, status: 'scheduled', date: new Date().toISOString().split('T')[0] };
+      const newMatch = { 
+        id: matchId, 
+        round: round, 
+        homeTeamId: homeId, 
+        awayTeamId: awayId, 
+        status: 'scheduled', 
+        date: new Date().toISOString().split('T')[0] 
+      };
+      
       l.matches = l.matches || [];
       l.matches.push(newMatch);
       await apiSave(PATHS.leagueSettings(l.id), l, `Schedule match`, key);
+      
       closeScheduleModal();
       renderLeagueView();
       setStatus('Match scheduled.', 'ok');
     } catch(e) { setStatus(e.message, 'error'); }
-});
+  });
+}
+
+// --- Starting a Match ---
 
 window.handleStartMatch = async (matchId) => {
   const key = els.inputs.editKey.value;
@@ -678,16 +704,24 @@ window.handleStartMatch = async (matchId) => {
     const awayTeam = await apiGet(PATHS.team(l.id, m.awayTeamId));
     if(!homeTeam || !awayTeam) throw new Error("Could not load team files.");
     
-    // Inject Colors into active match data for convenient theming later
     const initRoster = (players) => (players||[]).map(p => ({
-        ...p, live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
+        ...p,
+        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
     }));
 
     const activeData = {
-      matchId: m.id, leagueId: l.id, round: m.round, status: 'in_progress',
-      home: { id: homeTeam.id, name: homeTeam.name, colors: homeTeam.colors, score: 0, roster: initRoster(homeTeam.players), rerolls: homeTeam.rerolls || 0, apothecary: true },
-      away: { id: awayTeam.id, name: awayTeam.name, colors: awayTeam.colors, score: 0, roster: initRoster(awayTeam.players), rerolls: awayTeam.rerolls || 0, apothecary: true },
-      turn: { home: 0, away: 0 }, log: []
+      matchId: m.id,
+      leagueId: l.id,
+      round: m.round,
+      status: 'in_progress',
+      home: { 
+        id: homeTeam.id, name: homeTeam.name, colors: homeTeam.colors, score: 0, roster: initRoster(homeTeam.players), rerolls: homeTeam.rerolls || 0, apothecary: true 
+      },
+      away: { 
+        id: awayTeam.id, name: awayTeam.name, colors: awayTeam.colors, score: 0, roster: initRoster(awayTeam.players), rerolls: awayTeam.rerolls || 0, apothecary: true 
+      },
+      turn: { home: 0, away: 0 },
+      log: []
     };
     
     await apiSave(PATHS.activeMatch(m.id), activeData, `Start match`, key);
@@ -718,6 +752,9 @@ window.handleOpenScoreboard = async (matchId) => {
     if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
     state.activeMatchPollInterval = setInterval(async () => {
         try {
+            // Stability Fix: Stop polling if user left the screen
+            if(!document.getElementById('sbHomeName')) return; 
+            
             const fresh = await apiGet(PATHS.activeMatch(matchId));
             if (fresh) { state.activeMatchData = fresh; renderJumbotron(); }
         } catch(e) { console.warn("Poll failed", e); }
@@ -733,7 +770,7 @@ function renderJumbotron() {
   els.containers.sbHomeScore.textContent = d.home.score;
   els.containers.sbAwayScore.textContent = d.away.score;
   
-  // Moving "Play As" buttons to own row by updating innerHTML structure dynamically
+  // Moving "Play As" buttons to own row
   els.containers.sbHomeTurn.parentElement.innerHTML = `Turn: <span id="sbHomeTurn">${d.turn.home}</span>`;
   els.containers.sbAwayTurn.parentElement.innerHTML = `Turn: <span id="sbAwayTurn">${d.turn.away}</span>`;
   
@@ -899,7 +936,7 @@ if(els.buttons.cancelGame) {
       const l = await apiGet(PATHS.leagueSettings(lId));
       const m = l.matches.find(x => x.id === mId);
       if(m) m.status = 'scheduled';
-      await apiSave(PATHS.leagueSettings(l.id), l, `Revert ${mId}`, key);
+      await apiSave(PATHS.leagueSettings(lId), l, `Revert ${mId}`, key);
       handleOpenLeague(lId);
     } catch(e) { setStatus(e.message, 'error'); }
   });
@@ -957,7 +994,7 @@ window.showSkill = (skillName) => {
 
 window.closeSkillModal = () => els.modal.el.classList.add('hidden');
 
-// --- League & Team Management ---
+// --- League & Team Management Functions ---
 
 window.handleManageLeague = async (id) => {
   state.editMode = 'league';
@@ -1063,13 +1100,19 @@ window.handleEditTeam = async (teamId) => {
 
 function createEmptyTeam(id) {
   const defaultRace = state.gameData?.races?.[0]?.name || 'Human';
-  return { id, name: 'New Team', race: defaultRace, coachName: '', players: [], colors: { primary: '#222222', secondary: '#c5a059' } };
+  return { 
+    id, 
+    name: 'New Team', 
+    race: defaultRace, 
+    coachName: '', 
+    players: [], 
+    colors: { primary: '#222222', secondary: '#c5a059' } 
+  };
 }
 
 function renderTeamEditor() {
   const t = state.dirtyTeam;
   const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
-  const isNewTeam = !state.editTeamId;
   
   els.containers.manageTeamEditor.innerHTML = `
     <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
@@ -1079,10 +1122,12 @@ function renderTeamEditor() {
       <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
       <div class="form-field"><label>Race</label><select onchange="changeTeamRace(this.value)">${raceOpts}</select></div>
     </div>
+    
     <div class="form-grid" style="margin-top:1rem; padding:1rem; background:#f4f4f4; border-radius:4px;">
       <div class="form-field"><label>Primary Color</label><input type="color" id="teamColorPrimary" value="${t.colors?.primary || '#222222'}" style="width:100%; height:40px"></div>
       <div class="form-field"><label>Secondary Color</label><input type="color" id="teamColorSecondary" value="${t.colors?.secondary || '#c5a059'}" style="width:100%; height:40px"></div>
     </div>
+    
     <h4>Roster</h4>
     <div class="manager-toolbar">
       <button onclick="addSmartPlayer()" class="primary-btn">+ Hire Player</button>
@@ -1135,7 +1180,7 @@ function renderTeamEditor() {
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
-    if (isNewTeam) {
+    if (!state.editTeamId) {
       state.dirtyTeam.id = normalizeName(this.value);
       els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
     }
@@ -1226,7 +1271,7 @@ window.handleDeleteLeague = async () => {
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
 
-// --- Refactored Save Workflow (Fixes Double Save) ---
+// --- Refactored Save Workflow (Fixes Double Save & Deep Copy) ---
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
@@ -1247,20 +1292,29 @@ els.buttons.manageSave.addEventListener('click', async () => {
           t.colors = { primary: cp.value, secondary: cs.value };
       }
       
-      // Save Team File
+      // Save the team file
       await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
       
       // Update local league object's team metadata
       const existingIdx = l.teams.findIndex(x => x.id === t.id);
-      const meta = { id: t.id, name: t.name, race: t.race, coachName: t.coachName, colors: t.colors };
+      
+      // DEEP COPY to prevent reference bleeding
+      const meta = JSON.parse(JSON.stringify({ 
+        id: t.id, 
+        name: t.name, 
+        race: t.race, 
+        coachName: t.coachName, 
+        colors: t.colors 
+      }));
       
       if (existingIdx >= 0) l.teams[existingIdx] = meta;
       else l.teams.push(meta);
       
+      state.editTeamId = t.id;
+      
       // Save League File to keep colors in sync
       await apiSave(PATHS.leagueSettings(l.id), l, `Update team list for ${t.name}`, key);
       
-      state.editTeamId = t.id; 
       setStatus('Team saved & League updated!', 'ok');
       return; 
     }
