@@ -216,7 +216,7 @@
     "apothecary": true
   },
   "turn": {
-    "home": 0,
+    "home": 1,
     "away": 0
   },
   "log": []
