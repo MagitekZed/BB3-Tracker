@@ -1,7 +1,7 @@
 import { state, els } from './state.js';
 import { init, goHome, goAdmin, handleMobileMatchNav, showSkill, closeSkillModal } from './ui-core.js';
-import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, handleDeleteMatch, handleEditTeam, renderManageForm } from './ui-league.js';
-import { handleOpenTeam, handleManageTeamDirect, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
+import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, handleDeleteMatch, renderManageForm } from './ui-league.js';
+import { handleOpenTeam, handleManageTeamDirect, handleEditTeam, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
 import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame } from './ui-match.js';
 import { handleScanRepo, attachTeam, restoreLeague, deleteOrphanFile, deleteLeagueFolder } from './ui-admin.js';
 import { setStatus } from './utils.js';
@@ -53,15 +53,15 @@ window.deleteLeagueFolder = deleteLeagueFolder;
 // ============================================
 
 // Navigation
-els.nav.deskLeagues.addEventListener('click', () => goHome());
-els.nav.mobLeagues.addEventListener('click', () => goHome());
-els.nav.deskAdmin.addEventListener('click', () => goAdmin());
-els.nav.mobAdmin.addEventListener('click', () => goAdmin());
-els.nav.mobMatch.addEventListener('click', () => handleMobileMatchNav());
+if(els.nav.deskLeagues) els.nav.deskLeagues.addEventListener('click', () => goHome());
+if(els.nav.mobLeagues) els.nav.mobLeagues.addEventListener('click', () => goHome());
+if(els.nav.deskAdmin) els.nav.deskAdmin.addEventListener('click', () => goAdmin());
+if(els.nav.mobAdmin) els.nav.mobAdmin.addEventListener('click', () => goAdmin());
+if(els.nav.mobMatch) els.nav.mobMatch.addEventListener('click', () => handleMobileMatchNav());
 
 // Key Management
-els.mobileKey.btn.addEventListener('click', () => els.mobileKey.modal.classList.remove('hidden'));
-els.mobileKey.save.addEventListener('click', () => {
+if(els.mobileKey.btn) els.mobileKey.btn.addEventListener('click', () => els.mobileKey.modal.classList.remove('hidden'));
+if(els.mobileKey.save) els.mobileKey.save.addEventListener('click', () => {
   const k = els.mobileKey.input.value;
   if(k) { localStorage.setItem('bb3_edit_key', k); if(els.inputs.editKey) els.inputs.editKey.value = k; els.mobileKey.modal.classList.add('hidden'); setStatus("Key Saved", 'ok'); }
 });
@@ -93,11 +93,11 @@ if(els.buttons.sbBack) els.buttons.sbBack.addEventListener('click', () => {
 
 // Admin / Management Buttons
 if(els.buttons.scanBtn) els.buttons.scanBtn.addEventListener('click', handleScanRepo);
-els.buttons.createLeague.addEventListener('click', () => handleManageLeague(null));
-els.buttons.manageAddTeam.addEventListener('click', () => handleEditTeam(null));
+if(els.buttons.createLeague) els.buttons.createLeague.addEventListener('click', () => handleManageLeague(null));
+if(els.buttons.manageAddTeam) els.buttons.manageAddTeam.addEventListener('click', () => handleEditTeam(null));
 
 // Management Save Button (Route to League or Team save)
-els.buttons.manageSave.addEventListener('click', () => {
+if(els.buttons.manageSave) els.buttons.manageSave.addEventListener('click', () => {
     const key = els.inputs.editKey.value;
     if (!key) return setStatus('Edit key required', 'error');
     
@@ -109,7 +109,7 @@ els.buttons.manageSave.addEventListener('click', () => {
 });
 
 // Back Buttons
-els.buttons.manageBack.addEventListener('click', () => {
+if(els.buttons.manageBack) els.buttons.manageBack.addEventListener('click', () => {
   if (state.editMode === 'team') {
       if (state.editorReturnPath === 'teamView' && state.currentTeam) {
           handleOpenTeam(state.currentLeague.id, state.currentTeam.id);
