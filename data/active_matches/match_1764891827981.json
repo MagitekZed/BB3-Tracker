@@ -1,0 +1,235 @@
+{
+  "matchId": "match_1764891827981",
+  "leagueId": "league_four",
+  "round": 1,
+  "status": "in_progress",
+  "home": {
+    "id": "amazons",
+    "name": "Amazons",
+    "colors": {
+      "primary": "#ff0000",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": true
+  },
+  "away": {
+    "id": "norse",
+    "name": "Norse",
+    "colors": {
+      "primary": "#2b00ff",
+      "secondary": "#7a7a7a"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": true
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
