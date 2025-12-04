@@ -434,7 +434,14 @@ function renderLeagueView() {
   
   if (els.containers.rosterQuick) {
     els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
-      ${l.teams.map(t => `<div class="roster-tile"><div class="roster-tile-title"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div><div class="roster-tile-meta">${t.race} | ${t.coachName}</div></div>`).join('')}
+      ${l.teams.map(t => `
+      <div class="roster-tile">
+        <div class="roster-tile-title"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div>
+        <div class="roster-tile-meta">
+          <span><strong>Race:</strong> ${t.race}</span>
+          <span><strong>Coach:</strong> ${t.coachName}</span>
+        </div>
+      </div>`).join('')}
     </div>`;
   }
   renderMatchesList(l);
@@ -474,7 +481,7 @@ function renderMatchesList(league) {
       <td data-label="Home">${h}</td>
       <td data-label="Away">${a}</td>
       <td data-label="Score">${score}</td>
-      <td data-label="Status">${action} <button onclick="handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete Match">🗑️</button></td>
+      <td data-label="Status"><span class="tag ${m.status}">${action}</span> <button onclick="handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete Match">🗑️</button></td>
     </tr>`;
   }).join('');
   
@@ -721,15 +728,13 @@ function renderJumbotron() {
   els.containers.sbHomeTurn.textContent = d.turn.home;
   els.containers.sbAwayTurn.textContent = d.turn.away;
   
-  // Render with Headers for separation on mobile
+  // Render Unified Headers "Home - Team Name"
   els.containers.sbHomeRoster.innerHTML = 
-    `<div class="roster-header desktop-only">Home Roster</div>` +
-    `<div class="roster-header mobile-only">${d.home.name}</div>` +
+    `<div class="roster-header">Home - ${d.home.name}</div>` +
     renderLiveRoster(d.home.roster, 'home', true);
     
   els.containers.sbAwayRoster.innerHTML = 
-    `<div class="roster-header desktop-only">Away Roster</div>` +
-    `<div class="roster-header mobile-only">${d.away.name}</div>` +
+    `<div class="roster-header">Away - ${d.away.name}</div>` +
     renderLiveRoster(d.away.roster, 'away', true);
 }
 
@@ -1235,10 +1240,6 @@ els.buttons.manageSave.addEventListener('click', async () => {
       // Update UI state
       state.editTeamId = t.id;
       setStatus('Team saved & League updated!', 'ok');
-      
-      // OPTIONAL: Return to League Manage list automatically?
-      // Uncomment next line if you want to auto-exit after save
-      // els.buttons.manageBack.click();
       
       return; 
     }
