@@ -39,5 +39,9 @@
       ],
       "spp": 0
     }
-  ]
+  ],
+  "colors": {
+    "primary": "#491d1d",
+    "secondary": "#ffe4b3"
+  }
 }
