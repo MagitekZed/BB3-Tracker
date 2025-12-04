@@ -40,6 +40,16 @@
         "primary": "#222222",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "team_four",
+      "name": "Team Four",
+      "race": "Imperial Nobility",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
     }
   ],
   "matches": []
