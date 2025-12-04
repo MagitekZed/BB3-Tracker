@@ -7,7 +7,7 @@
     "pointsWin": 3,
     "pointsDraw": 1,
     "pointsLoss": 0,
-    "maxTeams": 16,
+    "maxTeams": 4,
     "lockTeams": false
   },
   "teams": [
