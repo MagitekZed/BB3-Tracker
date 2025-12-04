@@ -45,6 +45,7 @@ const state = {
 // ============================================
 const els = {
   globalStatus: document.getElementById('globalStatus'),
+  
   nav: {
     deskLeagues: document.getElementById('navDeskLeagues'),
     deskAdmin: document.getElementById('navDeskAdmin'),
@@ -53,6 +54,8 @@ const els = {
     mobAdmin: document.getElementById('navMobAdmin'),
     breadcrumbs: document.getElementById('breadcrumbs')
   },
+
+  // Modals & Sheets
   mobileKey: {
     btn: document.getElementById('mobileKeyToggle'),
     modal: document.getElementById('mobileKeyModal'),
@@ -70,6 +73,8 @@ const els = {
     el: document.getElementById('playerActionSheet'),
     title: document.getElementById('actionSheetTitle')
   },
+
+  // Sections
   sections: {
     list: document.getElementById('leagueListSection'),
     view: document.getElementById('leagueViewSection'),
@@ -79,6 +84,8 @@ const els = {
     coach: document.getElementById('coachSection'),
     admin: document.getElementById('adminSection')
   },
+  
+  // Containers
   containers: {
     leagueList: document.getElementById('leagueListContainer'),
     standings: document.getElementById('standingsContainer'),
@@ -89,6 +96,8 @@ const els = {
     manageTeamEditor: document.getElementById('leagueManageTeamEditor'),
     teamSummary: document.getElementById('teamSummary'),
     teamRoster: document.getElementById('teamRosterContainer'),
+    
+    // Jumbotron
     sbHomeName: document.getElementById('sbHomeName'),
     sbAwayName: document.getElementById('sbAwayName'),
     sbHomeScore: document.getElementById('sbHomeScore'),
@@ -97,14 +106,20 @@ const els = {
     sbAwayTurn: document.getElementById('sbAwayTurn'),
     sbHomeRoster: document.getElementById('scoreboardHomeRoster'),
     sbAwayRoster: document.getElementById('scoreboardAwayRoster'),
+    
+    // Coach Dashboard
     coachTeamName: document.getElementById('coachTeamName'),
     coachScore: document.getElementById('coachScoreDisplay'),
     coachRerolls: document.getElementById('coachRerolls'),
     coachTurn: document.getElementById('coachTurnDisplay'),
     coachRoster: document.getElementById('coachRosterList'),
+    
+    // Admin
     delLeagueBtn: document.getElementById('deleteLeagueContainer'),
     scanResults: document.getElementById('scanResults')
   },
+  
+  // Buttons
   buttons: {
     createLeague: document.getElementById('leagueCreateBtn'),
     manageSave: document.getElementById('leagueManageSaveBtn'),
@@ -120,10 +135,14 @@ const els = {
     scanBtn: document.getElementById('scanBtn'),
     loadBtn: document.getElementById('loadBtn'),
     saveBtn: document.getElementById('saveBtn'),
+    
+    // Scheduling Triggers
     deskSchedBtn: document.getElementById('desktopSchedBtn'),
     mobSchedBtn: document.getElementById('mobileAddMatchBtn'),
     cancelGame: document.getElementById('cancelGameBtn')
   },
+  
+  // Inputs
   inputs: {
     editKey: document.getElementById('editKeyInput'),
     leagueId: document.getElementById('leagueManageIdInput'),
@@ -137,6 +156,8 @@ const els = {
     lockTeams: document.getElementById('leagueManageLockTeamsInput'),
     adminText: document.getElementById('leagueTextarea')
   },
+  
+  // Cards & Modal
   cards: {
     leagueInfo: document.getElementById('leagueInfoCard'),
     leagueTeams: document.getElementById('leagueTeamsCard'),
@@ -156,7 +177,7 @@ const els = {
 
 function getContrastColor(hex) {
   if(!hex) return '#ffffff';
-  // Simple YIQ
+  // Simple YIQ brightness check
   const r = parseInt(hex.substr(1, 2), 16);
   const g = parseInt(hex.substr(3, 2), 16);
   const b = parseInt(hex.substr(5, 2), 16);
@@ -167,10 +188,11 @@ function getContrastColor(hex) {
 function applyTeamTheme(team) {
   const root = document.documentElement;
   if (team && team.colors) {
-    root.style.setProperty('--team-primary', team.colors.primary || '#8a1c1c');
+    root.style.setProperty('--team-primary', team.colors.primary || '#222');
     root.style.setProperty('--team-secondary', team.colors.secondary || '#c5a059');
-    root.style.setProperty('--team-text', getContrastColor(team.colors.primary || '#8a1c1c'));
+    root.style.setProperty('--team-text', getContrastColor(team.colors.primary || '#222'));
   } else {
+    // Revert to defaults
     root.style.setProperty('--team-primary', '#222222');
     root.style.setProperty('--team-secondary', '#c5a059');
     root.style.setProperty('--team-text', '#ffffff');
@@ -255,9 +277,11 @@ function updateBreadcrumbs(path) {
 }
 
 function setActiveNav(tabName) {
+  // Reset all
   ['deskLeagues', 'deskAdmin'].forEach(k => els.nav[k].classList.remove('active'));
   ['mobLeagues', 'mobMatch', 'mobAdmin'].forEach(k => els.nav[k].classList.remove('active'));
   
+  // Set Active
   if (tabName === 'leagues') {
     els.nav.deskLeagues.classList.add('active');
     els.nav.mobLeagues.classList.add('active');
@@ -279,7 +303,7 @@ function showSection(name) {
 }
 
 function goHome() {
-  applyTeamTheme(null);
+  applyTeamTheme(null); // Reset theme
   showSection('list');
   renderLeagueList();
   updateBreadcrumbs([{ label: 'Leagues' }]);
@@ -293,10 +317,11 @@ function goAdmin() {
   setActiveNav('admin');
 }
 
-els.nav.deskLeagues.addEventListener('click', goHome);
-els.nav.mobLeagues.addEventListener('click', goHome);
-els.nav.deskAdmin.addEventListener('click', goAdmin);
-els.nav.mobAdmin.addEventListener('click', goAdmin);
+// Navigation Listeners
+els.nav.deskLeagues.addEventListener('click', () => goHome());
+els.nav.mobLeagues.addEventListener('click', () => goHome());
+els.nav.deskAdmin.addEventListener('click', () => goAdmin());
+els.nav.mobAdmin.addEventListener('click', () => goAdmin());
 
 els.nav.mobMatch.addEventListener('click', () => {
   if (state.activeMatchData) {
@@ -310,6 +335,7 @@ els.nav.mobMatch.addEventListener('click', () => {
   setActiveNav('match');
 });
 
+// Key Management
 els.mobileKey.btn.addEventListener('click', () => els.mobileKey.modal.classList.remove('hidden'));
 els.mobileKey.save.addEventListener('click', () => {
   const k = els.mobileKey.input.value;
@@ -324,7 +350,10 @@ els.mobileKey.save.addEventListener('click', () => {
 if(els.buttons.rememberKey) {
   els.buttons.rememberKey.addEventListener('click', () => {
     const k = els.inputs.editKey.value;
-    if(k) { localStorage.setItem('bb3_edit_key', k); alert('Key saved.'); }
+    if(k) { 
+      localStorage.setItem('bb3_edit_key', k);
+      alert('Key saved.'); 
+    }
   });
 }
 
@@ -412,7 +441,7 @@ function renderLeagueView() {
   const l = state.currentLeague;
   document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
   
-  // Ensure Panel styling is active
+  // Add styling classes for differentiation
   document.getElementById('leagueTeamsSection').className = 'panel-styled';
   document.getElementById('leagueMatchesSection').className = 'panel-styled';
 
@@ -491,14 +520,17 @@ function computeStandings(league) {
     const h = map.get(m.homeTeamId);
     const a = map.get(m.awayTeamId);
     if(!h || !a) return;
+    
     const hf = m.score?.home || 0;
     const af = m.score?.away || 0;
     const hCas = m.casualties?.homeInflicted || 0;
     const aCas = m.casualties?.awayInflicted || 0;
+    
     h.tdDiff += (hf - af);
     a.tdDiff += (af - hf);
     h.casDiff += (hCas - aCas);
     a.casDiff += (aCas - hCas);
+    
     if (hf > af) { h.wins++; a.losses++; h.points += (league.settings.pointsWin||3); a.points += (league.settings.pointsLoss||0); }
     else if (hf < af) { a.wins++; h.losses++; a.points += (league.settings.pointsWin||3); h.points += (league.settings.pointsLoss||0); }
     else { h.draws++; a.draws++; h.points += (league.settings.pointsDraw||1); a.points += (league.settings.pointsDraw||1); }
@@ -536,18 +568,13 @@ window.handleOpenTeam = async (leagueId, teamId) => {
     // Apply Primary Color to Team Header Background
     const hdr = document.getElementById('teamHeader');
     if(hdr && teamData.colors) {
-        // Find the parent card header or apply inline
-        hdr.parentElement.style.background = teamData.colors.primary;
-        hdr.parentElement.style.color = getContrastColor(teamData.colors.primary);
+        hdr.className = "team-header-styled";
+        hdr.style.borderBottomColor = teamData.colors.primary || '#222';
     }
 
     renderTeamView();
     showSection('team');
-    updateBreadcrumbs([
-      { label: 'Leagues', action: goHome },
-      { label: state.currentLeague.name, action: () => handleOpenLeague(leagueId) },
-      { label: teamData.name }
-    ]);
+    updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: state.currentLeague.name, action: () => handleOpenLeague(leagueId) }, { label: teamData.name }]);
     setStatus('Team loaded.', 'ok');
   } catch (e) { setStatus(e.message, 'error'); }
 };
@@ -584,16 +611,28 @@ function renderTeamView() {
 
 function openScheduleModal() {
   const l = state.currentLeague; if(!l) return;
-  const homeSel = els.scheduleModal.home; const awaySel = els.scheduleModal.away;
+  const homeSel = els.scheduleModal.home;
+  const awaySel = els.scheduleModal.away;
   homeSel.innerHTML = '<option value="">Home Team...</option>';
   awaySel.innerHTML = '<option value="">Away Team...</option>';
+  
   l.teams.forEach(t => {
     const opt = `<option value="${t.id}">${t.name}</option>`;
     homeSel.innerHTML += opt;
     awaySel.innerHTML += opt;
   });
+  
+  // Auto-increment Round Logic
+  let nextRound = 1;
+  if(l.matches && l.matches.length > 0) {
+      const maxR = Math.max(...l.matches.map(m => m.round));
+      nextRound = maxR + 1;
+  }
+  els.scheduleModal.round.value = nextRound;
+  
   els.scheduleModal.el.classList.remove('hidden');
 }
+
 window.closeScheduleModal = () => els.scheduleModal.el.classList.add('hidden');
 
 if(els.buttons.deskSchedBtn) els.buttons.deskSchedBtn.addEventListener('click', openScheduleModal);
@@ -602,7 +641,12 @@ if(els.buttons.mobSchedBtn) els.buttons.mobSchedBtn.addEventListener('click', op
 if(els.scheduleModal.addBtn) els.scheduleModal.addBtn.addEventListener('click', async () => {
     const key = els.inputs.editKey.value;
     if (!key) return setStatus('Edit key required', 'error');
-    const l = state.currentLeague; const round = parseInt(els.scheduleModal.round.value); const homeId = els.scheduleModal.home.value; const awayId = els.scheduleModal.away.value;
+    
+    const l = state.currentLeague;
+    const round = parseInt(els.scheduleModal.round.value);
+    const homeId = els.scheduleModal.home.value;
+    const awayId = els.scheduleModal.away.value;
+    
     if (!homeId || !awayId || homeId === awayId) return alert("Invalid selection");
     
     setStatus('Scheduling...');
@@ -612,7 +656,9 @@ if(els.scheduleModal.addBtn) els.scheduleModal.addBtn.addEventListener('click', 
       l.matches = l.matches || [];
       l.matches.push(newMatch);
       await apiSave(PATHS.leagueSettings(l.id), l, `Schedule match`, key);
-      closeScheduleModal(); renderLeagueView(); setStatus('Match scheduled.', 'ok');
+      closeScheduleModal();
+      renderLeagueView();
+      setStatus('Match scheduled.', 'ok');
     } catch(e) { setStatus(e.message, 'error'); }
 });
 
@@ -632,6 +678,7 @@ window.handleStartMatch = async (matchId) => {
     const awayTeam = await apiGet(PATHS.team(l.id, m.awayTeamId));
     if(!homeTeam || !awayTeam) throw new Error("Could not load team files.");
     
+    // Inject Colors into active match data for convenient theming later
     const initRoster = (players) => (players||[]).map(p => ({
         ...p, live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
     }));
@@ -681,14 +728,16 @@ window.handleOpenScoreboard = async (matchId) => {
 
 function renderJumbotron() {
   const d = state.activeMatchData;
-  els.containers.sbHomeName.textContent = d.home.name;
-  els.containers.sbAwayName.textContent = d.away.name;
+  els.containers.sbHomeName.innerHTML = `<div class="big-team-text" style="color:${d.home.colors?.primary}; text-shadow:2px 2px 0 ${d.home.colors?.secondary}">${d.home.name}</div>`;
+  els.containers.sbAwayName.innerHTML = `<div class="big-team-text" style="color:${d.away.colors?.primary}; text-shadow:2px 2px 0 ${d.away.colors?.secondary}">${d.away.name}</div>`;
   els.containers.sbHomeScore.textContent = d.home.score;
   els.containers.sbAwayScore.textContent = d.away.score;
-  els.containers.sbHomeTurn.textContent = d.turn.home;
-  els.containers.sbAwayTurn.textContent = d.turn.away;
   
-  // Set Dynamic Styles for Headers
+  // Moving "Play As" buttons to own row by updating innerHTML structure dynamically
+  els.containers.sbHomeTurn.parentElement.innerHTML = `Turn: <span id="sbHomeTurn">${d.turn.home}</span>`;
+  els.containers.sbAwayTurn.parentElement.innerHTML = `Turn: <span id="sbAwayTurn">${d.turn.away}</span>`;
+  
+  // Render Unified Headers "Home - Team Name"
   const hCol = d.home.colors?.primary || '#222'; const hTxt = getContrastColor(hCol);
   const aCol = d.away.colors?.primary || '#222'; const aTxt = getContrastColor(aCol);
   
@@ -706,10 +755,13 @@ window.enterCoachMode = (side) => {
   state.coachSide = side;
   document.body.classList.add('mode-coach');
   const team = state.activeMatchData[side];
-  applyTeamTheme(team);
+  applyTeamTheme(team); // Apply Theme!
   renderCoachView();
   showSection('coach');
-  if (state.activeMatchPollInterval) { clearInterval(state.activeMatchPollInterval); state.activeMatchPollInterval = null; }
+  if (state.activeMatchPollInterval) {
+    clearInterval(state.activeMatchPollInterval);
+    state.activeMatchPollInterval = null;
+  }
 };
 
 window.exitCoachMode = () => {
@@ -725,9 +777,9 @@ function renderCoachView() {
   const oppSide = side === 'home' ? 'away' : 'home';
   const oppTeam = d[oppSide];
 
-  els.containers.coachTeamName.textContent = team.name;
+  els.containers.coachTeamName.innerHTML = `<div class="big-team-text" style="color:${team.colors?.text}; text-shadow:none;">${team.name}</div>`;
   els.containers.coachScore.textContent = `${team.score} - ${oppTeam.score}`;
-  els.containers.coachTurn.textContent = d.turn[side];
+  els.containers.coachTurn.textContent = `Turn: ${d.turn[side]}`;
 
   let pips = '';
   for(let i=0; i<team.rerolls; i++) {
@@ -830,9 +882,11 @@ if(els.buttons.coachEndTurn) {
     d.turn[side]++;
     renderCoachView();
     await updateLiveMatch(`End Turn: ${side}`);
-    setStatus("Turn ended.", "ok");
+    setStatus("Turn ended. Status synced.", "ok");
   });
 }
+
+// ---- Match Control Listeners ----
 
 if(els.buttons.cancelGame) {
   els.buttons.cancelGame.addEventListener('click', async () => {
@@ -880,6 +934,10 @@ els.buttons.sbBack.addEventListener('click', () => {
 
 els.buttons.sbRefresh.addEventListener('click', () => handleOpenScoreboard(state.activeMatchData.matchId));
 
+// ============================================
+// TEAM EDITOR & ADMIN
+// ============================================
+
 window.showSkill = (skillName) => {
   const cleanName = skillName.replace(/\(\+.*\)/, '').trim(); 
   let desc = "No description available.";
@@ -919,6 +977,7 @@ window.handleManageLeague = async (id) => {
       teams: [], matches: [] 
     };
   }
+  
   renderManageForm();
   showSection('manage');
   updateBreadcrumbs([
@@ -1010,8 +1069,8 @@ function createEmptyTeam(id) {
 function renderTeamEditor() {
   const t = state.dirtyTeam;
   const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
+  const isNewTeam = !state.editTeamId;
   
-  // Inject Color Pickers
   els.containers.manageTeamEditor.innerHTML = `
     <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
     <div class="form-grid">
@@ -1076,7 +1135,7 @@ function renderTeamEditor() {
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
-    if (!state.editTeamId) {
+    if (isNewTeam) {
       state.dirtyTeam.id = normalizeName(this.value);
       els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
     }
@@ -1167,6 +1226,7 @@ window.handleDeleteLeague = async () => {
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
 
+// --- Refactored Save Workflow (Fixes Double Save) ---
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
@@ -1187,18 +1247,20 @@ els.buttons.manageSave.addEventListener('click', async () => {
           t.colors = { primary: cp.value, secondary: cs.value };
       }
       
+      // Save Team File
       await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
       
+      // Update local league object's team metadata
       const existingIdx = l.teams.findIndex(x => x.id === t.id);
       const meta = { id: t.id, name: t.name, race: t.race, coachName: t.coachName, colors: t.colors };
       
       if (existingIdx >= 0) l.teams[existingIdx] = meta;
       else l.teams.push(meta);
       
-      state.editTeamId = t.id;
-      
+      // Save League File to keep colors in sync
       await apiSave(PATHS.leagueSettings(l.id), l, `Update team list for ${t.name}`, key);
       
+      state.editTeamId = t.id; 
       setStatus('Team saved & League updated!', 'ok');
       return; 
     }
