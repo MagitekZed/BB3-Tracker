@@ -1,9 +1,5 @@
 // app.js
 
-// ============================================
-// CONFIGURATION & STATE
-// ============================================
-
 const API_BASE = 'https://bb3-tracker-api.zedt-ninja.workers.dev';
 const PATHS = {
   gameData: 'data/gameData.json',
@@ -31,9 +27,7 @@ const state = {
   dirtyTeam: null
 };
 
-// ============================================
 // DOM ELEMENTS
-// ============================================
 const els = {
   globalStatus: document.getElementById('globalStatus'),
   nav: {
@@ -142,15 +136,14 @@ const els = {
 };
 
 // ============================================
-// THEME & UTILS (NEW)
+// THEME & UTILS
 // ============================================
 
 function getContrastColor(hex) {
-  // Convert hex to RGB
+  if (!hex) return '#ffffff';
   const r = parseInt(hex.substr(1, 2), 16);
   const g = parseInt(hex.substr(3, 2), 16);
   const b = parseInt(hex.substr(5, 2), 16);
-  // Calculate YIQ brightness
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
   return (yiq >= 128) ? '#222222' : '#ffffff';
 }
@@ -158,13 +151,11 @@ function getContrastColor(hex) {
 function applyTeamTheme(team) {
   const root = document.documentElement;
   if (team && team.colors) {
-    root.style.setProperty('--team-primary', team.colors.primary || '#8a1c1c');
+    const primary = team.colors.primary || '#8a1c1c';
+    root.style.setProperty('--team-primary', primary);
     root.style.setProperty('--team-secondary', team.colors.secondary || '#c5a059');
-    // Auto-calculate text contrast for headers
-    const textCol = getContrastColor(team.colors.primary || '#8a1c1c');
-    root.style.setProperty('--team-text', textCol);
+    root.style.setProperty('--team-text', getContrastColor(primary));
   } else {
-    // Reset to defaults
     root.style.setProperty('--team-primary', '#8a1c1c');
     root.style.setProperty('--team-secondary', '#c5a059');
     root.style.setProperty('--team-text', '#ffffff');
@@ -255,7 +246,7 @@ function showSection(name) {
 }
 
 function goHome() {
-  applyTeamTheme(null); // Reset theme
+  applyTeamTheme(null);
   showSection('list'); renderLeagueList();
   updateBreadcrumbs([{ label: 'Leagues' }]); setActiveNav('leagues');
 }
@@ -313,7 +304,7 @@ function populateSkillList() {
 // ============================================
 
 function renderLeagueList() {
-  if (!state.leaguesIndex.length) { els.containers.leagueList.innerHTML = `<div class="small">No leagues found. Create one.</div>`; return; }
+  if (!state.leaguesIndex.length) { els.containers.leagueList.innerHTML = `<div class="card">No leagues found. Create one.</div>`; return; }
   els.containers.leagueList.innerHTML = state.leaguesIndex.map(l => `
     <div class="league-card">
       <div class="league-card-main">
@@ -358,13 +349,10 @@ function renderLeagueView() {
       </tr>`).join('')}
   </tbody></table>`;
   
-  // Use Team Theme for Roster Tiles
   if (els.containers.rosterQuick) {
     els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
       ${l.teams.map(t => {
-        // We can do inline style for tile preview
         const prim = t.colors?.primary || 'var(--primary-red)';
-        const sec = t.colors?.secondary || 'var(--gold-accent)';
         return `
         <div class="roster-tile" style="border-top-color: ${prim}">
           <div class="roster-tile-title"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div>
@@ -398,7 +386,6 @@ function renderMatchesList(league) {
     const score = m.status === 'completed' ? `${m.score.home}-${m.score.away}` : '';
     let action = m.status;
     if (m.status === 'scheduled') action = `<button class="link-button" onclick="handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
-    
     return `<tr>
       <td data-label="Round">${m.round}</td>
       <td data-label="Home">${h}</td>
@@ -448,7 +435,7 @@ window.handleOpenTeam = async (leagueId, teamId) => {
     state.currentTeam = teamData;
     state.viewTeamId = teamId;
     
-    applyTeamTheme(teamData); // APPLY THEME!
+    applyTeamTheme(teamData); 
     
     renderTeamView();
     showSection('team');
@@ -558,7 +545,7 @@ function renderJumbotron() {
 window.enterCoachMode = (side) => {
   state.coachSide = side; document.body.classList.add('mode-coach');
   const team = state.activeMatchData[side];
-  applyTeamTheme(team); // Apply Theme!
+  applyTeamTheme(team); 
   renderCoachView(); showSection('coach');
   if (state.activeMatchPollInterval) { clearInterval(state.activeMatchPollInterval); state.activeMatchPollInterval = null; }
 };
@@ -640,7 +627,7 @@ function renderTeamEditor() {
       <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
       <div class="form-field"><label>Race</label><select onchange="changeTeamRace(this.value)">${raceOpts}</select></div>
     </div>
-    <div class="form-grid" style="margin-top:1rem; padding:1rem; background:#f4f4f4; border-radius:4px;">
+    <div class="form-grid" style="margin-top:1rem; padding:1rem; background:#f4f4f4; border-radius:4px; border:1px solid #ccc;">
       <div class="form-field"><label>Primary Color</label><input type="color" id="teamColorPrimary" value="${t.colors?.primary || '#8a1c1c'}" style="width:100%; height:40px"></div>
       <div class="form-field"><label>Secondary Color</label><input type="color" id="teamColorSecondary" value="${t.colors?.secondary || '#c5a059'}" style="width:100%; height:40px"></div>
     </div>
