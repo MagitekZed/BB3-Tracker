@@ -1,5 +1,5 @@
 import { state, els } from './state.js';
-import { init, goHome, goAdmin, handleMobileMatchNav, showSkill, closeSkillModal } from './ui-core.js';
+import { init, goHome, goAdmin, handleMobileMatchNav, showSkill, closeSkillModal, showSection } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, handleDeleteMatch, renderManageForm } from './ui-league.js';
 import { handleOpenTeam, handleManageTeamDirect, handleEditTeam, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
 import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame } from './ui-match.js';
@@ -9,6 +9,10 @@ import { setStatus } from './utils.js';
 // ============================================
 // 1. EXPOSE FUNCTIONS TO WINDOW (For HTML onclicks)
 // ============================================
+
+// CRITICAL: Expose state and navigation helpers for inline HTML event handlers
+window.state = state;
+window.showSection = showSection;
 
 window.handleOpenLeague = handleOpenLeague;
 window.handleManageLeague = handleManageLeague;
