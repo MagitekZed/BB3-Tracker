@@ -52,5 +52,14 @@
       }
     }
   ],
-  "matches": []
+  "matches": [
+    {
+      "id": "match_1764818511055",
+      "round": 1,
+      "homeTeamId": "team_one",
+      "awayTeamId": "team_two",
+      "status": "scheduled",
+      "date": "2025-12-04"
+    }
+  ]
 }
