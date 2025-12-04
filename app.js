@@ -415,27 +415,28 @@ function renderLeagueView() {
   const l = state.currentLeague;
   document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
   
-  // Standings Table
+  // Add styling classes for differentiation
+  document.getElementById('leagueTeamsSection').className = 'panel-styled';
+  document.getElementById('leagueMatchesSection').className = 'panel-styled';
+
   const standings = computeStandings(l);
   els.containers.standings.innerHTML = `<table class="responsive-table">
     <thead><tr><th>#</th><th>Team</th><th>W-D-L</th><th>Pts</th><th>Diff</th></tr></thead>
     <tbody>${standings.map((s, i) => `
       <tr>
         <td data-label="Rank">${i+1}</td>
-        <td data-label="Team"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${s.teamId}')">${s.name}</button></td>
+        <td data-label="Team"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${s.id}')">${s.name}</button></td>
         <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
         <td data-label="Points">${s.points}</td>
         <td data-label="Diff">${s.tdDiff}/${s.casDiff}</td>
       </tr>`).join('')}
   </tbody></table>`;
   
-  // Roster Tiles
   if (els.containers.rosterQuick) {
     els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
       ${l.teams.map(t => `<div class="roster-tile"><div class="roster-tile-title"><button class="team-link" onclick="handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div><div class="roster-tile-meta">${t.race} | ${t.coachName}</div></div>`).join('')}
     </div>`;
   }
-  
   renderMatchesList(l);
 }
 
@@ -448,7 +449,6 @@ function renderMatchesList(league) {
   const active = league.matches.filter(m => m.status === 'in_progress');
   const others = league.matches.filter(m => m.status !== 'in_progress').sort((a,b) => a.round - b.round);
 
-  // In-Progress Matches
   let inProgHtml = '';
   if (active.length > 0) {
     inProgHtml = '<div class="card"><h4 style="color:#0066cc">Live Matches</h4><ul>' + 
@@ -461,7 +461,6 @@ function renderMatchesList(league) {
   }
   els.containers.inProgress.innerHTML = inProgHtml;
 
-  // Scheduled / Completed Matches
   const rows = others.map(m => {
     const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
     const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
@@ -469,12 +468,13 @@ function renderMatchesList(league) {
     let action = m.status;
     if (m.status === 'scheduled') action = `<button class="link-button" onclick="handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
     
+    // Add delete button for scheduled/completed matches
     return `<tr>
       <td data-label="Round">${m.round}</td>
       <td data-label="Home">${h}</td>
       <td data-label="Away">${a}</td>
       <td data-label="Score">${score}</td>
-      <td data-label="Status">${action}</td>
+      <td data-label="Status">${action} <button onclick="handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete Match">🗑️</button></td>
     </tr>`;
   }).join('');
   
@@ -506,6 +506,22 @@ function computeStandings(league) {
   return Array.from(map.values()).sort((a,b) => b.points - a.points);
 }
 
+window.handleDeleteMatch = async (matchId) => {
+  if(!confirm("Are you sure you want to permanently delete this match record?")) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  
+  try {
+    const l = state.currentLeague;
+    const newMatches = l.matches.filter(m => m.id !== matchId);
+    l.matches = newMatches;
+    
+    await apiSave(PATHS.leagueSettings(l.id), l, `Delete match ${matchId}`, key);
+    renderLeagueView();
+    setStatus('Match deleted.', 'ok');
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
+};
+
 // ============================================
 // TEAM LOGIC
 // ============================================
@@ -534,7 +550,12 @@ function renderTeamView() {
   document.getElementById('teamHeader').textContent = t.name;
   els.containers.teamSummary.innerHTML = `Coach: ${t.coachName} | Race: ${t.race} | TV: ${t.teamValue || 0}`;
   
-  const rows = (t.players || []).map(p => `
+  const rows = (t.players || []).map(p => {
+    const skillsHtml = (p.skills||[]).map(s => 
+      `<span class="skill-tag" onclick="showSkill('${s}')">${s}</span>`
+    ).join(' ');
+    
+    return `
     <tr>
       <td data-label="#">${p.number||''}</td>
       <td data-label="Name">${p.name}</td>
@@ -544,10 +565,10 @@ function renderTeamView() {
       <td data-label="AG">${p.ag}</td>
       <td data-label="PA">${p.pa}</td>
       <td data-label="AV">${p.av}</td>
-      <td data-label="Skills">${(p.skills||[]).join(', ')}</td>
+      <td data-label="Skills">${skillsHtml}</td>
       <td data-label="SPP">${p.spp}</td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
   els.containers.teamRoster.innerHTML = `<table class="responsive-table"><thead><tr><th>#</th><th>Name</th><th>Pos</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
@@ -699,8 +720,17 @@ function renderJumbotron() {
   els.containers.sbAwayScore.textContent = d.away.score;
   els.containers.sbHomeTurn.textContent = d.turn.home;
   els.containers.sbAwayTurn.textContent = d.turn.away;
-  els.containers.sbHomeRoster.innerHTML = renderLiveRoster(d.home.roster, 'home', true);
-  els.containers.sbAwayRoster.innerHTML = renderLiveRoster(d.away.roster, 'away', true);
+  
+  // Render with Headers for separation on mobile
+  els.containers.sbHomeRoster.innerHTML = 
+    `<div class="roster-header desktop-only">Home Roster</div>` +
+    `<div class="roster-header mobile-only">${d.home.name}</div>` +
+    renderLiveRoster(d.home.roster, 'home', true);
+    
+  els.containers.sbAwayRoster.innerHTML = 
+    `<div class="roster-header desktop-only">Away Roster</div>` +
+    `<div class="roster-header mobile-only">${d.away.name}</div>` +
+    renderLiveRoster(d.away.roster, 'away', true);
 }
 
 // ---- Coach Mode & Action Sheets ----
@@ -763,6 +793,7 @@ function renderLiveRoster(roster, side, readOnly) {
           </div>`;
     }
 
+    // New Interaction: Open Action Sheet instead of inline buttons
     return `
       <div class="live-player-row ${live.used?'used':''} ${live.injured?'injured':''}" onclick="openPlayerActionSheet(${idx})">
         <div class="player-info">
@@ -1174,36 +1205,45 @@ window.handleDeleteLeague = async () => {
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
 
+// --- Refactored Save Workflow (Fixes Double Save) ---
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
   setStatus('Saving...', 'info');
   
   try {
+    // 1. Saving a TEAM
     if (state.editMode === 'team') {
       const t = state.dirtyTeam;
       const l = state.dirtyLeague;
       
       if (!t.id) return setStatus('Invalid team name.', 'error');
-      if (!state.editTeamId) {
-        if (l.teams.find(x => x.id === t.id)) return setStatus('Team ID exists.', 'error');
-      }
       
+      // Save the team file
       await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
       
+      // Update local league object with new team metadata
       const existingIdx = l.teams.findIndex(x => x.id === t.id);
       const meta = { id: t.id, name: t.name, race: t.race, coachName: t.coachName };
       
       if (existingIdx >= 0) l.teams[existingIdx] = meta;
       else l.teams.push(meta);
       
+      // Auto-save the league file so the user doesn't have to
+      await apiSave(PATHS.leagueSettings(l.id), l, `Update team list for ${t.name}`, key);
+      
+      // Update UI state
       state.editTeamId = t.id;
-      setStatus('Team saved locally. Save League to commit.', 'ok');
-      state.editMode = 'league';
-      renderManageForm();
+      setStatus('Team saved & League updated!', 'ok');
+      
+      // OPTIONAL: Return to League Manage list automatically?
+      // Uncomment next line if you want to auto-exit after save
+      // els.buttons.manageBack.click();
+      
       return; 
     }
     
+    // 2. Saving a LEAGUE
     const l = state.dirtyLeague;
     if (!l.id) return setStatus('League ID required.', 'error');
     if (!state.editLeagueId && state.leaguesIndex.find(x => x.id === l.id)) return setStatus('League ID exists.', 'error');
