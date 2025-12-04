@@ -30,6 +30,16 @@
         "primary": "#222222",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "team_three",
+      "name": "Team Three",
+      "race": "Vampire",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
     }
   ],
   "matches": []
