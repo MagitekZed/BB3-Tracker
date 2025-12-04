@@ -15,7 +15,11 @@
       "id": "team_one",
       "name": "team one",
       "race": "Amazon",
-      "coachName": "wer"
+      "coachName": "wer",
+      "colors": {
+        "primary": "#ff0000",
+        "secondary": "#1eff00"
+      }
     },
     {
       "id": "team_two",
