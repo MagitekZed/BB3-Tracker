@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "id": "league_three",
+    "name": "League Three",
+    "season": 1,
+    "status": "upcoming"
+  }
+]
