@@ -74,5 +74,7 @@
   "colors": {
     "primary": "#222222",
     "secondary": "#c5a059"
-  }
+  },
+  "apothecary": false,
+  "rerolls": 1
 }
