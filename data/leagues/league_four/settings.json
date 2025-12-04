@@ -40,6 +40,14 @@
       "awayTeamId": "norse",
       "status": "scheduled",
       "date": "2025-12-04"
+    },
+    {
+      "id": "match_1764891842892",
+      "round": 2,
+      "homeTeamId": "norse",
+      "awayTeamId": "amazons",
+      "status": "scheduled",
+      "date": "2025-12-04"
     }
   ]
 }
