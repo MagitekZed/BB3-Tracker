@@ -1,0 +1,26 @@
+{
+  "id": "league_two",
+  "name": "League Two",
+  "season": 1,
+  "status": "upcoming",
+  "settings": {
+    "pointsWin": 3,
+    "pointsDraw": 1,
+    "pointsLoss": 0,
+    "maxTeams": 16,
+    "lockTeams": false
+  },
+  "teams": [
+    {
+      "id": "team_one",
+      "name": "Team One",
+      "race": "Amazon",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
+    }
+  ],
+  "matches": []
+}
