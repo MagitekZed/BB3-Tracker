@@ -25,7 +25,11 @@
       "id": "team_two",
       "name": "team two",
       "race": "Khorne",
-      "coachName": "zer"
+      "coachName": "zer",
+      "colors": {
+        "primary": "#491d1d",
+        "secondary": "#ffe4b3"
+      }
     },
     {
       "id": "new_team",
