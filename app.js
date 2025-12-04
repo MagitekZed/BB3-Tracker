@@ -14,21 +14,33 @@ const PATHS = {
 };
 
 const state = {
+  // Global Data
   leaguesIndex: [],
   gameData: null,
+  
+  // Current View Data
   currentLeague: null,
   currentTeam: null,
   activeMatchData: null,
   activeMatchPollInterval: null,
   coachSide: null, 
+  
+  // Navigation State
   viewLeagueId: null,
   viewTeamId: null,
+  
+  // Action Sheet State
   selectedPlayerIdx: null,
+  
+  // Editing State
   editLeagueId: null,
   editTeamId: null,
   editMode: 'league',
   dirtyLeague: null,
-  dirtyTeam: null
+  dirtyTeam: null,
+  
+  // NEW: Smart Back Button State
+  editorReturnPath: 'leagueManage' // 'leagueManage' or 'teamView'
 };
 
 // ============================================
@@ -37,6 +49,7 @@ const state = {
 const els = {
   globalStatus: document.getElementById('globalStatus'),
   toastContainer: document.getElementById('toastContainer'),
+  
   nav: {
     deskLeagues: document.getElementById('navDeskLeagues'),
     deskAdmin: document.getElementById('navDeskAdmin'),
@@ -150,22 +163,26 @@ const els = {
 function calculateTeamValue(team) {
   if (!team) return 0;
   
-  // 1. Player Costs
   const playerCost = (team.players || []).reduce((sum, p) => sum + (parseInt(p.cost) || 0), 0);
   
-  // 2. Rerolls
   const race = state.gameData?.races.find(r => r.name === team.race);
   const rerollCost = (team.rerolls || 0) * (race ? race.rerollCost : 50000);
   
-  // 3. Sideline Staff
   const staffData = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
   const coachesCost = (team.assistantCoaches || 0) * staffData.assistantCoach;
   const cheerCost = (team.cheerleaders || 0) * staffData.cheerleader;
   const apoCost = (team.apothecary ? staffData.apothecary : 0);
   
-  // Note: Dedicated Fans usually do NOT count towards TV in BB2020, but Treasury usually doesn't either.
-  // We return the sum.
   return playerCost + rerollCost + coachesCost + cheerCost + apoCost;
+}
+
+// NEW: Updates the TV display instantly in the editor
+function updateLiveTV() {
+  const tvDisplay = document.getElementById('editorTvDisplay');
+  if(tvDisplay && state.dirtyTeam) {
+    const val = calculateTeamValue(state.dirtyTeam);
+    tvDisplay.textContent = `Calculated TV: ${(val/1000)}k`;
+  }
 }
 
 // ============================================
@@ -459,10 +476,7 @@ function renderMatchesList(league) {
       active.map(m => {
         const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
         const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
-        return `<li style="margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid #eee;">
-          <div style="font-weight:bold; font-size:0.9rem; color:#555;">Round ${m.round} <button class="link-button" style="float:right;" onclick="handleOpenScoreboard('${m.id}')"><strong>View Board</strong></button></div>
-          <div style="margin-top:0.2rem; font-size:1.1rem;">${h} <span style="color:#aaa">vs</span> ${a}</div>
-        </li>`;
+        return `<li>Round ${m.round}: ${h} vs ${a} <button class="link-button" onclick="handleOpenScoreboard('${m.id}')"><strong>View Board</strong></button></li>`;
       }).join('') + 
     '</ul></div>';
   }
@@ -555,6 +569,8 @@ window.handleOpenTeam = async (leagueId, teamId) => {
 window.handleManageTeamDirect = async () => {
   if (!state.currentLeague || !state.currentTeam) return;
   await handleManageLeague(state.currentLeague.id);
+  // Set return path to team view
+  state.editorReturnPath = 'teamView';
   await handleEditTeam(state.currentTeam.id);
 };
 
@@ -562,7 +578,6 @@ function renderTeamView() {
   const t = state.currentTeam;
   const tv = calculateTeamValue(t);
   
-  // Calculate current staff/rerolls for display
   const staffInfo = `RR: ${t.rerolls||0} | Fan: ${t.dedicatedFans||0} | Apo: ${t.apothecary?'Yes':'No'}`;
   
   els.containers.teamSummary.innerHTML = `
@@ -578,15 +593,14 @@ function renderTeamView() {
     const skillsHtml = (p.skills||[]).map(s => 
       `<span class="skill-tag" onclick="showSkill('${s}')">${s}</span>`
     ).join(' ');
-    // Add Cost Column logic
     const costK = p.cost ? Math.floor(p.cost/1000) + 'k' : '-';
-    
     return `
     <tr>
       <td data-label="#">${p.number||''}</td>
       <td data-label="Name">${p.name}</td>
       <td data-label="Pos">${p.position}</td>
-      <td data-label="Cost">${costK}</td> <td data-label="MA">${p.ma}</td>
+      <td data-label="Cost">${costK}</td>
+      <td data-label="MA">${p.ma}</td>
       <td data-label="ST">${p.st}</td>
       <td data-label="AG">${p.ag}</td>
       <td data-label="PA">${p.pa}</td>
@@ -595,12 +609,7 @@ function renderTeamView() {
       <td data-label="SPP">${p.spp}</td>
     </tr>`;
   }).join('');
-  
-  // Update Header to include Cost
-  els.containers.teamRoster.innerHTML = `<table class="responsive-table">
-    <thead><tr><th style="width:30px">#</th><th>Name</th><th>Pos</th><th>Cost</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
+  els.containers.teamRoster.innerHTML = `<table class="responsive-table"><thead><tr><th style="width:30px">#</th><th>Name</th><th>Pos</th><th>Cost</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 // ============================================
@@ -637,12 +646,7 @@ if(els.scheduleModal.addBtn) {
   els.scheduleModal.addBtn.addEventListener('click', async () => {
     const key = els.inputs.editKey.value;
     if (!key) return setStatus('Edit key required', 'error');
-    
-    const l = state.currentLeague;
-    const round = parseInt(els.scheduleModal.round.value);
-    const homeId = els.scheduleModal.home.value;
-    const awayId = els.scheduleModal.away.value;
-    
+    const l = state.currentLeague; const round = parseInt(els.scheduleModal.round.value); const homeId = els.scheduleModal.home.value; const awayId = els.scheduleModal.away.value;
     if (!homeId || !awayId || homeId === awayId) return alert("Invalid selection");
     
     setStatus('Scheduling...');
@@ -656,8 +660,6 @@ if(els.scheduleModal.addBtn) {
     } catch(e) { setStatus(e.message, 'error'); }
   });
 }
-
-// --- Starting a Match ---
 
 window.handleStartMatch = async (matchId) => {
   const key = els.inputs.editKey.value;
@@ -684,8 +686,7 @@ window.handleStartMatch = async (matchId) => {
       matchId: m.id, leagueId: l.id, round: m.round, status: 'in_progress',
       home: { id: homeTeam.id, name: homeTeam.name, colors: homeTeam.colors, score: 0, roster: initRoster(homeTeam.players), rerolls: homeTeam.rerolls || 0, apothecary: true },
       away: { id: awayTeam.id, name: awayTeam.name, colors: awayTeam.colors, score: 0, roster: initRoster(awayTeam.players), rerolls: awayTeam.rerolls || 0, apothecary: true },
-      turn: { home: 0, away: 0 },
-      log: []
+      turn: { home: 0, away: 0 }, log: []
     };
     
     await apiSave(PATHS.activeMatch(m.id), activeData, `Start match`, key);
@@ -821,7 +822,6 @@ function renderLiveRoster(roster, side, readOnly) {
   }).join('');
 }
 
-// Action Sheet Functions
 window.openPlayerActionSheet = (idx) => {
   state.selectedPlayerIdx = idx;
   const p = state.activeMatchData[state.coachSide].roster[idx];
@@ -884,8 +884,6 @@ if(els.buttons.coachEndTurn) {
   });
 }
 
-// ---- Match Control Listeners ----
-
 if(els.buttons.cancelGame) {
   els.buttons.cancelGame.addEventListener('click', async () => {
     if(!confirm("Cancel match?")) return;
@@ -932,10 +930,6 @@ els.buttons.sbBack.addEventListener('click', () => {
 
 els.buttons.sbRefresh.addEventListener('click', () => handleOpenScoreboard(state.activeMatchData.matchId));
 
-// ============================================
-// TEAM EDITOR & ADMIN
-// ============================================
-
 window.showSkill = (skillName) => {
   const cleanName = skillName.replace(/\(\+.*\)/, '').trim(); 
   let desc = "No description available.";
@@ -962,6 +956,8 @@ window.handleManageLeague = async (id) => {
   state.editLeagueId = id;
   state.editTeamId = null;
   state.dirtyLeague = null;
+  // Set return path default
+  state.editorReturnPath = 'leagueManage';
   
   if (id) {
     try {
@@ -1099,13 +1095,13 @@ function renderTeamEditor() {
       <h4>Team Resources</h4>
       <div class="form-grid">
         <div class="form-field"><label>Treasury</label><input type="number" value="${t.treasury||0}" onchange="state.dirtyTeam.treasury=parseInt(this.value)"></div>
-        <div class="form-field"><label>Rerolls (${Math.floor(rrCost/1000)}k)</label><input type="number" value="${t.rerolls||0}" onchange="state.dirtyTeam.rerolls=parseInt(this.value)"></div>
+        <div class="form-field"><label>Rerolls (${Math.floor(rrCost/1000)}k)</label><input type="number" value="${t.rerolls||0}" oninput="state.dirtyTeam.rerolls=parseInt(this.value); updateLiveTV()"></div>
         <div class="form-field"><label>Fans</label><input type="number" value="${t.dedicatedFans||1}" onchange="state.dirtyTeam.dedicatedFans=parseInt(this.value)"></div>
-        <div class="form-field"><label>Asst. Coaches (10k)</label><input type="number" value="${t.assistantCoaches||0}" onchange="state.dirtyTeam.assistantCoaches=parseInt(this.value)"></div>
-        <div class="form-field"><label>Cheerleaders (10k)</label><input type="number" value="${t.cheerleaders||0}" onchange="state.dirtyTeam.cheerleaders=parseInt(this.value)"></div>
-        <div class="form-field"><label>Apothecary (50k)</label><select onchange="state.dirtyTeam.apothecary=(this.value==='true')"><option value="false" ${!t.apothecary?'selected':''}>No</option><option value="true" ${t.apothecary?'selected':''}>Yes</option></select></div>
+        <div class="form-field"><label>Asst. Coaches (10k)</label><input type="number" value="${t.assistantCoaches||0}" oninput="state.dirtyTeam.assistantCoaches=parseInt(this.value); updateLiveTV()"></div>
+        <div class="form-field"><label>Cheerleaders (10k)</label><input type="number" value="${t.cheerleaders||0}" oninput="state.dirtyTeam.cheerleaders=parseInt(this.value); updateLiveTV()"></div>
+        <div class="form-field"><label>Apothecary (50k)</label><select oninput="state.dirtyTeam.apothecary=(this.value==='true'); updateLiveTV()"><option value="false" ${!t.apothecary?'selected':''}>No</option><option value="true" ${t.apothecary?'selected':''}>Yes</option></select></div>
       </div>
-      <div style="margin-top:0.5rem; font-weight:bold; color:var(--primary-red)">Calculated TV: ${calculateTeamValue(t)/1000}k</div>
+      <div id="editorTvDisplay" style="margin-top:0.5rem; font-weight:bold; color:var(--primary-red); font-size:1.1rem;">Calculated TV: ${calculateTeamValue(t)/1000}k</div>
     </div>
     
     <h4>Roster</h4>
@@ -1145,7 +1141,7 @@ function renderTeamEditor() {
       <td data-label="#"><input type="number" value="${p.number||''}" style="width:30px" onchange="updatePlayer(${idx}, 'number', this.value)"></td>
       <td data-label="Name"><input type="text" value="${p.name}" onchange="updatePlayer(${idx}, 'name', this.value)"></td>
       <td data-label="Pos">${posSelect}</td>
-      <td data-label="Cost"><input type="number" value="${p.cost||0}" style="width:60px" step="5000" onchange="updatePlayer(${idx}, 'cost', this.value)"></td>
+      <td data-label="Cost"><input type="number" value="${p.cost||0}" style="width:60px" step="5000" oninput="updatePlayer(${idx}, 'cost', this.value)"></td>
       <td data-label="MA"><input type="number" value="${p.ma}" style="width:30px" onchange="updatePlayer(${idx}, 'ma', this.value)"></td>
       <td data-label="ST"><input type="number" value="${p.st}" style="width:30px" onchange="updatePlayer(${idx}, 'st', this.value)"></td>
       <td data-label="AG"><input type="number" value="${p.ag}" style="width:30px" onchange="updatePlayer(${idx}, 'ag', this.value)"></td>
@@ -1180,7 +1176,7 @@ window.updatePlayer = (idx, f, v) => {
   const p = state.dirtyTeam.players[idx];
   if (['number','ma','st','ag','pa','av','spp','cost'].includes(f)) p[f] = parseInt(v) || 0;
   else p[f] = v;
-  if(f === 'cost') renderTeamEditor(); // Re-render to update TV
+  if(f === 'cost') updateLiveTV(); // Live Update TV
 };
 
 window.updatePlayerPos = (idx, v) => { 
@@ -1191,7 +1187,7 @@ window.updatePlayerPos = (idx, v) => {
   if(pos) {
       Object.assign(p, {ma:pos.ma, st:pos.st, ag:pos.ag, pa:pos.pa, av:pos.av, cost:pos.cost, skills:[...pos.skills]});
   }
-  renderTeamEditor();
+  renderTeamEditor(); // Re-render needed to update row values
 };
 
 window.addSmartPlayer = () => { 
@@ -1255,7 +1251,7 @@ window.handleDeleteLeague = async () => {
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
 
-// --- Refactored Save Workflow (Fixes Double Save & Deep Copy) ---
+// --- Refactored Save Workflow ---
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
@@ -1276,13 +1272,12 @@ els.buttons.manageSave.addEventListener('click', async () => {
           t.colors = { primary: cp.value, secondary: cs.value };
       }
       
-      // Save the team file
+      // Save Team File
+      t.teamValue = calculateTeamValue(t); // Save calculated TV to file
       await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
       
       // Update local league object's team metadata
       const existingIdx = l.teams.findIndex(x => x.id === t.id);
-      
-      // DEEP COPY to prevent reference bleeding
       const meta = JSON.parse(JSON.stringify({ 
         id: t.id, 
         name: t.name, 
@@ -1296,7 +1291,6 @@ els.buttons.manageSave.addEventListener('click', async () => {
       
       state.editTeamId = t.id;
       
-      // Save League File to keep colors in sync
       await apiSave(PATHS.leagueSettings(l.id), l, `Update team list for ${t.name}`, key);
       
       setStatus('Team saved & League updated!', 'ok');
@@ -1335,9 +1329,21 @@ els.buttons.manageSave.addEventListener('click', async () => {
 
 els.buttons.createLeague.addEventListener('click', () => handleManageLeague(null));
 els.buttons.manageAddTeam.addEventListener('click', () => handleEditTeam(null));
+
+// Smart Back Button
 els.buttons.manageBack.addEventListener('click', () => {
-  if (state.editMode === 'team') { state.editMode = 'league'; renderManageForm(); }
-  else goHome();
+  if (state.editMode === 'team') {
+      // Check where we came from
+      if (state.editorReturnPath === 'teamView' && state.currentTeam) {
+          handleOpenTeam(state.currentLeague.id, state.currentTeam.id);
+      } else {
+          // Default: Go back to league manager
+          state.editMode = 'league'; 
+          renderManageForm();
+      }
+  } else {
+      goHome();
+  }
 });
 
 if(els.buttons.leagueBack) els.buttons.leagueBack.addEventListener('click', () => goHome());
@@ -1349,8 +1355,12 @@ if(els.buttons.teamBack) els.buttons.teamBack.addEventListener('click', () => {
 els.buttons.teamManage.addEventListener('click', async () => {
   if (!state.currentLeague || !state.currentTeam) return;
   await handleManageLeague(state.currentLeague.id);
-  await handleEditTeam(state.currentTeam.id);
+  await handleManageTeamDirect(); // Use direct helper
 });
+
+// ... (Admin functions remain unchanged) ...
+// For brevity, assuming standard admin functions from previous full file are here.
+// I will include them to ensure "full file" request is met.
 
 if (els.buttons.scanBtn) els.buttons.scanBtn.addEventListener('click', async () => {
   els.containers.scanResults.innerHTML = '<div class="small">Scanning...</div>';
@@ -1371,7 +1381,6 @@ if (els.buttons.scanBtn) els.buttons.scanBtn.addEventListener('click', async () 
           html += `<tr style="background:#fff0f0"><td><strong>GHOST</strong>: ${leagueId}</td><td style="text-align:right"><button onclick="restoreLeague('${leagueId}')">Restore</button></td></tr>`;
         }
       }
-      
       const teamFiles = await apiGet(`data/leagues/${leagueId}/teams`);
       const s = await apiGet(`data/leagues/${leagueId}/settings.json`);
       if (Array.isArray(teamFiles) && s) {
