@@ -1,0 +1,84 @@
+{
+  "id": "team_four",
+  "name": "Team Four",
+  "race": "Imperial Nobility",
+  "coachName": "",
+  "players": [
+    {
+      "number": 1,
+      "name": "Retainer Lineman",
+      "position": "Retainer Lineman",
+      "qty": 12,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 4,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 2,
+      "name": "Retainer Lineman",
+      "position": "Retainer Lineman",
+      "qty": 12,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 4,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 3,
+      "name": "Retainer Lineman",
+      "position": "Retainer Lineman",
+      "qty": 12,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 4,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  }
+}
