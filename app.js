@@ -45,6 +45,7 @@ const state = {
 // ============================================
 const els = {
   globalStatus: document.getElementById('globalStatus'),
+  
   nav: {
     deskLeagues: document.getElementById('navDeskLeagues'),
     deskAdmin: document.getElementById('navDeskAdmin'),
@@ -53,6 +54,8 @@ const els = {
     mobAdmin: document.getElementById('navMobAdmin'),
     breadcrumbs: document.getElementById('breadcrumbs')
   },
+
+  // Modals & Sheets
   mobileKey: {
     btn: document.getElementById('mobileKeyToggle'),
     modal: document.getElementById('mobileKeyModal'),
@@ -70,6 +73,8 @@ const els = {
     el: document.getElementById('playerActionSheet'),
     title: document.getElementById('actionSheetTitle')
   },
+
+  // Sections
   sections: {
     list: document.getElementById('leagueListSection'),
     view: document.getElementById('leagueViewSection'),
@@ -79,6 +84,8 @@ const els = {
     coach: document.getElementById('coachSection'),
     admin: document.getElementById('adminSection')
   },
+  
+  // Containers
   containers: {
     leagueList: document.getElementById('leagueListContainer'),
     standings: document.getElementById('standingsContainer'),
@@ -89,6 +96,8 @@ const els = {
     manageTeamEditor: document.getElementById('leagueManageTeamEditor'),
     teamSummary: document.getElementById('teamSummary'),
     teamRoster: document.getElementById('teamRosterContainer'),
+    
+    // Jumbotron
     sbHomeName: document.getElementById('sbHomeName'),
     sbAwayName: document.getElementById('sbAwayName'),
     sbHomeScore: document.getElementById('sbHomeScore'),
@@ -97,14 +106,20 @@ const els = {
     sbAwayTurn: document.getElementById('sbAwayTurn'),
     sbHomeRoster: document.getElementById('scoreboardHomeRoster'),
     sbAwayRoster: document.getElementById('scoreboardAwayRoster'),
+    
+    // Coach Dashboard
     coachTeamName: document.getElementById('coachTeamName'),
     coachScore: document.getElementById('coachScoreDisplay'),
     coachRerolls: document.getElementById('coachRerolls'),
     coachTurn: document.getElementById('coachTurnDisplay'),
     coachRoster: document.getElementById('coachRosterList'),
+    
+    // Admin
     delLeagueBtn: document.getElementById('deleteLeagueContainer'),
     scanResults: document.getElementById('scanResults')
   },
+  
+  // Buttons
   buttons: {
     createLeague: document.getElementById('leagueCreateBtn'),
     manageSave: document.getElementById('leagueManageSaveBtn'),
@@ -120,10 +135,14 @@ const els = {
     scanBtn: document.getElementById('scanBtn'),
     loadBtn: document.getElementById('loadBtn'),
     saveBtn: document.getElementById('saveBtn'),
+    
+    // Scheduling Triggers
     deskSchedBtn: document.getElementById('desktopSchedBtn'),
     mobSchedBtn: document.getElementById('mobileAddMatchBtn'),
     cancelGame: document.getElementById('cancelGameBtn')
   },
+  
+  // Inputs
   inputs: {
     editKey: document.getElementById('editKeyInput'),
     leagueId: document.getElementById('leagueManageIdInput'),
@@ -137,6 +156,8 @@ const els = {
     lockTeams: document.getElementById('leagueManageLockTeamsInput'),
     adminText: document.getElementById('leagueTextarea')
   },
+  
+  // Cards & Modal
   cards: {
     leagueInfo: document.getElementById('leagueInfoCard'),
     leagueTeams: document.getElementById('leagueTeamsCard'),
@@ -263,7 +284,6 @@ function setActiveNav(tabName) {
 }
 
 function showSection(name) {
-  // CRITICAL: Always clear polling when switching views
   if (state.activeMatchPollInterval) {
     clearInterval(state.activeMatchPollInterval);
     state.activeMatchPollInterval = null;
@@ -391,8 +411,7 @@ function renderLeagueList() {
 window.handleOpenLeague = async (id) => {
   setStatus(`Loading league ${id}...`);
   try {
-    state.currentLeague = null; // Clear to prevent bleed
-    
+    state.currentLeague = null; 
     const settings = await apiGet(PATHS.leagueSettings(id));
     if (!settings) throw new Error("League settings file not found.");
     state.currentLeague = settings;
@@ -479,6 +498,7 @@ function renderMatchesList(league) {
       <td data-label="Status"><span class="tag ${m.status}">${action}</span> <button onclick="handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete">🗑️</button></td>
     </tr>`;
   }).join('');
+  
   els.containers.matches.innerHTML = `<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
 }
 
@@ -533,7 +553,6 @@ window.handleOpenTeam = async (leagueId, teamId) => {
     state.viewTeamId = teamId;
     
     applyTeamTheme(teamData);
-    
     renderTeamView();
     
     const hdr = document.getElementById('teamHeader');
@@ -685,7 +704,6 @@ window.handleOpenScoreboard = async (matchId) => {
     ]);
     setActiveNav('match');
     
-    // START POLLING
     if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
     state.activeMatchPollInterval = setInterval(async () => {
         try {
@@ -709,8 +727,11 @@ function renderJumbotron() {
   els.containers.sbHomeScore.textContent = d.home.score;
   els.containers.sbAwayScore.textContent = d.away.score;
   
-  els.containers.sbHomeTurn.parentElement.innerHTML = `Turn: <span id="sbHomeTurn">${d.turn.home}</span>`;
-  els.containers.sbAwayTurn.parentElement.innerHTML = `Turn: <span id="sbAwayTurn">${d.turn.away}</span>`;
+  // FIX: Use textContent to update turn counter safely without destroying DOM structure
+  const homeTurnEl = document.getElementById('sbHomeTurn');
+  const awayTurnEl = document.getElementById('sbAwayTurn');
+  if(homeTurnEl) homeTurnEl.textContent = d.turn.home;
+  if(awayTurnEl) awayTurnEl.textContent = d.turn.away;
   
   const hCol = d.home.colors?.primary || '#222'; const hTxt = getContrastColor(hCol);
   const aCol = d.away.colors?.primary || '#222'; const aTxt = getContrastColor(aCol);
@@ -729,10 +750,13 @@ window.enterCoachMode = (side) => {
   state.coachSide = side;
   document.body.classList.add('mode-coach');
   const team = state.activeMatchData[side];
-  applyTeamTheme(team);
+  applyTeamTheme(team); // Apply Theme!
   renderCoachView();
   showSection('coach');
-  if (state.activeMatchPollInterval) { clearInterval(state.activeMatchPollInterval); state.activeMatchPollInterval = null; }
+  if (state.activeMatchPollInterval) {
+    clearInterval(state.activeMatchPollInterval);
+    state.activeMatchPollInterval = null;
+  }
 };
 
 window.exitCoachMode = () => {
@@ -794,6 +818,7 @@ function renderLiveRoster(roster, side, readOnly) {
   }).join('');
 }
 
+// Action Sheet Functions
 window.openPlayerActionSheet = (idx) => {
   state.selectedPlayerIdx = idx;
   const p = state.activeMatchData[state.coachSide].roster[idx];
@@ -856,6 +881,8 @@ if(els.buttons.coachEndTurn) {
   });
 }
 
+// ---- Match Control Listeners ----
+
 if(els.buttons.cancelGame) {
   els.buttons.cancelGame.addEventListener('click', async () => {
     if(!confirm("Cancel match?")) return;
@@ -867,7 +894,7 @@ if(els.buttons.cancelGame) {
       const l = await apiGet(PATHS.leagueSettings(lId));
       const m = l.matches.find(x => x.id === mId);
       if(m) m.status = 'scheduled';
-      await apiSave(PATHS.leagueSettings(lId), l, `Revert ${mId}`, key);
+      await apiSave(PATHS.leagueSettings(l.id), l, `Revert ${mId}`, key);
       handleOpenLeague(lId);
     } catch(e) { setStatus(e.message, 'error'); }
   });
@@ -1202,7 +1229,7 @@ window.handleDeleteLeague = async () => {
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
 
-// --- Refactored Save Workflow ---
+// --- Refactored Save Workflow (Fixes Double Save & Deep Copy) ---
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
