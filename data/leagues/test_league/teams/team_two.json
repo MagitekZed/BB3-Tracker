@@ -1,0 +1,34 @@
+{
+  "id": "team_two",
+  "name": "team two",
+  "race": "Human",
+  "coachName": "",
+  "players": [
+    {
+      "number": 1,
+      "name": "Lineman",
+      "position": "Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  }
+}
