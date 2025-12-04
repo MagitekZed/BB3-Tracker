@@ -156,6 +156,12 @@
       ]
     }
   ],
+  "staffCosts": {
+    "assistantCoach": 10000,
+    "cheerleader": 10000,
+    "apothecary": 50000,
+    "dedicatedFans": 10000
+  },
   "skillCategories": {
     "General": [
       { "name": "Block", "description": "The player is not Knocked Down when a Both Down result is applied. " },
