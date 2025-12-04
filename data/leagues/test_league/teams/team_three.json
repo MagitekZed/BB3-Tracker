@@ -1,0 +1,64 @@
+{
+  "id": "team_three",
+  "name": "team three",
+  "race": "Norse",
+  "coachName": "",
+  "players": [
+    {
+      "number": 1,
+      "name": "Norse Raider Lineman",
+      "position": "Norse Raider Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 2,
+      "name": "Norse Raider Lineman",
+      "position": "Norse Raider Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  }
+}
