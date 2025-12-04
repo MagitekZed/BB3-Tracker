@@ -20,6 +20,16 @@
         "primary": "#222222",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "norse",
+      "name": "Norse",
+      "race": "Norse",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
     }
   ],
   "matches": []
