@@ -1,0 +1,277 @@
+import { state, els } from './state.js';
+import { PATHS } from './config.js';
+import { apiGet, apiSave, apiDelete } from './api.js';
+import { setStatus, normalizeName } from './utils.js';
+import { computeStandings } from './rules.js';
+import { showSection, updateBreadcrumbs, setActiveNav, goHome } from './ui-core.js';
+import { handleOpenTeam, handleEditTeam, renderTeamEditor } from './ui-team.js';
+import { handleStartMatch, handleOpenScoreboard } from './ui-match.js';
+
+export function renderLeagueList() {
+  if (!state.leaguesIndex.length) {
+    els.containers.leagueList.innerHTML = `<div class="panel-styled">No leagues found. Create one to get started.</div>`;
+    return;
+  }
+  els.containers.leagueList.innerHTML = state.leaguesIndex.map(l => `
+    <div class="league-card">
+      <div class="league-card-main">
+        <div class="league-card-title">${l.name}</div>
+        <div class="league-meta">
+          <span class="tag ${l.status === 'active' ? 'in_progress' : 'scheduled'}">${l.status}</span>
+          Season ${l.season} • ID: ${l.id}
+        </div>
+      </div>
+      <div>
+        <button class="link-button" onclick="window.handleOpenLeague('${l.id}')">Open</button>
+        &nbsp;|&nbsp;
+        <button class="link-button" onclick="window.handleManageLeague('${l.id}')">Manage</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+export async function handleOpenLeague(id) {
+  setStatus(`Loading league ${id}...`);
+  try {
+    state.currentLeague = null; 
+    const settings = await apiGet(PATHS.leagueSettings(id));
+    if (!settings) throw new Error("League settings file not found.");
+    state.currentLeague = settings;
+    state.viewLeagueId = id;
+    
+    renderLeagueView();
+    showSection('view');
+    updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: settings.name }]);
+    setActiveNav('leagues');
+
+    setStatus('League loaded.', 'ok');
+  } catch (e) { setStatus(e.message, 'error'); }
+}
+
+export function renderLeagueView() {
+  const l = state.currentLeague;
+  if (!l) return;
+  
+  document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
+  document.getElementById('leagueTeamsSection').className = 'panel-styled';
+  document.getElementById('leagueMatchesSection').className = 'panel-styled';
+
+  const standings = computeStandings(l);
+  els.containers.standings.innerHTML = `<table class="responsive-table">
+    <thead><tr><th>#</th><th>Team</th><th>W-D-L</th><th>Pts</th><th>Diff</th></tr></thead>
+    <tbody>${standings.map((s, i) => `
+      <tr>
+        <td data-label="Rank">${i+1}</td>
+        <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${l.id}', '${s.id}')">${s.name}</button></td>
+        <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
+        <td data-label="Points">${s.points}</td>
+        <td data-label="Diff">${s.tdDiff}/${s.casDiff}</td>
+      </tr>`).join('')}
+  </tbody></table>`;
+  
+  if (els.containers.rosterQuick) {
+    els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
+      ${l.teams.map(t => {
+        const prim = t.colors?.primary || '#8a1c1c';
+        return `
+        <div class="roster-tile" style="border-top-color: ${prim}">
+          <div class="roster-tile-title"><button class="team-link" onclick="window.handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div>
+          <div class="roster-tile-meta"><span><strong>Race:</strong> ${t.race}</span><span><strong>Coach:</strong> ${t.coachName}</span></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+  renderMatchesList(l);
+}
+
+export function renderMatchesList(league) {
+  if(!league.matches || !league.matches.length) {
+    els.containers.matches.innerHTML = '<div class="small">No matches scheduled.</div>';
+    return;
+  }
+  
+  const active = league.matches.filter(m => m.status === 'in_progress');
+  const others = league.matches.filter(m => m.status !== 'in_progress').sort((a,b) => a.round - b.round);
+
+  let inProgHtml = '';
+  if (active.length > 0) {
+    inProgHtml = '<div class="card"><h4 style="color:#0066cc">Live Matches</h4><ul>' + 
+      active.map(m => {
+        const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
+        const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
+        return `<li>Round ${m.round}: ${h} vs ${a} <button class="link-button" onclick="window.handleOpenScoreboard('${m.id}')"><strong>View Board</strong></button></li>`;
+      }).join('') + 
+    '</ul></div>';
+  }
+  els.containers.inProgress.innerHTML = inProgHtml;
+
+  const rows = others.map(m => {
+    const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
+    const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
+    const score = m.status === 'completed' ? `${m.score.home}-${m.score.away}` : '';
+    let action = m.status;
+    if (m.status === 'scheduled') action = `<button class="link-button" onclick="window.handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
+    
+    return `<tr>
+      <td data-label="Round">${m.round}</td>
+      <td data-label="Home">${h}</td>
+      <td data-label="Away">${a}</td>
+      <td data-label="Score">${score}</td>
+      <td data-label="Status"><span class="tag ${m.status}">${action}</span> <button onclick="window.handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete">🗑️</button></td>
+    </tr>`;
+  }).join('');
+  
+  const scheduledHeader = active.length > 0 ? '<h4 style="margin-top:2rem; color:#444;">Upcoming & Results</h4>' : '';
+  els.containers.matches.innerHTML = `${scheduledHeader}<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
+}
+
+export async function handleDeleteMatch(matchId) {
+  if(!confirm("Permanently delete match record?")) return;
+  const key = els.inputs.editKey.value; if (!key) return setStatus('Edit key required', 'error');
+  try {
+    const l = state.currentLeague; l.matches = l.matches.filter(m => m.id !== matchId);
+    await apiSave(PATHS.leagueSettings(l.id), l, `Delete match ${matchId}`, key);
+    renderLeagueView(); setStatus('Match deleted.', 'ok');
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
+}
+
+// --- Management ---
+
+export async function handleManageLeague(id) {
+  state.editMode = 'league';
+  state.editLeagueId = id;
+  state.editTeamId = null;
+  state.dirtyLeague = null;
+  state.editorReturnPath = 'leagueManage';
+  
+  if (id) {
+    try {
+      const s = await apiGet(PATHS.leagueSettings(id));
+      state.dirtyLeague = JSON.parse(JSON.stringify(s));
+    } catch (e) { setStatus(e.message, 'error'); return; }
+  } else {
+    state.dirtyLeague = { 
+      id: '', name: '', season: 1, status: 'upcoming', 
+      settings: { pointsWin: 3, pointsDraw: 1, pointsLoss: 0, maxTeams: 16, lockTeams: false }, 
+      teams: [], matches: [] 
+    };
+  }
+  
+  renderManageForm();
+  showSection('manage');
+  updateBreadcrumbs([
+    { label: 'Leagues', action: goHome },
+    { label: state.dirtyLeague.name || 'New League' },
+    { label: 'Manage' }
+  ]);
+}
+
+export function renderManageForm() {
+  const l = state.dirtyLeague;
+  const isNewLeague = !state.editLeagueId;
+  
+  els.inputs.leagueId.value = l.id;
+  if (isNewLeague) {
+    els.inputs.leagueId.readOnly = true;
+    els.inputs.leagueId.classList.add('faded');
+  } else {
+    els.inputs.leagueId.readOnly = true;
+    els.inputs.leagueId.classList.remove('faded');
+  }
+  
+  els.inputs.leagueName.value = l.name;
+  els.inputs.leagueName.oninput = function() {
+    state.dirtyLeague.name = this.value;
+    if (isNewLeague) {
+      state.dirtyLeague.id = normalizeName(this.value);
+      els.inputs.leagueId.value = state.dirtyLeague.id;
+    }
+  };
+  
+  els.inputs.leagueSeason.value = l.season;
+  els.inputs.leagueStatus.value = l.status;
+  els.inputs.ptsWin.value = l.settings.pointsWin;
+  els.inputs.ptsDraw.value = l.settings.pointsDraw;
+  els.inputs.ptsLoss.value = l.settings.pointsLoss;
+  els.inputs.maxTeams.value = l.settings.maxTeams || 16;
+  if(els.inputs.lockTeams) els.inputs.lockTeams.checked = l.settings.lockTeams;
+
+  if (state.editMode === 'team') {
+    els.cards.leagueInfo.classList.add('hidden');
+    els.cards.leagueTeams.classList.add('hidden');
+    els.cards.teamEditor.classList.remove('hidden');
+    renderTeamEditor();
+  } else {
+    els.cards.leagueInfo.classList.remove('hidden');
+    els.cards.leagueTeams.classList.remove('hidden');
+    els.cards.teamEditor.classList.add('hidden');
+    renderManageTeamsList();
+    
+    let delBtn = document.getElementById('deleteLeagueBtn');
+    if (!delBtn) {
+      delBtn = document.createElement('button');
+      delBtn.id = 'deleteLeagueBtn';
+      delBtn.textContent = 'Delete Entire League';
+      delBtn.className = 'danger-btn';
+      delBtn.onclick = handleDeleteLeague;
+      els.containers.delLeagueBtn.appendChild(delBtn);
+    }
+    delBtn.classList.toggle('hidden', isNewLeague);
+  }
+}
+
+function renderManageTeamsList() {
+  const l = state.dirtyLeague;
+  els.containers.manageTeams.innerHTML = `<table><thead><tr><th>ID</th><th>Name</th><th>Action</th></tr></thead><tbody>
+    ${l.teams.map(t => `<tr><td>${t.id}</td><td>${t.name}</td><td><button class="link-button" onclick="window.handleEditTeam('${t.id}')">Edit</button> | <button class="link-button" onclick="window.handleDeleteTeam('${t.id}')" style="color:red">Delete</button></td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+export async function handleDeleteLeague() {
+  const l = state.dirtyLeague;
+  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?`)) return;
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  try {
+    for (const t of l.teams) {
+      try { await apiDelete(PATHS.team(l.id, t.id), `Delete team ${t.id}`, key); } catch (e) {}
+    }
+    await apiDelete(PATHS.leagueSettings(l.id), `Delete league ${l.id}`, key);
+    const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
+    const newIndex = freshIndex.filter(x => x.id !== l.id);
+    await apiSave(PATHS.leaguesIndex, newIndex, `Remove league ${l.id} from index`, key);
+    state.leaguesIndex = newIndex;
+    state.editMode = 'league';
+    goHome();
+    setStatus('League deleted.', 'ok');
+  } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
+}
+
+export async function saveLeague(key) {
+  const l = state.dirtyLeague;
+  if (!l.id) return setStatus('League ID required.', 'error');
+  if (!state.editLeagueId && state.leaguesIndex.find(x => x.id === l.id)) return setStatus('League ID exists.', 'error');
+  
+  l.name = els.inputs.leagueName.value;
+  l.season = parseInt(els.inputs.leagueSeason.value);
+  l.status = els.inputs.leagueStatus.value;
+  l.settings.pointsWin = parseInt(els.inputs.ptsWin.value);
+  l.settings.pointsDraw = parseInt(els.inputs.ptsDraw.value);
+  l.settings.pointsLoss = parseInt(els.inputs.ptsLoss.value);
+  l.settings.maxTeams = parseInt(els.inputs.maxTeams.value) || 16;
+  l.settings.lockTeams = els.inputs.lockTeams.checked;
+  
+  await apiSave(PATHS.leagueSettings(l.id), l, `Save league ${l.id}`, key);
+  
+  const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
+  const idxEntry = { id: l.id, name: l.name, season: l.season, status: l.status };
+  const i = freshIndex.findIndex(x => x.id === l.id);
+  if (i >= 0) freshIndex[i] = idxEntry;
+  else freshIndex.push(idxEntry);
+  
+  await apiSave(PATHS.leaguesIndex, freshIndex, `Update index for ${l.id}`, key);
+  state.leaguesIndex = freshIndex;
+  setStatus('League saved.', 'ok');
+  state.editMode = 'league';
+  goHome();
+}
