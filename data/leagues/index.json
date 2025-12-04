@@ -1,11 +1,5 @@
 [
   {
-    "id": "league_one",
-    "name": "league one",
-    "season": 1,
-    "status": "upcoming"
-  },
-  {
     "id": "league_two",
     "name": "League Two",
     "season": 1,
