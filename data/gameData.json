@@ -1,44 +1,167 @@
 {
   "races": [
-    { "name": "Amazon", "tier": 1, "rerollCost": 50000, "specialRules": ["Lustrian Superleague"], "positionals": [ { "name": "Eagle Warrior Linewoman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Dodge"], "primary": ["G"], "secondary": ["A","S"] }, { "name": "Piranha Warrior Blitzer", "qty": 2, "cost": 90000, "ma": 7, "st": 3, "ag": 3, "pa": 5, "av": 8, "skills": ["Dodge", "Hit and Run", "Jump Up"], "primary": ["A","G"], "secondary": ["S"] }, { "name": "Python Warrior Thrower", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Dodge", "On the Ball", "Pass", "Safe Pass"], "primary": ["G","P"], "secondary": ["A","S"] }, { "name": "Jaguar Warrior Blocker", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 3, "pa": 5, "av": 9, "skills": ["Defensive", "Dodge"], "primary": ["G","S"], "secondary": ["A"] } ] },
-    { "name": "Black Orc", "tier": 2, "rerollCost": 60000, "specialRules": ["Badlands Brawl", "Bribery and Corruption"], "positionals": [ { "name": "Goblin Bruiser", "qty": 12, "cost": 45000, "ma": 6, "st": 2, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Right Stuff", "Stunty", "Thick Skull"], "primary": ["A"], "secondary": ["G","S","P"] }, { "name": "Black Orc", "qty": 6, "cost": 90000, "ma": 4, "st": 4, "ag": 4, "pa": 5, "av": 10, "skills": ["Brawler", "Grab"], "primary": ["G","S"], "secondary": ["A","P"] }, { "name": "Trained Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P","M"] } ] },
-    { "name": "Chaos Chosen", "tier": 2, "rerollCost": 60000, "specialRules": ["Favoured of Chaos"], "positionals": [ { "name": "Beastman Runner", "qty": 16, "cost": 60000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Horns"], "primary": ["G","S","M"], "secondary": ["A","P"] }, { "name": "Chosen Blocker", "qty": 4, "cost": 100000, "ma": 5, "st": 4, "ag": 3, "pa": 5, "av": 10, "skills": [], "primary": ["G","S","M"], "secondary": ["A","P"] }, { "name": "Chaos Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S","M"], "secondary": ["A","G","P"] }, { "name": "Chaos Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (3+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S","M"], "secondary": ["A","G","P"] }, { "name": "Minotaur", "qty": 1, "cost": 150000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Loner (3+)", "Frenzy", "Horns", "Mighty Blow (+1)", "Thick Skull", "Unchannelled Fury"], "primary": ["S","M"], "secondary": ["A","G"] } ] },
-    { "name": "Dark Elf", "tier": 1, "rerollCost": 50000, "specialRules": ["Elven Kingdoms League"], "positionals": [ { "name": "Lineman", "qty": 16, "cost": 70000, "ma": 6, "st": 3, "ag": 2, "pa": 4, "av": 9, "skills": [], "primary": ["G","A"], "secondary": ["S","P"] }, { "name": "Runner", "qty": 2, "cost": 80000, "ma": 7, "st": 3, "ag": 2, "pa": 3, "av": 8, "skills": ["Dump-off"], "primary": ["G","A","P"], "secondary": ["S"] }, { "name": "Assassin", "qty": 2, "cost": 85000, "ma": 6, "st": 3, "ag": 2, "pa": 5, "av": 8, "skills": ["Shadowing", "Stab"], "primary": ["G","A"], "secondary": ["S","P"] }, { "name": "Blitzer", "qty": 4, "cost": 100000, "ma": 7, "st": 3, "ag": 2, "pa": 4, "av": 9, "skills": ["Block"], "primary": ["G","A"], "secondary": ["S","P"] }, { "name": "Witch Elf", "qty": 2, "cost": 110000, "ma": 7, "st": 3, "ag": 2, "pa": 5, "av": 8, "skills": ["Dodge", "Frenzy", "Jump Up"], "primary": ["G","A"], "secondary": ["S","P"] } ] },
-    { "name": "Dwarf", "tier": 1, "rerollCost": 50000, "specialRules": ["Worlds Edge Superleague"], "positionals": [ { "name": "Blocker", "qty": 16, "cost": 70000, "ma": 4, "st": 3, "ag": 4, "pa": 5, "av": 10, "skills": ["Block", "Tackle", "Thick Skull"], "primary": ["G","S"], "secondary": ["A","P"] }, { "name": "Runner", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Sure Hands", "Thick Skull"], "primary": ["G","P"], "secondary": ["A","S"] }, { "name": "Blitzer", "qty": 2, "cost": 85000, "ma": 5, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": ["Block", "Thick Skull"], "primary": ["G","S"], "secondary": ["A","P"] }, { "name": "Troll Slayer", "qty": 2, "cost": 90000, "ma": 5, "st": 3, "ag": 4, "pa": -1, "av": 9, "skills": ["Block", "Dauntless", "Frenzy", "Thick Skull"], "primary": ["G","S"], "secondary": ["A"] }, { "name": "Deathroller", "qty": 1, "cost": 170000, "ma": 4, "st": 7, "ag": 5, "pa": -1, "av": 11, "skills": ["Break Tackle", "Dirty Player (+2)", "Juggernaut", "Loner (4+)", "Mighty Blow (+1)", "No Hands", "Secret Weapon", "Stand Firm"], "primary": ["S"], "secondary": ["G","A"] } ] },
-    { "name": "Human", "tier": 1, "rerollCost": 50000, "specialRules": ["Old World Classic"], "positionals": [ { "name": "Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": [], "primary": ["G"], "secondary": ["A","S","P"] }, { "name": "Catcher", "qty": 4, "cost": 65000, "ma": 8, "st": 2, "ag": 3, "pa": 5, "av": 8, "skills": ["Catch", "Dodge"], "primary": ["G","A"], "secondary": ["S","P"] }, { "name": "Thrower", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 2, "av": 9, "skills": ["Pass", "Sure Hands"], "primary": ["G","P"], "secondary": ["A","S"] }, { "name": "Blitzer", "qty": 4, "cost": 85000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Block"], "primary": ["G","S"], "secondary": ["A","P"] }, { "name": "Halfling Hopeful", "qty": 3, "cost": 30000, "ma": 5, "st": 2, "ag": 3, "pa": 4, "av": 7, "skills": ["Dodge", "Right Stuff", "Stunty"], "primary": ["A"], "secondary": ["G","S","P"] }, { "name": "Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (4+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] } ] },
-    { "name": "Imperial Nobility", "tier": 2, "rerollCost": 70000, "specialRules": ["Old World Classic"], "positionals": [ { "name": "Retainer Lineman", "qty": 12, "cost": 45000, "ma": 6, "st": 3, "ag": 4, "pa": 4, "av": 8, "skills": ["Fend"], "primary": ["G"], "secondary": ["A","S","P"] }, { "name": "Noble Blitzer", "qty": 2, "cost": 105000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Block", "Catch"], "primary": ["G","A"], "secondary": ["S","P"] }, { "name": "Noble Thrower", "qty": 2, "cost": 70000, "ma": 6, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Pass", "Running Pass"], "primary": ["G","P"], "secondary": ["A","S"] }, { "name": "Bodyguard", "qty": 4, "cost": 90000, "ma": 6, "st": 3, "ag": 4, "pa": 5, "av": 9, "skills": ["Stand Firm", "Wrestle"], "primary": ["G","S"], "secondary": ["A","P"] }, { "name": "Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (4+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] } ] },
-    { "name": "Khorne", "tier": 1, "rerollCost": 60000, "specialRules": ["Favoured of Khorne"], "positionals": [ { "name": "Bloodborn Marauder Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Frenzy"], "primary": ["G","M"], "secondary": ["A","S"] }, { "name": "Khorngor", "qty": 2, "cost": 70000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Horns", "Juggernaut", "Jump Up", "Thick Skull"], "primary": ["G","S","M"], "secondary": ["A","P"] }, { "name": "Bloodseeker", "qty": 4, "cost": 110000, "ma": 5, "st": 4, "ag": 4, "pa": 6, "av": 10, "skills": ["Frenzy"], "primary": ["G","S","M"], "secondary": ["A"] }, { "name": "Bloodspawn", "qty": 1, "cost": 160000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Claws", "Frenzy", "Loner (4+)", "Mighty Blow (+1)", "Unchannelled Fury"], "primary": ["S","M"], "secondary": ["A","G"] } ] },
-    { "name": "Necromantic Horror", "tier": 1, "rerollCost": 70000, "specialRules": ["Masters of Undeath", "Sylvanian Spotlight"], "positionals": [ { "name": "Zombie Lineman", "qty": 16, "cost": 40000, "ma": 4, "st": 3, "ag": 4, "pa": -1, "av": 9, "skills": ["Regeneration"], "primary": ["G"], "secondary": ["A","S"] }, { "name": "Ghoul Runner", "qty": 2, "cost": 75000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge"], "primary": ["A","G"], "secondary": ["S","P"] }, { "name": "Wraith", "qty": 2, "cost": 95000, "ma": 6, "st": 3, "ag": 3, "pa": -1, "av": 9, "skills": ["Block", "Foul Appearance", "No Hands", "Regeneration", "Side Step"], "primary": ["G","S"], "secondary": ["A"] }, { "name": "Werewolf", "qty": 2, "cost": 125000, "ma": 8, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Claws", "Frenzy", "Regeneration"], "primary": ["A","G"], "secondary": ["S","P"] }, { "name": "Flesh Golem", "qty": 2, "cost": 115000, "ma": 4, "st": 4, "ag": 4, "pa": -1, "av": 10, "skills": ["Regeneration", "Stand Firm", "Thick Skull"], "primary": ["G","S"], "secondary": ["A"] } ] },
-    { "name": "Norse", "tier": 1, "rerollCost": 60000, "specialRules": ["Old World Classic"], "positionals": [ { "name": "Norse Raider Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Block", "Drunkard", "Thick Skull"], "primary": ["G"], "secondary": ["A","S","P"] }, { "name": "Beer Boar", "qty": 2, "cost": 20000, "ma": 5, "st": 1, "ag": 3, "pa": -1, "av": 6, "skills": ["Dodge", "No Hands", "Pick-me-up", "Stunty", "Titchy"], "primary": [], "secondary": ["A"] }, { "name": "Norse Berserker", "qty": 2, "cost": 90000, "ma": 6, "st": 3, "ag": 3, "pa": 5, "av": 8, "skills": ["Block", "Frenzy", "Jump Up"], "primary": ["G","S"], "secondary": ["A","P"] }, { "name": "Valkyrie", "qty": 2, "cost": 95000, "ma": 7, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Catch", "Dauntless", "Pass", "Strip Ball"], "primary": ["A","G","P"], "secondary": ["S"] }, { "name": "Ulfwerener", "qty": 2, "cost": 105000, "ma": 6, "st": 4, "ag": 4, "pa": -1, "av": 9, "skills": ["Frenzy"], "primary": ["G","S"], "secondary": ["A"] }, { "name": "Yhetee", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Claws", "Disturbing Presence", "Frenzy", "Loner (4+)", "Unchannelled Fury"], "primary": ["S"], "secondary": ["A","G"] } ] },
-    { "name": "Orc", "tier": 1, "rerollCost": 60000, "specialRules": ["Badlands Brawl"], "positionals": [ { "name": "Lineman", "qty": 16, "cost": 50000, "ma": 5, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": [], "primary": ["G"], "secondary": ["A","S","P"] }, { "name": "Goblin", "qty": 4, "cost": 40000, "ma": 6, "st": 2, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Right Stuff", "Stunty"], "primary": ["A"], "secondary": ["G","S","P"] }, { "name": "Thrower", "qty": 2, "cost": 65000, "ma": 5, "st": 3, "ag": 3, "pa": 3, "av": 9, "skills": ["Pass", "Sure Hands"], "primary": ["G","P"], "secondary": ["A","S"] }, { "name": "Blitzer", "qty": 4, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": ["Block"], "primary": ["G","S"], "secondary": ["A","P"] }, { "name": "Big Un Blocker", "qty": 4, "cost": 90000, "ma": 4, "st": 4, "ag": 4, "pa": 5, "av": 10, "skills": [], "primary": ["G","S"], "secondary": ["A","P"] }, { "name": "Untrained Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] } ] },
-    { "name": "Vampire", "tier": 2, "rerollCost": 60000, "specialRules": ["Sylvanian Spotlight", "Masters of Undeath"], "positionals": [ { "name": "Thrall Lineman", "qty": 16, "cost": 40000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": [], "primary": ["G"], "secondary": ["A","S"] }, { "name": "Vampire Runner", "qty": 2, "cost": 100000, "ma": 8, "st": 3, "ag": 2, "pa": 3, "av": 8, "skills": ["Bloodlust (2+)", "Hypnotic Gaze", "Regeneration"], "primary": ["A","G"], "secondary": ["P","S"] }, { "name": "Vampire Thrower", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 2, "pa": 2, "av": 9, "skills": ["Bloodlust (2+)", "Hypnotic Gaze", "Pass", "Regeneration"], "primary": ["A","G","P"], "secondary": ["S"] }, { "name": "Vampire Blitzer", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 2, "pa": 4, "av": 9, "skills": ["Bloodlust (3+)", "Hypnotic Gaze", "Juggernaut", "Regeneration"], "primary": ["G","A","S"], "secondary": ["P"] }, { "name": "Vargheist", "qty": 1, "cost": 150000, "ma": 5, "st": 5, "ag": 4, "pa": 6, "av": 10, "skills": ["Bloodlust (3+)", "Claws", "Frenzy", "Loner (4+)", "Regeneration"], "primary": ["S"], "secondary": ["A","G"] } ] }
+    {
+      "name": "Amazon",
+      "tier": 1,
+      "rerollCost": 50000,
+      "specialRules": ["Lustrian Superleague"],
+      "positionals": [
+        { "name": "Eagle Warrior Linewoman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Dodge"], "primary": ["G"], "secondary": ["A","S"] },
+        { "name": "Piranha Warrior Blitzer", "qty": 2, "cost": 90000, "ma": 7, "st": 3, "ag": 3, "pa": 5, "av": 8, "skills": ["Dodge", "Hit and Run", "Jump Up"], "primary": ["A","G"], "secondary": ["S"] },
+        { "name": "Python Warrior Thrower", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Dodge", "On the Ball", "Pass", "Safe Pass"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Jaguar Warrior Blocker", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 3, "pa": 5, "av": 9, "skills": ["Defensive", "Dodge"], "primary": ["G","S"], "secondary": ["A"] }
+      ]
+    },
+    {
+      "name": "Black Orc",
+      "tier": 2,
+      "rerollCost": 60000,
+      "specialRules": ["Badlands Brawl", "Bribery and Corruption"],
+      "positionals": [
+        { "name": "Goblin Bruiser", "qty": 12, "cost": 45000, "ma": 6, "st": 2, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Right Stuff", "Stunty", "Thick Skull"], "primary": ["A"], "secondary": ["G","S","P"] },
+        { "name": "Black Orc", "qty": 6, "cost": 90000, "ma": 4, "st": 4, "ag": 4, "pa": 5, "av": 10, "skills": ["Brawler", "Grab"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Trained Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P","M"] }
+      ]
+    },
+    {
+      "name": "Chaos Chosen",
+      "tier": 2,
+      "rerollCost": 60000,
+      "specialRules": ["Favoured of Chaos"],
+      "positionals": [
+        { "name": "Beastman Runner", "qty": 16, "cost": 60000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Horns"], "primary": ["G","S","M"], "secondary": ["A","P"] },
+        { "name": "Chosen Blocker", "qty": 4, "cost": 100000, "ma": 5, "st": 4, "ag": 3, "pa": 5, "av": 10, "skills": [], "primary": ["G","S","M"], "secondary": ["A","P"] },
+        { "name": "Chaos Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S","M"], "secondary": ["A","G","P"] },
+        { "name": "Chaos Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (3+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S","M"], "secondary": ["A","G","P"] },
+        { "name": "Minotaur", "qty": 1, "cost": 150000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Loner (3+)", "Frenzy", "Horns", "Mighty Blow (+1)", "Thick Skull", "Unchannelled Fury"], "primary": ["S","M"], "secondary": ["A","G"] }
+      ]
+    },
+    {
+      "name": "Dark Elf",
+      "tier": 1,
+      "rerollCost": 50000,
+      "specialRules": ["Elven Kingdoms League"],
+      "positionals": [
+        { "name": "Lineman", "qty": 16, "cost": 70000, "ma": 6, "st": 3, "ag": 2, "pa": 4, "av": 9, "skills": [], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Runner", "qty": 2, "cost": 80000, "ma": 7, "st": 3, "ag": 2, "pa": 3, "av": 8, "skills": ["Dump-off"], "primary": ["G","A","P"], "secondary": ["S"] },
+        { "name": "Assassin", "qty": 2, "cost": 85000, "ma": 6, "st": 3, "ag": 2, "pa": 5, "av": 8, "skills": ["Shadowing", "Stab"], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Blitzer", "qty": 4, "cost": 100000, "ma": 7, "st": 3, "ag": 2, "pa": 4, "av": 9, "skills": ["Block"], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Witch Elf", "qty": 2, "cost": 110000, "ma": 7, "st": 3, "ag": 2, "pa": 5, "av": 8, "skills": ["Dodge", "Frenzy", "Jump Up"], "primary": ["G","A"], "secondary": ["S","P"] }
+      ]
+    },
+    {
+      "name": "Dwarf",
+      "tier": 1,
+      "rerollCost": 50000,
+      "specialRules": ["Worlds Edge Superleague"],
+      "positionals": [
+        { "name": "Blocker", "qty": 16, "cost": 70000, "ma": 4, "st": 3, "ag": 4, "pa": 5, "av": 10, "skills": ["Block", "Tackle", "Thick Skull"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Runner", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Sure Hands", "Thick Skull"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Blitzer", "qty": 2, "cost": 85000, "ma": 5, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": ["Block", "Thick Skull"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Troll Slayer", "qty": 2, "cost": 90000, "ma": 5, "st": 3, "ag": 4, "pa": -1, "av": 9, "skills": ["Block", "Dauntless", "Frenzy", "Thick Skull"], "primary": ["G","S"], "secondary": ["A"] },
+        { "name": "Deathroller", "qty": 1, "cost": 170000, "ma": 4, "st": 7, "ag": 5, "pa": -1, "av": 11, "skills": ["Break Tackle", "Dirty Player (+2)", "Juggernaut", "Loner (4+)", "Mighty Blow (+1)", "No Hands", "Secret Weapon", "Stand Firm"], "primary": ["S"], "secondary": ["G","A"] }
+      ]
+    },
+    {
+      "name": "Human",
+      "tier": 1,
+      "rerollCost": 50000,
+      "specialRules": ["Old World Classic"],
+      "positionals": [
+        { "name": "Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": [], "primary": ["G"], "secondary": ["A","S","P"] },
+        { "name": "Catcher", "qty": 4, "cost": 65000, "ma": 8, "st": 2, "ag": 3, "pa": 5, "av": 8, "skills": ["Catch", "Dodge"], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Thrower", "qty": 2, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 2, "av": 9, "skills": ["Pass", "Sure Hands"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Blitzer", "qty": 4, "cost": 85000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Block"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Halfling Hopeful", "qty": 3, "cost": 30000, "ma": 5, "st": 2, "ag": 3, "pa": 4, "av": 7, "skills": ["Dodge", "Right Stuff", "Stunty"], "primary": ["A"], "secondary": ["G","S","P"] },
+        { "name": "Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (4+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] }
+      ]
+    },
+    {
+      "name": "Imperial Nobility",
+      "tier": 2,
+      "rerollCost": 70000,
+      "specialRules": ["Old World Classic"],
+      "positionals": [
+        { "name": "Retainer Lineman", "qty": 12, "cost": 45000, "ma": 6, "st": 3, "ag": 4, "pa": 4, "av": 8, "skills": ["Fend"], "primary": ["G"], "secondary": ["A","S","P"] },
+        { "name": "Noble Blitzer", "qty": 2, "cost": 105000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Block", "Catch"], "primary": ["G","A"], "secondary": ["S","P"] },
+        { "name": "Noble Thrower", "qty": 2, "cost": 70000, "ma": 6, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Pass", "Running Pass"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Bodyguard", "qty": 4, "cost": 90000, "ma": 6, "st": 3, "ag": 4, "pa": 5, "av": 9, "skills": ["Stand Firm", "Wrestle"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Ogre", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": 5, "av": 10, "skills": ["Bone Head", "Loner (4+)", "Mighty Blow (+1)", "Thick Skull", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] }
+      ]
+    },
+    {
+      "name": "Khorne",
+      "tier": 1,
+      "rerollCost": 60000,
+      "specialRules": ["Favoured of Khorne"],
+      "positionals": [
+        { "name": "Bloodborn Marauder Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Frenzy"], "primary": ["G","M"], "secondary": ["A","S"] },
+        { "name": "Khorngor", "qty": 2, "cost": 70000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Horns", "Juggernaut", "Jump Up", "Thick Skull"], "primary": ["G","S","M"], "secondary": ["A","P"] },
+        { "name": "Bloodseeker", "qty": 4, "cost": 110000, "ma": 5, "st": 4, "ag": 4, "pa": 6, "av": 10, "skills": ["Frenzy"], "primary": ["G","S","M"], "secondary": ["A"] },
+        { "name": "Bloodspawn", "qty": 1, "cost": 160000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Claws", "Frenzy", "Loner (4+)", "Mighty Blow (+1)", "Unchannelled Fury"], "primary": ["S","M"], "secondary": ["A","G"] }
+      ]
+    },
+    {
+      "name": "Necromantic Horror",
+      "tier": 1,
+      "rerollCost": 70000,
+      "specialRules": ["Masters of Undeath", "Sylvanian Spotlight"],
+      "positionals": [
+        { "name": "Zombie Lineman", "qty": 16, "cost": 40000, "ma": 4, "st": 3, "ag": 4, "pa": -1, "av": 9, "skills": ["Regeneration"], "primary": ["G"], "secondary": ["A","S"] },
+        { "name": "Ghoul Runner", "qty": 2, "cost": 75000, "ma": 7, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge"], "primary": ["A","G"], "secondary": ["S","P"] },
+        { "name": "Wraith", "qty": 2, "cost": 95000, "ma": 6, "st": 3, "ag": 3, "pa": -1, "av": 9, "skills": ["Block", "Foul Appearance", "No Hands", "Regeneration", "Side Step"], "primary": ["G","S"], "secondary": ["A"] },
+        { "name": "Werewolf", "qty": 2, "cost": 125000, "ma": 8, "st": 3, "ag": 3, "pa": 4, "av": 9, "skills": ["Claws", "Frenzy", "Regeneration"], "primary": ["A","G"], "secondary": ["S","P"] },
+        { "name": "Flesh Golem", "qty": 2, "cost": 115000, "ma": 4, "st": 4, "ag": 4, "pa": -1, "av": 10, "skills": ["Regeneration", "Stand Firm", "Thick Skull"], "primary": ["G","S"], "secondary": ["A"] }
+      ]
+    },
+    {
+      "name": "Norse",
+      "tier": 1,
+      "rerollCost": 60000,
+      "specialRules": ["Old World Classic"],
+      "positionals": [
+        { "name": "Norse Raider Lineman", "qty": 16, "cost": 50000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": ["Block", "Drunkard", "Thick Skull"], "primary": ["G"], "secondary": ["A","S","P"] },
+        { "name": "Beer Boar", "qty": 2, "cost": 20000, "ma": 5, "st": 1, "ag": 3, "pa": -1, "av": 6, "skills": ["Dodge", "No Hands", "Pick-me-up", "Stunty", "Titchy"], "primary": [], "secondary": ["A"] },
+        { "name": "Norse Berserker", "qty": 2, "cost": 90000, "ma": 6, "st": 3, "ag": 3, "pa": 5, "av": 8, "skills": ["Block", "Frenzy", "Jump Up"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Valkyrie", "qty": 2, "cost": 95000, "ma": 7, "st": 3, "ag": 3, "pa": 3, "av": 8, "skills": ["Catch", "Dauntless", "Pass", "Strip Ball"], "primary": ["A","G","P"], "secondary": ["S"] },
+        { "name": "Ulfwerener", "qty": 2, "cost": 105000, "ma": 6, "st": 4, "ag": 4, "pa": -1, "av": 9, "skills": ["Frenzy"], "primary": ["G","S"], "secondary": ["A"] },
+        { "name": "Yhetee", "qty": 1, "cost": 140000, "ma": 5, "st": 5, "ag": 4, "pa": -1, "av": 9, "skills": ["Claws", "Disturbing Presence", "Frenzy", "Loner (4+)", "Unchannelled Fury"], "primary": ["S"], "secondary": ["A","G"] }
+      ]
+    },
+    {
+      "name": "Orc",
+      "tier": 1,
+      "rerollCost": 60000,
+      "specialRules": ["Badlands Brawl"],
+      "positionals": [
+        { "name": "Lineman", "qty": 16, "cost": 50000, "ma": 5, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": [], "primary": ["G"], "secondary": ["A","S","P"] },
+        { "name": "Goblin", "qty": 4, "cost": 40000, "ma": 6, "st": 2, "ag": 3, "pa": 4, "av": 8, "skills": ["Dodge", "Right Stuff", "Stunty"], "primary": ["A"], "secondary": ["G","S","P"] },
+        { "name": "Thrower", "qty": 2, "cost": 65000, "ma": 5, "st": 3, "ag": 3, "pa": 3, "av": 9, "skills": ["Pass", "Sure Hands"], "primary": ["G","P"], "secondary": ["A","S"] },
+        { "name": "Blitzer", "qty": 4, "cost": 80000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": ["Block"], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Big Un Blocker", "qty": 4, "cost": 90000, "ma": 4, "st": 4, "ag": 4, "pa": 5, "av": 10, "skills": [], "primary": ["G","S"], "secondary": ["A","P"] },
+        { "name": "Untrained Troll", "qty": 1, "cost": 115000, "ma": 4, "st": 5, "ag": 5, "pa": 5, "av": 10, "skills": ["Always Hungry", "Loner (3+)", "Mighty Blow (+1)", "Projectile Vomit", "Really Stupid", "Regeneration", "Throw Team-mate"], "primary": ["S"], "secondary": ["A","G","P"] }
+      ]
+    },
+    {
+      "name": "Vampire",
+      "tier": 2,
+      "rerollCost": 60000,
+      "specialRules": ["Sylvanian Spotlight", "Masters of Undeath"],
+      "positionals": [
+        { "name": "Thrall Lineman", "qty": 16, "cost": 40000, "ma": 6, "st": 3, "ag": 3, "pa": 4, "av": 8, "skills": [], "primary": ["G"], "secondary": ["A","S"] },
+        { "name": "Vampire Runner", "qty": 2, "cost": 100000, "ma": 8, "st": 3, "ag": 2, "pa": 3, "av": 8, "skills": ["Bloodlust (2+)", "Hypnotic Gaze", "Regeneration"], "primary": ["A","G"], "secondary": ["P","S"] },
+        { "name": "Vampire Thrower", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 2, "pa": 2, "av": 9, "skills": ["Bloodlust (2+)", "Hypnotic Gaze", "Pass", "Regeneration"], "primary": ["A","G","P"], "secondary": ["S"] },
+        { "name": "Vampire Blitzer", "qty": 2, "cost": 110000, "ma": 6, "st": 4, "ag": 2, "pa": 4, "av": 9, "skills": ["Bloodlust (3+)", "Hypnotic Gaze", "Juggernaut", "Regeneration"], "primary": ["G","A","S"], "secondary": ["P"] },
+        { "name": "Vargheist", "qty": 1, "cost": 150000, "ma": 5, "st": 5, "ag": 4, "pa": 6, "av": 10, "skills": ["Bloodlust (3+)", "Claws", "Frenzy", "Loner (4+)", "Regeneration"], "primary": ["S"], "secondary": ["A","G"] }
+      ]
+    }
   ],
-  "staffCosts": { "assistantCoach": 10000, "cheerleader": 10000, "apothecary": 50000, "dedicatedFans": 10000 },
-  "inducements": [
-    { "name": "Bloodweiser Keg", "cost": 50000, "max": 2 },
-    { "name": "Wandering Apothecary", "cost": 100000, "max": 2 },
-    { "name": "Mortuary Assistant", "cost": 100000, "max": 1 },
-    { "name": "Plague Doctor", "cost": 100000, "max": 1 },
-    { "name": "Bribe", "cost": 100000, "max": 3 },
-    { "name": "Extra Team Training", "cost": 100000, "max": 4 },
-    { "name": "Biased Referee", "cost": 120000, "max": 1 },
-    { "name": "Wizard", "cost": 150000, "max": 1 },
-    { "name": "Halfling Master Chef", "cost": 300000, "max": 1 }
-  ],
-  "starPlayers": [
-    { "name": "Akhorne the Squirrel", "cost": 80000, "ma": 7, "st": 1, "ag": 2, "pa": 0, "av": 6, "skills": ["Claws", "Dauntless", "Dodge", "Frenzy", "Jump Up", "Stunty", "Titchy"] },
-    { "name": "Barik Farblast", "cost": 80000, "ma": 6, "st": 3, "ag": 4, "pa": 3, "av": 9, "skills": ["Hail Mary Pass", "Pass", "Secret Weapon", "Strong Arm", "Sure Hands"] },
-    { "name": "Bomber Dribblesnot", "cost": 80000, "ma": 6, "st": 2, "ag": 3, "pa": 3, "av": 8, "skills": ["Accurate", "Bombardier", "Dodge", "Right Stuff", "Secret Weapon", "Stunty"] },
-    { "name": "Helmut Wulf", "cost": 140000, "ma": 6, "st": 3, "ag": 3, "pa": 0, "av": 9, "skills": ["Chainsaw", "Pro", "Secret Weapon", "Stand Firm"] },
-    { "name": "Hakflem Skuttlespike", "cost": 210000, "ma": 9, "st": 3, "ag": 2, "pa": 4, "av": 8, "skills": ["Dodge", "Extra Arms", "Prehensile Tail", "Two Heads"] },
-    { "name": "Karla von Kill", "cost": 210000, "ma": 6, "st": 4, "ag": 3, "pa": 3, "av": 9, "skills": ["Block", "Dauntless", "Dodge", "Jump Up"] },
-    { "name": "Gloriel Summerbloom", "cost": 150000, "ma": 7, "st": 2, "ag": 2, "pa": 3, "av": 8, "skills": ["Accurate", "Dodge", "Pass", "Side Step", "Sure Hands"] },
-    { "name": "Griff Oberwald", "cost": 320000, "ma": 7, "st": 4, "ag": 2, "pa": 3, "av": 9, "skills": ["Block", "Dodge", "Fend", "Sprint", "Sure Feet"] },
-    { "name": "Morg 'n' Thorg", "cost": 340000, "ma": 6, "st": 6, "ag": 3, "pa": 4, "av": 11, "skills": ["Block", "Mighty Blow (+2)", "Thick Skull", "Throw Team-mate"] },
-    { "name": "Varag Ghoul-Chewer", "cost": 280000, "ma": 6, "st": 5, "ag": 3, "pa": 4, "av": 10, "skills": ["Block", "Jump Up", "Mighty Blow (+1)", "Thick Skull"] },
-    { "name": "Deeproot Strongbranch", "cost": 280000, "ma": 2, "st": 7, "ag": 5, "pa": 4, "av": 11, "skills": ["Block", "Mighty Blow (+2)", "Stand Firm", "Strong Arm", "Thick Skull", "Throw Team-mate"] },
-    { "name": "The Black Gobbo", "cost": 225000, "ma": 6, "st": 2, "ag": 3, "pa": 3, "av": 8, "skills": ["Bombardier", "Dodge", "Side Step", "Sneaky Git", "Stab", "Stunty"] }
-  ],
+  "staffCosts": {
+    "assistantCoach": 10000,
+    "cheerleader": 10000,
+    "apothecary": 50000,
+    "dedicatedFans": 10000
+  },
   "skillCategories": {
     "General": [
       { "name": "Block", "description": "The player is not Knocked Down when a Both Down result is applied. " },
