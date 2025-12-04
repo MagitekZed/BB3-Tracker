@@ -78,7 +78,7 @@
     }
   ],
   "colors": {
-    "primary": "#222222",
+    "primary": "#ff0000",
     "secondary": "#c5a059"
   },
   "treasury": 1000000,
