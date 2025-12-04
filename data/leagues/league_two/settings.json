@@ -20,6 +20,16 @@
         "primary": "#222222",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "team_two",
+      "name": "Team Two ",
+      "race": "Imperial Nobility",
+      "coachName": "",
+      "colors": {
+        "primary": "#ff9e9e",
+        "secondary": "#401fc1"
+      }
     }
   ],
   "matches": []
