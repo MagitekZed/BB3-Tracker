@@ -44,7 +44,7 @@ const state = {
 // DOM ELEMENTS
 // ============================================
 const els = {
-  globalStatus: document.getElementById('globalStatus'),
+  toastContainer: document.getElementById('toastContainer'),
   
   nav: {
     deskLeagues: document.getElementById('navDeskLeagues'),
@@ -135,8 +135,6 @@ const els = {
     scanBtn: document.getElementById('scanBtn'),
     loadBtn: document.getElementById('loadBtn'),
     saveBtn: document.getElementById('saveBtn'),
-    
-    // Scheduling Triggers
     deskSchedBtn: document.getElementById('desktopSchedBtn'),
     mobSchedBtn: document.getElementById('mobileAddMatchBtn'),
     cancelGame: document.getElementById('cancelGameBtn')
@@ -202,17 +200,26 @@ function normalizeName(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
 }
 
+// Replaced Status Bar with Toasts
 function setStatus(msg, type = 'info') {
-  if (!els.globalStatus) return;
-  els.globalStatus.textContent = msg;
-  els.globalStatus.className = `status ${type}`;
-  if(msg) els.globalStatus.classList.remove('hidden');
-  else els.globalStatus.classList.add('hidden');
+  if(!msg) return;
+  // console.log(`[${type}] ${msg}`); // Optional debug
+  
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  
+  els.toastContainer.appendChild(toast);
+  
+  // Auto-remove after 3s
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
 
 async function apiGet(path) {
   const url = `${API_BASE}/api/file?path=${encodeURIComponent(path)}`;
-  // Disable Cache to prevent stale data issues
   const res = await fetch(url, { cache: 'no-store' });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
@@ -331,7 +338,7 @@ els.mobileKey.save.addEventListener('click', () => {
     localStorage.setItem('bb3_edit_key', k);
     if(els.inputs.editKey) els.inputs.editKey.value = k;
     els.mobileKey.modal.classList.add('hidden');
-    alert("Key Saved");
+    setStatus("Key Saved", 'ok');
   }
 });
 
@@ -340,7 +347,7 @@ if(els.buttons.rememberKey) {
     const k = els.inputs.editKey.value;
     if(k) { 
       localStorage.setItem('bb3_edit_key', k);
-      alert('Key saved.'); 
+      setStatus('Key saved.', 'ok'); 
     }
   });
 }
@@ -473,11 +480,15 @@ function renderMatchesList(league) {
 
   let inProgHtml = '';
   if (active.length > 0) {
-    inProgHtml = '<div class="card"><h4 style="color:#0066cc">Live Matches</h4><ul>' + 
+    inProgHtml = '<div class="card"><h4 style="color:#0066cc; margin-top:0;">Live Matches</h4><ul>' + 
       active.map(m => {
         const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
         const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
-        return `<li>Round ${m.round}: ${h} vs ${a} <button class="link-button" onclick="handleOpenScoreboard('${m.id}')"><strong>View Board</strong></button></li>`;
+        // Improved Mobile Layout for Live Matches
+        return `<li style="margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid #eee;">
+          <div style="font-weight:bold; font-size:0.9rem; color:#555;">Round ${m.round} <button class="link-button" style="float:right;" onclick="handleOpenScoreboard('${m.id}')"><strong>View Board</strong></button></div>
+          <div style="margin-top:0.2rem; font-size:1.1rem;">${h} <span style="color:#aaa">vs</span> ${a}</div>
+        </li>`;
       }).join('') + 
     '</ul></div>';
   }
@@ -499,7 +510,10 @@ function renderMatchesList(league) {
     </tr>`;
   }).join('');
   
-  els.containers.matches.innerHTML = `<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
+  // Add Subheader for scheduled matches
+  const scheduledHeader = active.length > 0 ? '<h4 style="margin-top:2rem; color:#444;">Upcoming & Results</h4>' : '';
+  
+  els.containers.matches.innerHTML = `${scheduledHeader}<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
 }
 
 function computeStandings(league) {
@@ -555,9 +569,12 @@ window.handleOpenTeam = async (leagueId, teamId) => {
     applyTeamTheme(teamData);
     renderTeamView();
     
+    // Apply Header style manually for Desktop View (SWAPPED Colors)
     const hdr = document.getElementById('teamHeader');
     if(hdr && teamData.colors) {
         hdr.className = "team-header-styled";
+        hdr.style.backgroundColor = teamData.colors.secondary || '#c5a059'; // Banner = Secondary
+        hdr.style.color = teamData.colors.primary || '#222'; // Text = Primary
         hdr.style.borderBottomColor = teamData.colors.primary || '#222';
     }
 
@@ -599,22 +616,26 @@ function renderTeamView() {
 
 function openScheduleModal() {
   const l = state.currentLeague; if(!l) return;
+  
   const homeSel = els.scheduleModal.home;
   const awaySel = els.scheduleModal.away;
   homeSel.innerHTML = '<option value="">Home Team...</option>';
   awaySel.innerHTML = '<option value="">Away Team...</option>';
+  
   l.teams.forEach(t => {
     const opt = `<option value="${t.id}">${t.name}</option>`;
     homeSel.innerHTML += opt;
     awaySel.innerHTML += opt;
   });
   
+  // Auto-increment Round Logic
   let nextRound = 1;
   if(l.matches && l.matches.length > 0) {
       const maxR = Math.max(...l.matches.map(m => m.round));
       nextRound = maxR + 1;
   }
   els.scheduleModal.round.value = nextRound;
+  
   els.scheduleModal.el.classList.remove('hidden');
 }
 
@@ -642,6 +663,7 @@ if(els.scheduleModal.addBtn) {
       l.matches = l.matches || [];
       l.matches.push(newMatch);
       await apiSave(PATHS.leagueSettings(l.id), l, `Schedule match`, key);
+      
       closeScheduleModal();
       renderLeagueView();
       setStatus('Match scheduled.', 'ok');
@@ -676,7 +698,8 @@ window.handleStartMatch = async (matchId) => {
       matchId: m.id, leagueId: l.id, round: m.round, status: 'in_progress',
       home: { id: homeTeam.id, name: homeTeam.name, colors: homeTeam.colors, score: 0, roster: initRoster(homeTeam.players), rerolls: homeTeam.rerolls || 0, apothecary: true },
       away: { id: awayTeam.id, name: awayTeam.name, colors: awayTeam.colors, score: 0, roster: initRoster(awayTeam.players), rerolls: awayTeam.rerolls || 0, apothecary: true },
-      turn: { home: 0, away: 0 }, log: []
+      turn: { home: 0, away: 0 },
+      log: []
     };
     
     await apiSave(PATHS.activeMatch(m.id), activeData, `Start match`, key);
@@ -877,7 +900,7 @@ if(els.buttons.coachEndTurn) {
     d.turn[side]++;
     renderCoachView();
     await updateLiveMatch(`End Turn: ${side}`);
-    setStatus("Turn ended. Status synced.", "ok");
+    setStatus("Turn ended.", "ok");
   });
 }
 
@@ -1138,7 +1161,7 @@ function renderTeamEditor() {
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
-    if (isNewTeam) {
+    if (!state.editTeamId) {
       state.dirtyTeam.id = normalizeName(this.value);
       els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
     }
@@ -1229,7 +1252,7 @@ window.handleDeleteLeague = async () => {
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 };
 
-// --- Refactored Save Workflow (Fixes Double Save & Deep Copy) ---
+// --- Refactored Save Workflow ---
 els.buttons.manageSave.addEventListener('click', async () => {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
