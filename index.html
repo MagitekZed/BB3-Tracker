@@ -48,12 +48,14 @@
     </div>
   </div>
 
-  <main id="mainContent">
-    <div id="globalStatus" class="status hidden"></div>
+  <div id="toastContainer"></div>
 
+  <main id="mainContent">
     <section id="leagueListSection">
-      <h2>Leagues</h2>
-      <div class="small">Select a league to view standings.</div>
+      <div class="page-header-panel">
+        <h2>Leagues</h2>
+        <div class="small">Select a league to view standings.</div>
+      </div>
       <div style="margin: 1rem 0;">
         <button id="leagueCreateBtn" class="primary-btn">+ New League</button>
       </div>
@@ -61,7 +63,7 @@
     </section>
 
     <section id="leagueViewSection" class="hidden">
-      <div id="leagueHeader"></div>
+      <div id="leagueHeader" class="page-header-panel"></div>
       
       <section id="leagueTeamsSection">
         <h3>Standings</h3>
@@ -106,7 +108,7 @@
 
     <section id="teamViewSection" class="hidden">
        <div class="card">
-        <div class="card-header"><h2 id="teamHeader">Team</h2><div><button id="teamBackBtn">← Back</button> <button id="teamManageBtn">Manage</button></div></div>
+        <div class="card-header" id="teamViewHeaderContainer"><h2 id="teamHeader">Team</h2><div><button id="teamBackBtn">← Back</button> <button id="teamManageBtn">Manage</button></div></div>
         <div id="teamSummary"></div>
       </div>
       <div id="teamRosterContainer"></div>
@@ -136,8 +138,11 @@
 
     <section id="coachSection" class="hidden">
       <div class="coach-header">
-        <div class="coach-header-top"><div class="coach-team-name" id="coachTeamName">My Team</div><div class="coach-score" id="coachScoreDisplay">0-0</div></div>
-        <div class="coach-resources"><div id="coachRerolls"></div><span id="coachTurnDisplay">Turn: 0</span></div>
+        <div class="coach-header-row1"><div class="coach-team-name" id="coachTeamName">My Team</div></div>
+        <div class="coach-header-row2">
+           <div class="coach-score" id="coachScoreDisplay">0-0</div>
+           <div class="coach-resources"><div id="coachRerolls"></div><span id="coachTurnDisplay">Turn: 0</span></div>
+        </div>
       </div>
       <div id="coachRosterList"></div>
       <div class="coach-footer"><button class="secondary-btn" onclick="exitCoachMode()">Exit</button><button class="primary-btn" id="coachEndTurnBtn">End Turn</button></div>
