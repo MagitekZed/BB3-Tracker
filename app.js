@@ -490,6 +490,7 @@ function renderMatchesList(league) {
       <td data-label="Status"><span class="tag ${m.status}">${action}</span> <button onclick="handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete">🗑️</button></td>
     </tr>`;
   }).join('');
+  
   els.containers.matches.innerHTML = `<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
 }
 
@@ -500,14 +501,17 @@ function computeStandings(league) {
     const h = map.get(m.homeTeamId);
     const a = map.get(m.awayTeamId);
     if(!h || !a) return;
+    
     const hf = m.score?.home || 0;
     const af = m.score?.away || 0;
     const hCas = m.casualties?.homeInflicted || 0;
     const aCas = m.casualties?.awayInflicted || 0;
+    
     h.tdDiff += (hf - af);
     a.tdDiff += (af - hf);
     h.casDiff += (hCas - aCas);
     a.casDiff += (aCas - hCas);
+    
     if (hf > af) { h.wins++; a.losses++; h.points += (league.settings.pointsWin||3); a.points += (league.settings.pointsLoss||0); }
     else if (hf < af) { a.wins++; h.losses++; a.points += (league.settings.pointsWin||3); h.points += (league.settings.pointsLoss||0); }
     else { h.draws++; a.draws++; h.points += (league.settings.pointsDraw||1); a.points += (league.settings.pointsDraw||1); }
@@ -766,7 +770,10 @@ window.enterCoachMode = (side) => {
   applyTeamTheme(team); // Apply Theme!
   renderCoachView();
   showSection('coach');
-  if (state.activeMatchPollInterval) { clearInterval(state.activeMatchPollInterval); state.activeMatchPollInterval = null; }
+  if (state.activeMatchPollInterval) {
+    clearInterval(state.activeMatchPollInterval);
+    state.activeMatchPollInterval = null;
+  }
 };
 
 window.exitCoachMode = () => {
@@ -887,7 +894,7 @@ if(els.buttons.coachEndTurn) {
     d.turn[side]++;
     renderCoachView();
     await updateLiveMatch(`End Turn: ${side}`);
-    setStatus("Turn ended.", "ok");
+    setStatus("Turn ended. Status synced.", "ok");
   });
 }
 
