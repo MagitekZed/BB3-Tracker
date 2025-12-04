@@ -84,8 +84,8 @@
     }
   ],
   "colors": {
-    "primary": "#222222",
-    "secondary": "#c5a059"
+    "primary": "#2b00ff",
+    "secondary": "#7a7a7a"
   },
   "treasury": 1000000,
   "rerolls": 0,
