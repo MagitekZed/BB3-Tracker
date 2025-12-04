@@ -51,7 +51,6 @@
   <div id="toastContainer"></div>
 
   <main id="mainContent">
-
     <section id="leagueListSection">
       <div class="page-header-panel">
         <h2>Leagues</h2>
@@ -85,11 +84,6 @@
       </section>
     </section>
 
-    <section id="matchSetupSection" class="hidden">
-      <div class="card-header"><h2>Pre-Game Setup</h2><button id="setupCancelBtn" class="secondary-btn">Cancel</button></div>
-      <div id="matchSetupContainer"></div>
-    </section>
-
     <section id="leagueManageSection" class="hidden">
        <div class="card"><div class="card-header"><h2 id="leagueManageHeader">Manage League</h2><button id="leagueManageBackBtn">← Back</button></div><div id="leagueManageStatus"></div></div>
        <div id="leagueInfoCard" class="card">
@@ -114,7 +108,7 @@
 
     <section id="teamViewSection" class="hidden">
        <div class="card">
-        <div class="card-header" id="teamViewHeaderContainer"></div>
+        <div class="card-header" id="teamViewHeaderContainer"><h2 id="teamHeader">Team</h2><div><button id="teamBackBtn">← Back</button> <button id="teamManageBtn">Manage</button></div></div>
         <div id="teamSummary"></div>
       </div>
       <div id="teamRosterContainer"></div>
@@ -128,14 +122,14 @@
              <div id="sbHomeName">Home</div>
              <div id="sbHomeScore" class="score-display">0</div>
              <div class="turn-box">Turn: <span id="sbHomeTurn">0</span></div>
-             <div style="margin-top:0.5rem"><button class="primary-btn" id="playAsHomeBtn">Play as Home</button></div>
+             <div style="margin-top:0.5rem"><button class="primary-btn" onclick="enterCoachMode('home')">Play as Home</button></div>
            </div>
            <div class="match-control"><button id="endGameBtn" class="primary-btn">End Game</button><button id="cancelGameBtn" class="danger-btn" style="margin-top:1rem">Cancel</button></div>
            <div class="team-control">
              <div id="sbAwayName">Away</div>
              <div id="sbAwayScore" class="score-display">0</div>
              <div class="turn-box">Turn: <span id="sbAwayTurn">0</span></div>
-             <div style="margin-top:0.5rem"><button class="primary-btn" id="playAsAwayBtn">Play as Away</button></div>
+             <div style="margin-top:0.5rem"><button class="primary-btn" onclick="enterCoachMode('away')">Play as Away</button></div>
            </div>
         </div>
       </div>
@@ -151,7 +145,7 @@
         </div>
       </div>
       <div id="coachRosterList"></div>
-      <div class="coach-footer"><button class="secondary-btn" id="exitCoachBtn">Exit</button><button class="primary-btn" id="coachEndTurnBtn">End Turn</button></div>
+      <div class="coach-footer"><button class="secondary-btn" onclick="exitCoachMode()">Exit</button><button class="primary-btn" id="coachEndTurnBtn">End Turn</button></div>
     </section>
 
     <section id="adminSection" class="hidden">
@@ -178,40 +172,48 @@
 
   <div id="scheduleModal" class="modal hidden">
     <div class="modal-content">
-      <div class="modal-header"><h3>Schedule Match</h3><button class="close-btn" id="schedModalCloseBtn">×</button></div>
+      <div class="modal-header"><h3>Schedule Match</h3><button class="close-btn" onclick="closeScheduleModal()">×</button></div>
       <div class="form-grid">
         <div class="form-field"><label>Round</label><input type="number" id="schedModalRound" value="1"></div>
         <div class="form-field"><label>Home Team</label><select id="schedModalHome"></select></div>
         <div class="form-field"><label>Away Team</label><select id="schedModalAway"></select></div>
       </div>
       <div class="modal-actions" style="margin-top:1.5rem">
-        <button id="schedModalCancelBtn" class="secondary-btn">Cancel</button>
+        <button onclick="closeScheduleModal()" class="secondary-btn">Cancel</button>
         <button id="schedModalAddBtn" class="primary-btn">Schedule Match</button>
       </div>
     </div>
   </div>
 
   <div id="playerActionSheet" class="action-sheet hidden">
-    <div class="action-sheet-backdrop" id="sheetBackdrop"></div>
+    <div class="action-sheet-backdrop" onclick="closeActionSheet()"></div>
     <div class="action-sheet-content">
       <div class="action-sheet-header">
         <h3 id="actionSheetTitle">Player Name</h3>
-        <button class="close-btn" id="sheetCloseBtn">×</button>
+        <button class="close-btn" onclick="closeActionSheet()">×</button>
       </div>
       <div class="sheet-grid">
-        <button class="sheet-btn btn-td" id="sheetBtnTd"><div class="emoji">🏈</div> Touchdown</button>
-        <button class="sheet-btn btn-cas" id="sheetBtnCas"><div class="emoji">💥</div> Casualty</button>
-        <button class="sheet-btn btn-inj" id="sheetBtnInj"><div class="emoji">🤕</div> Injury</button>
-         <button class="sheet-btn btn-used" id="sheetBtnUsed"><div class="emoji">💤</div> Toggle Used</button>
+        <button class="sheet-btn btn-td" onclick="handleSheetAction('td')">
+          <div class="emoji">🏈</div> Touchdown
+        </button>
+        <button class="sheet-btn btn-cas" onclick="handleSheetAction('cas')">
+          <div class="emoji">💥</div> Casualty
+        </button>
+        <button class="sheet-btn btn-inj" onclick="handleSheetAction('injured')">
+          <div class="emoji">🤕</div> Injury
+        </button>
+         <button class="sheet-btn btn-used" onclick="handleSheetAction('used')">
+          <div class="emoji">💤</div> Toggle Used
+        </button>
       </div>
     </div>
   </div>
 
   <div id="skillModal" class="modal hidden">
-    <div class="modal-content"><div class="modal-header"><h3 id="skillModalTitle"></h3><button class="close-btn" id="skillModalCloseBtn">×</button></div><div id="skillModalBody"></div></div>
+    <div class="modal-content"><div class="modal-header"><h3 id="skillModalTitle"></h3><button class="close-btn" onclick="closeSkillModal()">×</button></div><div id="skillModalBody"></div></div>
   </div>
   <datalist id="skillList"></datalist>
 
-  <script type="module" src="js/app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
