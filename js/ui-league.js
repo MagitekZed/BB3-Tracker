@@ -1,7 +1,7 @@
 import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
-import { setStatus, normalizeName } from './utils.js';
+import { setStatus, normalizeName, getContrastColor } from './utils.js';
 import { computeStandings } from './rules.js';
 import { showSection, updateBreadcrumbs, setActiveNav, goHome, confirmModal } from './ui-core.js';
 import { handleOpenTeam, handleEditTeam, renderTeamEditor } from './ui-team.js';
@@ -109,20 +109,94 @@ export function renderMatchesList(league) {
     const h = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
     const a = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
     const score = m.status === 'completed' ? `${m.score.home}-${m.score.away}` : '';
-    let action = m.status;
-    if (m.status === 'scheduled') action = `<button class="link-button" onclick="window.handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
+    
+    let action = `<span class="tag ${m.status}">${m.status}</span>`;
+    if (m.status === 'scheduled') {
+        action = `<button class="link-button" onclick="window.handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
+    } else if (m.status === 'completed' && m.report) {
+        action = `<button class="link-button" onclick="window.handleViewMatchReport('${m.id}')" style="color:#444; font-weight:bold">View Report</button>`;
+    } else if (m.status === 'completed') {
+        action = `<span class="tag completed">Final</span>`;
+    }
     
     return `<tr>
       <td data-label="Round">${m.round}</td>
       <td data-label="Home">${h}</td>
       <td data-label="Away">${a}</td>
       <td data-label="Score">${score}</td>
-      <td data-label="Status"><span class="tag ${m.status}">${action}</span> <button onclick="window.handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete">🗑️</button></td>
+      <td data-label="Status">${action} <button onclick="window.handleDeleteMatch('${m.id}')" style="margin-left:5px; color:red; border:none; background:none; cursor:pointer;" title="Delete">🗑️</button></td>
     </tr>`;
   }).join('');
   
   const scheduledHeader = active.length > 0 ? '<h4 style="margin-top:2rem; color:#444;">Upcoming & Results</h4>' : '';
   els.containers.matches.innerHTML = `${scheduledHeader}<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
+}
+
+export async function handleViewMatchReport(matchId) {
+    const l = state.currentLeague;
+    const m = l.matches.find(x => x.id === matchId);
+    if (!m || !m.report) return setStatus("No report data found.", "error");
+    
+    const homeT = l.teams.find(t => t.id === m.homeTeamId);
+    const awayT = l.teams.find(t => t.id === m.awayTeamId);
+    const hColor = homeT?.colors?.primary || '#222';
+    const aColor = awayT?.colors?.primary || '#222';
+    const hText = getContrastColor(hColor);
+    const aText = getContrastColor(aColor);
+
+    const renderStatList = (stats) => {
+        if(!stats || stats.length === 0) return '<div style="font-style:italic; color:#999">No notable stats.</div>';
+        return stats.map(p => {
+            const acts = [];
+            if(p.live.td) acts.push(`${p.live.td} TD`);
+            if(p.live.cas) acts.push(`${p.live.cas} CAS`);
+            if(p.live.int) acts.push(`${p.live.int} INT`);
+            return `<div><strong>${p.name}</strong>: ${acts.join(', ')}</div>`;
+        }).join('');
+    };
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '5000';
+    
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 700px; width: 95%;">
+          <div class="modal-header"><h3>Match Report</h3><button class="close-btn">×</button></div>
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; background:#eee; padding:1rem; border-radius:4px;">
+             <div style="text-align:center">
+                <h2 style="color:${hColor}; margin:0;">${homeT?.name}</h2>
+                <div style="font-size:2.5rem; font-weight:bold;">${m.score.home}</div>
+             </div>
+             <div style="font-weight:bold; color:#666; font-size:1.2rem;">VS</div>
+             <div style="text-align:center">
+                <h2 style="color:${aColor}; margin:0;">${awayT?.name}</h2>
+                <div style="font-size:2.5rem; font-weight:bold;">${m.score.away}</div>
+             </div>
+          </div>
+          
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+             <div class="panel-styled">
+                <div style="background:${hColor}; color:${hText}; padding:5px; font-weight:bold; text-align:center; margin:-1rem -1rem 1rem -1rem;">HOME STATS</div>
+                <div><strong>MVP:</strong> ${m.report.home.mvp}</div>
+                <div><strong>Winnings:</strong> ${m.report.home.winnings}k</div>
+                <hr>
+                ${renderStatList(m.report.home.stats)}
+             </div>
+             <div class="panel-styled">
+                <div style="background:${aColor}; color:${aText}; padding:5px; font-weight:bold; text-align:center; margin:-1rem -1rem 1rem -1rem;">AWAY STATS</div>
+                <div><strong>MVP:</strong> ${m.report.away.mvp}</div>
+                <div><strong>Winnings:</strong> ${m.report.away.winnings}k</div>
+                <hr>
+                ${renderStatList(m.report.away.stats)}
+             </div>
+          </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.querySelector('.close-btn').onclick = () => modal.remove();
 }
 
 export async function handleDeleteMatch(matchId) {
