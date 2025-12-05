@@ -178,7 +178,7 @@
           "sentOff": false,
           "td": 2,
           "cas": 0,
-          "int": 0,
+          "int": 1,
           "comp": 0,
           "foul": 0
         }
