@@ -1,0 +1,18 @@
+{
+  "id": "team_two",
+  "name": "Team Two",
+  "race": "Orc",
+  "coachName": "",
+  "players": [],
+  "colors": {
+    "primary": "#028000",
+    "secondary": "#737373"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 0
+}
