@@ -313,6 +313,8 @@ export async function handleOpenScoreboard(matchId) {
   } catch (e) { setStatus(e.message, 'error'); }
 }
 
+// --- Jumbotron & Coach Views (INDUCEMENTS UPDATED) ---
+
 export function renderJumbotron() {
   const d = state.activeMatchData;
   const activeSide = d.activeTeam || 'home'; 
@@ -325,8 +327,27 @@ export function renderJumbotron() {
   const awayTurnEl = document.getElementById('sbAwayTurn');
   if(homeTurnEl) homeTurnEl.innerHTML = `${d.turn.home} ${getIndicator('home')}`;
   if(awayTurnEl) awayTurnEl.innerHTML = `${d.turn.away} ${getIndicator('away')}`;
-  els.containers.sbHomeRoster.innerHTML = `<div class="roster-header" style="background:${d.home.colors?.primary||'#222'}; color:${getContrastColor(d.home.colors?.primary||'#222')}">Home - ${d.home.name}</div>` + renderLiveRoster(d.home.roster, 'home', true);
-  els.containers.sbAwayRoster.innerHTML = `<div class="roster-header" style="background:${d.away.colors?.primary||'#222'}; color:${getContrastColor(d.away.colors?.primary||'#222')}">Away - ${d.away.name}</div>` + renderLiveRoster(d.away.roster, 'away', true);
+  els.containers.sbHomeRoster.innerHTML = `<div class="roster-header" style="background:${d.home.colors?.primary||'#222'}; color:${getContrastColor(d.home.colors?.primary||'#222')}">Home - ${d.home.name}</div>` + renderJumbotronInducements(d.home) + renderLiveRoster(d.home.roster, 'home', true);
+  els.containers.sbAwayRoster.innerHTML = `<div class="roster-header" style="background:${d.away.colors?.primary||'#222'}; color:${getContrastColor(d.away.colors?.primary||'#222')}">Away - ${d.away.name}</div>` + renderJumbotronInducements(d.away) + renderLiveRoster(d.away.roster, 'away', true);
+}
+
+// Helper: Jumbotron Icons
+function renderJumbotronInducements(team) {
+    if (!team.inducements && !team.apothecary) return '';
+    const mapping = { 
+        "Bloodweiser Keg": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", 
+        "Halfling Master Chef": "👨‍🍳", "Mortuary Assistant": "⚰️", "Plague Doctor": "🧪",
+        "Riotous Rookies": "😡", "Wandering Apothecary": "💊", "Wizard": "⚡", "Biased Referee": "🃏"
+    };
+    let html = '<div class="jumbotron-icons">';
+    if (team.apothecary) html += `<span title="Apothecary">🚑</span>`;
+    if (team.inducements) {
+        Object.entries(team.inducements).forEach(([k, v]) => {
+            if (v > 0 && mapping[k]) html += `<span title="${k}">${mapping[k].repeat(v)}</span>`;
+        });
+    }
+    html += '</div>';
+    return html;
 }
 
 export function enterCoachMode(side) {
@@ -358,11 +379,27 @@ export function renderCoachView() {
   let pips = '';
   for(let i=0; i<team.rerolls; i++) pips += `<div class="reroll-pip ${i < (team.rerolls) ? 'active' : ''}" onclick="window.toggleReroll('${side}', ${i})"></div>`;
   els.containers.coachRerolls.innerHTML = pips;
-  let inducementsHtml = '';
-  if (team.inducements && Object.keys(team.inducements).length > 0) {
-      const items = Object.entries(team.inducements).filter(([k,v]) => v > 0).map(([k,v]) => k.startsWith('Star:') ? '' : k === 'Star Players' ? `Mercs(${v/1000}k)` : `${v}x ${k}`).filter(x => x !== '').join(', ');
-      if(items) inducementsHtml = `<div style="font-size:0.8rem; margin-bottom:5px; color:#ddd">Items: ${items}</div>`;
+  
+  // New Inducement Bar logic
+  let inducementsHtml = `<div class="inducement-bar"><div class="inducement-title">INDUCEMENTS <span onclick="window.openInGameShop('${side}')" style="cursor:pointer; font-size:1.2rem;">⚙️</span></div>`;
+  
+  if (team.apothecary) {
+      // Check if we have a flag for used apo (we don't yet, assumes single use per game)
+      // We'll just render it as available for now, maybe add 'used' logic later
+      inducementsHtml += `<div class="inducement-chip" onclick="if(confirm('Use Apothecary?')){ /* logic for apo use */ }">🚑 Apothecary</div>`;
   }
+  
+  if (team.inducements) {
+      const mapping = { "Bloodweiser Keg": "🍺", "Bribes": "💰", "Wizard": "⚡", "Halfling Master Chef": "👨‍🍳", "Wandering Apothecary": "💊" };
+      Object.entries(team.inducements).forEach(([k, v]) => {
+          if (v > 0 && !k.startsWith('Star:')) {
+              const icon = mapping[k] || "📦";
+              inducementsHtml += `<div class="inducement-chip" onclick="window.handleUseInducement('${side}', '${k}')">${icon} ${k} (${v})</div>`;
+          }
+      });
+  }
+  inducementsHtml += `</div>`;
+
   els.containers.coachRoster.innerHTML = inducementsHtml + renderLiveRoster(team.roster, side, false);
 }
 
@@ -381,6 +418,72 @@ function renderLiveRoster(roster, side, readOnly) {
     return `<div class="live-player-row ${live.used?'used':''} ${live.injured?'injured':''}" onclick="window.openPlayerActionSheet(${idx})"><div class="player-info"><span class="player-name">#${p.number} ${p.name} ${badges}</span><span class="player-pos">${p.position} | ${skillTags}</span></div></div>`;
   }).join('');
 }
+
+export async function handleUseInducement(side, itemName) {
+    if(!confirm(`Use ${itemName}? This will decrease your available count.`)) return;
+    const d = state.activeMatchData;
+    if (d[side].inducements[itemName] > 0) {
+        d[side].inducements[itemName]--;
+        renderCoachView();
+        await updateLiveMatch(`Used ${itemName} (${side})`);
+    }
+}
+
+// --- In-Game Shop Modal ---
+
+export function openInGameShop(side) {
+    // Reuse preMatch structure but simpler
+    const modal = document.createElement('div');
+    modal.className = 'modal'; modal.style.display = 'flex'; modal.style.zIndex = '3000';
+    modal.innerHTML = `
+      <div class="modal-content" style="max-height:90vh; display:flex; flex-direction:column;">
+          <div class="modal-header"><h3>Manage Inducements</h3><button class="close-btn">×</button></div>
+          <div class="modal-body-scroll" id="inGameShopList"></div>
+          <div class="modal-actions"><button class="primary-btn" id="igShopSave">Done</button></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    const renderList = () => {
+        const list = state.gameData?.inducements || [];
+        let html = '';
+        list.forEach(item => {
+            const count = state.activeMatchData[side].inducements[item.name] || 0;
+            html += `
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #eee; padding-bottom:4px;">
+                  <div style="font-size:0.9rem; font-weight:bold;">${item.name}</div>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                      <button class="stat-btn-small" onclick="window.adjustInGameInducement('${side}', '${item.name}', -1)">-</button>
+                      <span style="font-weight:bold; width:20px; text-align:center;">${count}</span>
+                      <button class="stat-btn-small" onclick="window.adjustInGameInducement('${side}', '${item.name}', 1)">+</button>
+                  </div>
+              </div>
+            `;
+        });
+        document.getElementById('inGameShopList').innerHTML = html;
+    };
+    
+    renderList();
+    
+    // Hacky: Attach re-render to window for the onclicks to find it
+    window.adjustInGameInducement = (s, name, delta) => {
+        const d = state.activeMatchData;
+        const current = d[s].inducements[name] || 0;
+        const newVal = current + delta;
+        if(newVal < 0) return;
+        d[s].inducements[name] = newVal;
+        renderList();
+        // Auto-save on change to keep it snappy or save on Done? 
+        // Let's save on change to be safe
+        updateLiveMatch(`Adjust ${name} to ${newVal}`);
+    };
+
+    modal.querySelector('.close-btn').onclick = () => { modal.remove(); delete window.adjustInGameInducement; renderCoachView(); };
+    modal.querySelector('#igShopSave').onclick = () => { modal.remove(); delete window.adjustInGameInducement; renderCoachView(); };
+}
+
+// ... (Player Actions, Game Control Actions, Post-Game Sequence unchanged from previous step) ...
+// ... (Included for completeness) ...
 
 export function openPlayerActionSheet(idx) {
   state.selectedPlayerIdx = idx;
@@ -467,15 +570,11 @@ export async function handleCancelGame() {
   } catch(e) { setStatus(e.message, 'error'); }
 }
 
-// --- POST GAME SEQUENCE (CHUNK 4) ---
-
 export function openPostGameModal() {
-    // DISABLE POLLING: Critical to prevent overwrite
     if (state.activeMatchPollInterval) {
         clearInterval(state.activeMatchPollInterval);
         state.activeMatchPollInterval = null;
     }
-    
     const d = state.activeMatchData;
     state.postGame = {
         step: 1,
@@ -484,7 +583,6 @@ export function openPostGameModal() {
         homeMvp: null, awayMvp: null,
         injuries: []
     };
-    // Identify injuries
     const getInjuries = (roster, side) => roster.map((p, i) => ({ ...p, originalIdx: i, side })).filter(p => p.live.injured);
     state.postGame.injuries = [...getInjuries(d.home.roster, 'home'), ...getInjuries(d.away.roster, 'away')];
     renderPostGameStep();
@@ -496,7 +594,6 @@ export function closePostGameModal() {
     state.postGame = null;
 }
 
-// NEW: Helper for manual stats adjustment
 export function manualAdjustStat(side, playerIdx, stat, delta) {
     const d = state.activeMatchData;
     const p = d[side].roster[playerIdx];
@@ -504,7 +601,7 @@ export function manualAdjustStat(side, playerIdx, stat, delta) {
     const newVal = (p.live[stat] || 0) + delta;
     if (newVal >= 0) {
         p.live[stat] = newVal;
-        renderPostGameStep(); // Re-render to show updated count
+        renderPostGameStep(); 
     }
 }
 
@@ -514,9 +611,7 @@ export function renderPostGameStep() {
     const body = els.postGame.body;
     const headerEl = els.postGame.el.querySelector('.modal-header');
     headerEl.innerHTML = `<h3>Post-Game Report</h3><button class="close-btn" onclick="window.closePostGameModal()">×</button>`;
-    
     let html = '';
-
     if (pg.step === 1) { 
         const renderTeamRecord = (side, winningsKey, fansKey) => {
             const team = d[side];
@@ -524,39 +619,26 @@ export function renderPostGameStep() {
             return `
             <div class="panel-styled" style="box-shadow: 6px 6px 0 ${team.colors.secondary}; border: 1px solid #333; margin-bottom: 1rem;">
                 <div style="font-family: 'Russo One', sans-serif; font-size: 1.6rem; color: ${team.colors.primary}; text-transform: uppercase; margin-bottom: 0.5rem; line-height:1;">${team.name}</div>
-                
                 <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.5rem;">
                     <label style="font-weight:bold; color:#444;">Winnings (k)</label>
                     <input type="number" value="${winnings}" style="width: 100%; padding: 8px; font-weight:bold; box-sizing:border-box;" onchange="state.postGame.${winningsKey}=parseInt(this.value)">
                 </div>
-                
                 <div style="display:flex; flex-direction:column; gap:0.5rem;">
                     <label style="font-weight:bold; color:#444;">Fan Factor</label>
-                    <select style="width: 100%; padding: 8px; box-sizing:border-box;" onchange="state.postGame.${fansKey}=parseInt(this.value)">
-                        <option value="0">Same</option>
-                        <option value="1">+1</option>
-                        <option value="-1">-1</option>
-                    </select>
+                    <select style="width: 100%; padding: 8px; box-sizing:border-box;" onchange="state.postGame.${fansKey}=parseInt(this.value)"><option value="0">Same</option><option value="1">+1</option><option value="-1">-1</option></select>
                 </div>
             </div>`;
         };
         html = `<h4>Step 1: Match Records</h4><div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">${renderTeamRecord('home', 'homeWinnings', 'homeFans')}${renderTeamRecord('away', 'awayWinnings', 'awayFans')}</div>`;
-    } else if (pg.step === 2) { // MVP
+    } else if (pg.step === 2) {
         const renderMvpSelect = (side) => {
             const team = d[side];
             const opts = team.roster.map((p, i) => `<option value="${i}">#${p.number} ${p.name}</option>`).join('');
             const shadow = team.colors.secondary;
-            return `
-              <div class="panel-styled" style="box-shadow: 4px 4px 0 ${shadow};">
-                 <h5 class="big-team-text" style="font-size:1.2rem; color:${team.colors.primary}; text-shadow:1px 1px 0 #fff;">${team.name} MVP</h5>
-                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <select id="mvpSelect${side}" style="width: 100%; box-sizing: border-box; padding: 8px;" onchange="state.postGame.${side}Mvp=parseInt(this.value)"><option value="">Select MVP...</option>${opts}</select>
-                    <button onclick="window.randomMvp('${side}')" style="width: 100%;">Randomize</button>
-                 </div>
-              </div>`;
+            return `<div class="panel-styled" style="box-shadow: 4px 4px 0 ${shadow};"><h5 class="big-team-text" style="font-size:1.2rem; color:${team.colors.primary}; text-shadow:1px 1px 0 #fff;">${team.name} MVP</h5><div style="display: flex; flex-direction: column; gap: 0.5rem;"><select id="mvpSelect${side}" style="width: 100%; box-sizing: border-box; padding: 8px;" onchange="state.postGame.${side}Mvp=parseInt(this.value)"><option value="">Select MVP...</option>${opts}</select><button onclick="window.randomMvp('${side}')" style="width: 100%;">Randomize</button></div></div>`;
         };
         html = `<h4>Step 2: Accolades (MVP)</h4><div class="form-grid">${renderMvpSelect('home')}${renderMvpSelect('away')}</div>`;
-    } else if (pg.step === 3) { // Injuries
+    } else if (pg.step === 3) { 
         if (pg.injuries.length === 0) {
             html = `<h4>Step 3: Casualty Ward</h4><p>No injuries reported. Lucky day!</p>`;
         } else {
@@ -568,40 +650,27 @@ export function renderPostGameStep() {
                 html += `<div class="panel-styled" style="margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;"><div>${badgeHtml} <strong>${p.name}</strong></div><select onchange="state.postGame.injuries[${i}].outcome=this.value"><option value="bh">Badly Hurt (Recover)</option><option value="mng">Miss Next Game</option><option value="-ma">-1 MA</option><option value="-st">-1 ST</option><option value="-ag">-1 AG</option><option value="-pa">-1 PA</option><option value="-av">-1 AV</option><option value="dead" style="color:red; font-weight:bold;">DEAD</option></select></div>`;
             });
         }
-    } else if (pg.step === 4) { // NEW: Stat Correction
+    } else if (pg.step === 4) { 
         html = `<h4>Step 4: Stat Corrections</h4><div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:1rem; max-height:400px; overflow-y:auto;">`;
         ['home', 'away'].forEach(side => {
             html += `<div><h5 style="text-align:center; border-bottom:2px solid #ccc; padding-bottom:5px;">${d[side].name}</h5>`;
             d[side].roster.forEach((p, idx) => {
-                if (p.position === 'Star Player') return; // Skip stars
-                html += `
-                <div class="stat-adjust-card">
-                    <div style="font-weight:bold; font-size:0.8rem; width:80px;">#${p.number} ${p.name.split(' ')[0]}</div>
-                    <div class="stat-adjust-row">
-                       <div class="stat-control"><span class="stat-adjust-label">TD</span><div><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'td', -1)">-</button> <b>${p.live.td}</b> <button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'td', 1)">+</button></div></div>
-                       <div class="stat-control"><span class="stat-adjust-label">CAS</span><div><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'cas', -1)">-</button> <b>${p.live.cas}</b> <button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'cas', 1)">+</button></div></div>
-                       <div class="stat-control"><span class="stat-adjust-label">INT</span><div><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'int', -1)">-</button> <b>${p.live.int}</b> <button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'int', 1)">+</button></div></div>
-                       <div class="stat-control"><span class="stat-adjust-label">CMP</span><div><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'comp', -1)">-</button> <b>${p.live.comp}</b> <button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'comp', 1)">+</button></div></div>
-                       <div class="stat-control"><span class="stat-adjust-label">MVP</span><div style="font-size:0.7rem;">${(pg[`${side}Mvp`] === idx) ? '🏆' : '-'}</div></div>
-                    </div>
-                </div>`;
+                if (p.position === 'Star Player') return; 
+                html += `<div class="stat-adjust-card"><div style="font-weight:bold; font-size:0.8rem; width:80px;">#${p.number} ${p.name.split(' ')[0]}</div><div class="stat-adjust-row"><div class="stat-control"><span class="stat-adjust-label">TD</span><div><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'td', -1)">-</button> <b>${p.live.td}</b> <button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'td', 1)">+</button></div></div><div class="stat-control"><span class="stat-adjust-label">CAS</span><div><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'cas', -1)">-</button> <b>${p.live.cas}</b> <button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'cas', 1)">+</button></div></div><div class="stat-control"><span class="stat-adjust-label">INT</span><div><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'int', -1)">-</button> <b>${p.live.int}</b> <button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'int', 1)">+</button></div></div><div class="stat-control"><span class="stat-adjust-label">CMP</span><div><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'comp', -1)">-</button> <b>${p.live.comp}</b> <button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${idx}, 'comp', 1)">+</button></div></div><div class="stat-control"><span class="stat-adjust-label">MVP</span><div style="font-size:0.7rem;">${(pg[`${side}Mvp`] === idx) ? '🏆' : '-'}</div></div></div></div>`;
             });
             html += `</div>`;
         });
         html += `</div>`;
-    } else if (pg.step === 5) { // NEW Summary with SPP
+    } else if (pg.step === 5) { 
         html = `<h4>Step 5: Confirm & Save</h4><p>Review the SPP gains before committing.</p><div style="max-height:300px; overflow-y:auto;">`;
-        
         ['home', 'away'].forEach(side => {
             const team = d[side];
             const mvpIdx = pg[`${side}Mvp`];
-            // Filter players who gained SPP
             const gainers = team.roster.map((p, i) => {
                 const isMvp = (i === mvpIdx);
                 const spp = (p.live.td * 3) + (p.live.cas * 2) + (p.live.int * 2) + (p.live.comp * 1) + (isMvp ? 4 : 0);
                 return { ...p, sppGain: spp, isMvp };
             }).filter(p => p.sppGain > 0);
-            
             html += `<div class="panel-styled"><h5>${team.name} (+${pg[`${side}Winnings`]}k)</h5>`;
             if (gainers.length === 0) html += `<div style="font-style:italic; color:#777;">No SPP gained.</div>`;
             else {
@@ -623,7 +692,6 @@ export function renderPostGameStep() {
     }
 
     body.innerHTML = html;
-    
     els.postGame.backBtn.style.display = (pg.step === 1) ? 'none' : 'inline-block';
     els.postGame.nextBtn.textContent = (pg.step === 5) ? 'Commit & Finish' : 'Next';
     
@@ -656,48 +724,27 @@ export async function commitPostGame() {
     const key = els.inputs.editKey.value;
     const pg = state.postGame;
     const d = state.activeMatchData;
-    
     setStatus('Committing results...');
     try {
-        // Load Fresh Teams
         const homeT = await apiGet(PATHS.team(d.leagueId, d.home.id));
         const awayT = await apiGet(PATHS.team(d.leagueId, d.away.id));
-        
-        // Helper to load league to get season number
         const leagueSettings = await apiGet(PATHS.leagueSettings(d.leagueId));
         const currentSeason = leagueSettings.season || 1;
 
-        // Helper to process team updates AND history
         const processTeamUpdates = (team, matchSide, winnings, fans, mvpIdx, opponentName, myScore, oppScore) => {
-            // 1. Update Treasury/Fans
             team.treasury = (team.treasury || 0) + (winnings * 1000);
             team.dedicatedFans = Math.max(1, (team.dedicatedFans || 1) + fans);
-            
             const playerRecords = [];
-
-            // 2. Update Players & Build History
             team.players.forEach((p) => {
                 const matchP = d[matchSide].roster.find(mp => mp.number === p.number);
                 if (!matchP) return; 
-                
                 const isMvp = (matchP === d[matchSide].roster[mvpIdx]);
                 let sppGain = (matchP.live.td * 3) + (matchP.live.cas * 2) + (matchP.live.int * 2) + (matchP.live.comp * 1);
                 if (isMvp) sppGain += 4;
-                
                 p.spp = (p.spp || 0) + sppGain;
-                
-                // Record for History
                 if (sppGain > 0 || matchP.live.foul > 0 || matchP.live.injured || isMvp) {
-                    playerRecords.push({
-                         name: p.name,
-                         number: p.number,
-                         sppGain,
-                         stats: { ...matchP.live },
-                         isMvp
-                    });
+                    playerRecords.push({ name: p.name, number: p.number, sppGain, stats: { ...matchP.live }, isMvp });
                 }
-
-                // Injuries
                 const injury = pg.injuries.find(inj => inj.side === matchSide && inj.originalIdx === d[matchSide].roster.indexOf(matchP));
                 if (injury && injury.outcome) {
                     if (injury.outcome === 'dead') { p.dead = true; } 
@@ -709,33 +756,16 @@ export async function commitPostGame() {
                     }
                 }
             });
-            
-            // 3. Filter Dead
             team.players = team.players.filter(p => !p.dead);
-
-            // 4. Push History
             if (!team.history) team.history = [];
-            team.history.push({
-                season: currentSeason,
-                round: d.round,
-                matchId: d.matchId,
-                opponentName: opponentName,
-                result: myScore > oppScore ? 'Win' : myScore < oppScore ? 'Loss' : 'Draw',
-                score: `${myScore}-${oppScore}`,
-                winnings,
-                playerRecords
-            });
+            team.history.push({ season: currentSeason, round: d.round, matchId: d.matchId, opponentName: opponentName, result: myScore > oppScore ? 'Win' : myScore < oppScore ? 'Loss' : 'Draw', score: `${myScore}-${oppScore}`, winnings, playerRecords });
         };
         
-        // Process both teams
         processTeamUpdates(homeT, 'home', pg.homeWinnings, pg.homeFans, pg.homeMvp, d.away.name, d.home.score, d.away.score);
         processTeamUpdates(awayT, 'away', pg.awayWinnings, pg.awayFans, pg.awayMvp, d.home.name, d.away.score, d.home.score);
-        
-        // Save Teams
         await apiSave(PATHS.team(d.leagueId, homeT.id), homeT, `Post-game ${d.matchId} Home`, key);
         await apiSave(PATHS.team(d.leagueId, awayT.id), awayT, `Post-game ${d.matchId} Away`, key);
         
-        // Update League Match Report
         const m = leagueSettings.matches.find(x => x.id === d.matchId);
         if(m) {
             m.status = 'completed';
@@ -744,29 +774,16 @@ export async function commitPostGame() {
                 homeInflicted: d.home.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0),
                 awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
             };
-            // Save the Detailed Report in League Match History
             m.report = {
-                home: {
-                    mvp: d.home.roster[pg.homeMvp]?.name || 'None',
-                    winnings: pg.homeWinnings,
-                    stats: d.home.roster.filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0).map(p => ({ name: p.name, live: p.live }))
-                },
-                away: {
-                    mvp: d.away.roster[pg.awayMvp]?.name || 'None',
-                    winnings: pg.awayWinnings,
-                    stats: d.away.roster.filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0).map(p => ({ name: p.name, live: p.live }))
-                }
+                home: { mvp: d.home.roster[pg.homeMvp]?.name || 'None', winnings: pg.homeWinnings, stats: d.home.roster.filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0).map(p => ({ name: p.name, live: p.live })) },
+                away: { mvp: d.away.roster[pg.awayMvp]?.name || 'None', winnings: pg.awayWinnings, stats: d.away.roster.filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0).map(p => ({ name: p.name, live: p.live })) }
             };
         }
-        
         await apiSave(PATHS.leagueSettings(d.leagueId), leagueSettings, `Complete match ${d.matchId}`, key);
         await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
-        
-        // Reset and Go Home
         els.postGame.el.classList.add('hidden');
         handleOpenLeague(d.leagueId);
         setStatus('Match finalized successfully!', 'ok');
-        
     } catch(e) { setStatus(e.message, 'error'); }
 }
 
