@@ -109,7 +109,10 @@
     ],
     "rerolls": 0,
     "apothecary": false,
-    "inducements": {},
+    "inducements": {
+      "Bloodweiser Keg": 1,
+      "Bribes": 1
+    },
     "tv": 120000
   },
   "away": {
