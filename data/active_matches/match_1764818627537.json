@@ -91,12 +91,13 @@
         ],
         "spp": 0,
         "live": {
-          "used": false,
+          "used": true,
           "injured": false,
           "sentOff": false,
           "td": 1,
           "cas": 0,
-          "int": 0
+          "int": 0,
+          "foul": 1
         }
       }
     ],
