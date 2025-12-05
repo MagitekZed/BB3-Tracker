@@ -3,7 +3,7 @@
   "leagueId": "league_four",
   "round": 2,
   "status": "in_progress",
-  "activeTeam": "away",
+  "activeTeam": "home",
   "home": {
     "id": "norse",
     "name": "Norse",
@@ -231,7 +231,7 @@
         ],
         "spp": 6,
         "live": {
-          "used": true,
+          "used": false,
           "injured": false,
           "sentOff": false,
           "td": 0,
@@ -318,7 +318,7 @@
   },
   "turn": {
     "home": 1,
-    "away": 0
+    "away": 1
   },
   "log": []
 }
