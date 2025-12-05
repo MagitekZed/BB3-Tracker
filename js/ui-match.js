@@ -313,7 +313,7 @@ export async function handleOpenScoreboard(matchId) {
   } catch (e) { setStatus(e.message, 'error'); }
 }
 
-// --- Jumbotron & Coach Views (INDUCEMENTS UPDATED) ---
+// --- Jumbotron & Coach Views ---
 
 export function renderJumbotron() {
   const d = state.activeMatchData;
@@ -331,14 +331,9 @@ export function renderJumbotron() {
   els.containers.sbAwayRoster.innerHTML = `<div class="roster-header" style="background:${d.away.colors?.primary||'#222'}; color:${getContrastColor(d.away.colors?.primary||'#222')}">Away - ${d.away.name}</div>` + renderJumbotronInducements(d.away) + renderLiveRoster(d.away.roster, 'away', true);
 }
 
-// Helper: Jumbotron Icons
 function renderJumbotronInducements(team) {
     if (!team.inducements && !team.apothecary) return '';
-    const mapping = { 
-        "Bloodweiser Keg": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", 
-        "Halfling Master Chef": "👨‍🍳", "Mortuary Assistant": "⚰️", "Plague Doctor": "🧪",
-        "Riotous Rookies": "😡", "Wandering Apothecary": "💊", "Wizard": "⚡", "Biased Referee": "🃏"
-    };
+    const mapping = { "Bloodweiser Keg": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", "Halfling Master Chef": "👨‍🍳", "Mortuary Assistant": "⚰️", "Plague Doctor": "🧪", "Riotous Rookies": "😡", "Wandering Apothecary": "💊", "Wizard": "⚡", "Biased Referee": "🃏" };
     let html = '<div class="jumbotron-icons">';
     if (team.apothecary) html += `<span title="Apothecary">🚑</span>`;
     if (team.inducements) {
@@ -380,15 +375,9 @@ export function renderCoachView() {
   for(let i=0; i<team.rerolls; i++) pips += `<div class="reroll-pip ${i < (team.rerolls) ? 'active' : ''}" onclick="window.toggleReroll('${side}', ${i})"></div>`;
   els.containers.coachRerolls.innerHTML = pips;
   
-  // New Inducement Bar logic
+  // Inducement Bar
   let inducementsHtml = `<div class="inducement-bar"><div class="inducement-title">INDUCEMENTS <span onclick="window.openInGameShop('${side}')" style="cursor:pointer; font-size:1.2rem;">⚙️</span></div>`;
-  
-  if (team.apothecary) {
-      // Check if we have a flag for used apo (we don't yet, assumes single use per game)
-      // We'll just render it as available for now, maybe add 'used' logic later
-      inducementsHtml += `<div class="inducement-chip" onclick="if(confirm('Use Apothecary?')){ /* logic for apo use */ }">🚑 Apothecary</div>`;
-  }
-  
+  if (team.apothecary) inducementsHtml += `<div class="inducement-chip" onclick="if(confirm('Use Apothecary?')){ /* logic for apo use */ }">🚑 Apothecary</div>`;
   if (team.inducements) {
       const mapping = { "Bloodweiser Keg": "🍺", "Bribes": "💰", "Wizard": "⚡", "Halfling Master Chef": "👨‍🍳", "Wandering Apothecary": "💊" };
       Object.entries(team.inducements).forEach(([k, v]) => {
@@ -399,7 +388,6 @@ export function renderCoachView() {
       });
   }
   inducementsHtml += `</div>`;
-
   els.containers.coachRoster.innerHTML = inducementsHtml + renderLiveRoster(team.roster, side, false);
 }
 
@@ -429,61 +417,50 @@ export async function handleUseInducement(side, itemName) {
     }
 }
 
-// --- In-Game Shop Modal ---
-
 export function openInGameShop(side) {
-    // Reuse preMatch structure but simpler
     const modal = document.createElement('div');
     modal.className = 'modal'; modal.style.display = 'flex'; modal.style.zIndex = '3000';
-    modal.innerHTML = `
-      <div class="modal-content" style="max-height:90vh; display:flex; flex-direction:column;">
-          <div class="modal-header"><h3>Manage Inducements</h3><button class="close-btn">×</button></div>
-          <div class="modal-body-scroll" id="inGameShopList"></div>
-          <div class="modal-actions"><button class="primary-btn" id="igShopSave">Done</button></div>
-      </div>
-    `;
+    modal.innerHTML = `<div class="modal-content" style="max-height:90vh; display:flex; flex-direction:column;"><div class="modal-header"><h3>Manage Inducements</h3><button class="close-btn">×</button></div><div class="modal-body-scroll" id="inGameShopList"></div><div class="modal-actions"><button class="primary-btn" id="igShopSave">Done (Save)</button></div></div>`;
     document.body.appendChild(modal);
     
+    // Local copy to edit without saving yet
+    const localInducements = JSON.parse(JSON.stringify(state.activeMatchData[side].inducements || {}));
+
     const renderList = () => {
         const list = state.gameData?.inducements || [];
         let html = '';
         list.forEach(item => {
-            const count = state.activeMatchData[side].inducements[item.name] || 0;
-            html += `
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #eee; padding-bottom:4px;">
-                  <div style="font-size:0.9rem; font-weight:bold;">${item.name}</div>
-                  <div style="display:flex; align-items:center; gap:10px;">
-                      <button class="stat-btn-small" onclick="window.adjustInGameInducement('${side}', '${item.name}', -1)">-</button>
-                      <span style="font-weight:bold; width:20px; text-align:center;">${count}</span>
-                      <button class="stat-btn-small" onclick="window.adjustInGameInducement('${side}', '${item.name}', 1)">+</button>
-                  </div>
-              </div>
-            `;
+            const count = localInducements[item.name] || 0;
+            html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #eee; padding-bottom:4px;"><div style="font-size:0.9rem; font-weight:bold;">${item.name}</div><div style="display:flex; align-items:center; gap:10px;"><button class="stat-btn-small" onclick="window.adjustInGameInducement('${item.name}', -1)">-</button><span style="font-weight:bold; width:20px; text-align:center;">${count}</span><button class="stat-btn-small" onclick="window.adjustInGameInducement('${item.name}', 1)">+</button></div></div>`;
         });
         document.getElementById('inGameShopList').innerHTML = html;
     };
     
-    renderList();
-    
-    // Hacky: Attach re-render to window for the onclicks to find it
-    window.adjustInGameInducement = (s, name, delta) => {
-        const d = state.activeMatchData;
-        const current = d[s].inducements[name] || 0;
+    window.adjustInGameInducement = (name, delta) => {
+        const current = localInducements[name] || 0;
         const newVal = current + delta;
         if(newVal < 0) return;
-        d[s].inducements[name] = newVal;
+        localInducements[name] = newVal;
         renderList();
-        // Auto-save on change to keep it snappy or save on Done? 
-        // Let's save on change to be safe
-        updateLiveMatch(`Adjust ${name} to ${newVal}`);
+    };
+    
+    renderList();
+
+    const closeAndSave = async (shouldSave) => {
+        if(shouldSave) {
+            state.activeMatchData[side].inducements = localInducements;
+            renderCoachView();
+            await updateLiveMatch(`Updated Inducements (${side})`);
+        }
+        delete window.adjustInGameInducement;
+        modal.remove();
     };
 
-    modal.querySelector('.close-btn').onclick = () => { modal.remove(); delete window.adjustInGameInducement; renderCoachView(); };
-    modal.querySelector('#igShopSave').onclick = () => { modal.remove(); delete window.adjustInGameInducement; renderCoachView(); };
+    modal.querySelector('.close-btn').onclick = () => closeAndSave(false);
+    modal.querySelector('#igShopSave').onclick = () => closeAndSave(true);
 }
 
-// ... (Player Actions, Game Control Actions, Post-Game Sequence unchanged from previous step) ...
-// ... (Included for completeness) ...
+// ... (Player Actions & Post-Game Logic - UNCHANGED but included) ...
 
 export function openPlayerActionSheet(idx) {
   state.selectedPlayerIdx = idx;
@@ -570,6 +547,8 @@ export async function handleCancelGame() {
   } catch(e) { setStatus(e.message, 'error'); }
 }
 
+// --- POST GAME SEQUENCE ---
+
 export function openPostGameModal() {
     if (state.activeMatchPollInterval) {
         clearInterval(state.activeMatchPollInterval);
@@ -625,7 +604,11 @@ export function renderPostGameStep() {
                 </div>
                 <div style="display:flex; flex-direction:column; gap:0.5rem;">
                     <label style="font-weight:bold; color:#444;">Fan Factor</label>
-                    <select style="width: 100%; padding: 8px; box-sizing:border-box;" onchange="state.postGame.${fansKey}=parseInt(this.value)"><option value="0">Same</option><option value="1">+1</option><option value="-1">-1</option></select>
+                    <select style="width: 100%; padding: 8px; box-sizing:border-box;" onchange="state.postGame.${fansKey}=parseInt(this.value)">
+                        <option value="0">Same</option>
+                        <option value="1">+1</option>
+                        <option value="-1">-1</option>
+                    </select>
                 </div>
             </div>`;
         };
