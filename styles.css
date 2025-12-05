@@ -447,27 +447,37 @@ body.mode-coach .coach-header {
 .action-sheet { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none; }
 .action-sheet.hidden { display: none !important; }
 .action-sheet-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); pointer-events: auto; }
-.action-sheet-content { background: var(--card-bg); width: 100%; max-height: 80vh; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 1.5rem; box-sizing: border-box; transform: translateY(0); transition: transform 0.3s ease-out; pointer-events: auto; position: relative; box-shadow: 0 -4px 20px rgba(0,0,0,0.5); border-top: 4px solid var(--primary-red); }
+.action-sheet-content { 
+  background: var(--card-bg); width: 100%; 
+  max-height: 90vh; /* Allow it to be tall */
+  border-top-left-radius: 16px; border-top-right-radius: 16px; 
+  padding: 1rem; /* Reduced padding */
+  box-sizing: border-box; transform: translateY(0); transition: transform 0.3s ease-out; 
+  pointer-events: auto; position: relative; 
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.5); border-top: 4px solid var(--primary-red); 
+  overflow-y: auto; /* Keep scroll as safety fallback */
+}
 .action-sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 
 /* =========================================
    7. PLAYER CARD (ACTION SHEET)
    ========================================= */
 .player-card-header {
-  text-align: center; margin-bottom: 1rem;
+  text-align: center; margin-bottom: 0.5rem; /* Reduced margin */
 }
 .player-card-name {
-  font-size: 1.8rem; font-weight: 800; font-family: 'Russo One', sans-serif;
+  font-size: 1.4rem; /* Smaller font */
+  font-weight: 800; font-family: 'Russo One', sans-serif;
   color: var(--primary-red); line-height: 1.1; text-transform: uppercase;
 }
 .player-card-meta {
-  font-size: 1rem; color: #555; font-weight: bold; margin-top: 0.25rem;
+  font-size: 0.9rem; color: #555; font-weight: bold; margin-top: 0.1rem;
 }
 
 /* Stat Grid */
 .stat-grid {
-  display: flex; justify-content: space-between; gap: 0.5rem;
-  background: #eee; padding: 0.5rem; border-radius: 8px; margin-bottom: 1rem;
+  display: flex; justify-content: space-between; gap: 0.25rem; /* Tighter gap */
+  background: #eee; padding: 0.4rem; border-radius: 8px; margin-bottom: 0.8rem;
   border: 1px solid #ccc;
 }
 .stat-box {
@@ -475,62 +485,63 @@ body.mode-coach .coach-header {
   display: flex; flex-direction: column;
 }
 .stat-label {
-  font-size: 0.7rem; font-weight: bold; color: #666; text-transform: uppercase;
+  font-size: 0.65rem; font-weight: bold; color: #666; text-transform: uppercase;
 }
 .stat-value {
-  font-size: 1.4rem; font-weight: 800; font-family: Consolas, monospace; color: #222;
+  font-size: 1.2rem; font-weight: 800; font-family: Consolas, monospace; color: #222;
 }
 
 /* Skills List in Card */
 .card-skills {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem; margin-bottom: 1rem;
 }
 .card-skills .skill-tag {
-  font-size: 0.9rem; padding: 4px 8px; background: #fff; border: 1px solid #888;
+  font-size: 0.8rem; padding: 3px 6px; background: #fff; border: 1px solid #888;
 }
 
-/* Expanded Action Grid */
+/* Expanded Action Grid - COMPACT MODE */
 .sheet-grid { 
   display: grid; 
-  grid-template-columns: 1fr 1fr 1fr; /* 3 Columns now */
-  gap: 0.75rem; 
+  grid-template-columns: 1fr 1fr 1fr; 
+  gap: 0.5rem; /* Tighter gap */
 }
 .sheet-btn { 
-  padding: 1rem; font-size: 0.8rem; 
-  height: 100px; /* Uniform height */
-  /* IMPROVED TEXT VISIBILITY */
+  padding: 0.5rem; font-size: 0.75rem; 
+  height: 80px; /* Reduced height from 100px */
   color: white;
   text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   border: 2px solid rgba(255,255,255,0.5);
 }
-.sheet-btn .emoji { font-size: 1.8rem; margin-bottom: 0.25rem; text-shadow: none; }
+.sheet-btn .emoji { font-size: 1.5rem; margin-bottom: 0.1rem; text-shadow: none; }
 
-/* New Button Colors */
-.btn-comp { background: #0288d1; } /* Blue */
-.btn-int { background: #512da8; }  /* Purple */
-.btn-foul { background: #333; }    /* Black (Ref) */
+/* Correction Mode Toggle - COMPACT */
+.correction-toggle {
+  margin-top: 0.8rem; 
+  text-align: center; 
+  display: block; 
+  font-weight: bold; 
+  font-size: 0.9rem;
+  color: #555;
+  background: #eee;
+  padding: 0.4rem;
+  border-radius: 4px;
+}
+
+/* ... New Button Colors & Badges (No changes needed) ... */
+.btn-comp { background: #0288d1; } 
+.btn-int { background: #512da8; }  
+.btn-foul { background: #333; }    
 .btn-td { background: var(--pitch-green); }
 .btn-cas { background: var(--primary-red); }
 .btn-inj { background: #e67e22; }
 .btn-used { background: #7f8c8d; }
 
-/* Roster Badges */
 .stat-badge.comp { background: #b3e5fc; color: #01579b; }
 .stat-badge.int { background: #d1c4e9; color: #311b92; }
 .stat-badge.foul { background: #cfd8dc; color: #263238; border: 1px solid #333; }
 
 /* Correction Mode Styles */
-.correction-toggle {
-  margin-top: 1rem; 
-  text-align: center; 
-  display: block; 
-  font-weight: bold; 
-  color: #555;
-  background: #eee;
-  padding: 0.5rem;
-  border-radius: 4px;
-}
 .correction-mode-active .sheet-btn {
   background: #444 !important;
   border-color: #ff4444;
