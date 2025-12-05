@@ -40,6 +40,14 @@
       "awayTeamId": "vampires",
       "status": "scheduled",
       "date": "2025-12-05"
+    },
+    {
+      "id": "match_1764973032221",
+      "round": 2,
+      "homeTeamId": "vampires",
+      "awayTeamId": "chaos",
+      "status": "scheduled",
+      "date": "2025-12-05"
     }
   ]
 }
