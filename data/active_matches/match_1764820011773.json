@@ -1,0 +1,340 @@
+{
+  "matchId": "match_1764820011773",
+  "leagueId": "league_three",
+  "round": 3,
+  "status": "in_progress",
+  "activeTeam": "away",
+  "home": {
+    "id": "team_two",
+    "name": "Team Two ",
+    "colors": {
+      "primary": "#ff0000",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 4,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 5,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 6,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "inducements": {
+      "Star: Karla von Kill": 0,
+      "Star: Helmut Wulf": 0
+    },
+    "tv": 300000
+  },
+  "away": {
+    "id": "team_three",
+    "name": "Team Three",
+    "colors": {
+      "primary": "#1100ff",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "inducements": {},
+    "tv": 120000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
