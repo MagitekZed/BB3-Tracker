@@ -54,8 +54,16 @@
       "round": 2,
       "homeTeamId": "norse",
       "awayTeamId": "amazons",
-      "status": "in_progress",
-      "date": "2025-12-04"
+      "status": "completed",
+      "date": "2025-12-04",
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "casualties": {
+        "homeInflicted": 1,
+        "awayInflicted": 0
+      }
     }
   ]
 }
