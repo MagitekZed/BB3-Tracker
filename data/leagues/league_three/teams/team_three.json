@@ -23,7 +23,7 @@
         "A",
         "S"
       ],
-      "spp": null
+      "spp": 0
     },
     {
       "number": 2,
@@ -44,7 +44,7 @@
         "A",
         "S"
       ],
-      "spp": null
+      "spp": 0
     },
     {
       "number": 3,
@@ -65,7 +65,7 @@
         "A",
         "S"
       ],
-      "spp": null
+      "spp": 0
     }
   ],
   "colors": {
