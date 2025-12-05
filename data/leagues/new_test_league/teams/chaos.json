@@ -1,0 +1,94 @@
+{
+  "id": "chaos",
+  "name": "chaos",
+  "race": "Chaos Chosen",
+  "coachName": "",
+  "players": [
+    {
+      "number": 1,
+      "name": "Beastman Runner",
+      "position": "Beastman Runner",
+      "qty": 16,
+      "cost": 60000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [
+        "Horns"
+      ],
+      "primary": [
+        "G",
+        "S",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 2,
+      "name": "Beastman Runner",
+      "position": "Beastman Runner",
+      "qty": 16,
+      "cost": 60000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [
+        "Horns"
+      ],
+      "primary": [
+        "G",
+        "S",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 3,
+      "name": "Beastman Runner",
+      "position": "Beastman Runner",
+      "qty": 16,
+      "cost": 60000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [
+        "Horns"
+      ],
+      "primary": [
+        "G",
+        "S",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "P"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#ff0000",
+    "secondary": "#0d0d0d"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 180000
+}
