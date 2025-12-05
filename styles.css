@@ -118,9 +118,38 @@ body {
   background: var(--card-bg); padding: 1.5rem; border-radius: 4px;
   width: 90%; max-width: 400px; position: relative;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 2px solid #444;
+  /* Scroll handling for tall modals */
+  max-height: 90vh; 
+  display: flex; 
+  flex-direction: column;
 }
+
+.modal-body-scroll {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 5px; /* Prevent scrollbar overlap */
+}
+
+/* Pre-Match Grid (Responsive) */
+.pre-match-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .pre-match-grid {
+    grid-template-columns: 1fr; /* Stack vertically on mobile */
+  }
+  .modal-content {
+    width: 95%;
+    padding: 1rem;
+  }
+}
+
 .large-input { padding: 0.8rem; font-size: 1.2rem; width: 100%; margin: 1rem 0; box-sizing: border-box; border: 1px solid #999; }
-.modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem; }
+.modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem; flex-shrink: 0; }
 
 .header-tools { position: relative; }
 .key-details { position: relative; list-style: none; }
@@ -139,8 +168,6 @@ body {
 /* Coach Mode Overrides */
 body.mode-coach { 
   padding: 0 !important; 
-  /* FIXED: Removed background overrides to let texture show through */
-  /* FIXED: Removed overflow:hidden to allow roster scrolling */
 }
 body.mode-coach #mobileNavBar, 
 body.mode-coach #desktopHeader, 
