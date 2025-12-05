@@ -110,12 +110,13 @@
     "rerolls": 0,
     "apothecary": false,
     "inducements": {
-      "Bloodweiser Keg": 1,
+      "Bloodweiser Keg": 0,
       "Bribes": 1,
       "Extra Team Training": 1,
       "Halfling Master Chef": 1,
       "Mortuary Assistant": 1,
-      "Plague Doctor": 1
+      "Plague Doctor": 1,
+      "Riotous Rookies": 1
     },
     "tv": 120000
   },
