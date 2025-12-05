@@ -38,8 +38,68 @@
       "round": 1,
       "homeTeamId": "chaos",
       "awayTeamId": "vampires",
-      "status": "in_progress",
-      "date": "2025-12-05"
+      "status": "completed",
+      "date": "2025-12-05",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "casualties": {
+        "homeInflicted": 1,
+        "awayInflicted": 0
+      },
+      "report": {
+        "home": {
+          "mvp": "Beastman Runner",
+          "winnings": 0,
+          "stats": [
+            {
+              "name": "Beastman Runner",
+              "live": {
+                "used": false,
+                "injured": false,
+                "sentOff": false,
+                "td": 1,
+                "cas": 0,
+                "int": 0,
+                "comp": 0,
+                "foul": 0
+              }
+            },
+            {
+              "name": "Beastman Runner",
+              "live": {
+                "used": false,
+                "injured": false,
+                "sentOff": false,
+                "td": 0,
+                "cas": 1,
+                "int": 0,
+                "comp": 0,
+                "foul": 0
+              }
+            },
+            {
+              "name": "Beastman Runner",
+              "live": {
+                "used": false,
+                "injured": false,
+                "sentOff": false,
+                "td": 0,
+                "cas": 0,
+                "int": 1,
+                "comp": 0,
+                "foul": 0
+              }
+            }
+          ]
+        },
+        "away": {
+          "mvp": "Thrall Lineman",
+          "winnings": 0,
+          "stats": []
+        }
+      }
     },
     {
       "id": "match_1764973032221",
