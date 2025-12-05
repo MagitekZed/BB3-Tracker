@@ -2,7 +2,7 @@
   "id": "new_test_league",
   "name": "new test league",
   "season": 1,
-  "status": "upcoming",
+  "status": "active",
   "settings": {
     "pointsWin": 3,
     "pointsDraw": 1,
