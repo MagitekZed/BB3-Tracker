@@ -1,0 +1,355 @@
+{
+  "matchId": "match_1764821756520",
+  "leagueId": "league_three",
+  "round": 4,
+  "status": "in_progress",
+  "home": {
+    "id": "team_two",
+    "name": "Team Two ",
+    "colors": {
+      "primary": "#ff0000",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 4,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 5,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 6,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "inducements": {},
+    "tv": 300000
+  },
+  "away": {
+    "id": "team_four",
+    "name": "Team Four",
+    "colors": {
+      "primary": "#ffc64d",
+      "secondary": "#d4d4d4"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 99,
+        "name": "Helmut Wulf",
+        "position": "Star Player",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Chainsaw",
+          "Loner (4+)",
+          "Pro",
+          "Secret Weapon"
+        ],
+        "cost": 140000,
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "inducements": {
+      "Star: Helmut Wulf": 1
+    },
+    "tv": 135000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
