@@ -1,0 +1,26 @@
+{
+  "id": "league_y",
+  "name": "League Y",
+  "season": 1,
+  "status": "upcoming",
+  "settings": {
+    "pointsWin": 3,
+    "pointsDraw": 1,
+    "pointsLoss": 0,
+    "maxTeams": 16,
+    "lockTeams": false
+  },
+  "teams": [
+    {
+      "id": "team_x",
+      "name": "Team x",
+      "race": "Imperial Nobility",
+      "coachName": "",
+      "colors": {
+        "primary": "#0000ff",
+        "secondary": "#c5a059"
+      }
+    }
+  ],
+  "matches": []
+}
