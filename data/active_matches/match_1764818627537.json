@@ -92,7 +92,7 @@
         "spp": 0,
         "live": {
           "used": false,
-          "injured": false,
+          "injured": true,
           "sentOff": false,
           "td": 0,
           "cas": 1,
