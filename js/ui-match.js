@@ -4,6 +4,7 @@ import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, getContrastColor, applyTeamTheme } from './utils.js';
 import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill } from './ui-core.js';
 import { handleOpenLeague } from './ui-league.js';
+import { calculateTeamValue } from './rules.js';
 
 // --- Scheduling ---
 
@@ -50,51 +51,291 @@ export async function handleScheduleMatch() {
     l.matches.push(newMatch);
     await apiSave(PATHS.leagueSettings(l.id), l, `Schedule match`, key);
     closeScheduleModal(); 
-    // We need to refresh the view. Importing renderLeagueView creates circular dependency.
-    // Instead, we reload the league which is safer.
     handleOpenLeague(l.id);
     setStatus('Match scheduled.', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
 }
 
-// --- Live Match Init ---
+// --- Pre-Match Setup (Chunk 2) ---
 
 export async function handleStartMatch(matchId) {
-  const key = els.inputs.editKey.value;
-  if (!key) return setStatus('Edit key required', 'error');
-  if(!confirm("Start this match?")) return;
-  
-  setStatus('Initializing...');
+  setStatus('Loading match setup...');
   try {
     const l = state.currentLeague;
     const matchIdx = l.matches.findIndex(m => m.id === matchId);
     if(matchIdx === -1) throw new Error("Match not found");
-    const m = l.matches[matchIdx];
     
+    // Load Teams
+    const m = l.matches[matchIdx];
     const homeTeam = await apiGet(PATHS.team(l.id, m.homeTeamId));
     const awayTeam = await apiGet(PATHS.team(l.id, m.awayTeamId));
     if(!homeTeam || !awayTeam) throw new Error("Could not load team files.");
     
+    // Calculate TV
+    const homeTv = calculateTeamValue(homeTeam);
+    const awayTv = calculateTeamValue(awayTeam);
+    
+    // Calculate Petty Cash
+    let homePetty = 0; 
+    let awayPetty = 0;
+    if (homeTv < awayTv) homePetty = awayTv - homeTv;
+    if (awayTv < homeTv) awayPetty = homeTv - awayTv;
+    
+    // Init Setup State
+    state.setupMatch = {
+        matchId: m.id,
+        homeTeam, awayTeam,
+        homeTv, awayTv,
+        pettyCash: { home: homePetty, away: awayPetty },
+        inducements: { home: {}, away: {} }
+    };
+    
+    renderPreMatchSetup();
+    els.preMatch.el.classList.remove('hidden');
+    setStatus('Setup ready.', 'ok');
+  } catch (e) { setStatus(e.message, 'error'); }
+}
+
+export function closePreMatchModal() {
+  els.preMatch.el.classList.add('hidden');
+}
+
+function renderPreMatchSetup() {
+  const s = state.setupMatch;
+  const list = state.gameData?.inducements || [];
+  const stars = state.gameData?.starPlayers || [];
+  
+  // Header Info
+  els.preMatch.homeName.textContent = s.homeTeam.name;
+  els.preMatch.awayName.textContent = s.awayTeam.name;
+  els.preMatch.homeTv.textContent = (s.homeTv/1000) + 'k';
+  els.preMatch.awayTv.textContent = (s.awayTv/1000) + 'k';
+  
+  // Treasury Display
+  els.preMatch.homeBank.textContent = (s.homeTeam.treasury || 0)/1000;
+  els.preMatch.awayBank.textContent = (s.awayTeam.treasury || 0)/1000;
+  els.preMatch.homePetty.textContent = s.pettyCash.home/1000;
+  els.preMatch.awayPetty.textContent = s.pettyCash.away/1000;
+  
+  const hTotal = (s.homeTeam.treasury||0) + s.pettyCash.home;
+  const aTotal = (s.awayTeam.treasury||0) + s.pettyCash.away;
+  
+  els.preMatch.homeTotal.textContent = (hTotal/1000);
+  els.preMatch.awayTotal.textContent = (aTotal/1000);
+
+  // Render Shops
+  const renderShop = (side, teamRace, totalBudget) => {
+      let html = '';
+      
+      // Generic Inducements
+      list.forEach(item => {
+          const count = s.inducements[side][item.name] || 0;
+          html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #eee; padding-bottom:2px;">
+                <div style="font-size:0.85rem;">
+                    <div>${item.name}</div>
+                    <div style="color:#666">${item.cost/1000}k</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <button onclick="window.changeInducement('${side}', '${item.name}', -1)" style="padding:0 5px;">-</button>
+                    <span style="font-weight:bold; width:20px; text-align:center;">${count}</span>
+                    <button onclick="window.changeInducement('${side}', '${item.name}', 1)" style="padding:0 5px;">+</button>
+                </div>
+            </div>
+          `;
+      });
+      
+      // Star Players
+      const raceData = state.gameData?.races.find(r => r.name === teamRace);
+      const teamTags = raceData ? [teamRace, ...(raceData.specialRules || [])] : [teamRace];
+      
+      const eligibleStars = stars.filter(star => {
+          return star.playsFor.includes("Any") || star.playsFor.some(tag => teamTags.includes(tag));
+      });
+      
+      if(eligibleStars.length > 0) {
+          html += `<div style="font-weight:bold; margin-top:10px; border-bottom:2px solid #ccc;">Star Players</div>`;
+          eligibleStars.forEach(star => {
+              const isHired = s.inducements[side][`Star: ${star.name}`] === 1;
+              html += `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; border-bottom:1px solid #eee;">
+                    <div style="font-size:0.8rem;">
+                        <div>${star.name}</div>
+                        <div style="color:#666">${star.cost/1000}k - ${star.position || 'Star'}</div>
+                    </div>
+                    <div>
+                        ${isHired 
+                          ? `<button onclick="window.toggleStar('${side}', '${star.name}', 0)" style="color:red; font-size:0.8rem;">Remove</button>` 
+                          : `<button onclick="window.toggleStar('${side}', '${star.name}', 1)" style="color:green; font-size:0.8rem;">Hire</button>`
+                        }
+                    </div>
+                </div>
+              `;
+          });
+      }
+      
+      return html;
+  };
+  
+  els.preMatch.homeList.innerHTML = renderShop('home', s.homeTeam.race, hTotal);
+  els.preMatch.awayList.innerHTML = renderShop('away', s.awayTeam.race, aTotal);
+  
+  updateInducementTotals();
+}
+
+export function changeInducement(side, itemName, delta) {
+  const list = state.gameData?.inducements || [];
+  const item = list.find(i => i.name === itemName);
+  if(!item) return;
+  
+  const current = state.setupMatch.inducements[side][itemName] || 0;
+  const newVal = current + delta;
+  
+  if (newVal < 0) return;
+  if (item.max && newVal > item.max) return;
+  
+  state.setupMatch.inducements[side][itemName] = newVal;
+  renderPreMatchSetup();
+}
+
+export function toggleStar(side, starName, val) {
+    state.setupMatch.inducements[side][`Star: ${starName}`] = val;
+    renderPreMatchSetup();
+}
+
+export function setCustomInducement(side, val) {
+  // Deprecated in favor of explicit star list, but keeping for custom mercs if needed
+  const cost = parseInt(val) || 0;
+  state.setupMatch.inducements[side]['Mercenaries'] = cost;
+  renderPreMatchSetup();
+}
+
+function updateInducementTotals() {
+  const s = state.setupMatch;
+  const list = state.gameData?.inducements || [];
+  const stars = state.gameData?.starPlayers || [];
+  
+  const calcSpent = (side) => {
+      let total = 0;
+      for (const [key, count] of Object.entries(s.inducements[side])) {
+          if (count === 0) continue;
+          
+          if (key.startsWith('Star: ')) {
+              const name = key.replace('Star: ', '');
+              const star = stars.find(x => x.name === name);
+              if (star) total += star.cost;
+          } else if (key === 'Mercenaries') {
+              total += count;
+          } else {
+              const data = list.find(i => i.name === key);
+              if(data) total += (data.cost * count);
+          }
+      }
+      return total;
+  };
+  
+  const hSpent = calcSpent('home');
+  const aSpent = calcSpent('away');
+  
+  els.preMatch.homeSpent.textContent = (hSpent/1000);
+  els.preMatch.awaySpent.textContent = (aSpent/1000);
+  
+  const hBudget = (s.homeTeam.treasury||0) + s.pettyCash.home;
+  const aBudget = (s.awayTeam.treasury||0) + s.pettyCash.away;
+  
+  els.preMatch.homeOver.style.display = (hSpent > hBudget) ? 'inline' : 'none';
+  els.preMatch.awayOver.style.display = (aSpent > aBudget) ? 'inline' : 'none';
+  
+  // Disable start if over budget
+  els.preMatch.startBtn.disabled = (hSpent > hBudget || aSpent > aBudget);
+}
+
+// --- Start Game (Finalize Setup) ---
+
+export async function confirmMatchStart() {
+  const key = els.inputs.editKey.value;
+  if (!key) return setStatus('Edit key required', 'error');
+  
+  const s = state.setupMatch;
+  const l = state.currentLeague;
+  const stars = state.gameData?.starPlayers || [];
+  
+  setStatus('Starting match...');
+  try {
     const initRoster = (players) => (players||[]).map(p => ({
         ...p,
         live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
     }));
+    
+    // Inject Star Players into Rosters
+    const injectStars = (baseRoster, side) => {
+        const newRoster = [...baseRoster];
+        for (const [key, count] of Object.entries(s.inducements[side])) {
+            if (count > 0 && key.startsWith('Star: ')) {
+                const name = key.replace('Star: ', '');
+                const starData = stars.find(x => x.name === name);
+                if (starData) {
+                    newRoster.push({
+                        number: 99, // Star Number
+                        name: starData.name,
+                        position: 'Star Player',
+                        ma: starData.ma, st: starData.st, ag: starData.ag, pa: starData.pa, av: starData.av,
+                        skills: starData.skills,
+                        cost: starData.cost,
+                        spp: 0,
+                        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
+                    });
+                }
+            }
+        }
+        return newRoster;
+    };
 
     const activeData = {
-      matchId: m.id, leagueId: l.id, round: m.round, status: 'in_progress',
-      home: { id: homeTeam.id, name: homeTeam.name, colors: homeTeam.colors, score: 0, roster: initRoster(homeTeam.players), rerolls: homeTeam.rerolls || 0, apothecary: true },
-      away: { id: awayTeam.id, name: awayTeam.name, colors: awayTeam.colors, score: 0, roster: initRoster(awayTeam.players), rerolls: awayTeam.rerolls || 0, apothecary: true },
-      turn: { home: 0, away: 0 }, log: []
+      matchId: s.matchId, 
+      leagueId: l.id, 
+      round: l.matches.find(m=>m.id===s.matchId).round, 
+      status: 'in_progress',
+      home: { 
+          id: s.homeTeam.id, 
+          name: s.homeTeam.name, 
+          colors: s.homeTeam.colors, 
+          score: 0, 
+          roster: injectStars(initRoster(s.homeTeam.players), 'home'), 
+          rerolls: s.homeTeam.rerolls || 0, 
+          apothecary: s.homeTeam.apothecary,
+          inducements: s.inducements.home,
+          tv: s.homeTv 
+      },
+      away: { 
+          id: s.awayTeam.id, 
+          name: s.awayTeam.name, 
+          colors: s.awayTeam.colors, 
+          score: 0, 
+          roster: injectStars(initRoster(s.awayTeam.players), 'away'), 
+          rerolls: s.awayTeam.rerolls || 0, 
+          apothecary: s.awayTeam.apothecary,
+          inducements: s.inducements.away,
+          tv: s.awayTv
+      },
+      turn: { home: 0, away: 0 }, 
+      log: []
     };
     
-    await apiSave(PATHS.activeMatch(m.id), activeData, `Start match`, key);
-    m.status = 'in_progress';
+    // Save Active Match
+    await apiSave(PATHS.activeMatch(s.matchId), activeData, `Start match ${s.matchId}`, key);
+    
+    // Update League Status
+    const m = l.matches.find(x => x.id === s.matchId);
+    if(m) m.status = 'in_progress';
     await apiSave(PATHS.leagueSettings(l.id), l, `Match in progress`, key);
     
-    handleOpenScoreboard(m.id);
+    closePreMatchModal();
+    handleOpenScoreboard(s.matchId);
     setStatus('Match started!', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
 }
+
 
 // --- Scoreboard / Jumbotron ---
 
@@ -189,7 +430,19 @@ export function renderCoachView() {
     pips += `<div class="reroll-pip ${i < (team.rerolls) ? 'active' : ''}" onclick="window.toggleReroll('${side}', ${i})"></div>`;
   }
   els.containers.coachRerolls.innerHTML = pips;
-  els.containers.coachRoster.innerHTML = renderLiveRoster(team.roster, side, false);
+  
+  // Render Inducements if any
+  let inducementsHtml = '';
+  if (team.inducements && Object.keys(team.inducements).length > 0) {
+      const items = Object.entries(team.inducements)
+        .filter(([k,v]) => v > 0)
+        .map(([k,v]) => k.startsWith('Star:') ? '' : k === 'Star Players' ? `Mercs(${v/1000}k)` : `${v}x ${k}`)
+        .filter(x => x !== '')
+        .join(', ');
+      if(items) inducementsHtml = `<div style="font-size:0.8rem; margin-bottom:5px; color:#ddd">Items: ${items}</div>`;
+  }
+
+  els.containers.coachRoster.innerHTML = inducementsHtml + renderLiveRoster(team.roster, side, false);
 }
 
 function renderLiveRoster(roster, side, readOnly) {
