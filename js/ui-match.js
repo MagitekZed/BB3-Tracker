@@ -273,7 +273,7 @@ export async function confirmMatchStart() {
   try {
     const initRoster = (players) => (players||[]).map(p => ({
         ...p,
-        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
+        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 } // Add comp, foul
     }));
     
     // Inject Star Players into Rosters
@@ -292,7 +292,7 @@ export async function confirmMatchStart() {
                         skills: starData.skills,
                         cost: starData.cost,
                         spp: 0,
-                        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0 }
+                        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 }
                     });
                 }
             }
@@ -458,9 +458,12 @@ function renderLiveRoster(roster, side, readOnly) {
   return roster.map((p, idx) => {
     const live = p.live || {};
     let badges = '';
+    // Chunk 3: New Badges
     if(live.td > 0) badges += `<span class="stat-badge">TD:${live.td}</span>`;
     if(live.cas > 0) badges += `<span class="stat-badge">CAS:${live.cas}</span>`;
-    if(live.int > 0) badges += `<span class="stat-badge">INT:${live.int}</span>`;
+    if(live.int > 0) badges += `<span class="stat-badge int">INT:${live.int}</span>`;
+    if(live.comp > 0) badges += `<span class="stat-badge comp">CMP:${live.comp}</span>`;
+    if(live.foul > 0) badges += `<span class="stat-badge foul">FL:${live.foul}</span>`;
     if(live.sentOff) badges += `<span class="stat-badge" style="background:#faa">Off</span>`;
 
     const skillTags = (p.skills || []).map(s => 
@@ -493,7 +496,57 @@ function renderLiveRoster(roster, side, readOnly) {
 export function openPlayerActionSheet(idx) {
   state.selectedPlayerIdx = idx;
   const p = state.activeMatchData[state.coachSide].roster[idx];
-  if(els.actionSheet.title) els.actionSheet.title.textContent = `#${p.number} ${p.name}`;
+  
+  // CHUNK 3: Render the Full Player Card
+  els.actionSheet.title.textContent = ``; // Clear generic title
+  
+  // We manipulate the DOM of the action sheet directly to inject the card
+  const content = els.actionSheet.el.querySelector('.action-sheet-content');
+  
+  // Build the Header & Stats
+  const headerHtml = `
+    <div class="player-card-header">
+        <div class="player-card-name">#${p.number} ${p.name}</div>
+        <div class="player-card-meta">${p.position} | ${p.cost/1000}k</div>
+    </div>
+    
+    <div class="stat-grid">
+        <div class="stat-box"><span class="stat-label">MA</span><span class="stat-value">${p.ma}</span></div>
+        <div class="stat-box"><span class="stat-label">ST</span><span class="stat-value">${p.st}</span></div>
+        <div class="stat-box"><span class="stat-label">AG</span><span class="stat-value">${p.ag}+</span></div>
+        <div class="stat-box"><span class="stat-label">PA</span><span class="stat-value">${p.pa ? p.pa+'+' : '-'}</span></div>
+        <div class="stat-box"><span class="stat-label">AV</span><span class="stat-value">${p.av}+</span></div>
+    </div>
+    
+    <div class="card-skills">
+        ${(p.skills||[]).map(s => `<span class="skill-tag">${s}</span>`).join('')}
+        ${(!p.skills || p.skills.length===0) ? '<span style="color:#999; font-style:italic">No skills</span>' : ''}
+    </div>
+  `;
+  
+  // Build the Action Grid (Buttons)
+  // We use the same 'sheet-grid' but populate it dynamically here instead of static HTML
+  const actionsHtml = `
+    <div class="sheet-grid">
+        <button class="sheet-btn btn-td" onclick="window.handleSheetAction('td')"><div class="emoji">🏈</div>TD</button>
+        <button class="sheet-btn btn-cas" onclick="window.handleSheetAction('cas')"><div class="emoji">💥</div>CAS</button>
+        <button class="sheet-btn btn-int" onclick="window.handleSheetAction('int')"><div class="emoji">✋</div>INT</button>
+        
+        <button class="sheet-btn btn-comp" onclick="window.handleSheetAction('comp')"><div class="emoji">🎯</div>COMP</button>
+        <button class="sheet-btn btn-foul" onclick="window.handleSheetAction('foul')"><div class="emoji">🥾</div>FOUL</button>
+        <button class="sheet-btn btn-inj" onclick="window.handleSheetAction('injured')"><div class="emoji">🤕</div>INJ</button>
+        
+        <button class="sheet-btn btn-used" onclick="window.handleSheetAction('used')" style="grid-column: 1 / -1; height:60px;">
+            <div class="emoji" style="font-size:1.2rem; display:inline;">💤</div> Toggle Used
+        </button>
+    </div>
+  `;
+  
+  // Custom close button implementation since we wiped the header
+  const closeHtml = `<button onclick="window.closeActionSheet()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:1.5rem; color:#555;">×</button>`;
+
+  content.innerHTML = closeHtml + headerHtml + actionsHtml;
+  
   els.actionSheet.el.classList.remove('hidden');
 }
 
@@ -517,6 +570,12 @@ export function handleSheetAction(type) {
     state.activeMatchData[side].score++;
   }
   else if (type === 'cas') p.live.cas++;
+  else if (type === 'int') p.live.int = (p.live.int || 0) + 1; // Chunk 3
+  else if (type === 'comp') p.live.comp = (p.live.comp || 0) + 1; // Chunk 3
+  else if (type === 'foul') {
+      p.live.foul = (p.live.foul || 0) + 1; // Chunk 3
+      p.live.used = true; // Fouling is an action
+  }
   
   closeActionSheet();
   renderCoachView();
