@@ -2,7 +2,7 @@ import { state, els } from './state.js';
 import { init, goHome, goAdmin, handleMobileMatchNav, showSkill, closeSkillModal, showSection } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, handleDeleteMatch, renderManageForm } from './ui-league.js';
 import { handleOpenTeam, handleManageTeamDirect, handleEditTeam, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
-import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame, closePreMatchModal, changeInducement, setCustomInducement, confirmMatchStart, toggleStar } from './ui-match.js';
+import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame, closePreMatchModal, changeInducement, setCustomInducement, confirmMatchStart, toggleStar, randomMvp } from './ui-match.js';
 import { handleScanRepo, attachTeam, restoreLeague, deleteOrphanFile, deleteLeagueFolder } from './ui-admin.js';
 import { setStatus } from './utils.js';
 
@@ -45,12 +45,13 @@ window.closeActionSheet = closeActionSheet;
 window.handleSheetAction = handleSheetAction;
 window.toggleReroll = toggleReroll;
 
-// Chunk 2: Inducement Setup Exports
+// Chunk 2 & 4 Exports
 window.closePreMatchModal = closePreMatchModal;
 window.changeInducement = changeInducement;
 window.setCustomInducement = setCustomInducement;
 window.confirmMatchStart = confirmMatchStart;
 window.toggleStar = toggleStar;
+window.randomMvp = randomMvp;
 
 window.restoreLeague = restoreLeague;
 window.attachTeam = attachTeam;
