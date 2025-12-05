@@ -56,7 +56,7 @@ export async function handleScheduleMatch() {
   } catch(e) { setStatus(e.message, 'error'); }
 }
 
-// --- Pre-Match Setup ---
+// --- Pre-Match Setup (Chunk 2) ---
 
 export async function handleStartMatch(matchId) {
   setStatus('Loading match setup...');
@@ -105,26 +105,9 @@ function renderPreMatchSetup() {
   const list = state.gameData?.inducements || [];
   const stars = state.gameData?.starPlayers || [];
   
-  // Helper for Styles
-  const setHeaderStyle = (el, team) => {
-      const col = team.colors?.primary || '#222';
-      el.style.color = col;
-      el.style.textShadow = '1px 1px 0px rgba(0,0,0,0.1)';
-      el.style.fontSize = '1.4rem';
-      el.textContent = team.name;
-      
-      // Add Race Subtitle
-      const raceDiv = document.createElement('div');
-      raceDiv.style.fontSize = '0.8rem';
-      raceDiv.style.color = '#555';
-      raceDiv.style.fontWeight = 'normal';
-      raceDiv.textContent = team.race;
-      el.appendChild(raceDiv);
-  };
-
-  // Header Info
-  setHeaderStyle(els.preMatch.homeName, s.homeTeam);
-  setHeaderStyle(els.preMatch.awayName, s.awayTeam);
+  // Header Info: Styles injected directly
+  els.preMatch.homeName.innerHTML = `<span style="font-size:1.5rem; color:${s.homeTeam.colors.primary}">${s.homeTeam.name}</span><div style="font-size:0.8rem; color:#666">${s.homeTeam.race}</div>`;
+  els.preMatch.awayName.innerHTML = `<span style="font-size:1.5rem; color:${s.awayTeam.colors.primary}">${s.awayTeam.name}</span><div style="font-size:0.8rem; color:#666">${s.awayTeam.race}</div>`;
   
   els.preMatch.homeTv.textContent = (s.homeTv/1000) + 'k';
   els.preMatch.awayTv.textContent = (s.awayTv/1000) + 'k';
@@ -151,19 +134,19 @@ function renderPreMatchSetup() {
           html += `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #eee; padding-bottom:2px;">
                 <div style="font-size:0.85rem;">
-                    <div style="font-weight:bold;">${item.name}</div>
+                    <div>${item.name}</div>
                     <div style="color:#666">${item.cost/1000}k</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px;">
-                    <button onclick="window.changeInducement('${side}', '${item.name}', -1)" style="padding:0 5px; width:24px;">-</button>
+                    <button onclick="window.changeInducement('${side}', '${item.name}', -1)" style="padding:0 5px;">-</button>
                     <span style="font-weight:bold; width:20px; text-align:center;">${count}</span>
-                    <button onclick="window.changeInducement('${side}', '${item.name}', 1)" style="padding:0 5px; width:24px;">+</button>
+                    <button onclick="window.changeInducement('${side}', '${item.name}', 1)" style="padding:0 5px;">+</button>
                 </div>
             </div>
           `;
       });
       
-      // Star Players Logic
+      // Star Players
       const raceData = state.gameData?.races.find(r => r.name === teamRace);
       const teamTags = raceData ? [teamRace, ...(raceData.specialRules || [])] : [teamRace];
       
@@ -172,21 +155,27 @@ function renderPreMatchSetup() {
       });
       
       if(eligibleStars.length > 0) {
-          html += `<div style="font-weight:bold; margin-top:15px; border-bottom:2px solid #ccc; margin-bottom:5px;">Star Players</div>`;
+          html += `<div style="font-weight:bold; margin-top:10px; border-bottom:2px solid #ccc;">Star Players</div>`;
           eligibleStars.forEach(star => {
               const isHired = s.inducements[side][`Star: ${star.name}`] === 1;
-              const playTags = star.playsFor.join(', ');
+              // Determine reason
+              let reason = "";
+              if (star.playsFor.includes("Any")) reason = "Any";
+              else {
+                  const match = star.playsFor.find(t => teamTags.includes(t));
+                  if (match) reason = match;
+              }
+
               html += `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-bottom:1px solid #eee; padding-bottom:4px;">
-                    <div style="font-size:0.8rem; line-height:1.2;">
-                        <div style="font-weight:bold;">${star.name}</div>
-                        <div style="color:#444">${star.cost/1000}k - ${star.position || 'Star'}</div>
-                        <div style="color:#777; font-size:0.7rem; font-style:italic;">Plays for: ${playTags}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; border-bottom:1px solid #eee;">
+                    <div style="font-size:0.8rem;">
+                        <div>${star.name}</div>
+                        <div style="color:#666">${star.cost/1000}k - <span style="font-style:italic; font-size:0.75rem">(${reason})</span></div>
                     </div>
                     <div>
                         ${isHired 
-                          ? `<button onclick="window.toggleStar('${side}', '${star.name}', 0)" style="color:white; background:#d32f2f; border:1px solid #b71c1c; font-size:0.8rem; padding:4px 8px;">Remove</button>` 
-                          : `<button onclick="window.toggleStar('${side}', '${star.name}', 1)" style="color:white; background:#388e3c; border:1px solid #2e7d32; font-size:0.8rem; padding:4px 8px;">Hire</button>`
+                          ? `<button onclick="window.toggleStar('${side}', '${star.name}', 0)" style="color:red; font-size:0.8rem;">Remove</button>` 
+                          : `<button onclick="window.toggleStar('${side}', '${star.name}', 1)" style="color:green; font-size:0.8rem;">Hire</button>`
                         }
                     </div>
                 </div>
@@ -224,6 +213,7 @@ export function toggleStar(side, starName, val) {
 }
 
 export function setCustomInducement(side, val) {
+  // Deprecated in favor of explicit star list, but keeping for custom mercs if needed
   const cost = parseInt(val) || 0;
   state.setupMatch.inducements[side]['Mercenaries'] = cost;
   renderPreMatchSetup();
