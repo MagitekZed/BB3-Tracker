@@ -28,7 +28,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 3
     },
     {
       "number": 2,
@@ -54,7 +54,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 3
     },
     {
       "number": 3,
@@ -80,14 +80,14 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 8
     }
   ],
   "colors": {
     "primary": "#2b00ff",
     "secondary": "#7a7a7a"
   },
-  "treasury": 1000000,
+  "treasury": 41000000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
