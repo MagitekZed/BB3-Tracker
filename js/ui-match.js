@@ -2,7 +2,7 @@ import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, getContrastColor, applyTeamTheme } from './utils.js';
-import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill } from './ui-core.js';
+import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill, confirmModal } from './ui-core.js';
 import { handleOpenLeague } from './ui-league.js';
 import { calculateTeamValue } from './rules.js';
 
@@ -553,7 +553,9 @@ export async function handleCoachEndTurn() {
 }
 
 export async function handleCancelGame() {
-  if(!confirm("Cancel match?")) return;
+  const confirmed = await confirmModal("Cancel Game?", "Are you sure you want to cancel this match? It will be reverted to 'Scheduled' status.", "Cancel Game", true);
+  if(!confirmed) return;
+  
   const key = els.inputs.editKey.value;
   try {
     const mId = state.activeMatchData.matchId;
@@ -568,7 +570,9 @@ export async function handleCancelGame() {
 }
 
 export async function handleEndGame() {
-  if(!confirm("End game? Saves results.")) return;
+  const confirmed = await confirmModal("End Game?", "Finish the match and save the final score? This cannot be undone.", "End Game", false);
+  if(!confirmed) return;
+  
   const key = els.inputs.editKey.value;
   try {
     const d = state.activeMatchData;
