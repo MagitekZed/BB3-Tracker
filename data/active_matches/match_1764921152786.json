@@ -1,0 +1,239 @@
+{
+  "matchId": "match_1764921152786",
+  "leagueId": "league_three",
+  "round": 4,
+  "status": "in_progress",
+  "activeTeam": "home",
+  "home": {
+    "id": "team_one",
+    "name": "Team One",
+    "colors": {
+      "primary": "#222222",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Lineman",
+        "position": "Lineman",
+        "qty": 16,
+        "cost": 70000,
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 4,
+        "av": 9,
+        "skills": [],
+        "primary": [
+          "G",
+          "A"
+        ],
+        "secondary": [
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Lineman",
+        "position": "Lineman",
+        "qty": 16,
+        "cost": 70000,
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 4,
+        "av": 9,
+        "skills": [],
+        "primary": [
+          "G",
+          "A"
+        ],
+        "secondary": [
+          "S",
+          "P"
+        ],
+        "spp": 4,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Lineman",
+        "position": "Lineman",
+        "qty": 16,
+        "cost": 70000,
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 4,
+        "av": 9,
+        "skills": [],
+        "primary": [
+          "G",
+          "A"
+        ],
+        "secondary": [
+          "S",
+          "P"
+        ],
+        "spp": 4,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 1,
+    "apothecary": false,
+    "inducements": {},
+    "tv": 260000
+  },
+  "away": {
+    "id": "team_four",
+    "name": "Team Four",
+    "colors": {
+      "primary": "#ffc64d",
+      "secondary": "#d4d4d4"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": null,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": null,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Retainer Lineman",
+        "position": "Retainer Lineman",
+        "qty": 12,
+        "cost": 45000,
+        "ma": 6,
+        "st": 3,
+        "ag": 4,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Fend"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": null,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "inducements": {},
+    "tv": 135000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
