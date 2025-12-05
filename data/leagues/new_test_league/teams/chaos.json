@@ -27,7 +27,7 @@
         "A",
         "P"
       ],
-      "spp": 0
+      "spp": 7
     },
     {
       "number": 2,
@@ -52,7 +52,7 @@
         "A",
         "P"
       ],
-      "spp": 0
+      "spp": 2
     },
     {
       "number": 3,
@@ -77,7 +77,7 @@
         "A",
         "P"
       ],
-      "spp": 0
+      "spp": 2
     }
   ],
   "colors": {
@@ -90,5 +90,66 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 180000
+  "teamValue": 180000,
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "match_1764973027144",
+      "opponentName": "vampires",
+      "result": "Win",
+      "score": "1-0",
+      "winnings": 0,
+      "playerRecords": [
+        {
+          "name": "Beastman Runner",
+          "number": 1,
+          "sppGain": 7,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "name": "Beastman Runner",
+          "number": 2,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 1,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "name": "Beastman Runner",
+          "number": 3,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 1,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ]
+    }
+  ]
 }
