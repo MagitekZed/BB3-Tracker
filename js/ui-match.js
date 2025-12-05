@@ -105,7 +105,7 @@ function renderPreMatchSetup() {
   const list = state.gameData?.inducements || [];
   const stars = state.gameData?.starPlayers || [];
   
-  // Header Info: Improved Layout
+  // Header Info
   const headerHTML = `
      <div style="display:flex; justify-content:space-between; align-items:center; text-align:center;">
         <div style="flex:1; min-width:0;">
@@ -484,6 +484,7 @@ export function openPostGameModal() {
         homeMvp: null, awayMvp: null,
         injuries: []
     };
+    // Identify injuries
     const getInjuries = (roster, side) => roster.map((p, i) => ({ ...p, originalIdx: i, side })).filter(p => p.live.injured);
     state.postGame.injuries = [...getInjuries(d.home.roster, 'home'), ...getInjuries(d.away.roster, 'away')];
     renderPostGameStep();
@@ -655,19 +656,48 @@ export async function commitPostGame() {
     const key = els.inputs.editKey.value;
     const pg = state.postGame;
     const d = state.activeMatchData;
+    
     setStatus('Committing results...');
     try {
+        // Load Fresh Teams
         const homeT = await apiGet(PATHS.team(d.leagueId, d.home.id));
         const awayT = await apiGet(PATHS.team(d.leagueId, d.away.id));
-        const updateTeam = (team, matchSide, winnings, fans, mvpIdx) => {
+        
+        // Helper to load league to get season number
+        const leagueSettings = await apiGet(PATHS.leagueSettings(d.leagueId));
+        const currentSeason = leagueSettings.season || 1;
+
+        // Helper to process team updates AND history
+        const processTeamUpdates = (team, matchSide, winnings, fans, mvpIdx, opponentName, myScore, oppScore) => {
+            // 1. Update Treasury/Fans
             team.treasury = (team.treasury || 0) + (winnings * 1000);
             team.dedicatedFans = Math.max(1, (team.dedicatedFans || 1) + fans);
-            team.players.forEach((p, i) => {
+            
+            const playerRecords = [];
+
+            // 2. Update Players & Build History
+            team.players.forEach((p) => {
                 const matchP = d[matchSide].roster.find(mp => mp.number === p.number);
                 if (!matchP) return; 
+                
+                const isMvp = (matchP === d[matchSide].roster[mvpIdx]);
                 let sppGain = (matchP.live.td * 3) + (matchP.live.cas * 2) + (matchP.live.int * 2) + (matchP.live.comp * 1);
-                if (matchP === d[matchSide].roster[mvpIdx]) sppGain += 4;
+                if (isMvp) sppGain += 4;
+                
                 p.spp = (p.spp || 0) + sppGain;
+                
+                // Record for History
+                if (sppGain > 0 || matchP.live.foul > 0 || matchP.live.injured || isMvp) {
+                    playerRecords.push({
+                         name: p.name,
+                         number: p.number,
+                         sppGain,
+                         stats: { ...matchP.live },
+                         isMvp
+                    });
+                }
+
+                // Injuries
                 const injury = pg.injuries.find(inj => inj.side === matchSide && inj.originalIdx === d[matchSide].roster.indexOf(matchP));
                 if (injury && injury.outcome) {
                     if (injury.outcome === 'dead') { p.dead = true; } 
@@ -679,14 +709,34 @@ export async function commitPostGame() {
                     }
                 }
             });
+            
+            // 3. Filter Dead
             team.players = team.players.filter(p => !p.dead);
+
+            // 4. Push History
+            if (!team.history) team.history = [];
+            team.history.push({
+                season: currentSeason,
+                round: d.round,
+                matchId: d.matchId,
+                opponentName: opponentName,
+                result: myScore > oppScore ? 'Win' : myScore < oppScore ? 'Loss' : 'Draw',
+                score: `${myScore}-${oppScore}`,
+                winnings,
+                playerRecords
+            });
         };
-        updateTeam(homeT, 'home', pg.homeWinnings, pg.homeFans, pg.homeMvp);
-        updateTeam(awayT, 'away', pg.awayWinnings, pg.awayFans, pg.awayMvp);
+        
+        // Process both teams
+        processTeamUpdates(homeT, 'home', pg.homeWinnings, pg.homeFans, pg.homeMvp, d.away.name, d.home.score, d.away.score);
+        processTeamUpdates(awayT, 'away', pg.awayWinnings, pg.awayFans, pg.awayMvp, d.home.name, d.away.score, d.home.score);
+        
+        // Save Teams
         await apiSave(PATHS.team(d.leagueId, homeT.id), homeT, `Post-game ${d.matchId} Home`, key);
         await apiSave(PATHS.team(d.leagueId, awayT.id), awayT, `Post-game ${d.matchId} Away`, key);
-        const league = await apiGet(PATHS.leagueSettings(d.leagueId));
-        const m = league.matches.find(x => x.id === d.matchId);
+        
+        // Update League Match Report
+        const m = leagueSettings.matches.find(x => x.id === d.matchId);
         if(m) {
             m.status = 'completed';
             m.score = { home: d.home.score, away: d.away.score };
@@ -694,12 +744,29 @@ export async function commitPostGame() {
                 homeInflicted: d.home.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0),
                 awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
             };
+            // Save the Detailed Report in League Match History
+            m.report = {
+                home: {
+                    mvp: d.home.roster[pg.homeMvp]?.name || 'None',
+                    winnings: pg.homeWinnings,
+                    stats: d.home.roster.filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0).map(p => ({ name: p.name, live: p.live }))
+                },
+                away: {
+                    mvp: d.away.roster[pg.awayMvp]?.name || 'None',
+                    winnings: pg.awayWinnings,
+                    stats: d.away.roster.filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0).map(p => ({ name: p.name, live: p.live }))
+                }
+            };
         }
-        await apiSave(PATHS.leagueSettings(d.leagueId), league, `Complete match ${d.matchId}`, key);
+        
+        await apiSave(PATHS.leagueSettings(d.leagueId), leagueSettings, `Complete match ${d.matchId}`, key);
         await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
+        
+        // Reset and Go Home
         els.postGame.el.classList.add('hidden');
         handleOpenLeague(d.leagueId);
         setStatus('Match finalized successfully!', 'ok');
+        
     } catch(e) { setStatus(e.message, 'error'); }
 }
 
