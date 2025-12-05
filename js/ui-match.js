@@ -105,14 +105,26 @@ function renderPreMatchSetup() {
   const list = state.gameData?.inducements || [];
   const stars = state.gameData?.starPlayers || [];
   
-  // Header Info: Styles injected directly
-  els.preMatch.homeName.innerHTML = `<span style="font-size:1.5rem; color:${s.homeTeam.colors.primary}">${s.homeTeam.name}</span><div style="font-size:0.8rem; color:#666">${s.homeTeam.race}</div>`;
-  els.preMatch.awayName.innerHTML = `<span style="font-size:1.5rem; color:${s.awayTeam.colors.primary}">${s.awayTeam.name}</span><div style="font-size:0.8rem; color:#666">${s.awayTeam.race}</div>`;
+  // Header Info: Improved Layout
+  const headerHTML = `
+     <div style="display:flex; justify-content:space-between; align-items:center; text-align:center;">
+        <div style="flex:1; min-width:0;">
+           <h4 style="margin:0; color:${s.homeTeam.colors.primary}; font-size:1.4rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.homeTeam.name}</h4>
+           <div style="font-size:0.8rem; color:#666">${s.homeTeam.race}</div>
+           <div style="font-weight:bold; font-size:1.1rem">${(s.homeTv/1000)}k</div>
+        </div>
+        <div style="font-weight:bold; color:#666; padding:0 10px;">VS</div>
+        <div style="flex:1; min-width:0;">
+           <h4 style="margin:0; color:${s.awayTeam.colors.primary}; font-size:1.4rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.awayTeam.name}</h4>
+           <div style="font-size:0.8rem; color:#666">${s.awayTeam.race}</div>
+           <div style="font-weight:bold; font-size:1.1rem">${(s.awayTv/1000)}k</div>
+        </div>
+     </div>
+  `;
   
-  els.preMatch.homeTv.textContent = (s.homeTv/1000) + 'k';
-  els.preMatch.awayTv.textContent = (s.awayTv/1000) + 'k';
+  const cardEl = els.preMatch.el.querySelector('.card');
+  cardEl.innerHTML = headerHTML;
   
-  // Treasury Display
   els.preMatch.homeBank.textContent = (s.homeTeam.treasury || 0)/1000;
   els.preMatch.awayBank.textContent = (s.awayTeam.treasury || 0)/1000;
   els.preMatch.homePetty.textContent = s.pettyCash.home/1000;
@@ -458,6 +470,12 @@ export async function handleCancelGame() {
 // --- POST GAME SEQUENCE (CHUNK 4) ---
 
 export function openPostGameModal() {
+    // DISABLE POLLING: Critical to prevent overwrite
+    if (state.activeMatchPollInterval) {
+        clearInterval(state.activeMatchPollInterval);
+        state.activeMatchPollInterval = null;
+    }
+    
     const d = state.activeMatchData;
     state.postGame = {
         step: 1,
@@ -466,7 +484,6 @@ export function openPostGameModal() {
         homeMvp: null, awayMvp: null,
         injuries: []
     };
-    // Identify injuries
     const getInjuries = (roster, side) => roster.map((p, i) => ({ ...p, originalIdx: i, side })).filter(p => p.live.injured);
     state.postGame.injuries = [...getInjuries(d.home.roster, 'home'), ...getInjuries(d.away.roster, 'away')];
     renderPostGameStep();
