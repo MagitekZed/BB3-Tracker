@@ -90,7 +90,7 @@
       "round": 4,
       "homeTeamId": "team_two",
       "awayTeamId": "team_four",
-      "status": "in_progress",
+      "status": "scheduled",
       "date": "2025-12-04"
     }
   ]
