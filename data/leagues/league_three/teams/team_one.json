@@ -24,7 +24,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 3
     },
     {
       "number": 2,
@@ -46,7 +46,7 @@
         "S",
         "P"
       ],
-      "spp": 4
+      "spp": 7
     },
     {
       "number": 3,
@@ -68,7 +68,7 @@
         "S",
         "P"
       ],
-      "spp": 4
+      "spp": 11
     }
   ],
   "colors": {
@@ -77,6 +77,6 @@
   },
   "apothecary": false,
   "rerolls": 1,
-  "treasury": 0,
-  "dedicatedFans": 1
+  "treasury": 50000000,
+  "dedicatedFans": 2
 }
