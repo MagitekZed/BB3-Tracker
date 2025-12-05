@@ -3,7 +3,7 @@ import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, normalizeName } from './utils.js';
 import { computeStandings } from './rules.js';
-import { showSection, updateBreadcrumbs, setActiveNav, goHome } from './ui-core.js';
+import { showSection, updateBreadcrumbs, setActiveNav, goHome, confirmModal } from './ui-core.js';
 import { handleOpenTeam, handleEditTeam, renderTeamEditor } from './ui-team.js';
 import { handleStartMatch, handleOpenScoreboard } from './ui-match.js';
 
@@ -126,7 +126,9 @@ export function renderMatchesList(league) {
 }
 
 export async function handleDeleteMatch(matchId) {
-  if(!confirm("Permanently delete match record?")) return;
+  const confirmed = await confirmModal("Delete Match?", "Permanently delete this match record?", "Delete", true);
+  if(!confirmed) return;
+  
   const key = els.inputs.editKey.value; if (!key) return setStatus('Edit key required', 'error');
   try {
     const l = state.currentLeague; l.matches = l.matches.filter(m => m.id !== matchId);
@@ -229,7 +231,9 @@ function renderManageTeamsList() {
 
 export async function handleDeleteLeague() {
   const l = state.dirtyLeague;
-  if(!confirm(`DELETE ENTIRE LEAGUE "${l.name}"?`)) return;
+  const confirmed = await confirmModal("Delete League?", `WARNING: This will permanently delete the league "${l.name}" and ALL associated teams. This cannot be undone.`, "Delete Forever", true);
+  if(!confirmed) return;
+  
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
   try {
