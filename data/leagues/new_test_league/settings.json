@@ -20,6 +20,16 @@
         "primary": "#ff0000",
         "secondary": "#0d0d0d"
       }
+    },
+    {
+      "id": "vampires",
+      "name": "vampires",
+      "race": "Vampire",
+      "coachName": "",
+      "colors": {
+        "primary": "#e100ff",
+        "secondary": "#c9c9c9"
+      }
     }
   ],
   "matches": []
