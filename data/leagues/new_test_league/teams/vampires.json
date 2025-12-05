@@ -1,0 +1,82 @@
+{
+  "id": "vampires",
+  "name": "vampires",
+  "race": "Vampire",
+  "coachName": "",
+  "players": [
+    {
+      "number": 1,
+      "name": "Thrall Lineman",
+      "position": "Thrall Lineman",
+      "qty": 16,
+      "cost": 40000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 2,
+      "name": "Thrall Lineman",
+      "position": "Thrall Lineman",
+      "qty": 16,
+      "cost": 40000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 3,
+      "name": "Thrall Lineman",
+      "position": "Thrall Lineman",
+      "qty": 16,
+      "cost": 40000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#e100ff",
+    "secondary": "#c9c9c9"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 120000
+}
