@@ -1,0 +1,26 @@
+{
+  "id": "test_league_again",
+  "name": "test league again",
+  "season": 1,
+  "status": "upcoming",
+  "settings": {
+    "pointsWin": 3,
+    "pointsDraw": 1,
+    "pointsLoss": 0,
+    "maxTeams": 16,
+    "lockTeams": false
+  },
+  "teams": [
+    {
+      "id": "team",
+      "name": "team",
+      "race": "Amazon",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
+    }
+  ],
+  "matches": []
+}
