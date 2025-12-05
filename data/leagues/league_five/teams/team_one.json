@@ -1,0 +1,107 @@
+{
+  "id": "team_one",
+  "name": "Team One",
+  "race": "Human",
+  "coachName": "",
+  "players": [
+    {
+      "number": 1,
+      "name": "Lineman",
+      "position": "Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 2,
+      "name": "Lineman",
+      "position": "Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 3,
+      "name": "Lineman",
+      "position": "Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 4,
+      "name": "Lineman",
+      "position": "Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#ff0000",
+    "secondary": "#c5a059"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 200000
+}
