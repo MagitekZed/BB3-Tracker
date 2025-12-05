@@ -1,0 +1,26 @@
+{
+  "id": "new_test_league",
+  "name": "new test league",
+  "season": 1,
+  "status": "upcoming",
+  "settings": {
+    "pointsWin": 3,
+    "pointsDraw": 1,
+    "pointsLoss": 0,
+    "maxTeams": 16,
+    "lockTeams": false
+  },
+  "teams": [
+    {
+      "id": "chaos",
+      "name": "chaos",
+      "race": "Chaos Chosen",
+      "coachName": "",
+      "colors": {
+        "primary": "#ff0000",
+        "secondary": "#0d0d0d"
+      }
+    }
+  ],
+  "matches": []
+}
