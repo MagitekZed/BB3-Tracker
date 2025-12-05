@@ -1,0 +1,324 @@
+{
+  "matchId": "match_1764891842892",
+  "leagueId": "league_four",
+  "round": 2,
+  "status": "in_progress",
+  "activeTeam": "home",
+  "home": {
+    "id": "norse",
+    "name": "Norse",
+    "colors": {
+      "primary": "#2b00ff",
+      "secondary": "#7a7a7a"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 3,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 3,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 8,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 99,
+        "name": "Grombrindal",
+        "position": "Star Player",
+        "ma": 5,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 10,
+        "skills": [
+          "Block",
+          "Dauntless",
+          "Loner (4+)",
+          "Mighty Blow (+1)",
+          "Stand Firm",
+          "Thick Skull"
+        ],
+        "cost": 210000,
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {
+      "Star: Grim Ironjaw": 0,
+      "Star: Griff Oberwald": 0,
+      "Biased Referee": 1,
+      "Wandering Apothecary": 1,
+      "Halfling Master Chef": 1,
+      "Star: Grombrindal": 1
+    },
+    "tv": 150000
+  },
+  "away": {
+    "id": "amazons",
+    "name": "Amazons",
+    "colors": {
+      "primary": "#ff0000",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 3,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 6,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 1,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 99,
+        "name": "Morg 'n' Thorg",
+        "position": "Star Player",
+        "ma": 6,
+        "st": 6,
+        "ag": 3,
+        "pa": 4,
+        "av": 11,
+        "skills": [
+          "Block",
+          "Loner (4+)",
+          "Mighty Blow (+2)",
+          "Thick Skull",
+          "Throw Team-mate"
+        ],
+        "cost": 430000,
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {
+      "Mortuary Assistant": 1,
+      "Riotous Rookies": 1,
+      "Wizard": 1,
+      "Bloodweiser Keg": 1,
+      "Star: Morg 'n' Thorg": 1
+    },
+    "tv": 150000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
