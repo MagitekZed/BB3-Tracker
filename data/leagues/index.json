@@ -28,5 +28,11 @@
     "name": "League X",
     "season": 1,
     "status": "upcoming"
+  },
+  {
+    "id": "league_y",
+    "name": "League Y",
+    "season": 1,
+    "status": "upcoming"
   }
 ]
