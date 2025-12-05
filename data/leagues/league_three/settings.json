@@ -84,22 +84,6 @@
         "homeInflicted": 1,
         "awayInflicted": 1
       }
-    },
-    {
-      "id": "match_1764820011773",
-      "round": 3,
-      "homeTeamId": "team_two",
-      "awayTeamId": "team_three",
-      "status": "completed",
-      "date": "2025-12-04",
-      "score": {
-        "home": 1,
-        "away": 0
-      },
-      "casualties": {
-        "homeInflicted": 0,
-        "awayInflicted": 0
-      }
     }
   ]
 }
