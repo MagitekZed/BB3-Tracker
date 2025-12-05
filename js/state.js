@@ -10,6 +10,17 @@ export const state = {
   activeMatchPollInterval: null,
   coachSide: null, 
   
+  // Pre-Match Setup State
+  setupMatch: {
+    matchId: null,
+    homeTeam: null,
+    awayTeam: null,
+    homeTv: 0,
+    awayTv: 0,
+    pettyCash: { home: 0, away: 0 },
+    inducements: { home: {}, away: {} } // Stores { 'Wizard': 1, 'Keg': 2 }
+  },
+
   // Navigation State
   viewLeagueId: null,
   viewTeamId: null,
@@ -52,6 +63,26 @@ export const els = {
     home: document.getElementById('schedModalHome'),
     away: document.getElementById('schedModalAway'),
     addBtn: document.getElementById('schedModalAddBtn')
+  },
+  preMatch: {
+    el: document.getElementById('preMatchModal'),
+    homeName: document.getElementById('pmHomeName'),
+    awayName: document.getElementById('pmAwayName'),
+    homeTv: document.getElementById('pmHomeTV'),
+    awayTv: document.getElementById('pmAwayTV'),
+    homeBank: document.getElementById('pmHomeBank'),
+    awayBank: document.getElementById('pmAwayBank'),
+    homePetty: document.getElementById('pmHomePetty'),
+    awayPetty: document.getElementById('pmAwayPetty'),
+    homeTotal: document.getElementById('pmHomeTotal'),
+    awayTotal: document.getElementById('pmAwayTotal'),
+    homeList: document.getElementById('pmHomeInducements'),
+    awayList: document.getElementById('pmAwayInducements'),
+    homeSpent: document.getElementById('pmHomeSpent'),
+    awaySpent: document.getElementById('pmAwaySpent'),
+    homeOver: document.getElementById('pmHomeOver'),
+    awayOver: document.getElementById('pmAwayOver'),
+    startBtn: document.getElementById('pmStartBtn')
   },
   actionSheet: {
     el: document.getElementById('playerActionSheet'),
@@ -100,7 +131,7 @@ export const els = {
     manageBack: document.getElementById('leagueManageBackBtn'),
     teamManage: document.getElementById('teamManageBtn'),
     teamBack: document.getElementById('teamBackBtn'),
-    leagueBack: document.getElementById('leagueBackBtn'), // Added safely in case it exists in future HTML
+    leagueBack: document.getElementById('leagueBackBtn'), 
     sbBack: document.getElementById('scoreboardBackToMatchBtn'),
     sbRefresh: document.getElementById('scoreboardRefreshBtn'),
     endGame: document.getElementById('endGameBtn'),
