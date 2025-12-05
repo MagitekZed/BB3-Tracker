@@ -449,14 +449,6 @@ body.mode-coach .coach-header {
 .action-sheet-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); pointer-events: auto; }
 .action-sheet-content { background: var(--card-bg); width: 100%; max-height: 80vh; border-top-left-radius: 16px; border-top-right-radius: 16px; padding: 1.5rem; box-sizing: border-box; transform: translateY(0); transition: transform 0.3s ease-out; pointer-events: auto; position: relative; box-shadow: 0 -4px 20px rgba(0,0,0,0.5); border-top: 4px solid var(--primary-red); }
 .action-sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-.sheet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.sheet-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; border-radius: 8px; font-weight: bold; font-size: 1rem; border: 1px solid rgba(0,0,0,0.2); color: white; transition: transform 0.1s; text-shadow: 1px 1px 0 rgba(0,0,0,0.3); }
-.sheet-btn:active { transform: scale(0.95); }
-.sheet-btn .emoji { font-size: 2rem; margin-bottom: 0.5rem; }
-.btn-td { background: var(--pitch-green); }
-.btn-cas { background: var(--primary-red); }
-.btn-inj { background: #e67e22; }
-.btn-used { background: #7f8c8d; }
 
 /* =========================================
    7. PLAYER CARD (ACTION SHEET)
@@ -513,6 +505,10 @@ body.mode-coach .coach-header {
 .btn-comp { background: #0288d1; } /* Blue */
 .btn-int { background: #512da8; }  /* Purple */
 .btn-foul { background: #333; }    /* Black (Ref) */
+.btn-td { background: var(--pitch-green); }
+.btn-cas { background: var(--primary-red); }
+.btn-inj { background: #e67e22; }
+.btn-used { background: #7f8c8d; }
 
 /* Roster Badges */
 .stat-badge.comp { background: #b3e5fc; color: #01579b; }
