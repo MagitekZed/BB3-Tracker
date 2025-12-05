@@ -632,15 +632,14 @@ body.mode-coach .coach-header {
   padding: 0px 6px; font-size: 0.8rem; cursor: pointer; border: 1px solid #aaa; background: #eee; border-radius: 2px;
 }
 
-/* INDUCEMENT BAR (Coach View) */
+/* INDUCEMENT BAR (Coach View) - Wrap Instead of Scroll */
 .inducement-bar {
   background: #333;
   border-bottom: 1px solid #555;
   padding: 0.5rem;
   display: flex;
   gap: 0.5rem;
-  overflow-x: auto;
-  white-space: nowrap;
+  flex-wrap: wrap; /* Allow wrapping */
   align-items: center;
 }
 .inducement-title {
@@ -669,7 +668,7 @@ body.mode-coach .coach-header {
 .inducement-chip:hover { background: #555; border-color: var(--gold-accent); }
 .inducement-chip:active { transform: translateY(1px); }
 
-/* Jumbotron Icons */
+/* Jumbotron Icons - With Background */
 .jumbotron-icons {
   margin-top: 0.5rem;
   font-size: 1.5rem;
@@ -677,4 +676,14 @@ body.mode-coach .coach-header {
   gap: 0.5rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+.jumbo-icon {
+  background: rgba(0,0,0,0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer; /* Make them clickable */
+}
+.jumbo-icon:hover {
+  background: rgba(255,255,255,0.2);
 }
