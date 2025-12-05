@@ -16,11 +16,5 @@
     "name": "League Four",
     "season": 1,
     "status": "upcoming"
-  },
-  {
-    "id": "league_five",
-    "name": "League Five",
-    "season": 1,
-    "status": "upcoming"
   }
 ]
