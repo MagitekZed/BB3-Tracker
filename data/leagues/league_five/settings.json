@@ -20,6 +20,16 @@
         "primary": "#ff0000",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "team_two",
+      "name": "Team Two",
+      "race": "Orc",
+      "coachName": "",
+      "colors": {
+        "primary": "#028000",
+        "secondary": "#737373"
+      }
     }
   ],
   "matches": []
