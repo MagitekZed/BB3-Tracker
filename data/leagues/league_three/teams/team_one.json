@@ -46,7 +46,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 4
     },
     {
       "number": 3,
@@ -76,5 +76,7 @@
     "secondary": "#c5a059"
   },
   "apothecary": false,
-  "rerolls": 1
+  "rerolls": 1,
+  "treasury": 0,
+  "dedicatedFans": 1
 }
