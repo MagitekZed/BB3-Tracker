@@ -110,9 +110,9 @@
     "rerolls": 0,
     "apothecary": false,
     "inducements": {
-      "Bloodweiser Keg": 0,
-      "Bribes": 0,
-      "Extra Team Training": 0,
+      "Bloodweiser Keg": 1,
+      "Bribes": 1,
+      "Extra Team Training": 1,
       "Halfling Master Chef": 0,
       "Mortuary Assistant": 0,
       "Plague Doctor": 1,
