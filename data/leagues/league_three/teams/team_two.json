@@ -75,10 +75,83 @@
         "S"
       ],
       "spp": 0
+    },
+    {
+      "number": 4,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Eagle Warrior Linewoman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 5,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Eagle Warrior Linewoman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 6,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Eagle Warrior Linewoman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
     }
   ],
   "colors": {
     "primary": "#ff0000",
     "secondary": "#c5a059"
-  }
+  },
+  "teamValue": 300000
 }
