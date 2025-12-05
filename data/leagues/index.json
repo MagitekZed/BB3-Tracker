@@ -22,11 +22,5 @@
     "name": "League Five",
     "season": 1,
     "status": "upcoming"
-  },
-  {
-    "id": "test_league_again",
-    "name": "test league again",
-    "season": 1,
-    "status": "upcoming"
   }
 ]
