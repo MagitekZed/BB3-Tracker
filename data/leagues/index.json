@@ -22,5 +22,11 @@
     "name": "League Five",
     "season": 1,
     "status": "upcoming"
+  },
+  {
+    "id": "league_x",
+    "name": "League X",
+    "season": 1,
+    "status": "upcoming"
   }
 ]
