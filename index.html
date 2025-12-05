@@ -203,40 +203,42 @@
          </div>
       </div>
 
-      <div class="sheet-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1rem;">
-         <!-- Home Shop -->
-         <div class="panel-styled" style="padding:0.5rem;">
-            <div style="border-bottom:2px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem; text-align:center;">
-               <strong>Home Treasury</strong>
-               <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:0.25rem;">
-                 <span>Bank: <span id="pmHomeBank">0</span>k</span>
-                 <span style="color:green">Petty: <span id="pmHomePetty">0</span>k</span>
-               </div>
-               <div style="font-weight:bold; margin-top:0.25rem;">Total: <span id="pmHomeTotal">0</span>k</div>
-            </div>
-            <div id="pmHomeInducements"></div>
-            <div style="margin-top:0.5rem; font-size:0.85rem; color:#444">
-               <strong>Spent:</strong> <span id="pmHomeSpent">0</span>k 
-               <span id="pmHomeOver" style="color:red; font-weight:bold; display:none;">(OVER BUDGET)</span>
-            </div>
-         </div>
+      <div class="modal-body-scroll">
+        <div class="sheet-grid pre-match-grid">
+           <!-- Home Shop -->
+           <div class="panel-styled" style="padding:0.5rem;">
+              <div style="border-bottom:2px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem; text-align:center;">
+                 <strong>Home Treasury</strong>
+                 <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:0.25rem;">
+                   <span>Bank: <span id="pmHomeBank">0</span>k</span>
+                   <span style="color:green">Petty: <span id="pmHomePetty">0</span>k</span>
+                 </div>
+                 <div style="font-weight:bold; margin-top:0.25rem;">Total: <span id="pmHomeTotal">0</span>k</div>
+              </div>
+              <div id="pmHomeInducements"></div>
+              <div style="margin-top:0.5rem; font-size:0.85rem; color:#444">
+                 <strong>Spent:</strong> <span id="pmHomeSpent">0</span>k 
+                 <span id="pmHomeOver" style="color:red; font-weight:bold; display:none;">(OVER BUDGET)</span>
+              </div>
+           </div>
 
-         <!-- Away Shop -->
-         <div class="panel-styled" style="padding:0.5rem;">
-            <div style="border-bottom:2px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem; text-align:center;">
-               <strong>Away Treasury</strong>
-               <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:0.25rem;">
-                 <span>Bank: <span id="pmAwayBank">0</span>k</span>
-                 <span style="color:green">Petty: <span id="pmAwayPetty">0</span>k</span>
-               </div>
-               <div style="font-weight:bold; margin-top:0.25rem;">Total: <span id="pmAwayTotal">0</span>k</div>
-            </div>
-            <div id="pmAwayInducements"></div>
-            <div style="margin-top:0.5rem; font-size:0.85rem; color:#444">
-               <strong>Spent:</strong> <span id="pmAwaySpent">0</span>k 
-               <span id="pmAwayOver" style="color:red; font-weight:bold; display:none;">(OVER BUDGET)</span>
-            </div>
-         </div>
+           <!-- Away Shop -->
+           <div class="panel-styled" style="padding:0.5rem;">
+              <div style="border-bottom:2px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem; text-align:center;">
+                 <strong>Away Treasury</strong>
+                 <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:0.25rem;">
+                   <span>Bank: <span id="pmAwayBank">0</span>k</span>
+                   <span style="color:green">Petty: <span id="pmAwayPetty">0</span>k</span>
+                 </div>
+                 <div style="font-weight:bold; margin-top:0.25rem;">Total: <span id="pmAwayTotal">0</span>k</div>
+              </div>
+              <div id="pmAwayInducements"></div>
+              <div style="margin-top:0.5rem; font-size:0.85rem; color:#444">
+                 <strong>Spent:</strong> <span id="pmAwaySpent">0</span>k 
+                 <span id="pmAwayOver" style="color:red; font-weight:bold; display:none;">(OVER BUDGET)</span>
+              </div>
+           </div>
+        </div>
       </div>
       
       <div class="modal-actions" style="margin-top:1rem; border-top:1px solid #ccc; padding-top:1rem;">
