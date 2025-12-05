@@ -26,7 +26,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": null
     },
     {
       "number": 2,
@@ -50,7 +50,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": null
     },
     {
       "number": 3,
@@ -74,7 +74,7 @@
         "S",
         "P"
       ],
-      "spp": 4
+      "spp": null
     }
   ],
   "colors": {
