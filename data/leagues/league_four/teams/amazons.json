@@ -26,7 +26,7 @@
         "A",
         "S"
       ],
-      "spp": 3
+      "spp": 5
     },
     {
       "number": 2,
@@ -50,7 +50,7 @@
         "A",
         "S"
       ],
-      "spp": 6
+      "spp": 10
     },
     {
       "number": 3,
@@ -74,18 +74,18 @@
         "A",
         "S"
       ],
-      "spp": 1
+      "spp": 7
     }
   ],
   "colors": {
     "primary": "#ff0000",
     "secondary": "#c5a059"
   },
-  "treasury": 51000000,
+  "treasury": 51040000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
-  "dedicatedFans": 2,
+  "dedicatedFans": 3,
   "teamValue": 150000
 }
