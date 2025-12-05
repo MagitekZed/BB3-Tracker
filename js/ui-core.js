@@ -121,3 +121,36 @@ export function handleMobileMatchNav() {
   }
   setActiveNav('match');
 }
+
+// --- NEW: Generic Confirmation Modal ---
+export function confirmModal(title, message, confirmLabel = 'Confirm', isDanger = false) {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '10000';
+    
+    const btnClass = isDanger ? 'danger-btn' : 'primary-btn';
+
+    modal.innerHTML = `
+      <div class="modal-content">
+          <div class="modal-header"><h3>${title}</h3></div>
+          <p>${message}</p>
+          <div class="modal-actions">
+              <button id="confirmCancelBtn" class="secondary-btn">Cancel</button>
+              <button id="confirmOkBtn" class="${btnClass}">${confirmLabel}</button>
+          </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    const close = (val) => {
+        modal.remove();
+        resolve(val);
+    };
+
+    modal.querySelector('#confirmCancelBtn').onclick = () => close(false);
+    modal.querySelector('#confirmOkBtn').onclick = () => close(true);
+  });
+}
