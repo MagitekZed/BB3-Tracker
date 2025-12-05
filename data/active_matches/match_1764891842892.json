@@ -11,7 +11,7 @@
       "primary": "#2b00ff",
       "secondary": "#7a7a7a"
     },
-    "score": 0,
+    "score": 1,
     "roster": [
       {
         "number": 1,
@@ -42,7 +42,7 @@
           "used": false,
           "injured": false,
           "sentOff": false,
-          "td": 0,
+          "td": 1,
           "cas": 0,
           "int": 0,
           "comp": 0,
