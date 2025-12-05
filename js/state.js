@@ -18,7 +18,19 @@ export const state = {
     homeTv: 0,
     awayTv: 0,
     pettyCash: { home: 0, away: 0 },
-    inducements: { home: {}, away: {} } // Stores { 'Wizard': 1, 'Keg': 2 }
+    inducements: { home: {}, away: {} }
+  },
+
+  // Post-Game State
+  postGame: {
+      step: 1,
+      homeWinnings: 0,
+      awayWinnings: 0,
+      homeFans: 0,
+      awayFans: 0,
+      homeMvp: null, // player index
+      awayMvp: null,
+      injuries: [] // list of { side: 'home'|'away', playerIdx: 0, result: '' }
   },
 
   // Navigation State
@@ -83,6 +95,12 @@ export const els = {
     homeOver: document.getElementById('pmHomeOver'),
     awayOver: document.getElementById('pmAwayOver'),
     startBtn: document.getElementById('pmStartBtn')
+  },
+  postGame: {
+      el: document.getElementById('postGameModal'),
+      body: document.getElementById('postGameBody'),
+      nextBtn: document.getElementById('pgNextBtn'),
+      backBtn: document.getElementById('pgBackBtn')
   },
   actionSheet: {
     el: document.getElementById('playerActionSheet'),
