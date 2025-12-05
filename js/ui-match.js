@@ -105,30 +105,14 @@ function renderPreMatchSetup() {
   const list = state.gameData?.inducements || [];
   const stars = state.gameData?.starPlayers || [];
   
-  // Header Info: Improved Layout (Fix for narrowing)
-  // Using block display for names to ensure they take space, wrapped in a flexible container
-  const headerHTML = `
-     <div style="display:flex; justify-content:space-between; align-items:center; text-align:center;">
-        <div style="flex:1; min-width:0;">
-           <h4 style="margin:0; color:${s.homeTeam.colors.primary}; font-size:1.4rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.homeTeam.name}</h4>
-           <div style="font-size:0.8rem; color:#666">${s.homeTeam.race}</div>
-           <div style="font-weight:bold; font-size:1.1rem">${(s.homeTv/1000)}k</div>
-        </div>
-        <div style="font-weight:bold; color:#666; padding:0 10px;">VS</div>
-        <div style="flex:1; min-width:0;">
-           <h4 style="margin:0; color:${s.awayTeam.colors.primary}; font-size:1.4rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.awayTeam.name}</h4>
-           <div style="font-size:0.8rem; color:#666">${s.awayTeam.race}</div>
-           <div style="font-weight:bold; font-size:1.1rem">${(s.awayTv/1000)}k</div>
-        </div>
-     </div>
-  `;
+  // Header Info: Styles injected directly
+  els.preMatch.homeName.innerHTML = `<span style="font-size:1.5rem; color:${s.homeTeam.colors.primary}">${s.homeTeam.name}</span><div style="font-size:0.8rem; color:#666">${s.homeTeam.race}</div>`;
+  els.preMatch.awayName.innerHTML = `<span style="font-size:1.5rem; color:${s.awayTeam.colors.primary}">${s.awayTeam.name}</span><div style="font-size:0.8rem; color:#666">${s.awayTeam.race}</div>`;
   
-  // Inject into the card container manually to override previous rigid structure
-  const cardEl = els.preMatch.el.querySelector('.card');
-  cardEl.innerHTML = headerHTML;
+  els.preMatch.homeTv.textContent = (s.homeTv/1000) + 'k';
+  els.preMatch.awayTv.textContent = (s.awayTv/1000) + 'k';
   
-  // Treasury Display - We update these, but the elements might need re-binding if we wiped parent?
-  // No, homeBank etc are in the next container.
+  // Treasury Display
   els.preMatch.homeBank.textContent = (s.homeTeam.treasury || 0)/1000;
   els.preMatch.awayBank.textContent = (s.awayTeam.treasury || 0)/1000;
   els.preMatch.homePetty.textContent = s.pettyCash.home/1000;
@@ -522,13 +506,19 @@ export function renderPostGameStep() {
             return `
             <div class="panel-styled" style="box-shadow: 6px 6px 0 ${team.colors.secondary}; border: 1px solid #333; margin-bottom: 1rem;">
                 <div style="font-family: 'Russo One', sans-serif; font-size: 1.6rem; color: ${team.colors.primary}; text-transform: uppercase; margin-bottom: 0.5rem; line-height:1;">${team.name}</div>
-                <div style="display:grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items:center; margin-bottom: 0.5rem;">
+                
+                <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.5rem;">
                     <label style="font-weight:bold; color:#444;">Winnings (k)</label>
-                    <input type="number" value="${winnings}" style="width: 80px; padding: 6px; font-weight:bold;" onchange="state.postGame.${winningsKey}=parseInt(this.value)">
+                    <input type="number" value="${winnings}" style="width: 100%; padding: 8px; font-weight:bold; box-sizing:border-box;" onchange="state.postGame.${winningsKey}=parseInt(this.value)">
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items:center;">
+                
+                <div style="display:flex; flex-direction:column; gap:0.5rem;">
                     <label style="font-weight:bold; color:#444;">Fan Factor</label>
-                    <select style="width: 100px; padding: 6px;" onchange="state.postGame.${fansKey}=parseInt(this.value)"><option value="0">Same</option><option value="1">+1</option><option value="-1">-1</option></select>
+                    <select style="width: 100%; padding: 8px; box-sizing:border-box;" onchange="state.postGame.${fansKey}=parseInt(this.value)">
+                        <option value="0">Same</option>
+                        <option value="1">+1</option>
+                        <option value="-1">-1</option>
+                    </select>
                 </div>
             </div>`;
         };
