@@ -108,6 +108,14 @@
       "awayTeamId": "chaos",
       "status": "in_progress",
       "date": "2025-12-05"
+    },
+    {
+      "id": "match_1764975255989",
+      "round": 3,
+      "homeTeamId": "chaos",
+      "awayTeamId": "vampires",
+      "status": "scheduled",
+      "date": "2025-12-05"
     }
   ]
 }
