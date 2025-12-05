@@ -250,6 +250,9 @@ button:hover { filter: brightness(1.05); }
 }
 
 input, select { padding: 0.5rem; border: 1px solid #999; border-radius: 4px; font-size: 1rem; background: #fff; }
+/* Modal specific input/select styles */
+.modal-content input, .modal-content select { font-weight: bold; color: #333; }
+
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
 .form-field { display: flex; flex-direction: column; }
 .form-field label { font-size: 0.85rem; font-weight: bold; color: #444; margin-bottom: 0.25rem; }
