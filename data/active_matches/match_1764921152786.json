@@ -216,14 +216,14 @@
         ],
         "spp": null,
         "live": {
-          "used": false,
+          "used": true,
           "injured": false,
           "sentOff": false,
           "td": 0,
           "cas": 0,
           "int": 0,
           "comp": 0,
-          "foul": 0
+          "foul": 1
         }
       }
     ],
