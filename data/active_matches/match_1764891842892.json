@@ -3,7 +3,7 @@
   "leagueId": "league_four",
   "round": 2,
   "status": "in_progress",
-  "activeTeam": "home",
+  "activeTeam": "away",
   "home": {
     "id": "norse",
     "name": "Norse",
@@ -317,7 +317,7 @@
     "tv": 150000
   },
   "turn": {
-    "home": 0,
+    "home": 1,
     "away": 0
   },
   "log": []
