@@ -313,7 +313,7 @@ export async function handleOpenScoreboard(matchId) {
   } catch (e) { setStatus(e.message, 'error'); }
 }
 
-// --- Jumbotron & Coach Views ---
+// --- Jumbotron & Coach Views (INDUCEMENTS UPDATED) ---
 
 export function renderJumbotron() {
   const d = state.activeMatchData;
@@ -331,14 +331,19 @@ export function renderJumbotron() {
   els.containers.sbAwayRoster.innerHTML = `<div class="roster-header" style="background:${d.away.colors?.primary||'#222'}; color:${getContrastColor(d.away.colors?.primary||'#222')}">Away - ${d.away.name}</div>` + renderJumbotronInducements(d.away) + renderLiveRoster(d.away.roster, 'away', true);
 }
 
+// Helper: Jumbotron Icons
 function renderJumbotronInducements(team) {
     if (!team.inducements && !team.apothecary) return '';
-    const mapping = { "Bloodweiser Keg": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", "Halfling Master Chef": "👨‍🍳", "Mortuary Assistant": "⚰️", "Plague Doctor": "🧪", "Riotous Rookies": "😡", "Wandering Apothecary": "💊", "Wizard": "⚡", "Biased Referee": "🃏" };
+    const mapping = { 
+        "Bloodweiser Keg": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", 
+        "Halfling Master Chef": "👨‍🍳", "Mortuary Assistant": "⚰️", "Plague Doctor": "🧪",
+        "Riotous Rookies": "😡", "Wandering Apothecary": "💊", "Wizard": "⚡", "Biased Referee": "🃏"
+    };
     let html = '<div class="jumbotron-icons">';
-    if (team.apothecary) html += `<span title="Apothecary">🚑</span>`;
+    if (team.apothecary) html += `<span title="Apothecary" class="jumbo-icon">🚑</span>`;
     if (team.inducements) {
         Object.entries(team.inducements).forEach(([k, v]) => {
-            if (v > 0 && mapping[k]) html += `<span title="${k}">${mapping[k].repeat(v)}</span>`;
+            if (v > 0 && mapping[k]) html += `<span title="${k}" class="jumbo-icon">${mapping[k].repeat(v)}</span>`;
         });
     }
     html += '</div>';
@@ -375,9 +380,13 @@ export function renderCoachView() {
   for(let i=0; i<team.rerolls; i++) pips += `<div class="reroll-pip ${i < (team.rerolls) ? 'active' : ''}" onclick="window.toggleReroll('${side}', ${i})"></div>`;
   els.containers.coachRerolls.innerHTML = pips;
   
-  // Inducement Bar
+  // New Inducement Bar logic
   let inducementsHtml = `<div class="inducement-bar"><div class="inducement-title">INDUCEMENTS <span onclick="window.openInGameShop('${side}')" style="cursor:pointer; font-size:1.2rem;">⚙️</span></div>`;
-  if (team.apothecary) inducementsHtml += `<div class="inducement-chip" onclick="if(confirm('Use Apothecary?')){ /* logic for apo use */ }">🚑 Apothecary</div>`;
+  
+  if (team.apothecary) {
+      inducementsHtml += `<div class="inducement-chip" onclick="window.handleUseInducement('${side}', 'Apothecary')">🚑 Apothecary</div>`;
+  }
+  
   if (team.inducements) {
       const mapping = { "Bloodweiser Keg": "🍺", "Bribes": "💰", "Wizard": "⚡", "Halfling Master Chef": "👨‍🍳", "Wandering Apothecary": "💊" };
       Object.entries(team.inducements).forEach(([k, v]) => {
@@ -388,6 +397,7 @@ export function renderCoachView() {
       });
   }
   inducementsHtml += `</div>`;
+
   els.containers.coachRoster.innerHTML = inducementsHtml + renderLiveRoster(team.roster, side, false);
 }
 
@@ -408,14 +418,28 @@ function renderLiveRoster(roster, side, readOnly) {
 }
 
 export async function handleUseInducement(side, itemName) {
-    if(!confirm(`Use ${itemName}? This will decrease your available count.`)) return;
+    const confirmed = await confirmModal(`Use ${itemName}?`, "This will decrease your available count.", "Use Item", false);
+    if(!confirmed) return;
+    
     const d = state.activeMatchData;
+    // Special case for Apothecary boolean
+    if (itemName === 'Apothecary') {
+        if (d[side].apothecary) {
+            d[side].apothecary = false; // Use it up
+            renderCoachView();
+            await updateLiveMatch(`Used Apothecary (${side})`);
+        }
+        return;
+    }
+    
     if (d[side].inducements[itemName] > 0) {
         d[side].inducements[itemName]--;
         renderCoachView();
         await updateLiveMatch(`Used ${itemName} (${side})`);
     }
 }
+
+// --- In-Game Shop Modal ---
 
 export function openInGameShop(side) {
     const modal = document.createElement('div');
@@ -436,6 +460,7 @@ export function openInGameShop(side) {
         document.getElementById('inGameShopList').innerHTML = html;
     };
     
+    // PURELY LOCAL UPDATE
     window.adjustInGameInducement = (name, delta) => {
         const current = localInducements[name] || 0;
         const newVal = current + delta;
@@ -460,7 +485,8 @@ export function openInGameShop(side) {
     modal.querySelector('#igShopSave').onclick = () => closeAndSave(true);
 }
 
-// ... (Player Actions & Post-Game Logic - UNCHANGED but included) ...
+// ... (Player Actions, Game Control Actions, Post-Game Sequence unchanged from previous step) ...
+// ... (Included for completeness) ...
 
 export function openPlayerActionSheet(idx) {
   state.selectedPlayerIdx = idx;
@@ -547,7 +573,7 @@ export async function handleCancelGame() {
   } catch(e) { setStatus(e.message, 'error'); }
 }
 
-// --- POST GAME SEQUENCE ---
+// --- POST GAME SEQUENCE (CHUNK 4) ---
 
 export function openPostGameModal() {
     if (state.activeMatchPollInterval) {
@@ -725,9 +751,16 @@ export async function commitPostGame() {
                 let sppGain = (matchP.live.td * 3) + (matchP.live.cas * 2) + (matchP.live.int * 2) + (matchP.live.comp * 1);
                 if (isMvp) sppGain += 4;
                 p.spp = (p.spp || 0) + sppGain;
-                if (sppGain > 0 || matchP.live.foul > 0 || matchP.live.injured || isMvp) {
-                    playerRecords.push({ name: p.name, number: p.number, sppGain, stats: { ...matchP.live }, isMvp });
-                }
+                // Always record player in history if they were in the match data
+                playerRecords.push({ 
+                    name: p.name, 
+                    number: p.number, 
+                    position: p.position,
+                    sppGain, 
+                    stats: { ...matchP.live }, 
+                    isMvp 
+                });
+                
                 const injury = pg.injuries.find(inj => inj.side === matchSide && inj.originalIdx === d[matchSide].roster.indexOf(matchP));
                 if (injury && injury.outcome) {
                     if (injury.outcome === 'dead') { p.dead = true; } 
@@ -741,7 +774,18 @@ export async function commitPostGame() {
             });
             team.players = team.players.filter(p => !p.dead);
             if (!team.history) team.history = [];
-            team.history.push({ season: currentSeason, round: d.round, matchId: d.matchId, opponentName: opponentName, result: myScore > oppScore ? 'Win' : myScore < oppScore ? 'Loss' : 'Draw', score: `${myScore}-${oppScore}`, winnings, playerRecords });
+            team.history.push({ 
+                season: currentSeason, 
+                round: d.round, 
+                matchId: d.matchId, 
+                opponentName: opponentName, 
+                result: myScore > oppScore ? 'Win' : myScore < oppScore ? 'Loss' : 'Draw', 
+                score: `${myScore}-${oppScore}`, 
+                winnings, 
+                tv: d[matchSide].tv,
+                inducements: d[matchSide].inducements,
+                playerRecords 
+            });
         };
         
         processTeamUpdates(homeT, 'home', pg.homeWinnings, pg.homeFans, pg.homeMvp, d.away.name, d.home.score, d.away.score);
@@ -758,8 +802,27 @@ export async function commitPostGame() {
                 awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
             };
             m.report = {
-                home: { mvp: d.home.roster[pg.homeMvp]?.name || 'None', winnings: pg.homeWinnings, stats: d.home.roster.filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0).map(p => ({ name: p.name, live: p.live })) },
-                away: { mvp: d.away.roster[pg.awayMvp]?.name || 'None', winnings: pg.awayWinnings, stats: d.away.roster.filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0).map(p => ({ name: p.name, live: p.live })) }
+                home: { 
+                    name: d.home.name,
+                    score: d.home.score,
+                    tv: d.home.tv,
+                    inducements: d.home.inducements,
+                    winnings: pg.homeWinnings,
+                    fanFactorChange: pg.homeFans,
+                    mvp: d.home.roster[pg.homeMvp]?.name || 'None',
+                    stats: d.home.roster.map(p => ({ name: p.name, number: p.number, live: p.live })).filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0 || p.live.comp > 0 || p.live.foul > 0) 
+                },
+                away: { 
+                    name: d.away.name,
+                    score: d.away.score,
+                    tv: d.away.tv,
+                    inducements: d.away.inducements,
+                    winnings: pg.awayWinnings,
+                    fanFactorChange: pg.awayFans,
+                    mvp: d.away.roster[pg.awayMvp]?.name || 'None',
+                    winnings: pg.awayWinnings,
+                    stats: d.away.roster.map(p => ({ name: p.name, number: p.number, live: p.live })).filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0 || p.live.comp > 0 || p.live.foul > 0) 
+                }
             };
         }
         await apiSave(PATHS.leagueSettings(d.leagueId), leagueSettings, `Complete match ${d.matchId}`, key);
