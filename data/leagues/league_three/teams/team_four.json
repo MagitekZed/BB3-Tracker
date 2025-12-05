@@ -74,11 +74,13 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 4
     }
   ],
   "colors": {
     "primary": "#ffc64d",
     "secondary": "#d4d4d4"
-  }
+  },
+  "treasury": 30000000,
+  "dedicatedFans": 1
 }
