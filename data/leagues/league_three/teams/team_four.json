@@ -26,7 +26,7 @@
         "S",
         "P"
       ],
-      "spp": null
+      "spp": 7
     },
     {
       "number": 2,
@@ -50,7 +50,7 @@
         "S",
         "P"
       ],
-      "spp": null
+      "spp": 2
     },
     {
       "number": 3,
@@ -74,13 +74,13 @@
         "S",
         "P"
       ],
-      "spp": null
+      "spp": 0
     }
   ],
   "colors": {
     "primary": "#ffc64d",
     "secondary": "#d4d4d4"
   },
-  "treasury": 30000000,
+  "treasury": 70000000,
   "dedicatedFans": 1
 }
