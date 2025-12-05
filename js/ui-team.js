@@ -3,7 +3,7 @@ import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, normalizeName, getContrastColor, applyTeamTheme } from './utils.js';
 import { calculateTeamValue } from './rules.js';
-import { showSection, updateBreadcrumbs, goHome, showSkill } from './ui-core.js';
+import { showSection, updateBreadcrumbs, goHome, showSkill, confirmModal } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, renderManageForm } from './ui-league.js';
 
 export async function handleOpenTeam(leagueId, teamId) {
@@ -42,7 +42,6 @@ export async function handleOpenTeam(leagueId, teamId) {
 export async function handleManageTeamDirect() {
   if (!state.currentLeague || !state.currentTeam) return;
   await handleManageLeague(state.currentLeague.id);
-  // Set return path to team view
   state.editorReturnPath = 'teamView';
   await handleEditTeam(state.currentTeam.id);
 }
@@ -129,7 +128,6 @@ export function renderTeamEditor() {
   const race = state.gameData?.races.find(r => r.name === t.race);
   const rrCost = race ? race.rerollCost : 50000;
   
-  // Ensure colors object exists
   if (!t.colors) t.colors = { primary: '#222222', secondary: '#c5a059' };
 
   els.containers.manageTeamEditor.innerHTML = `
@@ -195,11 +193,7 @@ export function renderTeamEditor() {
 
   t.players.forEach((p, idx) => {
     const posSelect = `<select style="width:100%; font-size:0.8rem;" onchange="window.updatePlayerPos(${idx}, this.value)"><option value="" disabled>Pos...</option>${positionalOptions.replace(`value="${p.position}"`, `value="${p.position}" selected`)}</select>`;
-    
-    const currentSkills = (p.skills || []).map((skill, sIdx) => `
-      <span class="skill-pill">${skill}<span class="remove-skill" onclick="window.removePlayerSkill(${idx}, ${sIdx})">×</span></span>
-    `).join('');
-    
+    const currentSkills = (p.skills || []).map((skill, sIdx) => `<span class="skill-pill">${skill}<span class="remove-skill" onclick="window.removePlayerSkill(${idx}, ${sIdx})">×</span></span>`).join('');
     const skillPicker = `<div class="skill-editor-container">${currentSkills}<select class="skill-select" onchange="window.addPlayerSkill(${idx}, this.value)">${allSkillsHtml}</select></div>`;
 
     const row = document.createElement('tr');
@@ -230,9 +224,13 @@ export function renderTeamEditor() {
   };
 }
 
-export function changeTeamRace(newRace) {
-  if (state.dirtyTeam.players.length > 0 && !confirm("Changing race will potentially break existing player positions. Continue?")) {
-    renderTeamEditor(); return;
+export async function changeTeamRace(newRace) {
+  if (state.dirtyTeam.players.length > 0) {
+      const confirmed = await confirmModal("Change Race?", "Changing race will potentially break existing player positions. Continue?", "Change Race", true);
+      if (!confirmed) {
+          renderTeamEditor(); // Re-render to reset select
+          return;
+      }
   }
   state.dirtyTeam.race = newRace;
   renderTeamEditor();
@@ -284,7 +282,9 @@ export function removePlayerSkill(playerIdx, skillIdx) {
 }
 
 export async function handleDeleteTeam(teamId) {
-  if(!confirm(`Delete team "${teamId}"?`)) return;
+  const confirmed = await confirmModal("Delete Team?", `Permanently delete team "${teamId}"?`, "Delete", true);
+  if(!confirmed) return;
+  
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
   try {
@@ -292,8 +292,6 @@ export async function handleDeleteTeam(teamId) {
     const idx = state.dirtyLeague.teams.findIndex(t => t.id === teamId);
     if(idx !== -1) state.dirtyLeague.teams.splice(idx, 1);
     await apiSave(PATHS.leagueSettings(state.dirtyLeague.id), state.dirtyLeague, `Remove team ${teamId}`, key);
-    // Reuse renderManageTeamsList but we can't import it easily due to circular refs, 
-    // so we re-render the form instead.
     renderManageForm(); 
     setStatus('Team deleted.', 'ok');
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
@@ -305,7 +303,6 @@ export async function saveTeam(key) {
   
   if (!t.id) return setStatus('Invalid team name.', 'error');
 
-  // Check if League has ID/Name. If not, trigger dynamic modal.
   if (!l.name || !l.id) {
       const modal = document.createElement('div');
       modal.className = 'modal'; 
@@ -330,32 +327,26 @@ export async function saveTeam(key) {
           if(val) {
               l.name = val;
               l.id = normalizeName(val);
-              
-              // Update background UI inputs so user sees the change
               const realInput = document.getElementById('leagueManageNameInput');
               const realId = document.getElementById('leagueManageIdInput');
               if(realInput) realInput.value = l.name;
               if(realId) realId.value = l.id;
-              
               modal.remove();
-              saveTeam(key); // Retry saving with new data
+              saveTeam(key);
           }
       };
       return; 
   }
   
-  // Capture Colors
   const cp = document.getElementById('teamColorPrimary');
   const cs = document.getElementById('teamColorSecondary');
   if(cp && cs) {
       t.colors = { primary: cp.value, secondary: cs.value };
   }
   
-  // Save Team File
   t.teamValue = calculateTeamValue(t); 
   await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
   
-  // Update local league object's team metadata
   const existingIdx = l.teams.findIndex(x => x.id === t.id);
   const meta = JSON.parse(JSON.stringify({ 
     id: t.id, 
@@ -369,8 +360,6 @@ export async function saveTeam(key) {
   else l.teams.push(meta);
   
   state.editTeamId = t.id;
-  
-  // This will implicitly create the league settings file if it doesn't exist yet
   await apiSave(PATHS.leagueSettings(l.id), l, `Update team list for ${t.name}`, key);
   
   setStatus('Team saved & League updated!', 'ok');
