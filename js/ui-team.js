@@ -146,13 +146,13 @@ export function renderTeamEditor() {
       <div class="form-field">
         <label>Primary Color</label>
         <input type="color" id="teamColorPrimary" value="${t.colors.primary}" 
-               onchange="state.dirtyTeam.colors.primary = this.value" 
+               oninput="state.dirtyTeam.colors.primary = this.value" 
                style="width:100%; height:40px">
       </div>
       <div class="form-field">
         <label>Secondary Color</label>
         <input type="color" id="teamColorSecondary" value="${t.colors.secondary}" 
-               onchange="state.dirtyTeam.colors.secondary = this.value" 
+               oninput="state.dirtyTeam.colors.secondary = this.value" 
                style="width:100%; height:40px">
       </div>
     </div>
@@ -304,8 +304,47 @@ export async function saveTeam(key) {
   const l = state.dirtyLeague;
   
   if (!t.id) return setStatus('Invalid team name.', 'error');
+
+  // Check if League has ID/Name. If not, trigger dynamic modal.
+  if (!l.name || !l.id) {
+      const modal = document.createElement('div');
+      modal.className = 'modal'; 
+      modal.style.display = 'flex'; 
+      modal.style.zIndex = '10000';
+      modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header"><h3>Name Your League</h3></div>
+            <p>You must give your league a name before you can save this team.</p>
+            <input type="text" id="tempLeagueNameInput" class="large-input" placeholder="League Name..." style="margin-bottom:1rem;">
+            <div class="modal-actions">
+                <button id="tempLeagueCancelBtn" class="secondary-btn">Cancel</button>
+                <button id="tempLeagueSaveBtn" class="primary-btn">Save Name & Team</button>
+            </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      
+      modal.querySelector('#tempLeagueCancelBtn').onclick = () => modal.remove();
+      modal.querySelector('#tempLeagueSaveBtn').onclick = () => {
+          const val = modal.querySelector('#tempLeagueNameInput').value;
+          if(val) {
+              l.name = val;
+              l.id = normalizeName(val);
+              
+              // Update background UI inputs so user sees the change
+              const realInput = document.getElementById('leagueManageNameInput');
+              const realId = document.getElementById('leagueManageIdInput');
+              if(realInput) realInput.value = l.name;
+              if(realId) realId.value = l.id;
+              
+              modal.remove();
+              saveTeam(key); // Retry saving with new data
+          }
+      };
+      return; 
+  }
   
-  // Capture Colors (redundant if using onchange, but safe to keep)
+  // Capture Colors
   const cp = document.getElementById('teamColorPrimary');
   const cs = document.getElementById('teamColorSecondary');
   if(cp && cs) {
@@ -331,6 +370,7 @@ export async function saveTeam(key) {
   
   state.editTeamId = t.id;
   
+  // This will implicitly create the league settings file if it doesn't exist yet
   await apiSave(PATHS.leagueSettings(l.id), l, `Update team list for ${t.name}`, key);
   
   setStatus('Team saved & League updated!', 'ok');
