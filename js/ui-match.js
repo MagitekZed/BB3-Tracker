@@ -277,13 +277,13 @@ function updateInducementTotals() {
   els.preMatch.homeSpent.textContent = (hSpent/1000);
   els.preMatch.awaySpent.textContent = (aSpent/1000);
   
-  // Logic here is now just for display, prevention is handled in changeInducement/toggleStar
   const hBudget = getBudget('home');
   const aBudget = getBudget('away');
   
   els.preMatch.homeOver.style.display = (hSpent > hBudget) ? 'inline' : 'none';
   els.preMatch.awayOver.style.display = (aSpent > aBudget) ? 'inline' : 'none';
   
+  // Disable start if over budget
   els.preMatch.startBtn.disabled = (hSpent > hBudget || aSpent > aBudget);
 }
 
@@ -427,6 +427,9 @@ export async function finalizeMatchStart(activeSide) {
     setStatus('Match started!', 'ok');
   } catch(e) { setStatus(e.message, 'error'); }
 }
+
+
+// --- Scoreboard / Jumbotron ---
 
 export async function handleOpenScoreboard(matchId) {
   setStatus('Loading live match...');
@@ -760,39 +763,69 @@ export function openPostGameModal() {
     els.postGame.el.classList.remove('hidden');
 }
 
+export function closePostGameModal() {
+    els.postGame.el.classList.add('hidden');
+    state.postGame = null;
+}
+
 export function renderPostGameStep() {
     const pg = state.postGame;
     const d = state.activeMatchData;
     const body = els.postGame.body;
+    
+    // Header
+    const headerEl = els.postGame.el.querySelector('.modal-header');
+    headerEl.innerHTML = `<h3>Post-Game Report</h3><button class="close-btn" onclick="window.closePostGameModal()">×</button>`;
+    
     let html = '';
 
-    if (pg.step === 1) { // Winnings
+    if (pg.step === 1) { 
+        // Helper for Step 1 Panel
+        const renderTeamRecord = (side, winningsKey, fansKey) => {
+            const team = d[side];
+            const winnings = pg[winningsKey];
+            
+            return `
+            <div class="panel-styled" style="box-shadow: 6px 6px 0 ${team.colors.secondary}; border: 1px solid #333; margin-bottom: 1rem;">
+                <div style="font-family: 'Russo One', sans-serif; font-size: 1.6rem; color: ${team.colors.primary}; text-transform: uppercase; margin-bottom: 0.5rem; line-height:1;">
+                    ${team.name}
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items:center; margin-bottom: 0.5rem;">
+                    <label style="font-weight:bold; color:#444;">Winnings (k)</label>
+                    <input type="number" value="${winnings}" style="width: 80px; padding: 6px; font-weight:bold;" onchange="state.postGame.${winningsKey}=parseInt(this.value)">
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items:center;">
+                    <label style="font-weight:bold; color:#444;">Fan Factor</label>
+                    <select style="width: 100px; padding: 6px;" onchange="state.postGame.${fansKey}=parseInt(this.value)">
+                        <option value="0">Same</option>
+                        <option value="1">+1</option>
+                        <option value="-1">-1</option>
+                    </select>
+                </div>
+            </div>`;
+        };
+
         html = `
           <h4>Step 1: Match Records</h4>
-          <div class="form-grid">
-             <div class="panel-styled">
-                <h5 style="color:${d.home.colors.primary}">${d.home.name}</h5>
-                <label>Winnings (k)</label><input type="number" value="${pg.homeWinnings}" onchange="state.postGame.homeWinnings=parseInt(this.value)">
-                <label>Fan Factor Change</label><select onchange="state.postGame.homeFans=parseInt(this.value)"><option value="0">Same</option><option value="1">+1</option><option value="-1">-1</option></select>
-             </div>
-             <div class="panel-styled">
-                <h5 style="color:${d.away.colors.primary}">${d.away.name}</h5>
-                <label>Winnings (k)</label><input type="number" value="${pg.awayWinnings}" onchange="state.postGame.awayWinnings=parseInt(this.value)">
-                <label>Fan Factor Change</label><select onchange="state.postGame.awayFans=parseInt(this.value)"><option value="0">Same</option><option value="1">+1</option><option value="-1">-1</option></select>
-             </div>
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+             ${renderTeamRecord('home', 'homeWinnings', 'homeFans')}
+             ${renderTeamRecord('away', 'awayWinnings', 'awayFans')}
           </div>
         `;
     } else if (pg.step === 2) { // MVP
         const renderMvpSelect = (side) => {
             const team = d[side];
             const opts = team.roster.map((p, i) => `<option value="${i}">#${p.number} ${p.name}</option>`).join('');
+            const shadow = team.colors.secondary;
             return `
-              <div class="panel-styled">
-                 <h5 style="color:${team.colors.primary}">${team.name} MVP</h5>
-                 <select id="mvpSelect${side}" onchange="state.postGame.${side}Mvp=parseInt(this.value)">
-                    <option value="">Select MVP...</option>${opts}
-                 </select>
-                 <button onclick="window.randomMvp('${side}')" style="margin-top:0.5rem; width:100%">Randomize</button>
+              <div class="panel-styled" style="box-shadow: 4px 4px 0 ${shadow};">
+                 <h5 class="big-team-text" style="font-size:1.2rem; color:${team.colors.primary}; text-shadow:1px 1px 0 #fff;">${team.name} MVP</h5>
+                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <select id="mvpSelect${side}" style="width: 100%; box-sizing: border-box; padding: 8px;" onchange="state.postGame.${side}Mvp=parseInt(this.value)">
+                        <option value="">Select MVP...</option>${opts}
+                    </select>
+                    <button onclick="window.randomMvp('${side}')" style="width: 100%;">Randomize</button>
+                 </div>
               </div>`;
         };
         html = `<h4>Step 2: Accolades (MVP)</h4><div class="form-grid">${renderMvpSelect('home')}${renderMvpSelect('away')}</div>`;
@@ -802,9 +835,14 @@ export function renderPostGameStep() {
         } else {
             html = `<h4>Step 3: Casualty Ward</h4>`;
             pg.injuries.forEach((p, i) => {
+                // Team Badge Logic
+                const teamName = d[p.side].name;
+                const teamColor = d[p.side].colors.primary;
+                const badgeHtml = `<span style="background:${teamColor}; color:#fff; font-size:0.7rem; padding:2px 4px; border-radius:3px; margin-right:5px; vertical-align:middle;">${teamName.substring(0,3).toUpperCase()}</span>`;
+
                 html += `
                   <div class="panel-styled" style="margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
-                     <div><strong>${p.name}</strong> (${p.side})</div>
+                     <div>${badgeHtml} <strong>${p.name}</strong></div>
                      <select onchange="state.postGame.injuries[${i}].outcome=this.value">
                         <option value="bh">Badly Hurt (Recover)</option>
                         <option value="mng">Miss Next Game</option>
@@ -888,7 +926,9 @@ export async function commitPostGame() {
                 const injury = pg.injuries.find(inj => inj.side === matchSide && inj.originalIdx === d[matchSide].roster.indexOf(matchP));
                 if (injury && injury.outcome) {
                     if (injury.outcome === 'dead') {
-                        p.dead = true; 
+                        p.dead = true; // Mark for deletion or filter
+                        // For now, let's rename to DEAD to keep record? Or just delete? Prompt said "remove".
+                        // Splice is tricky inside forEach. Let's mark and filter later.
                     } else if (injury.outcome === 'mng') {
                         p.mng = true;
                     } else if (injury.outcome.startsWith('-')) {
