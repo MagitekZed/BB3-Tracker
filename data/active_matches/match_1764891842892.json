@@ -1,0 +1,355 @@
+{
+  "matchId": "match_1764891842892",
+  "leagueId": "league_four",
+  "round": 2,
+  "status": "in_progress",
+  "home": {
+    "id": "norse",
+    "name": "Norse",
+    "colors": {
+      "primary": "#2b00ff",
+      "secondary": "#7a7a7a"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Raider Lineman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S",
+          "P"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 99,
+        "name": "Grim Ironjaw",
+        "position": "Star Player",
+        "ma": 5,
+        "st": 3,
+        "ag": 3,
+        "pa": 6,
+        "av": 10,
+        "skills": [
+          "Block",
+          "Dauntless",
+          "Frenzy",
+          "Loner (4+)",
+          "Multiple Block",
+          "Thick Skull"
+        ],
+        "cost": 220000,
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 99,
+        "name": "Grombrindal",
+        "position": "Star Player",
+        "ma": 5,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 10,
+        "skills": [
+          "Block",
+          "Dauntless",
+          "Loner (4+)",
+          "Mighty Blow (+1)",
+          "Stand Firm",
+          "Thick Skull"
+        ],
+        "cost": 210000,
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 99,
+        "name": "Helmut Wulf",
+        "position": "Star Player",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Chainsaw",
+          "Loner (4+)",
+          "Pro",
+          "Secret Weapon"
+        ],
+        "cost": 140000,
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 99,
+        "name": "Karla von Kill",
+        "position": "Star Player",
+        "ma": 6,
+        "st": 4,
+        "ag": 3,
+        "pa": 4,
+        "av": 9,
+        "skills": [
+          "Block",
+          "Dauntless",
+          "Dodge",
+          "Jump Up",
+          "Loner (4+)"
+        ],
+        "cost": 210000,
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {
+      "Bloodweiser Keg": 1,
+      "Star: Griff Oberwald": 0,
+      "Star: Grim Ironjaw": 1,
+      "Star: Grombrindal": 1,
+      "Star: Helmut Wulf": 1,
+      "Star: Karla von Kill": 1
+    },
+    "tv": 150000
+  },
+  "away": {
+    "id": "amazons",
+    "name": "Amazons",
+    "colors": {
+      "primary": "#ff0000",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "qty": 16,
+        "cost": 50000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {},
+    "tv": 150000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
