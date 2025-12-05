@@ -50,7 +50,7 @@
         "A",
         "S"
       ],
-      "spp": 0
+      "spp": 4
     },
     {
       "number": 3,
@@ -153,5 +153,7 @@
     "primary": "#ff0000",
     "secondary": "#c5a059"
   },
-  "teamValue": 300000
+  "teamValue": 300000,
+  "treasury": 50000000,
+  "dedicatedFans": 2
 }
