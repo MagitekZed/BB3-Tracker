@@ -162,6 +162,32 @@
     "apothecary": 50000,
     "dedicatedFans": 10000
   },
+  "inducements": [
+    { "name": "Bloodweiser Keg", "cost": 50000, "max": 2 },
+    { "name": "Bribes", "cost": 100000, "max": 3 },
+    { "name": "Extra Team Training", "cost": 100000, "max": 4 },
+    { "name": "Halfling Master Chef", "cost": 300000, "max": 1 },
+    { "name": "Mortuary Assistant", "cost": 100000, "max": 1 },
+    { "name": "Plague Doctor", "cost": 100000, "max": 1 },
+    { "name": "Riotous Rookies", "cost": 100000, "max": 1 },
+    { "name": "Wandering Apothecary", "cost": 100000, "max": 2 },
+    { "name": "Wizard", "cost": 150000, "max": 1 },
+    { "name": "Biased Referee", "cost": 120000, "max": 1 }
+  ],
+  "starPlayers": [
+    { "name": "Griff Oberwald", "cost": 320000, "ma": 7, "st": 4, "ag": 4, "pa": 4, "av": 9, "skills": ["Block", "Dodge", "Fend", "Loner (4+)", "Sprint", "Sure Feet"], "playsFor": ["Human", "Imperial Nobility", "Old World Classic"] },
+    { "name": "Morg 'n' Thorg", "cost": 430000, "ma": 6, "st": 6, "ag": 3, "pa": 4, "av": 11, "skills": ["Block", "Loner (4+)", "Mighty Blow (+2)", "Thick Skull", "Throw Team-mate"], "playsFor": ["Any"] },
+    { "name": "Varag Ghoul-Chewer", "cost": 290000, "ma": 6, "st": 4, "ag": 3, "pa": 5, "av": 10, "skills": ["Block", "Jump Up", "Loner (4+)", "Mighty Blow (+1)", "Thick Skull"], "playsFor": ["Orc", "Black Orc", "Goblin", "Badlands Brawl"] },
+    { "name": "Hakflem Skuttlespike", "cost": 210000, "ma": 9, "st": 2, "ag": 4, "pa": 4, "av": 8, "skills": ["Dodge", "Extra Arms", "Loner (4+)", "Prehensile Tail", "Two Heads"], "playsFor": ["Underworld Challenge", "Favoured of Chaos"] },
+    { "name": "Roxanna Darknail", "cost": 270000, "ma": 8, "st": 3, "ag": 5, "pa": 2, "av": 8, "skills": ["Dodge", "Frenzy", "Jump Up", "Leap", "Loner (4+)"], "playsFor": ["Elven Kingdoms League"] },
+    { "name": "Grim Ironjaw", "cost": 220000, "ma": 5, "st": 3, "ag": 3, "pa": 6, "av": 10, "skills": ["Block", "Dauntless", "Frenzy", "Loner (4+)", "Multiple Block", "Thick Skull"], "playsFor": ["Dwarf", "Norse", "Old World Classic", "Worlds Edge Superleague"] },
+    { "name": "Karla von Kill", "cost": 210000, "ma": 6, "st": 4, "ag": 3, "pa": 4, "av": 9, "skills": ["Block", "Dauntless", "Dodge", "Jump Up", "Loner (4+)"], "playsFor": ["Human", "Amazon", "Norse", "Old World Classic", "Lustrian Superleague"] },
+    { "name": "Helmut Wulf", "cost": 140000, "ma": 6, "st": 3, "ag": 3, "pa": 6, "av": 9, "skills": ["Chainsaw", "Loner (4+)", "Pro", "Secret Weapon"], "playsFor": ["Any"] },
+    { "name": "Wilhelm Chaney", "cost": 240000, "ma": 8, "st": 3, "ag": 3, "pa": 6, "av": 9, "skills": ["Catch", "Claws", "Frenzy", "Loner (4+)", "Regeneration", "Wrestle"], "playsFor": ["Sylvanian Spotlight", "Necromantic Horror"] },
+    { "name": "Glart Smashrip", "cost": 210000, "ma": 5, "st": 4, "ag": 3, "pa": 5, "av": 10, "skills": ["Block", "Claws", "Juggernaut", "Loner (4+)"], "playsFor": ["Favoured of Chaos", "Underworld Challenge"] },
+    { "name": "Gloriel Summerbloom", "cost": 150000, "ma": 7, "st": 2, "ag": 4, "pa": 2, "av": 7, "skills": ["Accurate", "Dodge", "Loner (4+)", "Pass", "Side Step", "Sure Hands"], "playsFor": ["Elven Kingdoms League"] },
+    { "name": "Grombrindal", "cost": 210000, "ma": 5, "st": 3, "ag": 3, "pa": 4, "av": 10, "skills": ["Block", "Dauntless", "Loner (4+)", "Mighty Blow (+1)", "Stand Firm", "Thick Skull"], "playsFor": ["Dwarf", "Old World Classic", "Worlds Edge Superleague"] }
+  ],
   "skillCategories": {
     "General": [
       { "name": "Block", "description": "The player is not Knocked Down when a Both Down result is applied. " },
@@ -175,7 +201,9 @@
       { "name": "Strip Ball", "description": "When this player pushes an opponent with the ball, the ball is knocked loose." },
       { "name": "Sure Hands", "description": "Player can re-roll failed Pick-up tests. Immunity to Strip Ball." },
       { "name": "Tackle", "description": "Opponents cannot use Dodge when blocked by this player." },
-      { "name": "Wrestle", "description": "On a Both Down result, both players are Placed Prone without Turnover or Armor rolls." }
+      { "name": "Wrestle", "description": "On a Both Down result, both players are Placed Prone without Turnover or Armor rolls." },
+      { "name": "Chainsaw", "description": "Perform a Chainsaw attack instead of a block (Armor roll with +3 modifier). If you fall, it hits you." },
+      { "name": "Secret Weapon", "description": "Player is sent off at the end of the drive." }
     ],
     "Agility": [
       { "name": "Catch", "description": "Re-roll failed Catch tests." },
@@ -213,6 +241,7 @@
       { "name": "Guard", "description": "Assist blocks even when in another tackle zone." },
       { "name": "Juggernaut", "description": "When Blitzing: convert Both Down to Push. Negates Stand Firm, Fend, Wrestle." },
       { "name": "Mighty Blow (+1)", "description": "+1 to Armor or Injury roll when blocking." },
+      { "name": "Mighty Blow (+2)", "description": "+2 to Armor or Injury roll when blocking." },
       { "name": "Multiple Block", "description": "Can block two opponents at once (Strength -2)." },
       { "name": "Pile Driver", "description": "Can make a free Foul action against a player you just knocked down." },
       { "name": "Stand Firm", "description": "Cannot be Pushed Back." },
