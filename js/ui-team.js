@@ -129,6 +129,9 @@ export function renderTeamEditor() {
   const race = state.gameData?.races.find(r => r.name === t.race);
   const rrCost = race ? race.rerollCost : 50000;
   
+  // Ensure colors object exists
+  if (!t.colors) t.colors = { primary: '#222222', secondary: '#c5a059' };
+
   els.containers.manageTeamEditor.innerHTML = `
     <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
     
@@ -140,8 +143,18 @@ export function renderTeamEditor() {
     </div>
     
     <div class="form-grid" style="margin-top:1rem; padding:1rem; background:#f4f4f4; border-radius:4px;">
-      <div class="form-field"><label>Primary Color</label><input type="color" id="teamColorPrimary" value="${t.colors?.primary || '#222222'}" style="width:100%; height:40px"></div>
-      <div class="form-field"><label>Secondary Color</label><input type="color" id="teamColorSecondary" value="${t.colors?.secondary || '#c5a059'}" style="width:100%; height:40px"></div>
+      <div class="form-field">
+        <label>Primary Color</label>
+        <input type="color" id="teamColorPrimary" value="${t.colors.primary}" 
+               onchange="state.dirtyTeam.colors.primary = this.value" 
+               style="width:100%; height:40px">
+      </div>
+      <div class="form-field">
+        <label>Secondary Color</label>
+        <input type="color" id="teamColorSecondary" value="${t.colors.secondary}" 
+               onchange="state.dirtyTeam.colors.secondary = this.value" 
+               style="width:100%; height:40px">
+      </div>
     </div>
     
     <div class="card" style="margin-top:1rem;">
@@ -292,7 +305,7 @@ export async function saveTeam(key) {
   
   if (!t.id) return setStatus('Invalid team name.', 'error');
   
-  // Capture Colors
+  // Capture Colors (redundant if using onchange, but safe to keep)
   const cp = document.getElementById('teamColorPrimary');
   const cs = document.getElementById('teamColorSecondary');
   if(cp && cs) {
