@@ -213,7 +213,6 @@ export function toggleStar(side, starName, val) {
 }
 
 export function setCustomInducement(side, val) {
-  // Deprecated in favor of explicit star list, but keeping for custom mercs if needed
   const cost = parseInt(val) || 0;
   state.setupMatch.inducements[side]['Mercenaries'] = cost;
   renderPreMatchSetup();
@@ -246,11 +245,11 @@ function updateInducementTotals() {
   const hSpent = calcSpent('home');
   const aSpent = calcSpent('away');
   
-  els.preMatch.homeSpent.textContent = (hSpent/1000);
-  els.preMatch.awaySpent.textContent = (aSpent/1000);
-  
   const hBudget = (s.homeTeam.treasury||0) + s.pettyCash.home;
   const aBudget = (s.awayTeam.treasury||0) + s.pettyCash.away;
+  
+  els.preMatch.homeSpent.textContent = (hSpent/1000);
+  els.preMatch.awaySpent.textContent = (aSpent/1000);
   
   els.preMatch.homeOver.style.display = (hSpent > hBudget) ? 'inline' : 'none';
   els.preMatch.awayOver.style.display = (aSpent > aBudget) ? 'inline' : 'none';
@@ -262,6 +261,65 @@ function updateInducementTotals() {
 // --- Start Game (Finalize Setup) ---
 
 export async function confirmMatchStart() {
+  // Instead of starting directly, run the coin flip animation
+  runCoinFlip(state.setupMatch.homeTeam.name, state.setupMatch.awayTeam.name, (winnerSide) => {
+      finalizeMatchStart(winnerSide);
+  });
+}
+
+function runCoinFlip(homeName, awayName, callback) {
+    // Determine winner purely for visual effect (50/50)
+    const winnerSide = Math.random() > 0.5 ? 'home' : 'away';
+    const winnerName = winnerSide === 'home' ? homeName : awayName;
+    const homeInitial = homeName.charAt(0).toUpperCase();
+    const awayInitial = awayName.charAt(0).toUpperCase();
+
+    // Dynamically create modal
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '3000'; // Above setup modal
+    modal.innerHTML = `
+      <div class="modal-content" style="text-align:center;">
+          <h3>Coin Toss</h3>
+          <div class="coin-scene">
+              <div class="coin" id="coinEl">
+                  <div class="coin-face front">${homeInitial}</div>
+                  <div class="coin-face back">${awayInitial}</div>
+              </div>
+          </div>
+          <div id="coinResult" style="opacity:0; transition: opacity 1s; font-size:1.2rem; margin-top:1rem;">
+              <strong>${winnerName}</strong> wins the toss!
+          </div>
+          <div class="modal-actions" style="justify-content:center; margin-top:2rem;">
+              <button id="coinContinueBtn" class="primary-btn" style="opacity:0; pointer-events:none;">Start Match</button>
+          </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Run Animation
+    setTimeout(() => {
+        const coin = modal.querySelector('#coinEl');
+        const rotation = winnerSide === 'home' ? 1800 : 1980; // 5 spins (1800) or 5.5 spins (1980)
+        coin.style.transform = `rotateY(${rotation}deg)`;
+        
+        // Show result after spin
+        setTimeout(() => {
+            modal.querySelector('#coinResult').style.opacity = '1';
+            const btn = modal.querySelector('#coinContinueBtn');
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+            
+            btn.onclick = () => {
+                modal.remove();
+                callback(winnerSide);
+            };
+        }, 3000);
+    }, 100);
+}
+
+export async function finalizeMatchStart(activeSide) {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Edit key required', 'error');
   
@@ -273,10 +331,9 @@ export async function confirmMatchStart() {
   try {
     const initRoster = (players) => (players||[]).map(p => ({
         ...p,
-        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 } // Add comp, foul
+        live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 }
     }));
     
-    // Inject Star Players into Rosters
     const injectStars = (baseRoster, side) => {
         const newRoster = [...baseRoster];
         for (const [key, count] of Object.entries(s.inducements[side])) {
@@ -285,7 +342,7 @@ export async function confirmMatchStart() {
                 const starData = stars.find(x => x.name === name);
                 if (starData) {
                     newRoster.push({
-                        number: 99, // Star Number
+                        number: 99, 
                         name: starData.name,
                         position: 'Star Player',
                         ma: starData.ma, st: starData.st, ag: starData.ag, pa: starData.pa, av: starData.av,
@@ -305,6 +362,7 @@ export async function confirmMatchStart() {
       leagueId: l.id, 
       round: l.matches.find(m=>m.id===s.matchId).round, 
       status: 'in_progress',
+      activeTeam: activeSide, // Coin toss winner starts
       home: { 
           id: s.homeTeam.id, 
           name: s.homeTeam.name, 
@@ -331,10 +389,8 @@ export async function confirmMatchStart() {
       log: []
     };
     
-    // Save Active Match
     await apiSave(PATHS.activeMatch(s.matchId), activeData, `Start match ${s.matchId}`, key);
     
-    // Update League Status
     const m = l.matches.find(x => x.id === s.matchId);
     if(m) m.status = 'in_progress';
     await apiSave(PATHS.leagueSettings(l.id), l, `Match in progress`, key);
@@ -357,7 +413,6 @@ export async function handleOpenScoreboard(matchId) {
     renderJumbotron();
     showSection('scoreboard');
     
-    // Attempt to load league name for breadcrumbs if not loaded
     const leagueName = state.currentLeague?.name || 'League';
     
     updateBreadcrumbs([
@@ -383,6 +438,11 @@ export async function handleOpenScoreboard(matchId) {
 
 export function renderJumbotron() {
   const d = state.activeMatchData;
+  const activeSide = d.activeTeam || 'home'; // Default to home if missing
+  
+  // Helper to show indicator
+  const getIndicator = (side) => (activeSide === side ? `<span class="turn-indicator">🏈</span>` : '');
+
   els.containers.sbHomeName.innerHTML = `<div class="big-team-text" style="color:${d.home.colors?.primary}; text-shadow:2px 2px 0 ${d.home.colors?.secondary}, 4px 4px 0px rgba(0,0,0,0.5)">${d.home.name}</div>`;
   els.containers.sbAwayName.innerHTML = `<div class="big-team-text" style="color:${d.away.colors?.primary}; text-shadow:2px 2px 0 ${d.away.colors?.secondary}, 4px 4px 0px rgba(0,0,0,0.5)">${d.away.name}</div>`;
   els.containers.sbHomeScore.textContent = d.home.score;
@@ -390,8 +450,8 @@ export function renderJumbotron() {
   
   const homeTurnEl = document.getElementById('sbHomeTurn');
   const awayTurnEl = document.getElementById('sbAwayTurn');
-  if(homeTurnEl) homeTurnEl.textContent = d.turn.home;
-  if(awayTurnEl) awayTurnEl.textContent = d.turn.away;
+  if(homeTurnEl) homeTurnEl.innerHTML = `${d.turn.home} ${getIndicator('home')}`;
+  if(awayTurnEl) awayTurnEl.innerHTML = `${d.turn.away} ${getIndicator('away')}`;
   
   const hCol = d.home.colors?.primary || '#222'; const hTxt = getContrastColor(hCol);
   const aCol = d.away.colors?.primary || '#222'; const aTxt = getContrastColor(aCol);
@@ -429,10 +489,14 @@ export function renderCoachView() {
   const team = d[side];
   const oppSide = side === 'home' ? 'away' : 'home';
   const oppTeam = d[oppSide];
+  
+  const activeSide = d.activeTeam || 'home';
+  const turnLabel = (activeSide === side) ? "YOUR TURN" : "OPPONENT'S TURN";
+  const turnColor = (activeSide === side) ? "var(--pitch-green)" : "#888";
 
   els.containers.coachTeamName.innerHTML = `<div class="big-team-text" style="color:${team.colors?.text || '#fff'}; text-shadow:none;">${team.name}</div>`;
   els.containers.coachScore.textContent = `${team.score} - ${oppTeam.score}`;
-  els.containers.coachTurn.textContent = `Turn: ${d.turn[side]}`;
+  els.containers.coachTurn.innerHTML = `Turn: ${d.turn[side]} <span style="background:${turnColor}; color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; margin-left:5px;">${turnLabel}</span>`;
 
   let pips = '';
   for(let i=0; i<team.rerolls; i++) {
@@ -497,13 +561,9 @@ export function openPlayerActionSheet(idx) {
   state.selectedPlayerIdx = idx;
   const p = state.activeMatchData[state.coachSide].roster[idx];
   
-  // CHUNK 3: Render the Full Player Card
-  els.actionSheet.title.textContent = ``; // Clear generic title
-  
-  // We manipulate the DOM of the action sheet directly to inject the card
+  els.actionSheet.title.textContent = ``; 
   const content = els.actionSheet.el.querySelector('.action-sheet-content');
   
-  // Build the Header & Stats
   const headerHtml = `
     <div class="player-card-header">
         <div class="player-card-name">#${p.number} ${p.name}</div>
@@ -524,8 +584,6 @@ export function openPlayerActionSheet(idx) {
     </div>
   `;
   
-  // Build the Action Grid (Buttons)
-  // We use the same 'sheet-grid' but populate it dynamically here instead of static HTML
   const actionsHtml = `
     <div class="sheet-grid">
         <button class="sheet-btn btn-td" onclick="window.handleSheetAction('td')"><div class="emoji">🏈</div>TD</button>
@@ -540,12 +598,19 @@ export function openPlayerActionSheet(idx) {
             <div class="emoji" style="font-size:1.2rem; display:inline;">💤</div> Toggle Used
         </button>
     </div>
+    
+    <!-- Correction Toggle -->
+    <label class="correction-toggle">
+        <input type="checkbox" id="correctionMode" onchange="this.parentElement.parentElement.classList.toggle('correction-mode-active', this.checked)">
+        Correction Mode (Undo)
+    </label>
   `;
   
-  // Custom close button implementation since we wiped the header
   const closeHtml = `<button onclick="window.closeActionSheet()" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:1.5rem; color:#555;">×</button>`;
 
   content.innerHTML = closeHtml + headerHtml + actionsHtml;
+  // Reset correction mode class from potential previous use
+  content.classList.remove('correction-mode-active');
   
   els.actionSheet.el.classList.remove('hidden');
 }
@@ -563,23 +628,47 @@ export function handleSheetAction(type) {
   const p = state.activeMatchData[side].roster[idx];
   p.live = p.live || {};
   
-  if (type === 'used') p.live.used = !p.live.used;
-  else if (type === 'injured') p.live.injured = !p.live.injured;
-  else if (type === 'td') {
-    p.live.td++;
-    state.activeMatchData[side].score++;
+  // Check correction mode
+  const correctionEl = document.getElementById('correctionMode');
+  const isUndo = correctionEl && correctionEl.checked;
+  const multiplier = isUndo ? -1 : 1;
+  
+  if (type === 'used') {
+      p.live.used = !p.live.used; // Toggle ignores undo, always just toggles
   }
-  else if (type === 'cas') p.live.cas++;
-  else if (type === 'int') p.live.int = (p.live.int || 0) + 1; // Chunk 3
-  else if (type === 'comp') p.live.comp = (p.live.comp || 0) + 1; // Chunk 3
+  else if (type === 'injured') {
+      p.live.injured = !p.live.injured; // Toggle
+  }
+  else if (type === 'td') {
+    const newVal = (p.live.td || 0) + multiplier;
+    if (newVal >= 0) {
+        p.live.td = newVal;
+        state.activeMatchData[side].score = Math.max(0, state.activeMatchData[side].score + multiplier);
+    }
+  }
+  else if (type === 'cas') {
+      const newVal = (p.live.cas || 0) + multiplier;
+      if (newVal >= 0) p.live.cas = newVal;
+  }
+  else if (type === 'int') {
+      const newVal = (p.live.int || 0) + multiplier;
+      if (newVal >= 0) p.live.int = newVal;
+  }
+  else if (type === 'comp') {
+      const newVal = (p.live.comp || 0) + multiplier;
+      if (newVal >= 0) p.live.comp = newVal;
+  }
   else if (type === 'foul') {
-      p.live.foul = (p.live.foul || 0) + 1; // Chunk 3
-      p.live.used = true; // Fouling is an action
+      const newVal = (p.live.foul || 0) + multiplier;
+      if (newVal >= 0) {
+          p.live.foul = newVal;
+          if(!isUndo) p.live.used = true; // Fouling uses the player
+      }
   }
   
   closeActionSheet();
   renderCoachView();
-  updateLiveMatch(`Update ${p.name} ${type}`);
+  updateLiveMatch(`Update ${p.name} ${type} (Undo:${isUndo})`);
 }
 
 export async function updateLiveMatch(actionDesc) {
@@ -604,11 +693,20 @@ export function toggleReroll(side, idx) {
 export async function handleCoachEndTurn() {
   const side = state.coachSide;
   const d = state.activeMatchData;
+  
+  // Logic: 
+  // 1. Reset Used flags for current side
   d[side].roster.forEach(p => { if(p.live) p.live.used = false; });
+  
+  // 2. Increment turn for current side
   d.turn[side]++;
+  
+  // 3. Swap active turn
+  d.activeTeam = (side === 'home') ? 'away' : 'home';
+  
   renderCoachView();
   await updateLiveMatch(`End Turn: ${side}`);
-  setStatus("Turn ended.", "ok");
+  setStatus("Turn ended. Swapping Sides.", "ok");
 }
 
 export async function handleCancelGame() {
