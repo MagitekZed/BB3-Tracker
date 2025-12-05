@@ -114,7 +114,7 @@
       "round": 5,
       "homeTeamId": "team_three",
       "awayTeamId": "team_one",
-      "status": "scheduled",
+      "status": "in_progress",
       "date": "2025-12-05"
     }
   ]
