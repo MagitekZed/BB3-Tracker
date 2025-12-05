@@ -2,7 +2,7 @@ import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus } from './utils.js';
-import { goHome } from './ui-core.js';
+import { goHome, confirmModal } from './ui-core.js';
 
 export async function handleScanRepo() {
   els.containers.scanResults.innerHTML = '<div class="small">Scanning...</div>';
@@ -67,7 +67,9 @@ export async function restoreLeague(leagueId) {
 }
 
 export async function deleteOrphanFile(leagueId, filename) {
-  if(!confirm(`Delete ${filename}?`)) return;
+  const confirmed = await confirmModal("Delete Orphan File?", `Permanently delete file "${filename}"?`, "Delete", true);
+  if(!confirmed) return;
+  
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Key needed', 'error');
   try {
@@ -77,7 +79,9 @@ export async function deleteOrphanFile(leagueId, filename) {
 }
 
 export async function deleteLeagueFolder(leagueId) {
-  if(!confirm(`Delete Settings file for ${leagueId}?`)) return;
+  const confirmed = await confirmModal("Delete League Folder?", `Permanently delete Settings file for "${leagueId}"?`, "Delete", true);
+  if(!confirmed) return;
+  
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Key needed', 'error');
   try {
