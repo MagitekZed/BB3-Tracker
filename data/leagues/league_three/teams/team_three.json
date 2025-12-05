@@ -23,7 +23,7 @@
         "A",
         "S"
       ],
-      "spp": 0
+      "spp": null
     },
     {
       "number": 2,
@@ -44,7 +44,7 @@
         "A",
         "S"
       ],
-      "spp": 0
+      "spp": null
     },
     {
       "number": 3,
@@ -65,11 +65,13 @@
         "A",
         "S"
       ],
-      "spp": 0
+      "spp": null
     }
   ],
   "colors": {
     "primary": "#1100ff",
     "secondary": "#c5a059"
-  }
+  },
+  "treasury": 0,
+  "dedicatedFans": 1
 }
