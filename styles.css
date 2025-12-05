@@ -457,3 +457,64 @@ body.mode-coach .coach-header {
 .btn-cas { background: var(--primary-red); }
 .btn-inj { background: #e67e22; }
 .btn-used { background: #7f8c8d; }
+
+/* =========================================
+   7. PLAYER CARD (ACTION SHEET)
+   ========================================= */
+.player-card-header {
+  text-align: center; margin-bottom: 1rem;
+}
+.player-card-name {
+  font-size: 1.8rem; font-weight: 800; font-family: 'Russo One', sans-serif;
+  color: var(--primary-red); line-height: 1.1; text-transform: uppercase;
+}
+.player-card-meta {
+  font-size: 1rem; color: #555; font-weight: bold; margin-top: 0.25rem;
+}
+
+/* Stat Grid */
+.stat-grid {
+  display: flex; justify-content: space-between; gap: 0.5rem;
+  background: #eee; padding: 0.5rem; border-radius: 8px; margin-bottom: 1rem;
+  border: 1px solid #ccc;
+}
+.stat-box {
+  flex: 1; text-align: center;
+  display: flex; flex-direction: column;
+}
+.stat-label {
+  font-size: 0.7rem; font-weight: bold; color: #666; text-transform: uppercase;
+}
+.stat-value {
+  font-size: 1.4rem; font-weight: 800; font-family: Consolas, monospace; color: #222;
+}
+
+/* Skills List in Card */
+.card-skills {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;
+}
+.card-skills .skill-tag {
+  font-size: 0.9rem; padding: 4px 8px; background: #fff; border: 1px solid #888;
+}
+
+/* Expanded Action Grid */
+.sheet-grid { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr 1fr; /* 3 Columns now */
+  gap: 0.75rem; 
+}
+.sheet-btn { 
+  padding: 1rem; font-size: 0.8rem; 
+  height: 100px; /* Uniform height */
+}
+.sheet-btn .emoji { font-size: 1.8rem; }
+
+/* New Button Colors */
+.btn-comp { background: #0288d1; } /* Blue */
+.btn-int { background: #512da8; }  /* Purple */
+.btn-foul { background: #333; }    /* Black (Ref) */
+
+/* Roster Badges */
+.stat-badge.comp { background: #b3e5fc; color: #01579b; }
+.stat-badge.int { background: #d1c4e9; color: #311b92; }
+.stat-badge.foul { background: #cfd8dc; color: #263238; border: 1px solid #333; }
