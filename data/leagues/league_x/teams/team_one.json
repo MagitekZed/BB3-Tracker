@@ -1,0 +1,67 @@
+{
+  "id": "team_one",
+  "name": "team one",
+  "race": "Khorne",
+  "coachName": "asd",
+  "players": [
+    {
+      "number": 1,
+      "name": "Bloodborn Marauder Lineman",
+      "position": "Bloodborn Marauder Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "number": 2,
+      "name": "Bloodborn Marauder Lineman",
+      "position": "Bloodborn Marauder Lineman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#d11515",
+    "secondary": "#c5a059"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 100000
+}
