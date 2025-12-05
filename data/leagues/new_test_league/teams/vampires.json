@@ -65,7 +65,7 @@
         "A",
         "S"
       ],
-      "spp": 0
+      "spp": 4
     }
   ],
   "colors": {
@@ -78,5 +78,34 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 120000
+  "teamValue": 120000,
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "match_1764973027144",
+      "opponentName": "chaos",
+      "result": "Loss",
+      "score": "0-1",
+      "winnings": 0,
+      "playerRecords": [
+        {
+          "name": "Thrall Lineman",
+          "number": 3,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        }
+      ]
+    }
+  ]
 }
