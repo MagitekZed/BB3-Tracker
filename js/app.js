@@ -2,7 +2,7 @@ import { state, els } from './state.js';
 import { init, goHome, goAdmin, handleMobileMatchNav, showSkill, closeSkillModal, showSection } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, handleDeleteMatch, renderManageForm } from './ui-league.js';
 import { handleOpenTeam, handleManageTeamDirect, handleEditTeam, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
-import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame } from './ui-match.js';
+import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame, closePreMatchModal, changeInducement, setCustomInducement, confirmMatchStart, toggleStar } from './ui-match.js';
 import { handleScanRepo, attachTeam, restoreLeague, deleteOrphanFile, deleteLeagueFolder } from './ui-admin.js';
 import { setStatus } from './utils.js';
 
@@ -10,7 +10,6 @@ import { setStatus } from './utils.js';
 // 1. EXPOSE FUNCTIONS TO WINDOW (For HTML onclicks)
 // ============================================
 
-// CRITICAL: Expose state and navigation helpers for inline HTML event handlers
 window.state = state;
 window.showSection = showSection;
 
@@ -45,6 +44,13 @@ window.openPlayerActionSheet = openPlayerActionSheet;
 window.closeActionSheet = closeActionSheet;
 window.handleSheetAction = handleSheetAction;
 window.toggleReroll = toggleReroll;
+
+// Chunk 2: Inducement Setup Exports
+window.closePreMatchModal = closePreMatchModal;
+window.changeInducement = changeInducement;
+window.setCustomInducement = setCustomInducement;
+window.confirmMatchStart = confirmMatchStart;
+window.toggleStar = toggleStar;
 
 window.restoreLeague = restoreLeague;
 window.attachTeam = attachTeam;
@@ -88,11 +94,13 @@ if(els.buttons.endGame) els.buttons.endGame.addEventListener('click', handleEndG
 if(els.buttons.sbRefresh) els.buttons.sbRefresh.addEventListener('click', () => handleOpenScoreboard(state.activeMatchData.matchId));
 if(els.buttons.sbBack) els.buttons.sbBack.addEventListener('click', () => {
   if (state.activeMatchPollInterval) clearInterval(state.activeMatchPollInterval);
-  // Import from UI core to avoid circ dependency or just manual logic:
   document.getElementById('scoreboardSection').classList.add('hidden');
   document.getElementById('leagueViewSection').classList.remove('hidden');
   if (state.viewLeagueId) handleOpenLeague(state.viewLeagueId);
 });
+
+// Pre-Match Start Button
+if(els.preMatch.startBtn) els.preMatch.startBtn.addEventListener('click', confirmMatchStart);
 
 
 // Admin / Management Buttons
