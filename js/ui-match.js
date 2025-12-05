@@ -283,6 +283,8 @@ function updateInducementTotals() {
   
   els.preMatch.homeOver.style.display = (hSpent > hBudget) ? 'inline' : 'none';
   els.preMatch.awayOver.style.display = (aSpent > aBudget) ? 'inline' : 'none';
+  
+  els.preMatch.startBtn.disabled = (hSpent > hBudget || aSpent > aBudget);
 }
 
 // ... (Start Game, Jumbotron, Coach Mode, Player Actions - UNCHANGED) ...
@@ -486,6 +488,8 @@ export function renderJumbotron() {
     renderLiveRoster(d.away.roster, 'away', true);
 }
 
+// --- Coach Mode ---
+
 export function enterCoachMode(side) {
   state.coachSide = side;
   document.body.classList.add('mode-coach');
@@ -523,6 +527,7 @@ export function renderCoachView() {
   }
   els.containers.coachRerolls.innerHTML = pips;
   
+  // Render Inducements if any
   let inducementsHtml = '';
   if (team.inducements && Object.keys(team.inducements).length > 0) {
       const items = Object.entries(team.inducements)
@@ -572,6 +577,8 @@ function renderLiveRoster(roster, side, readOnly) {
     `;
   }).join('');
 }
+
+// --- Player Actions ---
 
 export function openPlayerActionSheet(idx) {
   state.selectedPlayerIdx = idx;
@@ -701,6 +708,8 @@ export function toggleReroll(side, idx) {
   }
 }
 
+// --- Game Control Actions ---
+
 export async function handleCoachEndTurn() {
   const side = state.coachSide;
   const d = state.activeMatchData;
@@ -731,25 +740,201 @@ export async function handleCancelGame() {
   } catch(e) { setStatus(e.message, 'error'); }
 }
 
-export async function handleEndGame() {
-  const confirmed = await confirmModal("End Game?", "Finish the match and save the final score? This cannot be undone.", "End Game", false);
-  if(!confirmed) return;
-  
-  const key = els.inputs.editKey.value;
-  try {
+// --- POST GAME SEQUENCE (CHUNK 4) ---
+
+export function openPostGameModal() {
     const d = state.activeMatchData;
-    const l = await apiGet(PATHS.leagueSettings(d.leagueId));
-    const m = l.matches.find(x => x.id === d.matchId);
-    if(m) {
-      m.status = 'completed';
-      m.score = { home: d.home.score, away: d.away.score };
-      m.casualties = { 
-        homeInflicted: d.home.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0),
-        awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
-      };
+    state.postGame = {
+        step: 1,
+        homeWinnings: 0, awayWinnings: 0,
+        homeFans: 0, awayFans: 0,
+        homeMvp: null, awayMvp: null,
+        injuries: []
+    };
+    
+    // Identify injuries
+    const getInjuries = (roster, side) => roster.map((p, i) => ({ ...p, originalIdx: i, side })).filter(p => p.live.injured);
+    state.postGame.injuries = [...getInjuries(d.home.roster, 'home'), ...getInjuries(d.away.roster, 'away')];
+    
+    renderPostGameStep();
+    els.postGame.el.classList.remove('hidden');
+}
+
+export function renderPostGameStep() {
+    const pg = state.postGame;
+    const d = state.activeMatchData;
+    const body = els.postGame.body;
+    let html = '';
+
+    if (pg.step === 1) { // Winnings
+        html = `
+          <h4>Step 1: Match Records</h4>
+          <div class="form-grid">
+             <div class="panel-styled">
+                <h5 style="color:${d.home.colors.primary}">${d.home.name}</h5>
+                <label>Winnings (k)</label><input type="number" value="${pg.homeWinnings}" onchange="state.postGame.homeWinnings=parseInt(this.value)">
+                <label>Fan Factor Change</label><select onchange="state.postGame.homeFans=parseInt(this.value)"><option value="0">Same</option><option value="1">+1</option><option value="-1">-1</option></select>
+             </div>
+             <div class="panel-styled">
+                <h5 style="color:${d.away.colors.primary}">${d.away.name}</h5>
+                <label>Winnings (k)</label><input type="number" value="${pg.awayWinnings}" onchange="state.postGame.awayWinnings=parseInt(this.value)">
+                <label>Fan Factor Change</label><select onchange="state.postGame.awayFans=parseInt(this.value)"><option value="0">Same</option><option value="1">+1</option><option value="-1">-1</option></select>
+             </div>
+          </div>
+        `;
+    } else if (pg.step === 2) { // MVP
+        const renderMvpSelect = (side) => {
+            const team = d[side];
+            const opts = team.roster.map((p, i) => `<option value="${i}">#${p.number} ${p.name}</option>`).join('');
+            return `
+              <div class="panel-styled">
+                 <h5 style="color:${team.colors.primary}">${team.name} MVP</h5>
+                 <select id="mvpSelect${side}" onchange="state.postGame.${side}Mvp=parseInt(this.value)">
+                    <option value="">Select MVP...</option>${opts}
+                 </select>
+                 <button onclick="window.randomMvp('${side}')" style="margin-top:0.5rem; width:100%">Randomize</button>
+              </div>`;
+        };
+        html = `<h4>Step 2: Accolades (MVP)</h4><div class="form-grid">${renderMvpSelect('home')}${renderMvpSelect('away')}</div>`;
+    } else if (pg.step === 3) { // Injuries
+        if (pg.injuries.length === 0) {
+            html = `<h4>Step 3: Casualty Ward</h4><p>No injuries reported. Lucky day!</p>`;
+        } else {
+            html = `<h4>Step 3: Casualty Ward</h4>`;
+            pg.injuries.forEach((p, i) => {
+                html += `
+                  <div class="panel-styled" style="margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                     <div><strong>${p.name}</strong> (${p.side})</div>
+                     <select onchange="state.postGame.injuries[${i}].outcome=this.value">
+                        <option value="bh">Badly Hurt (Recover)</option>
+                        <option value="mng">Miss Next Game</option>
+                        <option value="-ma">-1 MA</option>
+                        <option value="-st">-1 ST</option>
+                        <option value="-ag">-1 AG</option>
+                        <option value="-pa">-1 PA</option>
+                        <option value="-av">-1 AV</option>
+                        <option value="dead" style="color:red; font-weight:bold;">DEAD</option>
+                     </select>
+                  </div>`;
+            });
+        }
+    } else if (pg.step === 4) { // Summary
+        html = `<h4>Step 4: Confirm & Save</h4><p>Ready to commit these results to the permanent team records?</p>`;
+        html += `<ul><li>Home: +${pg.homeWinnings}k, MVP #${d.home.roster[pg.homeMvp]?.number||'?'}</li>`;
+        html += `<li>Away: +${pg.awayWinnings}k, MVP #${d.away.roster[pg.awayMvp]?.number||'?'}</li>`;
+        html += `<li>Injuries Processed: ${pg.injuries.length}</li></ul>`;
     }
-    await apiSave(PATHS.leagueSettings(d.leagueId), l, `Complete ${d.matchId}`, key);
-    await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
-    handleOpenLeague(d.leagueId);
-  } catch(e) { setStatus(e.message, 'error'); }
+
+    body.innerHTML = html;
+    
+    // Button Logic
+    els.postGame.backBtn.style.display = (pg.step === 1) ? 'none' : 'inline-block';
+    els.postGame.nextBtn.textContent = (pg.step === 4) ? 'Commit & Finish' : 'Next';
+    
+    // Clear old listeners to prevent stacking (simple approach)
+    const newNext = els.postGame.nextBtn.cloneNode(true);
+    const newBack = els.postGame.backBtn.cloneNode(true);
+    els.postGame.nextBtn.parentNode.replaceChild(newNext, els.postGame.nextBtn);
+    els.postGame.backBtn.parentNode.replaceChild(newBack, els.postGame.backBtn);
+    els.postGame.nextBtn = newNext;
+    els.postGame.backBtn = newBack;
+    
+    els.postGame.nextBtn.onclick = () => {
+        if (pg.step < 4) { state.postGame.step++; renderPostGameStep(); }
+        else { commitPostGame(); }
+    };
+    els.postGame.backBtn.onclick = () => {
+        if (pg.step > 1) { state.postGame.step--; renderPostGameStep(); }
+    };
+}
+
+export function randomMvp(side) {
+    const roster = state.activeMatchData[side].roster;
+    const eligible = roster.map((p,i) => i).filter(i => roster[i].position !== 'Star Player'); // Stars can't be MVP
+    if(eligible.length === 0) return;
+    const winnerIdx = eligible[Math.floor(Math.random() * eligible.length)];
+    state.postGame[`${side}Mvp`] = winnerIdx;
+    document.getElementById(`mvpSelect${side}`).value = winnerIdx;
+}
+
+export async function commitPostGame() {
+    const key = els.inputs.editKey.value;
+    const pg = state.postGame;
+    const d = state.activeMatchData;
+    
+    setStatus('Committing results...');
+    try {
+        // Load Fresh Teams
+        const homeT = await apiGet(PATHS.team(d.leagueId, d.home.id));
+        const awayT = await apiGet(PATHS.team(d.leagueId, d.away.id));
+        
+        // Helper to update team
+        const updateTeam = (team, matchSide, winnings, fans, mvpIdx) => {
+            team.treasury = (team.treasury || 0) + (winnings * 1000);
+            team.dedicatedFans = Math.max(1, (team.dedicatedFans || 1) + fans);
+            
+            // Map roster updates
+            team.players.forEach((p, i) => {
+                // Find matching player in match data (by number)
+                const matchP = d[matchSide].roster.find(mp => mp.number === p.number);
+                if (!matchP) return; // Maybe a journeyman not in main file?
+                
+                // SPP
+                let sppGain = (matchP.live.td * 3) + (matchP.live.cas * 2) + (matchP.live.int * 2) + (matchP.live.comp * 1);
+                if (matchP === d[matchSide].roster[mvpIdx]) sppGain += 4;
+                p.spp = (p.spp || 0) + sppGain;
+                
+                // Injuries
+                const injury = pg.injuries.find(inj => inj.side === matchSide && inj.originalIdx === d[matchSide].roster.indexOf(matchP));
+                if (injury && injury.outcome) {
+                    if (injury.outcome === 'dead') {
+                        p.dead = true; 
+                    } else if (injury.outcome === 'mng') {
+                        p.mng = true;
+                    } else if (injury.outcome.startsWith('-')) {
+                        const stat = injury.outcome.substring(1); // 'ma', 'st'
+                        p[stat] = (p[stat] || 0) - 1;
+                        p.injuries = (p.injuries || []) + injury.outcome + ',';
+                    }
+                }
+            });
+            // Filter dead
+            team.players = team.players.filter(p => !p.dead);
+        };
+        
+        updateTeam(homeT, 'home', pg.homeWinnings, pg.homeFans, pg.homeMvp);
+        updateTeam(awayT, 'away', pg.awayWinnings, pg.awayFans, pg.awayMvp);
+        
+        // Save Teams
+        await apiSave(PATHS.team(d.leagueId, homeT.id), homeT, `Post-game ${d.matchId} Home`, key);
+        await apiSave(PATHS.team(d.leagueId, awayT.id), awayT, `Post-game ${d.matchId} Away`, key);
+        
+        // Update League
+        const league = await apiGet(PATHS.leagueSettings(d.leagueId));
+        const m = league.matches.find(x => x.id === d.matchId);
+        if(m) {
+            m.status = 'completed';
+            m.score = { home: d.home.score, away: d.away.score };
+            m.casualties = { 
+                homeInflicted: d.home.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0),
+                awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
+            };
+        }
+        await apiSave(PATHS.leagueSettings(d.leagueId), league, `Complete match ${d.matchId}`, key);
+        
+        // Delete Match
+        await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
+        
+        // Reset and Go Home
+        els.postGame.el.classList.add('hidden');
+        handleOpenLeague(d.leagueId);
+        setStatus('Match finalized successfully!', 'ok');
+        
+    } catch(e) { setStatus(e.message, 'error'); }
+}
+
+export async function handleEndGame() {
+  const confirmed = await confirmModal("End Game?", "Proceed to Post-Game Sequence? (MVP, Winnings, etc.)", "Proceed", false);
+  if(!confirmed) return;
+  openPostGameModal(); // CHUNK 4 ENTRY POINT
 }
