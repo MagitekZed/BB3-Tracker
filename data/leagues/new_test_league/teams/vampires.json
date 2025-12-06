@@ -23,7 +23,7 @@
         "A",
         "S"
       ],
-      "spp": 0
+      "spp": 4
     },
     {
       "number": 2,
@@ -104,6 +104,70 @@
             "foul": 0
           },
           "isMvp": true
+        }
+      ]
+    },
+    {
+      "season": 1,
+      "round": 3,
+      "matchId": "match_1764975255989",
+      "opponentName": "chaos",
+      "result": "Draw",
+      "score": "0-0",
+      "winnings": 0,
+      "tv": 120000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "name": "Thrall Lineman",
+          "number": 1,
+          "position": "Thrall Lineman",
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "name": "Thrall Lineman",
+          "number": 2,
+          "position": "Thrall Lineman",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "name": "Thrall Lineman",
+          "number": 3,
+          "position": "Thrall Lineman",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
         }
       ]
     }
