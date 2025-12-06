@@ -3,7 +3,7 @@
   "leagueId": "new_test_league",
   "round": 3,
   "status": "in_progress",
-  "activeTeam": "home",
+  "activeTeam": "away",
   "home": {
     "id": "chaos",
     "name": "chaos",
@@ -233,7 +233,7 @@
     "tv": 120000
   },
   "turn": {
-    "home": 0,
+    "home": 1,
     "away": 0
   },
   "log": []
