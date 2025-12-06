@@ -52,7 +52,7 @@
         "A",
         "P"
       ],
-      "spp": 2
+      "spp": 6
     },
     {
       "number": 3,
@@ -144,6 +144,70 @@
             "td": 0,
             "cas": 0,
             "int": 1,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ]
+    },
+    {
+      "season": 1,
+      "round": 3,
+      "matchId": "match_1764975255989",
+      "opponentName": "vampires",
+      "result": "Draw",
+      "score": "0-0",
+      "winnings": 0,
+      "tv": 180000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "name": "Beastman Runner",
+          "number": 1,
+          "position": "Beastman Runner",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "name": "Beastman Runner",
+          "number": 2,
+          "position": "Beastman Runner",
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "name": "Beastman Runner",
+          "number": 3,
+          "position": "Beastman Runner",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
             "comp": 0,
             "foul": 0
           },
