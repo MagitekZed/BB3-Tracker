@@ -1,0 +1,240 @@
+{
+  "matchId": "match_1764975255989",
+  "leagueId": "new_test_league",
+  "round": 3,
+  "status": "in_progress",
+  "activeTeam": "home",
+  "home": {
+    "id": "chaos",
+    "name": "chaos",
+    "colors": {
+      "primary": "#ff0000",
+      "secondary": "#0d0d0d"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Beastman Runner",
+        "position": "Beastman Runner",
+        "qty": 16,
+        "cost": 60000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 9,
+        "skills": [
+          "Horns"
+        ],
+        "primary": [
+          "G",
+          "S",
+          "M"
+        ],
+        "secondary": [
+          "A",
+          "P"
+        ],
+        "spp": 7,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Beastman Runner",
+        "position": "Beastman Runner",
+        "qty": 16,
+        "cost": 60000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 9,
+        "skills": [
+          "Horns"
+        ],
+        "primary": [
+          "G",
+          "S",
+          "M"
+        ],
+        "secondary": [
+          "A",
+          "P"
+        ],
+        "spp": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Beastman Runner",
+        "position": "Beastman Runner",
+        "qty": 16,
+        "cost": 60000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 9,
+        "skills": [
+          "Horns"
+        ],
+        "primary": [
+          "G",
+          "S",
+          "M"
+        ],
+        "secondary": [
+          "A",
+          "P"
+        ],
+        "spp": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {},
+    "tv": 180000
+  },
+  "away": {
+    "id": "vampires",
+    "name": "vampires",
+    "colors": {
+      "primary": "#e100ff",
+      "secondary": "#c9c9c9"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "number": 1,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 2,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 0,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "number": 3,
+        "name": "Thrall Lineman",
+        "position": "Thrall Lineman",
+        "qty": 16,
+        "cost": 40000,
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [],
+        "primary": [
+          "G"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "spp": 4,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {},
+    "tv": 120000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
