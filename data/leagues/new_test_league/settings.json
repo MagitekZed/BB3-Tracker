@@ -114,8 +114,38 @@
       "round": 3,
       "homeTeamId": "chaos",
       "awayTeamId": "vampires",
-      "status": "in_progress",
-      "date": "2025-12-05"
+      "status": "completed",
+      "date": "2025-12-05",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "casualties": {
+        "homeInflicted": 0,
+        "awayInflicted": 0
+      },
+      "report": {
+        "home": {
+          "name": "chaos",
+          "score": 0,
+          "tv": 180000,
+          "inducements": {},
+          "winnings": 0,
+          "fanFactorChange": 0,
+          "mvp": "Beastman Runner",
+          "stats": []
+        },
+        "away": {
+          "name": "vampires",
+          "score": 0,
+          "tv": 120000,
+          "inducements": {},
+          "winnings": 0,
+          "fanFactorChange": 0,
+          "mvp": "Thrall Lineman",
+          "stats": []
+        }
+      }
     }
   ]
 }
