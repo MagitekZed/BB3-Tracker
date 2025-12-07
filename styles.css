@@ -168,9 +168,7 @@ body {
 }
 .key-dropdown input { width: 100%; padding: 0.4rem; border:1px solid #999; }
 
-/* Force Hidden Utility */
 .hidden { display: none !important; }
-
 @media (min-width: 769px) { .mobile-only { display: none !important; } body { padding-bottom: 2rem; } }
 @media (max-width: 768px) { .desktop-only { display: none !important; } #mainContent { padding: 0.5rem; } h1 { font-size: 1.8rem; } }
 
