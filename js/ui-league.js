@@ -39,6 +39,9 @@ export async function handleOpenLeague(id) {
     state.currentLeague = settings;
     state.viewLeagueId = id;
     
+    // Initialize active tab if not set
+    if(!state.leagueViewTab) state.leagueViewTab = 'standings';
+
     renderLeagueView();
     showSection('view');
     updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: settings.name }]);
@@ -48,39 +51,62 @@ export async function handleOpenLeague(id) {
   } catch (e) { setStatus(e.message, 'error'); }
 }
 
+export function switchLeagueTab(tabName) {
+    state.leagueViewTab = tabName;
+    renderLeagueView();
+}
+// Expose to window
+window.switchLeagueTab = switchLeagueTab;
+
 export function renderLeagueView() {
   const l = state.currentLeague;
   if (!l) return;
   
   document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
-  document.getElementById('leagueTeamsSection').className = 'panel-styled';
-  document.getElementById('leagueMatchesSection').className = 'panel-styled';
-
-  const standings = computeStandings(l);
-  els.containers.standings.innerHTML = `<table class="responsive-table">
-    <thead><tr><th>#</th><th>Team</th><th>W-D-L</th><th>Pts</th><th>Diff</th></tr></thead>
-    <tbody>${standings.map((s, i) => `
-      <tr>
-        <td data-label="Rank">${i+1}</td>
-        <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${l.id}', '${s.id}')">${s.name}</button></td>
-        <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
-        <td data-label="Points">${s.points}</td>
-        <td data-label="Diff">${s.tdDiff}/${s.casDiff}</td>
-      </tr>`).join('')}
-  </tbody></table>`;
   
-  if (els.containers.rosterQuick) {
-    els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
-      ${l.teams.map(t => {
-        const prim = t.colors?.primary || '#8a1c1c';
-        return `
-        <div class="roster-tile" style="border-top-color: ${prim}">
-          <div class="roster-tile-title"><button class="team-link" onclick="window.handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div>
-          <div class="roster-tile-meta"><span><strong>Race:</strong> ${t.race}</span><span><strong>Coach:</strong> ${t.coachName}</span></div>
-        </div>`;
-      }).join('')}
-    </div>`;
+  // Setup Tabs
+  const activeTab = state.leagueViewTab || 'standings';
+  const tabsHtml = `
+    <div class="league-tabs">
+        <div class="league-tab ${activeTab==='standings'?'active':''}" onclick="window.switchLeagueTab('standings')">Standings</div>
+        <div class="league-tab ${activeTab==='leaders'?'active':''}" onclick="window.switchLeagueTab('leaders')">Leaders</div>
+        <div class="league-tab ${activeTab==='stats'?'active':''}" onclick="window.switchLeagueTab('stats')">Team Stats</div>
+    </div>
+  `;
+
+  const teamsSection = document.getElementById('leagueTeamsSection');
+  teamsSection.className = 'panel-styled';
+  
+  // Render Content based on Tab
+  let contentHtml = '';
+  if (activeTab === 'standings') {
+      const standings = computeStandings(l);
+      contentHtml = `
+        <div class="scroll-table-container">
+        <table class="responsive-table standings-table">
+        <thead><tr><th>#</th><th>Team</th><th>Coach</th><th>W-D-L</th><th>Pts</th><th>Diff</th></tr></thead>
+        <tbody>${standings.map((s, i) => `
+          <tr>
+            <td data-label="Rank">${i+1}</td>
+            <td data-label="Team">
+                <button class="primary-btn" style="padding:2px 8px; font-size:0.8rem;" onclick="window.handleOpenTeam('${l.id}', '${s.id}')">${s.name}</button>
+                <div style="font-size:0.75rem; color:#666; margin-top:2px;">${s.race}</div>
+            </td>
+            <td data-label="Coach">${s.coachName}</td>
+            <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
+            <td data-label="Points">${s.points}</td>
+            <td data-label="Diff">${s.tdDiff}/${s.casDiff}</td>
+          </tr>`).join('')}
+        </tbody></table></div>`;
+  } else {
+      contentHtml = `<div style="padding:2rem; text-align:center; color:#666;">Stats coming soon...</div>`;
   }
+  
+  teamsSection.innerHTML = tabsHtml + contentHtml;
+  
+  // Remove rosterQuick (Team List sidebar) as requested
+  if (els.containers.rosterQuick) els.containers.rosterQuick.innerHTML = '';
+
   renderMatchesList(l);
 }
 
@@ -129,7 +155,7 @@ export function renderMatchesList(league) {
   }).join('');
   
   const scheduledHeader = active.length > 0 ? '<h4 style="margin-top:2rem; color:#444;">Upcoming & Results</h4>' : '';
-  els.containers.matches.innerHTML = `${scheduledHeader}<table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`; 
+  els.containers.matches.innerHTML = `${scheduledHeader}<div class="scroll-table-container"><table class="responsive-table"><thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`; 
 }
 
 export async function handleViewMatchReport(matchId) {
