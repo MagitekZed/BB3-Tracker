@@ -313,7 +313,7 @@ export async function handleOpenScoreboard(matchId) {
   } catch (e) { setStatus(e.message, 'error'); }
 }
 
-// --- Jumbotron & Coach Views (INDUCEMENTS UPDATED) ---
+// --- Jumbotron & Coach Views ---
 
 export function renderJumbotron() {
   const d = state.activeMatchData;
@@ -331,14 +331,9 @@ export function renderJumbotron() {
   els.containers.sbAwayRoster.innerHTML = `<div class="roster-header" style="background:${d.away.colors?.primary||'#222'}; color:${getContrastColor(d.away.colors?.primary||'#222')}">Away - ${d.away.name}</div>` + renderJumbotronInducements(d.away) + renderLiveRoster(d.away.roster, 'away', true);
 }
 
-// Helper: Jumbotron Icons
 function renderJumbotronInducements(team) {
     if (!team.inducements && !team.apothecary) return '';
-    const mapping = { 
-        "Bloodweiser Keg": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", 
-        "Halfling Master Chef": "👨‍🍳", "Mortuary Assistant": "⚰️", "Plague Doctor": "🧪",
-        "Riotous Rookies": "😡", "Wandering Apothecary": "💊", "Wizard": "⚡", "Biased Referee": "🃏"
-    };
+    const mapping = { "Bloodweiser Keg": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", "Halfling Master Chef": "👨‍🍳", "Mortuary Assistant": "⚰️", "Plague Doctor": "🧪", "Riotous Rookies": "😡", "Wandering Apothecary": "💊", "Wizard": "⚡", "Biased Referee": "🃏" };
     let html = '<div class="jumbotron-icons">';
     if (team.apothecary) html += `<span title="Apothecary" class="jumbo-icon">🚑</span>`;
     if (team.inducements) {
@@ -380,13 +375,9 @@ export function renderCoachView() {
   for(let i=0; i<team.rerolls; i++) pips += `<div class="reroll-pip ${i < (team.rerolls) ? 'active' : ''}" onclick="window.toggleReroll('${side}', ${i})"></div>`;
   els.containers.coachRerolls.innerHTML = pips;
   
-  // New Inducement Bar logic
+  // Inducement Bar
   let inducementsHtml = `<div class="inducement-bar"><div class="inducement-title">INDUCEMENTS <span onclick="window.openInGameShop('${side}')" style="cursor:pointer; font-size:1.2rem;">⚙️</span></div>`;
-  
-  if (team.apothecary) {
-      inducementsHtml += `<div class="inducement-chip" onclick="window.handleUseInducement('${side}', 'Apothecary')">🚑 Apothecary</div>`;
-  }
-  
+  if (team.apothecary) inducementsHtml += `<div class="inducement-chip" onclick="window.handleUseInducement('${side}', 'Apothecary')">🚑 Apothecary</div>`;
   if (team.inducements) {
       const mapping = { "Bloodweiser Keg": "🍺", "Bribes": "💰", "Wizard": "⚡", "Halfling Master Chef": "👨‍🍳", "Wandering Apothecary": "💊" };
       Object.entries(team.inducements).forEach(([k, v]) => {
@@ -397,7 +388,6 @@ export function renderCoachView() {
       });
   }
   inducementsHtml += `</div>`;
-
   els.containers.coachRoster.innerHTML = inducementsHtml + renderLiveRoster(team.roster, side, false);
 }
 
@@ -422,7 +412,6 @@ export async function handleUseInducement(side, itemName) {
     if(!confirmed) return;
     
     const d = state.activeMatchData;
-    // Special case for Apothecary boolean
     if (itemName === 'Apothecary') {
         if (d[side].apothecary) {
             d[side].apothecary = false; // Use it up
@@ -438,8 +427,6 @@ export async function handleUseInducement(side, itemName) {
         await updateLiveMatch(`Used ${itemName} (${side})`);
     }
 }
-
-// --- In-Game Shop Modal ---
 
 export function openInGameShop(side) {
     const modal = document.createElement('div');
@@ -460,7 +447,6 @@ export function openInGameShop(side) {
         document.getElementById('inGameShopList').innerHTML = html;
     };
     
-    // PURELY LOCAL UPDATE
     window.adjustInGameInducement = (name, delta) => {
         const current = localInducements[name] || 0;
         const newVal = current + delta;
@@ -485,8 +471,7 @@ export function openInGameShop(side) {
     modal.querySelector('#igShopSave').onclick = () => closeAndSave(true);
 }
 
-// ... (Player Actions, Game Control Actions, Post-Game Sequence unchanged from previous step) ...
-// ... (Included for completeness) ...
+// ... (Player Actions & Post-Game Logic - UNCHANGED but included) ...
 
 export function openPlayerActionSheet(idx) {
   state.selectedPlayerIdx = idx;
@@ -572,8 +557,6 @@ export async function handleCancelGame() {
     handleOpenLeague(lId);
   } catch(e) { setStatus(e.message, 'error'); }
 }
-
-// --- POST GAME SEQUENCE (CHUNK 4) ---
 
 export function openPostGameModal() {
     if (state.activeMatchPollInterval) {
