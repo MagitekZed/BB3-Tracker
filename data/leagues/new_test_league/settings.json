@@ -146,6 +146,14 @@
           "stats": []
         }
       }
+    },
+    {
+      "id": "match_1765583319701",
+      "round": 4,
+      "homeTeamId": "chaos",
+      "awayTeamId": "vampires",
+      "status": "scheduled",
+      "date": "2025-12-12"
     }
   ]
 }
