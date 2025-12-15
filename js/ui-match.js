@@ -115,7 +115,7 @@ export async function handleStartMatch(matchId) {
     renderPreMatchSetup();
     els.preMatch.el.classList.remove('hidden');
     setStatus('Setup ready.', 'ok');
-  } catch (e) { setStatus(e.message, 'error'); }
+  } catch (e) { console.error(e); setStatus(e.message, 'error'); }
 }
 
 export function closePreMatchModal() {

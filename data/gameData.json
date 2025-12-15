@@ -3433,7 +3433,9 @@
                                            "Titchy"
                                        ],
                             "cost":  80000,
-                            "playsFor":  "Any Team",
+                            "playsFor":  [
+                                             "Any"
+                                         ],
                             "specialRules":  "Blind Rage\nAkhorne may choose to re-roll the D6 when rolling for the Dauntless Skill."
                         },
                         {
@@ -3452,7 +3454,9 @@
                                            "Unsteady"
                                        ],
                             "cost":  190000,
-                            "playsFor":  "Lustrian Superleague",
+                            "playsFor":  [
+                                             "Lustrian Superleague"
+                                         ],
                             "specialRules":  "Savage Blow\nOnce per game, when Anqi performs a Block Action against an opposition player he may choose to re-roll any number of the Block Dice."
                         },
                         {
@@ -3497,7 +3501,9 @@
                                            "Unsteady"
                                        ],
                             "cost":  180000,
-                            "playsFor":  "Favoured of Nurgle",
+                            "playsFor":  [
+                                             "Favoured of Nurgle"
+                                         ],
                             "specialRules":  "Putrid Regurgitation\nOnce per half, Bilerot may use the Projectile Vomit Special Action. This may still be used even if Bilerot has already performed a Block Action this Turn."
                         },
                         {
@@ -3543,7 +3549,9 @@
                                            "Side Step"
                                        ],
                             "cost":  180000,
-                            "playsFor":  "Lustrian Superleague",
+                            "playsFor":  [
+                                             "Lustrian Superleague"
+                                         ],
                             "specialRules":  "Look into my Eyes\nOnce per game, if Boa begins his activation Marking an opposition player in possession of the ball, he may roll a D6. On a 1, nothing happens. On a 2+ the opposition player losses possession of the ball, Boa immediately gains possession of the ball, and Boa’s activation immediately ends."
                         },
                         {
@@ -3588,7 +3596,9 @@
                                            "Ghostly Flames"
                                        ],
                             "cost":  130000,
-                            "playsFor":  "Sylvanian Spotlight",
+                            "playsFor":  [
+                                             "Sylvanian Spotlight"
+                                         ],
                             "specialRules":  ""
                         },
                         {
@@ -3608,7 +3618,9 @@
                                            "Regeneration"
                                        ],
                             "cost":  230000,
-                            "playsFor":  "Sylvanian Spotlight",
+                            "playsFor":  [
+                                             "Sylvanian Spotlight"
+                                         ],
                             "specialRules":  "Tasty Morsel\nOnce per game, when Karina fails a Bloodlust roll, she may choose to bite an opposition player with a ST of 3 or lower as if they were a Thrall Lineman team-mate. Karina may not bite Star Players with this special rule."
                         },
                         {
@@ -3627,7 +3639,9 @@
                                            "Side Step"
                                        ],
                             "cost":  300000,
-                            "playsFor":  "Sylvanian Spotlight",
+                            "playsFor":  [
+                                             "Sylvanian Spotlight"
+                                         ],
                             "specialRules":  "Star of the Show\nOnce per game, when Count Luthor scores a Touchdown, his controlling coach gains one Team Re-roll until the end of the following Drive. If this Team Re-roll has not been used by the end of the next Drive, it is lost."
                         },
                         {
@@ -3673,7 +3687,9 @@
                                            "Timmm-ber!"
                                        ],
                             "cost":  280000,
-                            "playsFor":  "Woodland League",
+                            "playsFor":  [
+                                             "Woodland League"
+                                         ],
                             "specialRules":  "Reliable\nIf Deeproot makes a Fumbled Throw when performing a Throw Team-mate Action, the player that was being thrown will Bounce as normal but will automatically land safely."
                         },
                         {
@@ -3698,7 +3714,9 @@
                                            "Stunty"
                                        ],
                             "cost":  230000,
-                            "playsFor":  "Lustrian Superleague",
+                            "playsFor":  [
+                                             "Lustrian Superleague"
+                                         ],
                             "specialRules":  "A Sneaky Pair – Dribl \u0026 Drull mist be hired as a pair.\nAdditionally, whenever Dribl or Drull perform either a Foul Action or a Stab Special Action against an opposition player Marked by both Dribl \u0026 Drull, they may apply a +1 modifier to the roll."
                         },
                         {
@@ -3718,7 +3736,9 @@
                                            "On the Ball"
                                        ],
                             "cost":  220000,
-                            "playsFor":  "Elven Kingdoms League",
+                            "playsFor":  [
+                                             "Elven Kingdoms League"
+                                         ],
                             "specialRules":  "Mesmerizing Gaze\nOnce per half, Eldril may re-roll the dice when performing a Hypnotic Gaze Special Action."
                         },
                         {
@@ -3737,7 +3757,9 @@
                                            "Side Step"
                                        ],
                             "cost":  190000,
-                            "playsFor":  "Lustrian Superleague",
+                            "playsFor":  [
+                                             "Lustrian Superleague"
+                                         ],
                             "specialRules":  "Baleful Hex\nOnce per game, at the beginning of Estelle’s activation, she may select an opposition player within 5 squares and roll a D6. On a 2+, the selected player becomes Distracted and cannot be activated during their team’s next Turn."
                         },
                         {
@@ -3804,7 +3826,9 @@
                                            "Stand Firm"
                                        ],
                             "cost":  175000,
-                            "playsFor":  "Underworld Challenge",
+                            "playsFor":  [
+                                             "Underworld Challenge"
+                                         ],
                             "specialRules":  "Frenzied Rush\nOnce per half, when Glart declares a Blitz Action he may gain the Frenzy Skill until the end of his activation. Glatt may not use the Grab Skill during a Turn in which he uses this special rule."
                         },
                         {
@@ -3824,7 +3848,9 @@
                                            "Sure Hands"
                                        ],
                             "cost":  150000,
-                            "playsFor":  "Elven Kingdoms League",
+                            "playsFor":  [
+                                             "Elven Kingdoms League"
+                                         ],
                             "specialRules":  "Shot to Nothing\nOnce per game, when Gloriel is activated she may use this special rule. If she does, Gloriel gains the Hail Mary Pass Skill until the end of her activation."
                         },
                         {
@@ -3845,7 +3871,9 @@
                                            "Thick Skull"
                                        ],
                             "cost":  260000,
-                            "playsFor":  "Lustrian Superleague",
+                            "playsFor":  [
+                                             "Lustrian Superleague"
+                                         ],
                             "specialRules":  "Primal Savagery\nOne per game, when Glotl fails an Animal Savagery roll, it may lash out at an opposition player rather than a team-mate."
                         },
                         {
@@ -3869,7 +3897,9 @@
                                            "Sure Hands"
                                        ],
                             "cost":  250000,
-                            "playsFor":  "Any Team",
+                            "playsFor":  [
+                                             "Any"
+                                         ],
                             "specialRules":  "I’ll Carry You – Grak \u0026 Grumbleberry must be hired as a pair.\nAdditionally, once per half, if Grak begins his activation adjacent to Crumbleberry he may pick up Crumbleberry; temporarily remove Crumbleberry from the pitch. At the end of Grak’s activation, place Crumbleberry in an unoccupied square adjacent to Grak.\nAdditional, whilst Crumbleberry is being carried by Grak, Grak gains the Break Tackle and Dodge Skills."
                         },
                         {
@@ -3889,7 +3919,9 @@
                                            "Unchannelled Fury"
                                        ],
                             "cost":  240000,
-                            "playsFor":  "Chaos Clash",
+                            "playsFor":  [
+                                             "Chaos Clash"
+                                         ],
                             "specialRules":  "Gored by the Bull\nOnce per game wen Grashnak performs a Block Action as part of a Blitz Action, he may roll one additional Block Dice against the opposition player regardless of their ST, to a maximum of three Block Dice. If Grashnak performs a second Block Action due to the Frenzy Skill, the second Block Action will also benefit from this rule."
                         },
                         {
@@ -3912,7 +3944,9 @@
                                            "Side Step"
                                        ],
                             "cost":  180000,
-                            "playsFor":  "Sylvanian Spotlight",
+                            "playsFor":  [
+                                             "Sylvanian Spotlight"
+                                         ],
                             "specialRules":  "Incorporeal\nOnce per game, when Gretchen is activated she can use this special rule. Until the end of her activation, Gretchen does not have to make Dodge rolls for leaving a square within an opposition player’s Tackle Zone."
                         },
                         {
@@ -3931,7 +3965,9 @@
                                            "Sprint Sure Feet"
                                        ],
                             "cost":  300000,
-                            "playsFor":  "Old World Classic",
+                            "playsFor":  [
+                                             "Old World Classic"
+                                         ],
                             "specialRules":  "Consummate Professional\nOnce per game, Griff may apple a +1 modifier to an Agility Test he has made. This modifier may be applied after the roll has been made."
                         },
                         {
@@ -3952,7 +3988,9 @@
                                            "Thick Skull"
                                        ],
                             "cost":  200000,
-                            "playsFor":  "Worlds Edge Superleague",
+                            "playsFor":  [
+                                             "Worlds Edge Superleague"
+                                         ],
                             "specialRules":  "Slayer\nOnce per game, when an opposition Big Guy is Knocked Down as a result of a Block Action performed by Grim, you may apply an additional +1 modifier to either the Armour Roll or the Injury Roll. This modifier may be applied after the roll has been made."
                         },
                         {
@@ -3998,7 +4036,9 @@
                                            "Plague Ridden"
                                        ],
                             "cost":  150000,
-                            "playsFor":  "Favoured of Nurgle",
+                            "playsFor":  [
+                                             "Favoured of Nurgle"
+                                         ],
                             "specialRules":  "Quick Bite\nOnce per game, if Guffle is Marking an opposition player who catches the ball, he may immediately make an Armour Roll against that player. If the target’s Armour is broken, Guffle immediately gains possession of the ball. No Turnover is caused as a result of using this special rule."
                         },
                         {
@@ -4042,7 +4082,9 @@
                                            "Two Heads"
                                        ],
                             "cost":  200000,
-                            "playsFor":  "Underworld Challenge",
+                            "playsFor":  [
+                                             "Underworld Challenge"
+                                         ],
                             "specialRules":  "Treacherous\nOnce per game, if Hakflem is adjacent to a teammate who is in possession of the ball when he is activated, then Hakflem can choose to gain possession of the ball. If he does, then the team-mate will immediately be Knocked Down. This will not cause a Turnover even if the team-mate suffers a Casualty."
                         },
                         {
@@ -4062,7 +4104,9 @@
                                            "Stand Firm"
                                        ],
                             "cost":  140000,
-                            "playsFor":  "Old World Classic",
+                            "playsFor":  [
+                                             "Old World Classic"
+                                         ],
                             "specialRules":  "Old Pro\nOnce per game, Helmut may use his Pro Skill to re-roll a single dice rolled as art of an Armour Roll."
                         },
                         {
@@ -4084,7 +4128,9 @@
                                            "Tackle"
                                        ],
                             "cost":  210000,
-                            "playsFor":  "Sylvanian Spotlight",
+                            "playsFor":  [
+                                             "Sylvanian Spotlight"
+                                         ],
                             "specialRules":  "Dwarfen Scourge\nOnce per game, when an opposition player is Knocked Down as a result of a Block Action performed by Ivan, you may apply an additional +1 modifier to the Armour Roll or Injury roll. If this is against a Dwarf player this may instead be a +2 modifier."
                         },
                         {
@@ -4102,7 +4148,9 @@
                                            "Tackle"
                                        ],
                             "cost":  215000,
-                            "playsFor":  "Old World Classic",
+                            "playsFor":  [
+                                             "Old World Classic"
+                                         ],
                             "specialRules":  "Raiding Party\nOnce per Drive, when Ivar begins his activation he may select one Open team-mate within 5 squares. The selected player may immediately move 1 square though they must end this move Marking an opposition player."
                         },
                         {
@@ -4125,7 +4173,9 @@
                                            "Sidestep"
                                        ],
                             "cost":  300000,
-                            "playsFor":  "Elven Kingdoms League",
+                            "playsFor":  [
+                                             "Elven Kingdoms League"
+                                         ],
                             "specialRules":  "The Flashing Blade\nOnce per game, at the start of his activation, Jeremiah may declare a Stab Special Action against an opposition player he is Marking. After performing the Stab Special Action, Jeremiah may then perform a Move Action before his activation ends."
                         },
                         {
@@ -4215,7 +4265,9 @@
                                            "Tentacles"
                                        ],
                             "cost":  160000,
-                            "playsFor":  "Elven Kingdoms League",
+                            "playsFor":  [
+                                             "Elven Kingdoms League"
+                                         ],
                             "specialRules":  "Black Ink\nOnce per game, at the start of any of his activations, Kiroth can select an opposition player he is Marking. The selected player becomes Distracted until they are next activated."
                         },
                         {
@@ -4235,7 +4287,9 @@
                                            "Secret Weapon"
                                        ],
                             "cost":  180000,
-                            "playsFor":  "Underworld Challenge",
+                            "playsFor":  [
+                                             "Underworld Challenge"
+                                         ],
                             "specialRules":  "I’ll Be Back!\nThe first time in a game that Kreek would be Sent-off as per the Secret Weapon Trait, he is not Sent-off and may instead continue as part of the game. Kreek’s coach may not Argue the Call when Kreek uses this special rule."
                         },
                         {
@@ -4256,7 +4310,9 @@
                                            "Sneaky Git"
                                        ],
                             "cost":  270000,
-                            "playsFor":  "Chaos Clash",
+                            "playsFor":  [
+                                             "Chaos Clash"
+                                         ],
                             "specialRules":  "Lord of Chaos\nOnce per game, when Lord Borak performs a Block Action he may re-roll a single Block Dice."
                         },
                         {
@@ -4277,7 +4333,9 @@
                                            "Thick Skull"
                                        ],
                             "cost":  210000,
-                            "playsFor":  "Woodland League",
+                            "playsFor":  [
+                                             "Woodland League"
+                                         ],
                             "specialRules":  "Vicious Vines\nOnce per half, when Maple declares a Block Action he may do so against an opposition player who is 2 squares away following all the normal rules for performing a Block Action, though he may not follow-up."
                         },
                         {
@@ -4295,7 +4353,9 @@
                                            "Secret Weapon"
                                        ],
                             "cost":  130000,
-                            "playsFor":  "Favoured Of Khorne",
+                            "playsFor":  [
+                                             "Favoured Of Khorne"
+                                         ],
                             "specialRules":  "Maximum Carnage\nOnce per game, after Max performs a Chainsaw Attack Special Action he may immediately perform another Chainsaw Attack Special Action that targets a different opposition player."
                         },
                         {
@@ -4336,7 +4396,9 @@
                                            "Throw Team-Mate"
                                        ],
                             "cost":  340,
-                            "playsFor":  "Any team except Sylvanian Spotlight",
+                            "playsFor":  [
+                                             "Any"
+                                         ],
                             "specialRules":  "The Ballista\nOnce per game, when Morg performs a Throw Team-mate Action, he may re-roll the Passing Ability Test."
                         },
                         {
@@ -4402,7 +4464,9 @@
                                            "Stab"
                                        ],
                             "cost":  130000,
-                            "playsFor":  "Badlands Brawl",
+                            "playsFor":  [
+                                             "Badlands Brawl"
+                                         ],
                             "specialRules":  "Toxin Connoisseur\nOnce per game, when Rashnak successfully breaks an opposition player’s armour as a result of a Stab Special Action, you may apply an additional +1 modifier to the Injury Roll. This modifier may be applied after the roll has been made."
                         },
                         {
@@ -4447,7 +4511,9 @@
                                            "Wrestle"
                                        ],
                             "cost":  70000,
-                            "playsFor":  "Woodland League",
+                            "playsFor":  [
+                                             "Woodland League"
+                                         ],
                             "specialRules":  "Catch of the Day\nOnce per half, if Rodney is Standing and begins his activation within 3 squares of a ball which is on the ground he may roll a d6. On a 1-2 nothing happens. On a 3+ Rodney immediately gains possession of the ball."
                         },
                         {
@@ -4468,7 +4534,9 @@
                                            "Loner (4+)"
                                        ],
                             "cost":  160000,
-                            "playsFor":  "Woodland League",
+                            "playsFor":  [
+                                             "Woodland League"
+                                         ],
                             "specialRules":  "Bounding Leap\nOnce per game, after declaring that she will Leap but before rolling any dice, Rowana may choose to use this special rule. If she does, Rowana suffers no negative modifiers for the Agility Test to Leap and may choose to re-roll the result."
                         },
                         {
@@ -4488,7 +4556,9 @@
                                            "Loner (4+)"
                                        ],
                             "cost":  270000,
-                            "playsFor":  "Elven Kingdoms League",
+                            "playsFor":  [
+                                             "Elven Kingdoms League"
+                                         ],
                             "specialRules":  "Slashing Nails\nOnce per half, when Roxanna declares a Blitz Action, she gains the Claws Skill until the end of her activation."
                         },
                         {
@@ -4508,7 +4578,9 @@
                                            "Thick Skull"
                                        ],
                             "cost":  170000,
-                            "playsFor":  "Halfling Thimble Cup",
+                            "playsFor":  [
+                                             "Halfling Thimble Cup"
+                                         ],
                             "specialRules":  "Ram\nOnce per game, when an opposition player is Knocked Down as a result of a Block Action performed by Rumbelow, you may apply an additional +1 modifier to either the Armour Roll or the Injury Roll. This modifier may be applied after the roll has been made."
                         },
                         {
@@ -4554,7 +4626,9 @@
                                            "Unchannelled Fury"
                                        ],
                             "cost":  200000,
-                            "playsFor":  "Favoured Of Khorne",
+                            "playsFor":  [
+                                             "Favoured Of Khorne"
+                                         ],
                             "specialRules":  "Fury of the Blood God\nOnce per game, if Scyla rolls a 1 for his Unchannelled Fury roll after declaring a Block Action then, instead of applying the usual effects of Unchanneled Fury, Scyla may perform two Block Actions instead. The first Block Action must be fully resolved, including the use of the Frenzy Skill, before the second one is performed."
                         },
                         {
@@ -4573,7 +4647,9 @@
                                            "Stab"
                                        ],
                             "cost":  170000,
-                            "playsFor":  "Underworld Challenge",
+                            "playsFor":  [
+                                             "Underworld Challenge"
+                                         ],
                             "specialRules":  "Master Assassin\nOncer per game, when Skitter performs a Stab Special Action, he may choose to re-roll the Armour Roll."
                         },
                         {
@@ -4643,7 +4719,9 @@
                                            "Sure Hands"
                                        ],
                             "cost":  300000,
-                            "playsFor":  "Elven Kingdoms League",
+                            "playsFor":  [
+                                             "Elven Kingdoms League"
+                                         ],
                             "specialRules":  "Working In Tandem -The Swift Twins must be hired as a pair.\nAdditionally, if Lucien performs a Block Action against an opposition player who is also Marked be Valen, Lucien may re-roll a single Block Dice.\nAdditionally, if Valen performs a Pass Action that targets a square containing Lucien, then Valen suffers no modifiers to the PA Test for the range of the Pass Action."
                         },
                         {
@@ -4663,7 +4741,10 @@
                                            "Stunty"
                                        ],
                             "cost":  110000,
-                            "playsFor":  "Woodland, League",
+                            "playsFor":  [
+                                             "Woodland",
+                                             "League"
+                                         ],
                             "specialRules":  "Furious Outburst\nOnce per half, so long as she is Standing at the start of her activation, Swiftvine can place herself adjacent to a Standing opposition player within 3 squares of her and immediately make a Stab Special Action against them. She may then place herself in an unoccupied square within 3 squares of her new position. Her action then immediately ends. This counts as the team’s Blitz Action for the turn."
                         },
                         {
@@ -4705,7 +4786,9 @@
                                            "Unsteady"
                                        ],
                             "cost":  260000,
-                            "playsFor":  "Badlands Brawl",
+                            "playsFor":  [
+                                             "Badlands Brawl"
+                                         ],
                             "specialRules":  "Krump and Smash\nOnce per game, when an opposition player is Knocked Down as a result of a Block Action performed by Varag, he may re-roll the Armour Roll."
                         },
                         {
@@ -4725,7 +4808,9 @@
                                            "Wrestle"
                                        ],
                             "cost":  220000,
-                            "playsFor":  "Sylvanian Spotlight",
+                            "playsFor":  [
+                                             "Sylvanian Spotlight"
+                                         ],
                             "specialRules":  "Savage Mauling\nOnce per game, when Wilhelm makes in Injury Roll against an opposition player, he may choose to re-roll the result."
                         },
                         {
@@ -4743,7 +4828,9 @@
                                            "Thick Skull"
                                        ],
                             "cost":  160000,
-                            "playsFor":  "Woodland League",
+                            "playsFor":  [
+                                             "Woodland League"
+                                         ],
                             "specialRules":  "Woodland Fury\nOnce per game, when Willow performs a Block Action that would result in her being Knocked Down, she can choose to re-roll a single Block Dice."
                         },
                         {
@@ -4764,7 +4851,9 @@
                                            "Wrestle"
                                        ],
                             "cost":  170000,
-                            "playsFor":  "Favoured Of Nurgle",
+                            "playsFor":  [
+                                             "Favoured Of Nurgle"
+                                         ],
                             "specialRules":  "Watch Out!\nThe first time each Drive that Withergrasp is the target of a block Action performed by an opposition player, he counts as having the Dodge Skill."
                         },
                         {
@@ -4808,7 +4897,9 @@
                                            "Thick Skull!"
                                        ],
                             "cost":  130000,
-                            "playsFor":  "Favoured of Hashut",
+                            "playsFor":  [
+                                             "Favoured of Hashut"
+                                         ],
                             "specialRules":  "“Blastin’ Solves Everything”\nOnce per half, at the start of his activation, Zzharg may select a Standing opposition player within 3 squares and roll a D6. On a 3+, the selected player is hit. On a 2, the opposition coach selects a player (from either team, but not Zzharg) within 3 squares of the originally selected player to be hit instead. On a 1, Zzharg is hit instead. Make an Armour Roll for whichever player is hit. Zzharg’s activation then immediately ends."
                         }
                     ],
