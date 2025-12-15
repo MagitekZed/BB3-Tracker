@@ -4,7 +4,7 @@ import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, getContrastColor, applyTeamTheme, ulid } from './utils.js';
 import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill, confirmModal } from './ui-core.js';
 import { handleOpenLeague } from './ui-league.js';
-import { calculateTeamValue } from './rules.js';
+import { calculateTeamValue, calculateCurrentTeamValue, isPlayerAvailableForMatch } from './rules.js';
 
 // --- Scheduling ---
 
@@ -71,22 +71,44 @@ export async function handleStartMatch(matchId) {
     const awayTeam = await apiGet(PATHS.team(l.id, m.awayTeamId));
     if(!homeTeam || !awayTeam) throw new Error("Could not load team files.");
     
-    // Calculate TV
     const homeTv = calculateTeamValue(homeTeam);
     const awayTv = calculateTeamValue(awayTeam);
-    
-    // Calculate Petty Cash
-    let homePetty = 0; 
-    let awayPetty = 0;
-    if (homeTv < awayTv) homePetty = awayTv - homeTv;
-    if (awayTv < homeTv) awayPetty = homeTv - awayTv;
+
+    const getAvailableCount = (t) => (t.players || []).filter(isPlayerAvailableForMatch).length;
+    const homeAvail = getAvailableCount(homeTeam);
+    const awayAvail = getAvailableCount(awayTeam);
+    const homeJourneysNeeded = Math.max(0, 11 - homeAvail);
+    const awayJourneysNeeded = Math.max(0, 11 - awayAvail);
+
+    const getJourneymanOptions = (teamRace) => {
+      const raceData = state.gameData?.races?.find(r => r.name === teamRace);
+      const candidates = (raceData?.positionals || [])
+        .filter(p => (p.qtyMin === 0) && (p.qtyMax >= 12))
+        .map(p => ({ name: p.name, cost: p.cost, ma: p.ma, st: p.st, ag: p.ag, pa: p.pa, av: p.av, skills: p.skills || [] }));
+      if (candidates.length) return candidates;
+      return [{ name: 'Lineman (Journeyman)', cost: 50000, ma: 6, st: 3, ag: 3, pa: 4, av: 8, skills: [] }];
+    };
+
+    const homeJourneymanOptions = getJourneymanOptions(homeTeam.race);
+    const awayJourneymanOptions = getJourneymanOptions(awayTeam.race);
     
     // Init Setup State
     state.setupMatch = {
         matchId: m.id,
+        leagueId: l.id,
+        round: m.round,
         homeTeam, awayTeam,
-        homeTv, awayTv,
-        pettyCash: { home: homePetty, away: awayPetty },
+        tv: { home: homeTv, away: awayTv },
+        available: { home: homeAvail, away: awayAvail },
+        journeymen: {
+          home: { needed: homeJourneysNeeded, type: homeJourneymanOptions[0]?.name || 'Lineman (Journeyman)', options: homeJourneymanOptions },
+          away: { needed: awayJourneysNeeded, type: awayJourneymanOptions[0]?.name || 'Lineman (Journeyman)', options: awayJourneymanOptions }
+        },
+        ctv: { home: 0, away: 0 },
+        higherSide: 'tie',
+        pettyCash: { home: 0, away: 0 },
+        treasurySpent: { home: 0, away: 0 },
+        spendCap: { home: 0, away: 0 },
         inducements: { home: {}, away: {} }
     };
     
@@ -104,6 +126,30 @@ function renderPreMatchSetup() {
   const s = state.setupMatch;
   const list = state.gameData?.inducements || [];
   const stars = state.gameData?.starPlayers || [];
+
+  const getRaceData = (teamRace) => state.gameData?.races?.find(r => r.name === teamRace);
+  const getTeamTags = (teamRace) => {
+    const raceData = getRaceData(teamRace);
+    const sr = Array.isArray(raceData?.specialRules) ? raceData.specialRules : (raceData?.specialRules ? [raceData.specialRules] : []);
+    return raceData ? [teamRace, ...sr] : [teamRace];
+  };
+  const getJourneymanTemplate = (side) => {
+    const typeName = s.journeymen?.[side]?.type;
+    const options = s.journeymen?.[side]?.options || [];
+    return options.find(o => o.name === typeName) || options[0] || { name: 'Lineman (Journeyman)', cost: 50000, ma: 6, st: 3, ag: 3, pa: 4, av: 8, skills: [] };
+  };
+  const computeCtvWithJourneymen = (team, side) => {
+    const base = calculateCurrentTeamValue(team);
+    const needed = s.journeymen?.[side]?.needed || 0;
+    const jm = getJourneymanTemplate(side);
+    return base + (needed * (jm.cost || 0));
+  };
+
+  s.ctv.home = computeCtvWithJourneymen(s.homeTeam, 'home');
+  s.ctv.away = computeCtvWithJourneymen(s.awayTeam, 'away');
+  if (s.ctv.home > s.ctv.away) s.higherSide = 'home';
+  else if (s.ctv.away > s.ctv.home) s.higherSide = 'away';
+  else s.higherSide = 'tie';
   
   // Header Info
   const headerHTML = `
@@ -111,39 +157,141 @@ function renderPreMatchSetup() {
         <div style="flex:1; min-width:0;">
            <h4 style="margin:0; color:${s.homeTeam.colors.primary}; font-size:1.4rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.homeTeam.name}</h4>
            <div style="font-size:0.8rem; color:#666">${s.homeTeam.race}</div>
-           <div style="font-weight:bold; font-size:1.1rem">${(s.homeTv/1000)}k</div>
+           <div style="font-weight:bold; font-size:1.1rem">CTV ${(s.ctv.home/1000)}k</div>
         </div>
         <div style="font-weight:bold; color:#666; padding:0 10px;">VS</div>
         <div style="flex:1; min-width:0;">
            <h4 style="margin:0; color:${s.awayTeam.colors.primary}; font-size:1.4rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.awayTeam.name}</h4>
            <div style="font-size:0.8rem; color:#666">${s.awayTeam.race}</div>
-           <div style="font-weight:bold; font-size:1.1rem">${(s.awayTv/1000)}k</div>
+           <div style="font-weight:bold; font-size:1.1rem">CTV ${(s.ctv.away/1000)}k</div>
         </div>
      </div>
   `;
   
   const cardEl = els.preMatch.el.querySelector('.card');
   cardEl.innerHTML = headerHTML;
-  
-  els.preMatch.homeBank.textContent = (s.homeTeam.treasury || 0)/1000;
-  els.preMatch.awayBank.textContent = (s.awayTeam.treasury || 0)/1000;
-  els.preMatch.homePetty.textContent = s.pettyCash.home/1000;
-  els.preMatch.awayPetty.textContent = s.pettyCash.away/1000;
-  
-  const hTotal = (s.homeTeam.treasury||0) + s.pettyCash.home;
-  const aTotal = (s.awayTeam.treasury||0) + s.pettyCash.away;
-  
-  els.preMatch.homeTotal.textContent = (hTotal/1000);
-  els.preMatch.awayTotal.textContent = (aTotal/1000);
+
+  const getInducementMax = (side, itemName) => {
+    const item = list.find(i => i.name === itemName);
+    if (!item) return null;
+    const raceData = getRaceData(s[side + 'Team'].race);
+    const sr = Array.isArray(raceData?.specialRules) ? raceData.specialRules : [];
+    if (itemName === 'Bribes' && sr.includes('Bribery and Corruption')) return 6;
+    return item.max ?? null;
+  };
+
+  const getInducementUnitCost = (side, itemName) => {
+    const item = list.find(i => i.name === itemName);
+    if (!item) return 0;
+    const raceData = getRaceData(s[side + 'Team'].race);
+    const sr = Array.isArray(raceData?.specialRules) ? raceData.specialRules : [];
+    if (itemName === 'Bribes' && sr.includes('Bribery and Corruption')) return 50000;
+    return item.cost || 0;
+  };
+
+  const calculateTotalSpent = (side) => {
+    const starsAll = state.gameData?.starPlayers || [];
+    let total = 0;
+    for (const [key, count] of Object.entries(s.inducements[side])) {
+      if (!count) continue;
+      if (key.startsWith('Star: ')) {
+        const name = key.replace('Star: ', '');
+        const star = starsAll.find(x => x.name === name);
+        if (star) total += star.cost;
+      } else if (key === 'Mercenaries') total += count;
+      else total += getInducementUnitCost(side, key) * count;
+    }
+    return total;
+  };
+
+  const computeBudgets = () => {
+    const hSpent = calculateTotalSpent('home');
+    const aSpent = calculateTotalSpent('away');
+
+    let highSide = s.higherSide;
+    let lowSide = (highSide === 'home') ? 'away' : (highSide === 'away' ? 'home' : null);
+
+    const homeTreasury = s.homeTeam.treasury || 0;
+    const awayTreasury = s.awayTeam.treasury || 0;
+
+    if (highSide === 'tie') {
+      s.pettyCash.home = 0;
+      s.pettyCash.away = 0;
+      s.treasurySpent.home = 0;
+      s.treasurySpent.away = 0;
+      s.spendCap.home = 0;
+      s.spendCap.away = 0;
+      return { homeSpent: hSpent, awaySpent: aSpent };
+    }
+
+    const highTreasury = (highSide === 'home') ? homeTreasury : awayTreasury;
+    const highSpent = (highSide === 'home') ? hSpent : aSpent;
+    const highTreasurySpent = Math.min(highSpent, highTreasury);
+
+    const ctvDiff = Math.abs(s.ctv.home - s.ctv.away);
+    const lowPetty = ctvDiff + highTreasurySpent;
+
+    s.pettyCash[highSide] = 0;
+    s.pettyCash[lowSide] = lowPetty;
+
+    s.spendCap[highSide] = highTreasury;
+    const lowTeamTreasury = (lowSide === 'home') ? homeTreasury : awayTreasury;
+    const lowTopUpMax = Math.min(50000, lowTeamTreasury);
+    s.spendCap[lowSide] = lowPetty + lowTopUpMax;
+
+    s.treasurySpent[highSide] = highTreasurySpent;
+
+    const lowSpent = (lowSide === 'home') ? hSpent : aSpent;
+    const lowTreasurySpent = Math.max(0, Math.min(lowTopUpMax, lowSpent - lowPetty));
+    s.treasurySpent[lowSide] = lowTreasurySpent;
+
+    return { homeSpent: hSpent, awaySpent: aSpent };
+  };
+
+  const { homeSpent, awaySpent } = computeBudgets();
+
+  const homeBank = (s.higherSide === 'home') ? (s.homeTeam.treasury || 0) : (s.higherSide === 'tie' ? 0 : Math.min(50000, (s.homeTeam.treasury || 0)));
+  const awayBank = (s.higherSide === 'away') ? (s.awayTeam.treasury || 0) : (s.higherSide === 'tie' ? 0 : Math.min(50000, (s.awayTeam.treasury || 0)));
+
+  els.preMatch.homeBank.textContent = (homeBank/1000);
+  els.preMatch.awayBank.textContent = (awayBank/1000);
+  els.preMatch.homePetty.textContent = (s.pettyCash.home/1000);
+  els.preMatch.awayPetty.textContent = (s.pettyCash.away/1000);
+  els.preMatch.homeTotal.textContent = (s.spendCap.home/1000);
+  els.preMatch.awayTotal.textContent = (s.spendCap.away/1000);
+
+  if (els.preMatch.homeCtv) els.preMatch.homeCtv.textContent = (s.ctv.home/1000);
+  if (els.preMatch.awayCtv) els.preMatch.awayCtv.textContent = (s.ctv.away/1000);
+  if (els.preMatch.homeAvail) els.preMatch.homeAvail.textContent = s.available.home;
+  if (els.preMatch.awayAvail) els.preMatch.awayAvail.textContent = s.available.away;
+  if (els.preMatch.homeJourneys) els.preMatch.homeJourneys.textContent = s.journeymen.home.needed;
+  if (els.preMatch.awayJourneys) els.preMatch.awayJourneys.textContent = s.journeymen.away.needed;
 
   const renderShop = (side, teamRace) => {
+      const isHigh = (s.higherSide === side);
+      const isTie = (s.higherSide === 'tie');
+      const needed = s.journeymen?.[side]?.needed || 0;
+      const opts = s.journeymen?.[side]?.options || [];
+      const selected = s.journeymen?.[side]?.type;
+
       let html = '';
+      html += `<div style="font-weight:bold; margin-bottom:6px; color:#444;">${isTie ? 'CTV TIED (No inducements by default)' : (isHigh ? 'Higher CTV (spends Treasury first)' : 'Lower CTV (Petty Cash after opponent spend)')}</div>`;
+
+      if (needed > 0) {
+        html += `<div class="small" style="margin-bottom:6px; color:#444;">Journeymen needed: <strong>${needed}</strong> (choose type)</div>`;
+        html += `<select style="width:100%; margin-bottom:8px;" onchange="window.setJourneymanType('${side}', this.value)">`;
+        html += opts.map(o => `<option value="${o.name}" ${o.name === selected ? 'selected' : ''}>${o.name} (${(o.cost/1000)}k)</option>`).join('');
+        html += `</select>`;
+      }
+
       list.forEach(item => {
           const count = s.inducements[side][item.name] || 0;
-          html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #eee; padding-bottom:2px;"><div style="font-size:0.85rem;"><div>${item.name}</div><div style="color:#666">${item.cost/1000}k</div></div><div style="display:flex; align-items:center; gap:5px;"><button onclick="window.changeInducement('${side}', '${item.name}', -1)" style="padding:0 5px;">-</button><span style="font-weight:bold; width:20px; text-align:center;">${count}</span><button onclick="window.changeInducement('${side}', '${item.name}', 1)" style="padding:0 5px;">+</button></div></div>`;
+          const unitCost = getInducementUnitCost(side, item.name);
+          const max = getInducementMax(side, item.name);
+          const maxLabel = (max != null) ? ` • max ${max}` : '';
+          html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #eee; padding-bottom:2px;"><div style="font-size:0.85rem;"><div>${item.name}</div><div style="color:#666">${unitCost/1000}k${maxLabel}</div></div><div style="display:flex; align-items:center; gap:5px;"><button onclick="window.changeInducement('${side}', '${item.name}', -1)" style="padding:0 5px;">-</button><span style="font-weight:bold; width:20px; text-align:center;">${count}</span><button onclick="window.changeInducement('${side}', '${item.name}', 1)" style="padding:0 5px;">+</button></div></div>`;
       });
-      const raceData = state.gameData?.races.find(r => r.name === teamRace);
-      const teamTags = raceData ? [teamRace, ...(raceData.specialRules || [])] : [teamRace];
+      const teamTags = getTeamTags(teamRace);
       const eligibleStars = stars.filter(star => star.playsFor.includes("Any") || star.playsFor.some(tag => teamTags.includes(tag)));
       if(eligibleStars.length > 0) {
           html += `<div style="font-weight:bold; margin-top:10px; border-bottom:2px solid #ccc;">Star Players</div>`;
@@ -159,7 +307,12 @@ function renderPreMatchSetup() {
   
   els.preMatch.homeList.innerHTML = renderShop('home', s.homeTeam.race);
   els.preMatch.awayList.innerHTML = renderShop('away', s.awayTeam.race);
-  updateInducementTotals();
+
+  // Totals UI
+  els.preMatch.homeSpent.textContent = (homeSpent/1000);
+  els.preMatch.awaySpent.textContent = (awaySpent/1000);
+  els.preMatch.homeOver.style.display = (homeSpent > s.spendCap.home) ? 'inline' : 'none';
+  els.preMatch.awayOver.style.display = (awaySpent > s.spendCap.away) ? 'inline' : 'none';
 }
 
 export function changeInducement(side, itemName, delta) {
@@ -169,26 +322,15 @@ export function changeInducement(side, itemName, delta) {
   const current = state.setupMatch.inducements[side][itemName] || 0;
   const newVal = current + delta;
   if (newVal < 0) return;
-  if (item.max && newVal > item.max) return;
-  if (delta > 0) {
-      const currentSpent = calculateTotalSpent(side);
-      const budget = getBudget(side);
-      if (currentSpent + item.cost > budget) return setStatus("Not enough gold!", "error");
-  }
+  const raceData = state.gameData?.races?.find(r => r.name === state.setupMatch[side + 'Team'].race);
+  const sr = Array.isArray(raceData?.specialRules) ? raceData.specialRules : [];
+  const max = (itemName === 'Bribes' && sr.includes('Bribery and Corruption')) ? 6 : (item.max ?? null);
+  if (max != null && newVal > max) return;
   state.setupMatch.inducements[side][itemName] = newVal;
   renderPreMatchSetup();
 }
 
 export function toggleStar(side, starName, val) {
-    if (val === 1) {
-        const stars = state.gameData?.starPlayers || [];
-        const star = stars.find(x => x.name === starName);
-        if (star) {
-            const currentSpent = calculateTotalSpent(side);
-            const budget = getBudget(side);
-            if (currentSpent + star.cost > budget) return setStatus(`Not enough gold for ${starName}!`, "error");
-        }
-    }
     state.setupMatch.inducements[side][`Star: ${starName}`] = val;
     renderPreMatchSetup();
 }
@@ -199,41 +341,97 @@ export function setCustomInducement(side, val) {
   renderPreMatchSetup();
 }
 
-function getBudget(side) { return (state.setupMatch[side + 'Team'].treasury || 0) + state.setupMatch.pettyCash[side]; }
-function calculateTotalSpent(side) {
-    const s = state.setupMatch;
-    const list = state.gameData?.inducements || [];
-    const stars = state.gameData?.starPlayers || [];
-    let total = 0;
-    for (const [key, count] of Object.entries(s.inducements[side])) {
-        if (count === 0) continue;
-        if (key.startsWith('Star: ')) {
-            const name = key.replace('Star: ', '');
-            const star = stars.find(x => x.name === name);
-            if (star) total += star.cost;
-        } else if (key === 'Mercenaries') total += count;
-        else {
-            const data = list.find(i => i.name === key);
-            if(data) total += (data.cost * count);
-        }
-    }
-    return total;
-}
-
-function updateInducementTotals() {
-  const hSpent = calculateTotalSpent('home');
-  const aSpent = calculateTotalSpent('away');
-  els.preMatch.homeSpent.textContent = (hSpent/1000);
-  els.preMatch.awaySpent.textContent = (aSpent/1000);
-  const hBudget = getBudget('home');
-  const aBudget = getBudget('away');
-  els.preMatch.homeOver.style.display = (hSpent > hBudget) ? 'inline' : 'none';
-  els.preMatch.awayOver.style.display = (aSpent > aBudget) ? 'inline' : 'none';
-  els.preMatch.startBtn.disabled = (hSpent > hBudget || aSpent > aBudget);
+export function setJourneymanType(side, typeName) {
+  if (!state.setupMatch?.journeymen?.[side]) return;
+  state.setupMatch.journeymen[side].type = typeName;
+  renderPreMatchSetup();
 }
 
 export async function confirmMatchStart() {
+  const { warnings, errors } = validatePreMatchSetup();
+  if (errors.length) {
+    setStatus(errors[0], 'error');
+    return;
+  }
+  if (warnings.length) {
+    const html = `<div style="text-align:left"><div style="font-weight:bold; margin-bottom:0.5rem;">Rule Warnings</div><ul style="margin:0; padding-left:1.2rem;">${warnings.map(w => `<li>${w}</li>`).join('')}</ul><div class="small" style="margin-top:0.75rem; color:#555;">You can proceed anyway, but the match may be outside standard league rules.</div></div>`;
+    const ok = await confirmModal('Proceed with warnings?', html, 'Proceed Anyway', true, true);
+    if (!ok) return;
+  }
   runCoinFlip(state.setupMatch.homeTeam.name, state.setupMatch.awayTeam.name, (winnerSide) => { finalizeMatchStart(winnerSide); });
+}
+
+function validatePreMatchSetup() {
+  const s = state.setupMatch;
+  const list = state.gameData?.inducements || [];
+  const stars = state.gameData?.starPlayers || [];
+  const warnings = [];
+  const errors = [];
+
+  const getRaceData = (teamRace) => state.gameData?.races?.find(r => r.name === teamRace);
+  const getSpecialRules = (teamRace) => {
+    const rd = getRaceData(teamRace);
+    return Array.isArray(rd?.specialRules) ? rd.specialRules : [];
+  };
+
+  const getInducementUnitCost = (side, itemName) => {
+    const item = list.find(i => i.name === itemName);
+    if (!item) return 0;
+    const sr = getSpecialRules(s[side + 'Team'].race);
+    if (itemName === 'Bribes' && sr.includes('Bribery and Corruption')) return 50000;
+    return item.cost || 0;
+  };
+
+  const calcSpent = (side) => {
+    let total = 0;
+    for (const [key, count] of Object.entries(s.inducements[side] || {})) {
+      if (!count) continue;
+      if (key.startsWith('Star: ')) {
+        const name = key.replace('Star: ', '');
+        const star = stars.find(x => x.name === name);
+        if (star) total += star.cost;
+      } else if (key === 'Mercenaries') total += count;
+      else total += getInducementUnitCost(side, key) * count;
+    }
+    return total;
+  };
+
+  const homeSpent = calcSpent('home');
+  const awaySpent = calcSpent('away');
+
+  const starCount = (side) => Object.entries(s.inducements[side] || {}).filter(([k, v]) => k.startsWith('Star: ') && v > 0).length;
+  if (starCount('home') > 2) warnings.push(`Home has ${starCount('home')} Star Players (max 2 by default).`);
+  if (starCount('away') > 2) warnings.push(`Away has ${starCount('away')} Star Players (max 2 by default).`);
+
+  if (s.higherSide === 'tie' && (homeSpent > 0 || awaySpent > 0)) {
+    warnings.push('CTV is tied. By default, neither team can spend Treasury, so inducements are not available.');
+  }
+
+  if (homeSpent > (s.spendCap.home || 0)) warnings.push(`Home is over the spend cap by ${Math.ceil((homeSpent - s.spendCap.home)/1000)}k.`);
+  if (awaySpent > (s.spendCap.away || 0)) warnings.push(`Away is over the spend cap by ${Math.ceil((awaySpent - s.spendCap.away)/1000)}k.`);
+
+  const checkRestricted = (side) => {
+    const sr = getSpecialRules(s[side + 'Team'].race);
+    const rd = getRaceData(s[side + 'Team'].race);
+    const needs = [
+      { name: 'Mortuary Assistant', rule: 'Masters of Undeath' },
+      { name: 'Plague Doctor', rule: 'Favoured of Nurgle' },
+      { name: 'Riotous Rookies', rule: 'Low Cost Linemen' }
+    ];
+    for (const n of needs) {
+      if ((s.inducements[side]?.[n.name] || 0) > 0 && !sr.includes(n.rule)) warnings.push(`${side === 'home' ? 'Home' : 'Away'} has ${n.name} but does not have the \"${n.rule}\" special rule.`);
+    }
+    if ((s.inducements[side]?.['Wandering Apothecary'] || 0) > 0 && rd?.apothecaryAllowed === false) {
+      warnings.push(`${side === 'home' ? 'Home' : 'Away'} purchased Wandering Apothecary but the roster cannot hire an Apothecary.`);
+    }
+  };
+  checkRestricted('home');
+  checkRestricted('away');
+
+  // Basic sanity
+  if (!s.homeTeam || !s.awayTeam) errors.push('Missing team data.');
+
+  return { warnings, errors };
 }
 
 function runCoinFlip(homeName, awayName, callback) {
@@ -263,7 +461,7 @@ export async function finalizeMatchStart(activeSide) {
   const stars = state.gameData?.starPlayers || [];
   setStatus('Starting match...');
   try {
-    const initRoster = (players) => (players || []).map(p => ({
+    const initRoster = (players) => (players || []).filter(isPlayerAvailableForMatch).map(p => ({
       playerId: p.id,
       number: p.number,
       name: p.name,
@@ -277,6 +475,36 @@ export async function finalizeMatchStart(activeSide) {
       cost: p.cost || 0,
       live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 }
     }));
+
+    const injectJourneymen = (baseRoster, side) => {
+      const needed = s.journeymen?.[side]?.needed || 0;
+      if (needed <= 0) return baseRoster;
+
+      const typeName = s.journeymen?.[side]?.type;
+      const options = s.journeymen?.[side]?.options || [];
+      const tmpl = options.find(o => o.name === typeName) || options[0] || { name: 'Lineman (Journeyman)', cost: 50000, ma: 6, st: 3, ag: 3, pa: 4, av: 8, skills: [] };
+
+      const maxNum = (baseRoster.length > 0) ? Math.max(...baseRoster.map(p => p.number || 0)) : 0;
+      const out = [...baseRoster];
+      for (let i = 0; i < needed; i++) {
+        out.push({
+          playerId: ulid(),
+          isJourneyman: true,
+          number: maxNum + 90 + i + 1,
+          name: `Journeyman ${i + 1}`,
+          position: tmpl.name,
+          ma: tmpl.ma,
+          st: tmpl.st,
+          ag: tmpl.ag,
+          pa: tmpl.pa,
+          av: tmpl.av,
+          skills: [...(tmpl.skills || []), 'Loner (4+)'],
+          cost: tmpl.cost || 0,
+          live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 }
+        });
+      }
+      return out;
+    };
     const injectStars = (baseRoster, side) => {
         const newRoster = [...baseRoster];
         for (const [key, count] of Object.entries(s.inducements[side])) {
@@ -302,10 +530,35 @@ export async function finalizeMatchStart(activeSide) {
         }
         return newRoster;
     };
+
+    const pregame = {
+      ctv: { home: s.ctv.home, away: s.ctv.away },
+      higherSide: s.higherSide,
+      pettyCash: { home: s.pettyCash.home, away: s.pettyCash.away },
+      treasurySpent: { home: s.treasurySpent.home, away: s.treasurySpent.away },
+      journeymen: {
+        home: { needed: s.journeymen.home.needed, type: s.journeymen.home.type },
+        away: { needed: s.journeymen.away.needed, type: s.journeymen.away.type }
+      }
+    };
+
+    // Apply treasury spend now; if the match is cancelled we restore it.
+    const applySpend = async (team, sideLabel) => {
+      const spend = pregame.treasurySpent[sideLabel] || 0;
+      if (spend <= 0) return team;
+      team.treasury = Math.max(0, (team.treasury || 0) - spend);
+      await apiSave(PATHS.team(l.id, team.id), team, `Pregame inducements (${s.matchId})`, key);
+      return team;
+    };
+
+    await applySpend(s.homeTeam, 'home');
+    await applySpend(s.awayTeam, 'away');
+
     const activeData = {
       matchId: s.matchId, leagueId: l.id, round: l.matches.find(m=>m.id===s.matchId).round, status: 'in_progress', activeTeam: activeSide,
-      home: { id: s.homeTeam.id, name: s.homeTeam.name, colors: s.homeTeam.colors, score: 0, roster: injectStars(initRoster(s.homeTeam.players), 'home'), rerolls: s.homeTeam.rerolls || 0, apothecary: s.homeTeam.apothecary, inducements: s.inducements.home, tv: s.homeTv },
-      away: { id: s.awayTeam.id, name: s.awayTeam.name, colors: s.awayTeam.colors, score: 0, roster: injectStars(initRoster(s.awayTeam.players), 'away'), rerolls: s.awayTeam.rerolls || 0, apothecary: s.awayTeam.apothecary, inducements: s.inducements.away, tv: s.awayTv },
+      pregame,
+      home: { id: s.homeTeam.id, name: s.homeTeam.name, colors: s.homeTeam.colors, score: 0, roster: injectStars(injectJourneymen(initRoster(s.homeTeam.players), 'home'), 'home'), rerolls: s.homeTeam.rerolls || 0, apothecary: s.homeTeam.apothecary, inducements: s.inducements.home, ctv: s.ctv.home, tv: s.ctv.home },
+      away: { id: s.awayTeam.id, name: s.awayTeam.name, colors: s.awayTeam.colors, score: 0, roster: injectStars(injectJourneymen(initRoster(s.awayTeam.players), 'away'), 'away'), rerolls: s.awayTeam.rerolls || 0, apothecary: s.awayTeam.apothecary, inducements: s.inducements.away, ctv: s.ctv.away, tv: s.ctv.away },
       turn: { home: 0, away: 0 }, log: []
     };
     await apiSave(PATHS.activeMatch(s.matchId), activeData, `Start match ${s.matchId}`, key);
@@ -591,6 +844,24 @@ export async function handleCancelGame() {
   try {
     const mId = state.activeMatchData.matchId;
     const lId = state.activeMatchData.leagueId;
+
+    // Restore any pregame treasury spend (if present)
+    try {
+      const spent = state.activeMatchData.pregame?.treasurySpent;
+      if (spent) {
+        const homeT = await apiGet(PATHS.team(lId, state.activeMatchData.home.id));
+        const awayT = await apiGet(PATHS.team(lId, state.activeMatchData.away.id));
+        if (homeT && spent.home) {
+          homeT.treasury = (homeT.treasury || 0) + spent.home;
+          await apiSave(PATHS.team(lId, homeT.id), homeT, `Restore pregame treasury (${mId})`, key);
+        }
+        if (awayT && spent.away) {
+          awayT.treasury = (awayT.treasury || 0) + spent.away;
+          await apiSave(PATHS.team(lId, awayT.id), awayT, `Restore pregame treasury (${mId})`, key);
+        }
+      }
+    } catch (e) {}
+
     await apiDelete(PATHS.activeMatch(mId), `Cancel ${mId}`, key);
     const l = await apiGet(PATHS.league(lId));
     const m = l.matches.find(x => x.id === mId);

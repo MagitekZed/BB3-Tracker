@@ -123,7 +123,7 @@ export function handleMobileMatchNav() {
 }
 
 // --- NEW: Generic Confirmation Modal ---
-export function confirmModal(title, message, confirmLabel = 'Confirm', isDanger = false) {
+export function confirmModal(title, message, confirmLabel = 'Confirm', isDanger = false, messageIsHtml = false) {
   return new Promise((resolve) => {
     const modal = document.createElement('div');
     modal.className = 'modal';
@@ -135,7 +135,7 @@ export function confirmModal(title, message, confirmLabel = 'Confirm', isDanger 
     modal.innerHTML = `
       <div class="modal-content">
           <div class="modal-header"><h3>${title}</h3></div>
-          <p>${message}</p>
+          <div class="confirm-message" style="margin-bottom: 1rem;"></div>
           <div class="modal-actions">
               <button id="confirmCancelBtn" class="secondary-btn">Cancel</button>
               <button id="confirmOkBtn" class="${btnClass}">${confirmLabel}</button>
@@ -144,6 +144,10 @@ export function confirmModal(title, message, confirmLabel = 'Confirm', isDanger 
     `;
     
     document.body.appendChild(modal);
+
+    const messageEl = modal.querySelector('.confirm-message');
+    if (messageIsHtml) messageEl.innerHTML = message;
+    else messageEl.textContent = message;
     
     const close = (val) => {
         modal.remove();

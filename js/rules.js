@@ -23,6 +23,31 @@ export function calculateTeamValue(team) {
   return playerCost + rerollCost + coachesCost + cheerCost + apoCost;
 }
 
+export function isPlayerAvailableForMatch(player) {
+  if (!player) return false;
+  if (player.dead) return false;
+  if (player.mng) return false;
+  if (player.tr) return false;
+  return true;
+}
+
+export function calculateCurrentTeamValue(team) {
+  if (!team) return 0;
+
+  const availablePlayers = (team.players || []).filter(isPlayerAvailableForMatch);
+  const playerCost = availablePlayers.reduce((sum, p) => sum + (parseInt(p.cost) || 0), 0);
+
+  const race = state.gameData?.races.find(r => r.name === team.race);
+  const rerollCost = (team.rerolls || 0) * (race ? race.rerollCost : 50000);
+
+  const staffData = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
+  const coachesCost = (team.assistantCoaches || 0) * staffData.assistantCoach;
+  const cheerCost = (team.cheerleaders || 0) * staffData.cheerleader;
+  const apoCost = (team.apothecary ? staffData.apothecary : 0);
+
+  return playerCost + rerollCost + coachesCost + cheerCost + apoCost;
+}
+
 export function computeStandings(league) {
   return computeSeasonStats(league);
 }
