@@ -1,0 +1,392 @@
+{
+  "matchId": "01KCGPDNC73K6KAAJN632HD31T",
+  "leagueId": "01KCGP9ZG1KPX3AECN0BFP1YGY",
+  "round": 1,
+  "status": "in_progress",
+  "activeTeam": "home",
+  "home": {
+    "id": "01KCGPACYZY3NBCA4ZFNBXBPTK",
+    "name": "Amazons",
+    "colors": {
+      "primary": "#1e8a00",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KCGPB0Q1RXQ09K8K8STB9714",
+        "number": 1,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Piranha Warrior Blitzer",
+        "ma": 7,
+        "st": 3,
+        "ag": 3,
+        "pa": 5,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Hit and Run",
+          "Jump Up"
+        ],
+        "cost": 90000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPB5F7XFMW6E851E1JDT3M",
+        "number": 2,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPB5WRMNBA4TSCH3RM61WG",
+        "number": 3,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPEVDW7FFVHR4AX72P4Y1Y",
+        "isStar": true,
+        "number": 99,
+        "name": "Karla von Kill",
+        "position": "Star Player",
+        "ma": 6,
+        "st": 4,
+        "ag": 3,
+        "pa": 4,
+        "av": 9,
+        "skills": [
+          "Block",
+          "Dauntless",
+          "Dodge",
+          "Jump Up",
+          "Loner (4+)"
+        ],
+        "cost": 210000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPEVDW5W9J8VBKY4APFXFP",
+        "isStar": true,
+        "number": 99,
+        "name": "Helmut Wulf",
+        "position": "Star Player",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Chainsaw",
+          "Loner (4+)",
+          "Pro",
+          "Secret Weapon"
+        ],
+        "cost": 140000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPEVDWV5KRVY03ASCV10XG",
+        "isStar": true,
+        "number": 99,
+        "name": "Morg 'n' Thorg",
+        "position": "Star Player",
+        "ma": 6,
+        "st": 6,
+        "ag": 3,
+        "pa": 4,
+        "av": 11,
+        "skills": [
+          "Block",
+          "Loner (4+)",
+          "Mighty Blow (+2)",
+          "Thick Skull",
+          "Throw Team-mate"
+        ],
+        "cost": 430000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {
+      "Star: Karla von Kill": 1,
+      "Mortuary Assistant": 1,
+      "Star: Helmut Wulf": 1,
+      "Star: Morg 'n' Thorg": 1
+    },
+    "tv": 190000
+  },
+  "away": {
+    "id": "01KCGPBJR94R81D2REP21EZ48N",
+    "name": "Norse",
+    "colors": {
+      "primary": "#1e00ff",
+      "secondary": "#c7c7c7"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
+        "number": 1,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Berserker",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 5,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Frenzy",
+          "Jump Up"
+        ],
+        "cost": 90000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4MNXR4D5G5G4JSMJSM9",
+        "number": 2,
+        "name": "Norse Raider Lineman",
+        "position": "Valkyrie",
+        "ma": 7,
+        "st": 3,
+        "ag": 3,
+        "pa": 3,
+        "av": 8,
+        "skills": [
+          "Catch",
+          "Dauntless",
+          "Pass",
+          "Strip Ball"
+        ],
+        "cost": 95000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4S17HB8G8C20VS3GSD8",
+        "number": 3,
+        "name": "Norse Raider Lineman",
+        "position": "Yhetee",
+        "ma": 5,
+        "st": 5,
+        "ag": 4,
+        "pa": -1,
+        "av": 9,
+        "skills": [
+          "Claws",
+          "Disturbing Presence",
+          "Frenzy",
+          "Loner (4+)",
+          "Unchannelled Fury"
+        ],
+        "cost": 140000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4X91BX2KRGE8CA1PJH0",
+        "number": 4,
+        "name": "Norse Raider Lineman",
+        "position": "Ulfwerener",
+        "ma": 6,
+        "st": 4,
+        "ag": 4,
+        "pa": -1,
+        "av": 9,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 105000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPEVDWR982TZP9GYAYJ0B5",
+        "isStar": true,
+        "number": 99,
+        "name": "Griff Oberwald",
+        "position": "Star Player",
+        "ma": 7,
+        "st": 4,
+        "ag": 4,
+        "pa": 4,
+        "av": 9,
+        "skills": [
+          "Block",
+          "Dodge",
+          "Fend",
+          "Loner (4+)",
+          "Sprint",
+          "Sure Feet"
+        ],
+        "cost": 320000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPEVDWKAF1AWF4FNH4KHAJ",
+        "isStar": true,
+        "number": 99,
+        "name": "Grim Ironjaw",
+        "position": "Star Player",
+        "ma": 5,
+        "st": 3,
+        "ag": 3,
+        "pa": 6,
+        "av": 10,
+        "skills": [
+          "Block",
+          "Dauntless",
+          "Frenzy",
+          "Loner (4+)",
+          "Multiple Block",
+          "Thick Skull"
+        ],
+        "cost": 220000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {
+      "Plague Doctor": 1,
+      "Riotous Rookies": 1,
+      "Wandering Apothecary": 2,
+      "Star: Griff Oberwald": 1,
+      "Star: Grim Ironjaw": 1
+    },
+    "tv": 430000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
