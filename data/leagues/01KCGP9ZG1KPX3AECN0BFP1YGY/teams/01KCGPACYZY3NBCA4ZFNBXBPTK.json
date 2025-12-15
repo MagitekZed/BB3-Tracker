@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "id": "01KCGPACYZY3NBCA4ZFNBXBPTK",
+  "slug": "amazons",
+  "name": "Amazons",
+  "race": "Amazon",
+  "coachName": "Coach 1",
+  "players": [
+    {
+      "id": "01KCGPB0Q1RXQ09K8K8STB9714",
+      "number": 1,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Piranha Warrior Blitzer",
+      "qty": 16,
+      "cost": 90000,
+      "ma": 7,
+      "st": 3,
+      "ag": 3,
+      "pa": 5,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Hit and Run",
+        "Jump Up"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "id": "01KCGPB5F7XFMW6E851E1JDT3M",
+      "number": 2,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Eagle Warrior Linewoman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "id": "01KCGPB5WRMNBA4TSCH3RM61WG",
+      "number": 3,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Eagle Warrior Linewoman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 4
+    }
+  ],
+  "colors": {
+    "primary": "#1e8a00",
+    "secondary": "#c5a059"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 190000,
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "01KCGPDNC73K6KAAJN632HD31T",
+      "opponentName": "Norse",
+      "result": "Loss",
+      "score": "0-3",
+      "winnings": 0,
+      "tv": 190000,
+      "inducements": {
+        "Star: Karla von Kill": 1,
+        "Mortuary Assistant": 1,
+        "Star: Helmut Wulf": 1,
+        "Star: Morg 'n' Thorg": 1
+      },
+      "playerRecords": [
+        {
+          "playerId": "01KCGPB0Q1RXQ09K8K8STB9714",
+          "name": "Eagle Warrior Linewoman",
+          "number": 1,
+          "position": "Piranha Warrior Blitzer",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPB5F7XFMW6E851E1JDT3M",
+          "name": "Eagle Warrior Linewoman",
+          "number": 2,
+          "position": "Eagle Warrior Linewoman",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPB5WRMNBA4TSCH3RM61WG",
+          "name": "Eagle Warrior Linewoman",
+          "number": 3,
+          "position": "Eagle Warrior Linewoman",
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        }
+      ]
+    }
+  ]
+}
