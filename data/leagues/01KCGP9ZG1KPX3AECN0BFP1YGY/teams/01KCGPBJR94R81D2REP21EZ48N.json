@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "id": "01KCGPBJR94R81D2REP21EZ48N",
+  "slug": "norse",
+  "name": "Norse",
+  "race": "Norse",
+  "coachName": "coach 2",
+  "players": [
+    {
+      "id": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
+      "number": 1,
+      "name": "Norse Raider Lineman",
+      "position": "Norse Berserker",
+      "qty": 16,
+      "cost": 90000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 5,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Frenzy",
+        "Jump Up"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "id": "01KCGPC4MNXR4D5G5G4JSMJSM9",
+      "number": 2,
+      "name": "Norse Raider Lineman",
+      "position": "Valkyrie",
+      "qty": 16,
+      "cost": 95000,
+      "ma": 7,
+      "st": 3,
+      "ag": 3,
+      "pa": 3,
+      "av": 8,
+      "skills": [
+        "Catch",
+        "Dauntless",
+        "Pass",
+        "Strip Ball"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "id": "01KCGPC4S17HB8G8C20VS3GSD8",
+      "number": 3,
+      "name": "Norse Raider Lineman",
+      "position": "Yhetee",
+      "qty": 16,
+      "cost": 140000,
+      "ma": 5,
+      "st": 5,
+      "ag": 4,
+      "pa": -1,
+      "av": 9,
+      "skills": [
+        "Claws",
+        "Disturbing Presence",
+        "Frenzy",
+        "Loner (4+)",
+        "Unchannelled Fury"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    },
+    {
+      "id": "01KCGPC4X91BX2KRGE8CA1PJH0",
+      "number": 4,
+      "name": "Norse Raider Lineman",
+      "position": "Ulfwerener",
+      "qty": 16,
+      "cost": 105000,
+      "ma": 6,
+      "st": 4,
+      "ag": 4,
+      "pa": -1,
+      "av": 9,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S",
+        "P"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#1e00ff",
+    "secondary": "#c7c7c7"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 430000
+}
