@@ -80,7 +80,7 @@
         "A",
         "S"
       ],
-      "spp": 0
+      "spp": 4
     }
   ],
   "colors": {
@@ -93,5 +93,79 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 190000
+  "teamValue": 190000,
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "01KCGPDNC73K6KAAJN632HD31T",
+      "opponentName": "Norse",
+      "result": "Loss",
+      "score": "0-3",
+      "winnings": 0,
+      "tv": 190000,
+      "inducements": {
+        "Star: Karla von Kill": 1,
+        "Mortuary Assistant": 1,
+        "Star: Helmut Wulf": 1,
+        "Star: Morg 'n' Thorg": 1
+      },
+      "playerRecords": [
+        {
+          "playerId": "01KCGPB0Q1RXQ09K8K8STB9714",
+          "name": "Eagle Warrior Linewoman",
+          "number": 1,
+          "position": "Piranha Warrior Blitzer",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPB5F7XFMW6E851E1JDT3M",
+          "name": "Eagle Warrior Linewoman",
+          "number": 2,
+          "position": "Eagle Warrior Linewoman",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPB5WRMNBA4TSCH3RM61WG",
+          "name": "Eagle Warrior Linewoman",
+          "number": 3,
+          "position": "Eagle Warrior Linewoman",
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        }
+      ]
+    }
+  ]
 }
