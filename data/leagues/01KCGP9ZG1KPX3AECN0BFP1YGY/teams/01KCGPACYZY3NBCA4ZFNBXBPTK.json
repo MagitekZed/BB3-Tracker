@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "01KCGPACYZY3NBCA4ZFNBXBPTK",
+  "slug": "amazons",
+  "name": "Amazons",
+  "race": "Amazon",
+  "coachName": "Coach 1",
+  "players": [
+    {
+      "id": "01KCGPB0Q1RXQ09K8K8STB9714",
+      "number": 1,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Piranha Warrior Blitzer",
+      "qty": 16,
+      "cost": 90000,
+      "ma": 7,
+      "st": 3,
+      "ag": 3,
+      "pa": 5,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Hit and Run",
+        "Jump Up"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "id": "01KCGPB5F7XFMW6E851E1JDT3M",
+      "number": 2,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Eagle Warrior Linewoman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    },
+    {
+      "id": "01KCGPB5WRMNBA4TSCH3RM61WG",
+      "number": 3,
+      "name": "Eagle Warrior Linewoman",
+      "position": "Eagle Warrior Linewoman",
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0
+    }
+  ],
+  "colors": {
+    "primary": "#1e8a00",
+    "secondary": "#c5a059"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 190000
+}
