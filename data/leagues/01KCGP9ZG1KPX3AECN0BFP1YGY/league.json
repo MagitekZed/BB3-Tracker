@@ -34,5 +34,15 @@
       }
     }
   ],
-  "matches": []
+  "matches": [
+    {
+      "id": "01KCGPDNC73K6KAAJN632HD31T",
+      "season": 1,
+      "round": 1,
+      "homeTeamId": "01KCGPACYZY3NBCA4ZFNBXBPTK",
+      "awayTeamId": "01KCGPBJR94R81D2REP21EZ48N",
+      "status": "scheduled",
+      "date": "2025-12-15"
+    }
+  ]
 }
