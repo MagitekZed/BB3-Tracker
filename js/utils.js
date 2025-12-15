@@ -1,5 +1,44 @@
 import { els } from './state.js';
 
+const ULID_ENCODING = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
+function encodeUlidTime(timeMs) {
+  // 48-bit timestamp -> 10 chars base32
+  let time = BigInt(timeMs);
+  let out = '';
+  for (let i = 0; i < 10; i++) {
+    const mod = Number(time & 31n);
+    out = ULID_ENCODING[mod] + out;
+    time >>= 5n;
+  }
+  return out;
+}
+
+function encodeUlidRandom() {
+  // 80 bits randomness -> 16 chars base32
+  const bytes = new Uint8Array(10);
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+  }
+
+  let value = 0n;
+  for (const b of bytes) value = (value << 8n) | BigInt(b);
+
+  let out = '';
+  for (let i = 0; i < 16; i++) {
+    const mod = Number(value & 31n);
+    out = ULID_ENCODING[mod] + out;
+    value >>= 5n;
+  }
+  return out;
+}
+
+export function ulid() {
+  return encodeUlidTime(Date.now()) + encodeUlidRandom();
+}
+
 export function getContrastColor(hex) {
   if(!hex) return '#ffffff';
   const r = parseInt(hex.substr(1, 2), 16);

@@ -1,8 +1,8 @@
 import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
-import { setStatus, normalizeName, getContrastColor } from './utils.js';
-import { computeStandings } from './rules.js';
+import { setStatus, normalizeName, getContrastColor, ulid } from './utils.js';
+import { computeStandings, computeSeasonStats } from './rules.js';
 import { showSection, updateBreadcrumbs, setActiveNav, goHome, confirmModal } from './ui-core.js';
 import { handleOpenTeam, handleEditTeam, renderTeamEditor } from './ui-team.js';
 import { handleStartMatch, handleOpenScoreboard } from './ui-match.js';
@@ -18,7 +18,7 @@ export function renderLeagueList() {
         <div class="league-card-title">${l.name}</div>
         <div class="league-meta">
           <span class="tag ${l.status === 'active' ? 'in_progress' : 'scheduled'}">${l.status}</span>
-          Season ${l.season} • ID: ${l.id}
+          Season ${l.season}
         </div>
       </div>
       <div>
@@ -34,14 +34,14 @@ export async function handleOpenLeague(id) {
   setStatus(`Loading league ${id}...`);
   try {
     state.currentLeague = null; 
-    const settings = await apiGet(PATHS.leagueSettings(id));
-    if (!settings) throw new Error("League settings file not found.");
-    state.currentLeague = settings;
+    const league = await apiGet(PATHS.league(id));
+    if (!league) throw new Error("League file not found.");
+    state.currentLeague = league;
     state.viewLeagueId = id;
     
     renderLeagueView();
     showSection('view');
-    updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: settings.name }]);
+    updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: league.name }]);
     setActiveNav('leagues');
 
     setStatus('League loaded.', 'ok');
@@ -56,18 +56,26 @@ export function renderLeagueView() {
   document.getElementById('leagueTeamsSection').className = 'panel-styled';
   document.getElementById('leagueMatchesSection').className = 'panel-styled';
 
-  const standings = computeStandings(l);
-  els.containers.standings.innerHTML = `<table class="responsive-table">
-    <thead><tr><th>#</th><th>Team</th><th>W-D-L</th><th>Pts</th><th>Diff</th></tr></thead>
-    <tbody>${standings.map((s, i) => `
-      <tr>
-        <td data-label="Rank">${i+1}</td>
-        <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${l.id}', '${s.id}')">${s.name}</button></td>
-        <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
-        <td data-label="Points">${s.points}</td>
-        <td data-label="Diff">${s.tdDiff}/${s.casDiff}</td>
-      </tr>`).join('')}
-  </tbody></table>`;
+  const standings = computeSeasonStats(l);
+  els.containers.standings.innerHTML = `
+    <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${l.season} standings</div>
+    <table class="responsive-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Team</th><th>GP</th><th>W-D-L</th><th>Pts</th><th>TD F/A</th><th>CAS F/A</th>
+        </tr>
+      </thead>
+      <tbody>${standings.map((s, i) => `
+        <tr>
+          <td data-label="Rank">${i+1}</td>
+          <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${l.id}', '${s.id}')">${s.name}</button></td>
+          <td data-label="GP">${s.games}</td>
+          <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
+          <td data-label="Points">${s.points}</td>
+          <td data-label="TD F/A">${s.tdFor}/${s.tdAgainst} (${s.tdDiff>=0?'+':''}${s.tdDiff})</td>
+          <td data-label="CAS F/A">${s.casFor}/${s.casAgainst} (${s.casDiff>=0?'+':''}${s.casDiff})</td>
+        </tr>`).join('')}
+    </tbody></table>`;
   
   if (els.containers.rosterQuick) {
     els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
@@ -113,7 +121,7 @@ export function renderMatchesList(league) {
     let action = `<span class="tag ${m.status}">${m.status}</span>`;
     if (m.status === 'scheduled') {
         action = `<button class="link-button" onclick="window.handleStartMatch('${m.id}')" style="color:green; font-weight:bold">Start Match</button>`;
-    } else if (m.status === 'completed' && m.report) {
+    } else if (m.status === 'completed' && (m.reportId || m.hasReport)) {
         action = `<button class="link-button" onclick="window.handleViewMatchReport('${m.id}')" style="color:#444; font-weight:bold">View Report</button>`;
     } else if (m.status === 'completed') {
         action = `<span class="tag completed">Final</span>`;
@@ -135,7 +143,10 @@ export function renderMatchesList(league) {
 export async function handleViewMatchReport(matchId) {
     const l = state.currentLeague;
     const m = l.matches.find(x => x.id === matchId);
-    if (!m || !m.report) return setStatus("No report data found.", "error");
+    if (!m) return setStatus("Match not found.", "error");
+
+    const report = await apiGet(PATHS.match(l.id, matchId));
+    if (!report) return setStatus("No report data found.", "error");
     
     const homeT = l.teams.find(t => t.id === m.homeTeamId);
     const awayT = l.teams.find(t => t.id === m.awayTeamId);
@@ -179,17 +190,17 @@ export async function handleViewMatchReport(matchId) {
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
              <div class="panel-styled">
                 <div style="background:${hColor}; color:${hText}; padding:5px; font-weight:bold; text-align:center; margin:-1rem -1rem 1rem -1rem;">HOME STATS</div>
-                <div><strong>MVP:</strong> ${m.report.home.mvp}</div>
-                <div><strong>Winnings:</strong> ${m.report.home.winnings}k</div>
+                <div><strong>MVP:</strong> ${report.home.mvp}</div>
+                <div><strong>Winnings:</strong> ${report.home.winnings}k</div>
                 <hr>
-                ${renderStatList(m.report.home.stats)}
+                ${renderStatList(report.home.stats)}
              </div>
              <div class="panel-styled">
                 <div style="background:${aColor}; color:${aText}; padding:5px; font-weight:bold; text-align:center; margin:-1rem -1rem 1rem -1rem;">AWAY STATS</div>
-                <div><strong>MVP:</strong> ${m.report.away.mvp}</div>
-                <div><strong>Winnings:</strong> ${m.report.away.winnings}k</div>
+                <div><strong>MVP:</strong> ${report.away.mvp}</div>
+                <div><strong>Winnings:</strong> ${report.away.winnings}k</div>
                 <hr>
-                ${renderStatList(m.report.away.stats)}
+                ${renderStatList(report.away.stats)}
              </div>
           </div>
       </div>
@@ -205,8 +216,13 @@ export async function handleDeleteMatch(matchId) {
   
   const key = els.inputs.editKey.value; if (!key) return setStatus('Edit key required', 'error');
   try {
-    const l = state.currentLeague; l.matches = l.matches.filter(m => m.id !== matchId);
-    await apiSave(PATHS.leagueSettings(l.id), l, `Delete match ${matchId}`, key);
+    const l = state.currentLeague;
+    const m = l.matches.find(x => x.id === matchId);
+    l.matches = l.matches.filter(x => x.id !== matchId);
+    await apiSave(PATHS.league(l.id), l, `Delete match ${matchId}`, key);
+    if (m?.status === 'completed') {
+      try { await apiDelete(PATHS.match(l.id, matchId), `Delete match report ${matchId}`, key); } catch (e) {}
+    }
     renderLeagueView(); setStatus('Match deleted.', 'ok');
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 }
@@ -222,12 +238,18 @@ export async function handleManageLeague(id) {
   
   if (id) {
     try {
-      const s = await apiGet(PATHS.leagueSettings(id));
-      state.dirtyLeague = JSON.parse(JSON.stringify(s));
+      const league = await apiGet(PATHS.league(id));
+      if (!league) throw new Error('League file not found.');
+      state.dirtyLeague = JSON.parse(JSON.stringify(league));
     } catch (e) { setStatus(e.message, 'error'); return; }
   } else {
     state.dirtyLeague = { 
-      id: '', name: '', season: 1, status: 'upcoming', 
+      schemaVersion: 1,
+      id: ulid(),
+      slug: '',
+      name: '',
+      season: 1,
+      status: 'upcoming', 
       settings: { pointsWin: 3, pointsDraw: 1, pointsLoss: 0, maxTeams: 16, lockTeams: false }, 
       teams: [], matches: [] 
     };
@@ -258,10 +280,7 @@ export function renderManageForm() {
   els.inputs.leagueName.value = l.name;
   els.inputs.leagueName.oninput = function() {
     state.dirtyLeague.name = this.value;
-    if (isNewLeague) {
-      state.dirtyLeague.id = normalizeName(this.value);
-      els.inputs.leagueId.value = state.dirtyLeague.id;
-    }
+    if (isNewLeague) state.dirtyLeague.slug = normalizeName(this.value);
   };
   
   els.inputs.leagueSeason.value = l.season;
@@ -298,8 +317,8 @@ export function renderManageForm() {
 
 function renderManageTeamsList() {
   const l = state.dirtyLeague;
-  els.containers.manageTeams.innerHTML = `<table><thead><tr><th>ID</th><th>Name</th><th>Action</th></tr></thead><tbody>
-    ${l.teams.map(t => `<tr><td>${t.id}</td><td>${t.name}</td><td><button class="link-button" onclick="window.handleEditTeam('${t.id}')">Edit</button> | <button class="link-button" onclick="window.handleDeleteTeam('${t.id}')" style="color:red">Delete</button></td></tr>`).join('')}
+  els.containers.manageTeams.innerHTML = `<table><thead><tr><th>Name</th><th>Action</th></tr></thead><tbody>
+    ${l.teams.map(t => `<tr><td>${t.name}</td><td><button class="link-button" onclick="window.handleEditTeam('${t.id}')">Edit</button> | <button class="link-button" onclick="window.handleDeleteTeam('${t.id}')" style="color:red">Delete</button></td></tr>`).join('')}
   </tbody></table>`;
 }
 
@@ -314,7 +333,10 @@ export async function handleDeleteLeague() {
     for (const t of l.teams) {
       try { await apiDelete(PATHS.team(l.id, t.id), `Delete team ${t.id}`, key); } catch (e) {}
     }
-    await apiDelete(PATHS.leagueSettings(l.id), `Delete league ${l.id}`, key);
+    for (const m of (l.matches || [])) {
+      try { await apiDelete(PATHS.match(l.id, m.id), `Delete match report ${m.id}`, key); } catch (e) {}
+    }
+    await apiDelete(PATHS.league(l.id), `Delete league ${l.id}`, key);
     const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
     const newIndex = freshIndex.filter(x => x.id !== l.id);
     await apiSave(PATHS.leaguesIndex, newIndex, `Remove league ${l.id} from index`, key);
@@ -331,6 +353,7 @@ export async function saveLeague(key) {
   if (!state.editLeagueId && state.leaguesIndex.find(x => x.id === l.id)) return setStatus('League ID exists.', 'error');
   
   l.name = els.inputs.leagueName.value;
+  l.slug = l.slug || normalizeName(l.name);
   l.season = parseInt(els.inputs.leagueSeason.value);
   l.status = els.inputs.leagueStatus.value;
   l.settings.pointsWin = parseInt(els.inputs.ptsWin.value);
@@ -339,7 +362,7 @@ export async function saveLeague(key) {
   l.settings.maxTeams = parseInt(els.inputs.maxTeams.value) || 16;
   l.settings.lockTeams = els.inputs.lockTeams.checked;
   
-  await apiSave(PATHS.leagueSettings(l.id), l, `Save league ${l.id}`, key);
+  await apiSave(PATHS.league(l.id), l, `Save league ${l.id}`, key);
   
   const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
   const idxEntry = { id: l.id, name: l.name, season: l.season, status: l.status };

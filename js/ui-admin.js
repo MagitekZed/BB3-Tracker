@@ -17,16 +17,16 @@ export async function handleScanRepo() {
     
     for (const leagueId of leagueDirs) {
       if (!indexIds.includes(leagueId)) {
-        const s = await apiGet(`data/leagues/${leagueId}/settings.json`);
-        if (s) {
+        const league = await apiGet(PATHS.league(leagueId));
+        if (league) {
           issuesFound++;
           html += `<tr style="background:#fff0f0"><td><strong>GHOST</strong>: ${leagueId}</td><td style="text-align:right"><button onclick="window.restoreLeague('${leagueId}')">Restore</button></td></tr>`;
         }
       }
       const teamFiles = await apiGet(`data/leagues/${leagueId}/teams`);
-      const s = await apiGet(`data/leagues/${leagueId}/settings.json`);
-      if (Array.isArray(teamFiles) && s) {
-        const regIds = s.teams.map(t => t.id);
+      const league = await apiGet(PATHS.league(leagueId));
+      if (Array.isArray(teamFiles) && league) {
+        const regIds = league.teams.map(t => t.id);
         const orphans = teamFiles.filter(f => f.name.endsWith('.json')).filter(f => !regIds.includes(f.name.replace('.json', '')));
         orphans.forEach(f => {
           issuesFound++;
@@ -45,9 +45,9 @@ export async function attachTeam(leagueId, filename) {
   try {
     const tId = filename.replace('.json', '');
     const t = await apiGet(PATHS.team(leagueId, tId));
-    const s = await apiGet(PATHS.leagueSettings(leagueId));
-    s.teams.push({ id: t.id, name: t.name, race: t.race, coachName: t.coachName });
-    await apiSave(PATHS.leagueSettings(leagueId), s, `Attach ${tId}`, key);
+    const league = await apiGet(PATHS.league(leagueId));
+    league.teams.push({ id: t.id, name: t.name, race: t.race, coachName: t.coachName });
+    await apiSave(PATHS.league(leagueId), league, `Attach ${tId}`, key);
     handleScanRepo();
   } catch(e) { alert(e.message); }
 }
@@ -56,7 +56,7 @@ export async function restoreLeague(leagueId) {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Key needed', 'error');
   try {
-    const s = await apiGet(PATHS.leagueSettings(leagueId));
+    const s = await apiGet(PATHS.league(leagueId));
     const idx = await apiGet(PATHS.leaguesIndex) || [];
     idx.push({ id: s.id, name: s.name, season: s.season, status: s.status });
     await apiSave(PATHS.leaguesIndex, idx, `Restore ${leagueId}`, key);
@@ -85,7 +85,7 @@ export async function deleteLeagueFolder(leagueId) {
   const key = els.inputs.editKey.value;
   if (!key) return setStatus('Key needed', 'error');
   try {
-    await apiDelete(PATHS.leagueSettings(leagueId), `Delete ghost league ${leagueId}`, key);
+    await apiDelete(PATHS.league(leagueId), `Delete ghost league ${leagueId}`, key);
     handleScanRepo();
   } catch(e) { alert(e.message); }
 }

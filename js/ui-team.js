@@ -1,8 +1,8 @@
 import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
-import { setStatus, normalizeName, getContrastColor, applyTeamTheme } from './utils.js';
-import { calculateTeamValue } from './rules.js';
+import { setStatus, normalizeName, getContrastColor, applyTeamTheme, ulid } from './utils.js';
+import { calculateTeamValue, computeSeasonStats } from './rules.js';
 import { showSection, updateBreadcrumbs, goHome, showSkill, confirmModal } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, renderManageForm } from './ui-league.js';
 
@@ -51,14 +51,51 @@ export function renderTeamView() {
   const tv = calculateTeamValue(t);
   
   const staffInfo = `RR: ${t.rerolls||0} | Fan: ${t.dedicatedFans||0} | Apo: ${t.apothecary?'Yes':'No'}`;
+
+  const seasonStats = state.currentLeague ? computeSeasonStats(state.currentLeague).find(s => s.id === t.id) : null;
+  const season = state.currentLeague?.season;
+  const history = (t.history || []).filter(h => !h.season || h.season === season);
+  const matchLogRows = history.map(h => `
+    <tr>
+      <td data-label="Rnd">${h.round ?? '-'}</td>
+      <td data-label="Opponent">${h.opponentName || '-'}</td>
+      <td data-label="Result">${h.result || '-'}</td>
+      <td data-label="Score">${h.score || '-'}</td>
+      <td data-label="Winnings">${h.winnings ? h.winnings + 'k' : '-'}</td>
+    </tr>
+  `).join('');
   
   els.containers.teamSummary.innerHTML = `
-    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; border-bottom:1px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem;">
-       <span><strong>Race:</strong> ${t.race}</span>
-       <span><strong>Coach:</strong> ${t.coachName}</span>
-       <span><strong>TV:</strong> ${(tv/1000)}k</span>
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; border-bottom:1px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem;">
+         <span><strong>Race:</strong> ${t.race}</span>
+         <span><strong>Coach:</strong> ${t.coachName}</span>
+         <span><strong>TV:</strong> ${(tv/1000)}k</span>
+      </div>
+      <div class="small" style="color:#666;">${staffInfo}</div>
     </div>
-    <div class="small" style="color:#666;">${staffInfo}</div>
+
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <h4 style="margin-top:0;">Season ${season || '-'} Stats</h4>
+      ${seasonStats ? `
+        <div class="season-stats-grid">
+          <div><strong>Record:</strong> ${seasonStats.wins}-${seasonStats.draws}-${seasonStats.losses} (${seasonStats.games} GP)</div>
+          <div><strong>Points:</strong> ${seasonStats.points}</div>
+          <div><strong>TD F/A:</strong> ${seasonStats.tdFor}/${seasonStats.tdAgainst} (${seasonStats.tdDiff>=0?'+':''}${seasonStats.tdDiff})</div>
+          <div><strong>CAS F/A:</strong> ${seasonStats.casFor}/${seasonStats.casAgainst} (${seasonStats.casDiff>=0?'+':''}${seasonStats.casDiff})</div>
+        </div>
+      ` : `<div class="small" style="color:#666;">No completed games yet.</div>`}
+    </div>
+
+    <div class="panel-styled">
+      <h4 style="margin-top:0;">Season Match Log</h4>
+      ${history.length ? `
+        <table class="responsive-table">
+          <thead><tr><th>Rnd</th><th>Opponent</th><th>Result</th><th>Score</th><th>Winnings</th></tr></thead>
+          <tbody>${matchLogRows}</tbody>
+        </table>
+      ` : `<div class="small" style="color:#666;">No games logged for this season.</div>`}
+    </div>
   `;
   
   const rows = (t.players || []).map(p => {
@@ -96,7 +133,7 @@ export async function handleEditTeam(teamId) {
       state.dirtyTeam = t || createEmptyTeam(teamId);
     } catch(e) { console.error(e); state.dirtyTeam = createEmptyTeam(teamId); }
   } else {
-    state.dirtyTeam = createEmptyTeam('');
+    state.dirtyTeam = createEmptyTeam(ulid());
   }
   renderManageForm(); 
 }
@@ -104,7 +141,9 @@ export async function handleEditTeam(teamId) {
 function createEmptyTeam(id) {
   const defaultRace = state.gameData?.races?.[0]?.name || 'Human';
   return { 
-    id, 
+    schemaVersion: 1,
+    id,
+    slug: '',
     name: 'New Team', 
     race: defaultRace, 
     coachName: '', 
@@ -124,6 +163,7 @@ export function updateLiveTV() {
 
 export function renderTeamEditor() {
   const t = state.dirtyTeam;
+  (t.players || []).forEach(p => { if (!p.id) p.id = ulid(); });
   const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
   const race = state.gameData?.races.find(r => r.name === t.race);
   const rrCost = race ? race.rerollCost : 50000;
@@ -217,10 +257,7 @@ export function renderTeamEditor() {
   const nameInput = document.getElementById('teamEditNameInput');
   nameInput.oninput = function() {
     state.dirtyTeam.name = this.value;
-    if (!state.editTeamId) {
-      state.dirtyTeam.id = normalizeName(this.value);
-      els.containers.manageTeamEditor.querySelector('input[readonly]').value = state.dirtyTeam.id;
-    }
+    state.dirtyTeam.slug = normalizeName(this.value);
   };
 }
 
@@ -259,7 +296,7 @@ export function addSmartPlayer() {
   const r = state.gameData.races.find(r=>r.name===t.race);
   const def = r?.positionals[0] || {name:'L',ma:6,st:3,ag:3,pa:4,av:8,cost:50000,skills:[]};
   const nextNum = (t.players.length > 0) ? Math.max(...t.players.map(p => p.number || 0)) + 1 : 1;
-  t.players.push({number:nextNum, name:'Player', position:def.name, ...def, skills:[...def.skills], spp:0});
+  t.players.push({id: ulid(), number:nextNum, name:'Player', position:def.name, ...def, skills:[...def.skills], spp:0});
   renderTeamEditor();
 }
 
@@ -291,7 +328,7 @@ export async function handleDeleteTeam(teamId) {
     await apiDelete(PATHS.team(state.dirtyLeague.id, teamId), `Delete team ${teamId}`, key);
     const idx = state.dirtyLeague.teams.findIndex(t => t.id === teamId);
     if(idx !== -1) state.dirtyLeague.teams.splice(idx, 1);
-    await apiSave(PATHS.leagueSettings(state.dirtyLeague.id), state.dirtyLeague, `Remove team ${teamId}`, key);
+    await apiSave(PATHS.league(state.dirtyLeague.id), state.dirtyLeague, `Remove team ${teamId}`, key);
     renderManageForm(); 
     setStatus('Team deleted.', 'ok');
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
@@ -326,7 +363,7 @@ export async function saveTeam(key) {
           const val = modal.querySelector('#tempLeagueNameInput').value;
           if(val) {
               l.name = val;
-              l.id = normalizeName(val);
+              l.slug = normalizeName(val);
               const realInput = document.getElementById('leagueManageNameInput');
               const realId = document.getElementById('leagueManageIdInput');
               if(realInput) realInput.value = l.name;
@@ -344,6 +381,7 @@ export async function saveTeam(key) {
       t.colors = { primary: cp.value, secondary: cs.value };
   }
   
+  t.slug = t.slug || normalizeName(t.name);
   t.teamValue = calculateTeamValue(t); 
   await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
   
@@ -360,7 +398,7 @@ export async function saveTeam(key) {
   else l.teams.push(meta);
   
   state.editTeamId = t.id;
-  await apiSave(PATHS.leagueSettings(l.id), l, `Update team list for ${t.name}`, key);
+  await apiSave(PATHS.league(l.id), l, `Update team list for ${t.name}`, key);
   
   setStatus('Team saved & League updated!', 'ok');
 }
