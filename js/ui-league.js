@@ -31,7 +31,8 @@ export function renderLeagueList() {
 }
 
 export async function handleOpenLeague(id) {
-  setStatus(`Loading league ${id}...`);
+  const leagueName = state.leaguesIndex.find(l => l.id === id)?.name;
+  setStatus(`Loading league${leagueName ? `: ${leagueName}` : ''}...`);
   try {
     state.currentLeague = null; 
     const league = await apiGet(PATHS.league(id));
@@ -44,7 +45,7 @@ export async function handleOpenLeague(id) {
     updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: league.name }]);
     setActiveNav('leagues');
 
-    setStatus('League loaded.', 'ok');
+    setStatus(`League loaded: ${league.name}`, 'ok');
   } catch (e) { setStatus(e.message, 'error'); }
 }
 

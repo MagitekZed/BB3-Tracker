@@ -7,7 +7,8 @@ import { showSection, updateBreadcrumbs, goHome, showSkill, confirmModal } from 
 import { handleOpenLeague, handleManageLeague, renderManageForm } from './ui-league.js';
 
 export async function handleOpenTeam(leagueId, teamId) {
-  setStatus(`Loading team ${teamId}...`);
+  const teamName = state.currentLeague?.teams?.find(t => t.id === teamId)?.name;
+  setStatus(`Loading team${teamName ? `: ${teamName}` : ''}...`);
   try {
     const teamData = await apiGet(PATHS.team(leagueId, teamId));
     if (!teamData) throw new Error("Team file not found.");
@@ -35,7 +36,7 @@ export async function handleOpenTeam(leagueId, teamId) {
     renderTeamView();
     showSection('team');
     updateBreadcrumbs([{ label: 'Leagues', action: goHome }, { label: state.currentLeague.name, action: () => handleOpenLeague(leagueId) }, { label: teamData.name }]);
-    setStatus('Team loaded.', 'ok');
+    setStatus(`Team loaded: ${teamData.name}`, 'ok');
   } catch (e) { setStatus(e.message, 'error'); }
 }
 
