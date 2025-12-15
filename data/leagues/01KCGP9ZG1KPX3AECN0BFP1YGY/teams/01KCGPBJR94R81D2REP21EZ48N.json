@@ -31,7 +31,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 3
     },
     {
       "id": "01KCGPC4MNXR4D5G5G4JSMJSM9",
@@ -59,7 +59,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 3
     },
     {
       "id": "01KCGPC4S17HB8G8C20VS3GSD8",
@@ -113,7 +113,7 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 4
     }
   ],
   "colors": {
@@ -126,5 +126,98 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 430000
+  "teamValue": 430000,
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "01KCGPDNC73K6KAAJN632HD31T",
+      "opponentName": "Amazons",
+      "result": "Win",
+      "score": "3-0",
+      "winnings": 0,
+      "tv": 430000,
+      "inducements": {
+        "Plague Doctor": 1,
+        "Riotous Rookies": 1,
+        "Wandering Apothecary": 2,
+        "Star: Griff Oberwald": 1,
+        "Star: Grim Ironjaw": 1
+      },
+      "playerRecords": [
+        {
+          "playerId": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
+          "name": "Norse Raider Lineman",
+          "number": 1,
+          "position": "Norse Berserker",
+          "sppGain": 3,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPC4MNXR4D5G5G4JSMJSM9",
+          "name": "Norse Raider Lineman",
+          "number": 2,
+          "position": "Valkyrie",
+          "sppGain": 3,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPC4S17HB8G8C20VS3GSD8",
+          "name": "Norse Raider Lineman",
+          "number": 3,
+          "position": "Yhetee",
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPC4X91BX2KRGE8CA1PJH0",
+          "name": "Norse Raider Lineman",
+          "number": 4,
+          "position": "Ulfwerener",
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        }
+      ]
+    }
+  ]
 }
