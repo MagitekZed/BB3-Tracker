@@ -127,6 +127,18 @@ function renderPreMatchSetup() {
   const list = state.gameData?.inducements || [];
   const stars = state.gameData?.starPlayers || [];
 
+  const getPlaysFor = (star) => {
+    const raw = star?.playsFor;
+    if (Array.isArray(raw)) return raw.filter(Boolean);
+    if (typeof raw === 'string') {
+      return raw
+        .split(/\r?\n|,\s*/)
+        .map(x => x.trim())
+        .filter(Boolean);
+    }
+    return [];
+  };
+
   const getRaceData = (teamRace) => state.gameData?.races?.find(r => r.name === teamRace);
   const getTeamTags = (teamRace) => {
     const raceData = getRaceData(teamRace);
@@ -292,13 +304,19 @@ function renderPreMatchSetup() {
           html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #eee; padding-bottom:2px;"><div style="font-size:0.85rem;"><div>${item.name}</div><div style="color:#666">${unitCost/1000}k${maxLabel}</div></div><div style="display:flex; align-items:center; gap:5px;"><button onclick="window.changeInducement('${side}', '${item.name}', -1)" style="padding:0 5px;">-</button><span style="font-weight:bold; width:20px; text-align:center;">${count}</span><button onclick="window.changeInducement('${side}', '${item.name}', 1)" style="padding:0 5px;">+</button></div></div>`;
       });
       const teamTags = getTeamTags(teamRace);
-      const eligibleStars = stars.filter(star => star.playsFor.includes("Any") || star.playsFor.some(tag => teamTags.includes(tag)));
+      const eligibleStars = stars.filter(star => {
+        const playsFor = getPlaysFor(star);
+        const isAny = playsFor.some(p => p.toLowerCase().startsWith('any'));
+        return isAny || playsFor.some(tag => teamTags.includes(tag));
+      });
       if(eligibleStars.length > 0) {
           html += `<div style="font-weight:bold; margin-top:10px; border-bottom:2px solid #ccc;">Star Players</div>`;
           eligibleStars.forEach(star => {
               const safeName = star.name.replace(/'/g, "\\'");
               const isHired = s.inducements[side][`Star: ${star.name}`] === 1;
-              let reason = star.playsFor.includes("Any") ? "Any" : star.playsFor.find(t => teamTags.includes(t)) || "";
+              const playsFor = getPlaysFor(star);
+              const isAny = playsFor.some(p => p.toLowerCase().startsWith('any'));
+              let reason = isAny ? (playsFor.find(p => p.toLowerCase().startsWith('any')) || 'Any') : (playsFor.find(t => teamTags.includes(t)) || "");
               html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; border-bottom:1px solid #eee;"><div style="font-size:0.8rem;"><div>${star.name}</div><div style="color:#666">${star.cost/1000}k - <span style="font-style:italic; font-size:0.75rem">(${reason})</span></div></div><div>${isHired ? `<button onclick="window.toggleStar('${side}', '${safeName}', 0)" style="color:red; font-size:0.8rem;">Remove</button>` : `<button onclick="window.toggleStar('${side}', '${safeName}', 1)" style="color:green; font-size:0.8rem;">Hire</button>`}</div></div>`;
           });
       }
