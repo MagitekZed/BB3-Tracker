@@ -4395,7 +4395,7 @@
                                            "Thick Skull",
                                            "Throw Team-Mate"
                                        ],
-                            "cost":  340,
+                            "cost":  340000,
                             "playsFor":  [
                                              "Any"
                                          ],
