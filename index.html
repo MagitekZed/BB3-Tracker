@@ -189,6 +189,8 @@
     <div class="modal-content" style="max-width: 800px; width: 95%;">
       <div class="modal-header"><h3>Match Setup & Inducements</h3><button class="close-btn" onclick="closePreMatchModal()">×</button></div>
       
+      <div id="pmStepLabel" class="small" style="margin:0.5rem 0 0; color:#444;"></div>
+
       <div class="card" style="margin-bottom:1rem; background:#eee;">
          <div style="display:flex; justify-content:space-between; align-items:center;">
             <div style="text-align:center; flex:1">
@@ -206,46 +208,61 @@
       <div class="modal-body-scroll">
         <div class="sheet-grid pre-match-grid">
            <!-- Home Shop -->
-           <div class="panel-styled" style="padding:0.5rem;">
-              <div style="border-bottom:2px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem; text-align:center;">
-                 <strong>Home Budget</strong>
-                 <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:0.25rem;">
-                   <span>Treasury: <span id="pmHomeBank">0</span>k</span>
-                   <span style="color:green">Petty: <span id="pmHomePetty">0</span>k</span>
-                 </div>
-                 <div style="font-weight:bold; margin-top:0.25rem;">Spend Cap: <span id="pmHomeTotal">0</span>k</div>
+           <div id="pmHomePanel" class="panel-styled" style="padding:0.5rem;">
+               <div style="border-bottom:2px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem; text-align:center;">
+                  <strong id="pmHomeBudgetTitle">Home Budget</strong>
+                  <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:0.25rem;">
+                    <span>Treasury: <span id="pmHomeBank">0</span>k</span>
+                    <span style="color:green">Petty: <span id="pmHomePetty">0</span>k</span>
+                  </div>
+                  <div style="font-weight:bold; margin-top:0.25rem;">Spend Cap: <span id="pmHomeTotal">0</span>k</div>
+                  <div class="small" id="pmHomeBankNote" style="margin-top:0.25rem; color:#555;"></div>
                  <div class="small" id="pmHomeCtvLine" style="margin-top:0.25rem; color:#444;">CTV: <span id="pmHomeCtv">0</span>k • Players: <span id="pmHomeAvail">0</span>+<span id="pmHomeJourneys">0</span>J</div>
               </div>
               <div id="pmHomeInducements"></div>
-              <div style="margin-top:0.5rem; font-size:0.85rem; color:#444">
-                 <strong>Spent:</strong> <span id="pmHomeSpent">0</span>k 
-                 <span id="pmHomeOver" style="color:red; font-weight:bold; display:none;">(OVER BUDGET)</span>
-              </div>
-           </div>
+               <div style="margin-top:0.5rem; font-size:0.85rem; color:#444">
+                  <div>
+                    <strong>Spent:</strong> <span id="pmHomeSpent">0</span>k 
+                    <span id="pmHomeOver" style="color:red; font-weight:bold; display:none;">(OVER BUDGET)</span>
+                  </div>
+                  <div class="small" style="margin-top:0.25rem;">
+                    Treasury: <span id="pmHomeSpentTreasury">0</span>k • Petty: <span id="pmHomeSpentPetty">0</span>k
+                  </div>
+                  <div class="small" id="pmHomeSpendSummary" style="margin-top:0.25rem;"></div>
+               </div>
+            </div>
 
            <!-- Away Shop -->
-           <div class="panel-styled" style="padding:0.5rem;">
-              <div style="border-bottom:2px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem; text-align:center;">
-                 <strong>Away Budget</strong>
-                 <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:0.25rem;">
-                   <span>Treasury: <span id="pmAwayBank">0</span>k</span>
-                   <span style="color:green">Petty: <span id="pmAwayPetty">0</span>k</span>
-                 </div>
-                 <div style="font-weight:bold; margin-top:0.25rem;">Spend Cap: <span id="pmAwayTotal">0</span>k</div>
+           <div id="pmAwayPanel" class="panel-styled" style="padding:0.5rem;">
+               <div style="border-bottom:2px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem; text-align:center;">
+                  <strong id="pmAwayBudgetTitle">Away Budget</strong>
+                  <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:0.25rem;">
+                    <span>Treasury: <span id="pmAwayBank">0</span>k</span>
+                    <span style="color:green">Petty: <span id="pmAwayPetty">0</span>k</span>
+                  </div>
+                  <div style="font-weight:bold; margin-top:0.25rem;">Spend Cap: <span id="pmAwayTotal">0</span>k</div>
+                  <div class="small" id="pmAwayBankNote" style="margin-top:0.25rem; color:#555;"></div>
                  <div class="small" id="pmAwayCtvLine" style="margin-top:0.25rem; color:#444;">CTV: <span id="pmAwayCtv">0</span>k • Players: <span id="pmAwayAvail">0</span>+<span id="pmAwayJourneys">0</span>J</div>
               </div>
               <div id="pmAwayInducements"></div>
-              <div style="margin-top:0.5rem; font-size:0.85rem; color:#444">
-                 <strong>Spent:</strong> <span id="pmAwaySpent">0</span>k 
-                 <span id="pmAwayOver" style="color:red; font-weight:bold; display:none;">(OVER BUDGET)</span>
-              </div>
-           </div>
+               <div style="margin-top:0.5rem; font-size:0.85rem; color:#444">
+                  <div>
+                    <strong>Spent:</strong> <span id="pmAwaySpent">0</span>k 
+                    <span id="pmAwayOver" style="color:red; font-weight:bold; display:none;">(OVER BUDGET)</span>
+                  </div>
+                  <div class="small" style="margin-top:0.25rem;">
+                    Treasury: <span id="pmAwaySpentTreasury">0</span>k • Petty: <span id="pmAwaySpentPetty">0</span>k
+                  </div>
+                  <div class="small" id="pmAwaySpendSummary" style="margin-top:0.25rem;"></div>
+               </div>
+            </div>
         </div>
       </div>
       
       <div class="modal-actions" style="margin-top:1rem; border-top:1px solid #ccc; padding-top:1rem;">
         <button onclick="closePreMatchModal()" class="secondary-btn">Cancel</button>
-        <button id="pmStartBtn" class="primary-btn">Confirm & Play Ball!</button>
+        <button id="pmBackBtn" class="secondary-btn" style="display:none;">Back</button>
+        <button id="pmStartBtn" class="primary-btn">Next</button>
       </div>
     </div>
   </div>

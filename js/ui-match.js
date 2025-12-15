@@ -109,7 +109,8 @@ export async function handleStartMatch(matchId) {
         pettyCash: { home: 0, away: 0 },
         treasurySpent: { home: 0, away: 0 },
         spendCap: { home: 0, away: 0 },
-        inducements: { home: {}, away: {} }
+        inducements: { home: {}, away: {} },
+        wizard: { step: 0, lock: null }
     };
     
     renderPreMatchSetup();
@@ -122,10 +123,44 @@ export function closePreMatchModal() {
   els.preMatch.el.classList.add('hidden');
 }
 
+export function handlePreMatchBack() {
+  const s = state.setupMatch;
+  if (!s?.wizard) return;
+  if (s.wizard.step !== 1) return;
+  s.wizard.step = 0;
+  s.wizard.lock = null;
+  renderPreMatchSetup();
+}
+
+export async function handlePreMatchPrimary() {
+  const s = state.setupMatch;
+  if (!s) return;
+  s.wizard = s.wizard || { step: 0, lock: null };
+
+  if (s.wizard.step === 0) {
+    renderPreMatchSetup();
+    if (s.higherSide === 'tie') {
+      s.wizard.lock = { highSide: 'tie', lowSide: 'away', highTreasurySpent: 0 };
+    } else {
+      const highSide = s.higherSide;
+      const lowSide = highSide === 'home' ? 'away' : 'home';
+      const highTreasurySpent = s.treasurySpent?.[highSide] || 0;
+      s.wizard.lock = { highSide, lowSide, highTreasurySpent };
+    }
+    s.wizard.step = 1;
+    renderPreMatchSetup();
+    return;
+  }
+
+  await confirmMatchStart();
+}
+
 function renderPreMatchSetup() {
   const s = state.setupMatch;
   const list = state.gameData?.inducements || [];
   const stars = state.gameData?.starPlayers || [];
+  s.wizard = s.wizard || { step: 0, lock: null };
+  const w = s.wizard;
 
   const getPlaysFor = (star) => {
     const raw = star?.playsFor;
@@ -221,6 +256,7 @@ function renderPreMatchSetup() {
     const aSpent = calculateTotalSpent('away');
 
     let highSide = s.higherSide;
+    if (w.step === 1 && w.lock?.highSide) highSide = w.lock.highSide;
     let lowSide = (highSide === 'home') ? 'away' : (highSide === 'away' ? 'home' : null);
 
     const homeTreasury = s.homeTeam.treasury || 0;
@@ -238,7 +274,8 @@ function renderPreMatchSetup() {
 
     const highTreasury = (highSide === 'home') ? homeTreasury : awayTreasury;
     const highSpent = (highSide === 'home') ? hSpent : aSpent;
-    const highTreasurySpent = Math.min(highSpent, highTreasury);
+    const highTreasurySpentLive = Math.min(highSpent, highTreasury);
+    const highTreasurySpent = (w.step === 1 && w.lock && w.lock.highSide === highSide) ? (w.lock.highTreasurySpent || 0) : highTreasurySpentLive;
 
     const ctvDiff = Math.abs(s.ctv.home - s.ctv.away);
     const lowPetty = ctvDiff + highTreasurySpent;
@@ -262,8 +299,13 @@ function renderPreMatchSetup() {
 
   const { homeSpent, awaySpent } = computeBudgets();
 
-  const homeBank = (s.higherSide === 'home') ? (s.homeTeam.treasury || 0) : (s.higherSide === 'tie' ? 0 : Math.min(50000, (s.homeTeam.treasury || 0)));
-  const awayBank = (s.higherSide === 'away') ? (s.awayTeam.treasury || 0) : (s.higherSide === 'tie' ? 0 : Math.min(50000, (s.awayTeam.treasury || 0)));
+  const effectiveHighSide = (w.step === 1 && w.lock?.highSide) ? w.lock.highSide : s.higherSide;
+  const homeTreasury = s.homeTeam.treasury || 0;
+  const awayTreasury = s.awayTeam.treasury || 0;
+  const homeTopUpMax = Math.min(50000, homeTreasury);
+  const awayTopUpMax = Math.min(50000, awayTreasury);
+  const homeBank = (effectiveHighSide === 'home') ? homeTreasury : (effectiveHighSide === 'tie' ? 0 : homeTopUpMax);
+  const awayBank = (effectiveHighSide === 'away') ? awayTreasury : (effectiveHighSide === 'tie' ? 0 : awayTopUpMax);
 
   els.preMatch.homeBank.textContent = (homeBank/1000);
   els.preMatch.awayBank.textContent = (awayBank/1000);
@@ -279,9 +321,45 @@ function renderPreMatchSetup() {
   if (els.preMatch.homeJourneys) els.preMatch.homeJourneys.textContent = s.journeymen.home.needed;
   if (els.preMatch.awayJourneys) els.preMatch.awayJourneys.textContent = s.journeymen.away.needed;
 
+  if (els.preMatch.homeBudgetTitle) els.preMatch.homeBudgetTitle.textContent = `${s.homeTeam.name} Budget`;
+  if (els.preMatch.awayBudgetTitle) els.preMatch.awayBudgetTitle.textContent = `${s.awayTeam.name} Budget`;
+
+  if (els.preMatch.homeBankNote) {
+    els.preMatch.homeBankNote.textContent = (effectiveHighSide === 'tie' || effectiveHighSide === 'home') ? '' : `Top-up max ${homeTopUpMax/1000}k (Treasury ${homeTreasury/1000}k)`;
+  }
+  if (els.preMatch.awayBankNote) {
+    els.preMatch.awayBankNote.textContent = (effectiveHighSide === 'tie' || effectiveHighSide === 'away') ? '' : `Top-up max ${awayTopUpMax/1000}k (Treasury ${awayTreasury/1000}k)`;
+  }
+
+  const activeSide = (() => {
+    if (w.step === 0) return s.higherSide === 'away' ? 'away' : 'home';
+    if (w.lock?.lowSide) return w.lock.lowSide;
+    if (effectiveHighSide === 'home') return 'away';
+    if (effectiveHighSide === 'away') return 'home';
+    return 'away';
+  })();
+
+  if (els.preMatch.homePanel) els.preMatch.homePanel.classList.toggle('hidden', activeSide !== 'home');
+  if (els.preMatch.awayPanel) els.preMatch.awayPanel.classList.toggle('hidden', activeSide !== 'away');
+
+  if (els.preMatch.backBtn) els.preMatch.backBtn.style.display = (w.step === 1) ? '' : 'none';
+  if (els.preMatch.startBtn) {
+    const otherName = activeSide === 'home' ? s.awayTeam.name : s.homeTeam.name;
+    els.preMatch.startBtn.textContent = (w.step === 0) ? `Next: ${otherName}` : 'Confirm & Coin Toss';
+  }
+  if (els.preMatch.stepLabel) {
+    if (w.step === 0) {
+      const teamName = activeSide === 'home' ? s.homeTeam.name : s.awayTeam.name;
+      els.preMatch.stepLabel.textContent = `Step 1/2: ${teamName} chooses inducements (locks opponent budget).`;
+    } else {
+      const teamName = activeSide === 'home' ? s.homeTeam.name : s.awayTeam.name;
+      els.preMatch.stepLabel.textContent = `Step 2/2: ${teamName} chooses inducements (Back to edit opponent).`;
+    }
+  }
+
   const renderShop = (side, teamRace) => {
-      const isHigh = (s.higherSide === side);
-      const isTie = (s.higherSide === 'tie');
+      const isHigh = (effectiveHighSide === side);
+      const isTie = (effectiveHighSide === 'tie');
       const needed = s.journeymen?.[side]?.needed || 0;
       const opts = s.journeymen?.[side]?.options || [];
       const selected = s.journeymen?.[side]?.type;
@@ -331,6 +409,49 @@ function renderPreMatchSetup() {
   els.preMatch.awaySpent.textContent = (awaySpent/1000);
   els.preMatch.homeOver.style.display = (homeSpent > s.spendCap.home) ? 'inline' : 'none';
   els.preMatch.awayOver.style.display = (awaySpent > s.spendCap.away) ? 'inline' : 'none';
+
+  const renderSpendSummary = (side) => {
+    const parts = [];
+    const starsAll = state.gameData?.starPlayers || [];
+    for (const [key, count] of Object.entries(s.inducements?.[side] || {})) {
+      if (!count) continue;
+      if (key.startsWith('Star: ')) {
+        const name = key.replace('Star: ', '');
+        const star = starsAll.find(x => x.name === name);
+        if (star) parts.push(`${name} (${star.cost/1000}k)`);
+        else parts.push(name);
+        continue;
+      }
+      if (key === 'Mercenaries') {
+        parts.push(`Mercenaries (${Math.round(count/1000)}k)`);
+        continue;
+      }
+      const unit = getInducementUnitCost(side, key);
+      const total = unit * count;
+      parts.push(`${key}${count > 1 ? ` x${count}` : ''} (${total/1000}k)`);
+    }
+    return parts.join(' | ');
+  };
+
+  const updateSpendSplit = (side, spent) => {
+    const petty = s.pettyCash?.[side] || 0;
+    const treasuryCap = (effectiveHighSide === 'tie') ? 0 : ((side === effectiveHighSide) ? ((side === 'home') ? homeTreasury : awayTreasury) : Math.min(50000, (side === 'home') ? homeTreasury : awayTreasury));
+    const pettyUsed = Math.min(spent, petty);
+    const treasuryUsed = Math.min(treasuryCap, Math.max(0, spent - pettyUsed));
+
+    if (side === 'home') {
+      if (els.preMatch.homeSpentTreasury) els.preMatch.homeSpentTreasury.textContent = (treasuryUsed/1000);
+      if (els.preMatch.homeSpentPetty) els.preMatch.homeSpentPetty.textContent = (pettyUsed/1000);
+      if (els.preMatch.homeSpendSummary) els.preMatch.homeSpendSummary.textContent = renderSpendSummary('home');
+    } else {
+      if (els.preMatch.awaySpentTreasury) els.preMatch.awaySpentTreasury.textContent = (treasuryUsed/1000);
+      if (els.preMatch.awaySpentPetty) els.preMatch.awaySpentPetty.textContent = (pettyUsed/1000);
+      if (els.preMatch.awaySpendSummary) els.preMatch.awaySpendSummary.textContent = renderSpendSummary('away');
+    }
+  };
+
+  updateSpendSplit('home', homeSpent);
+  updateSpendSplit('away', awaySpent);
 }
 
 export function changeInducement(side, itemName, delta) {
@@ -423,6 +544,10 @@ function validatePreMatchSetup() {
 
   if (s.higherSide === 'tie' && (homeSpent > 0 || awaySpent > 0)) {
     warnings.push('CTV is tied. By default, neither team can spend Treasury, so inducements are not available.');
+  }
+
+  if (s.wizard?.lock?.highSide && s.wizard.lock.highSide !== 'tie' && s.higherSide !== 'tie' && s.higherSide !== s.wizard.lock.highSide) {
+    warnings.push('CTV order changed after locking the first team. Consider going Back and re-locking to ensure the inducement budgets are correct.');
   }
 
   if (homeSpent > (s.spendCap.home || 0)) warnings.push(`Home is over the spend cap by ${Math.ceil((homeSpent - s.spendCap.home)/1000)}k.`);

@@ -140,15 +140,12 @@ body {
 /* Pre-Match Grid (Responsive) */
 .pre-match-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1rem;
   align-items: start;
 }
 
 @media (max-width: 700px) {
-  .pre-match-grid {
-    grid-template-columns: 1fr; /* Stack vertically on mobile */
-  }
   .modal-content {
     width: 95%;
     padding: 1rem;
