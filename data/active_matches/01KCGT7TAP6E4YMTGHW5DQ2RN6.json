@@ -541,7 +541,7 @@
           "sentOff": false,
           "td": 0,
           "cas": 0,
-          "int": 0,
+          "int": 1,
           "comp": 0,
           "ttmThrow": 0,
           "ttmLand": 0,
