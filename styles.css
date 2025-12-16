@@ -118,6 +118,7 @@ body {
   background: var(--card-bg); padding: 1.5rem; border-radius: 4px;
   width: 90%; max-width: 400px; position: relative;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 2px solid #444;
+  box-sizing: border-box;
   /* Scroll handling for tall modals */
   max-height: 90vh; 
   display: flex; 
@@ -135,7 +136,6 @@ body {
 
 .modal-body-scroll {
   overflow-y: auto;
-  overflow-x: hidden;
   flex: 1;
   padding-right: 5px; /* Prevent scrollbar overlap */
   box-sizing: border-box;
@@ -521,7 +521,8 @@ body.mode-coach .coach-header {
 }
 .sheet-grid.pre-match-grid > .panel-styled {
   grid-column: 1 / -1;
-  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 .sheet-btn { 
   padding: 0.5rem; font-size: 0.75rem; 
