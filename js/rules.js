@@ -52,6 +52,90 @@ export function computeStandings(league) {
   return computeSeasonStats(league);
 }
 
+// ==============================
+// BB2025 League Play Helpers
+// ==============================
+
+export function computeBb2025WinningsGp({ myTouchdowns = 0, myDedicatedFans = 1, oppDedicatedFans = 1, noStallingBonus = true }) {
+  const fanAttendance = (Number(myDedicatedFans) || 0) + (Number(oppDedicatedFans) || 0);
+  const base = (fanAttendance / 2) + (Number(myTouchdowns) || 0) + (noStallingBonus ? 1 : 0);
+  // Can produce 5,000gp increments when fanAttendance is odd.
+  return Math.round(base * 10000);
+}
+
+export function computeBb2025DedicatedFansDelta({ result /* 'win'|'loss'|'draw' */, dedicatedFans = 1, rollD6 = null }) {
+  const df = Number(dedicatedFans) || 1;
+  const roll = (rollD6 == null || rollD6 === '') ? null : Number(rollD6);
+  if (result === 'draw') return 0;
+  if (!roll || roll < 1 || roll > 6) return 0;
+  if (result === 'win') return (roll >= df) ? 1 : 0;
+  if (result === 'loss') return (roll < df) ? -1 : 0;
+  return 0;
+}
+
+export function computeBb2025SppGain({ td = 0, cas = 0, int = 0, comp = 0, ttmThrow = 0, ttmLand = 0, isMvp = false }) {
+  return (Number(td) || 0) * 3
+    + (Number(cas) || 0) * 2
+    + (Number(int) || 0) * 2
+    + (Number(comp) || 0) * 1
+    + (Number(ttmThrow) || 0) * 1
+    + (Number(ttmLand) || 0) * 1
+    + (isMvp ? 4 : 0);
+}
+
+export function getAdvancementCount(player) {
+  return Array.isArray(player?.advancements) ? player.advancements.length : 0;
+}
+
+export function getBb2025AdvancementCost(player, kind /* 'randomPrimary'|'chosenPrimary'|'chosenSecondary'|'characteristic' */) {
+  const idx = Math.min(getAdvancementCount(player), 5);
+  const costs = state.gameData?.advancement?.sppCosts;
+  if (!costs) return null;
+  const arr = costs[kind];
+  if (!Array.isArray(arr)) return null;
+  return arr[idx] ?? null;
+}
+
+export function getBb2025ValueIncreaseGp({ kind /* 'primarySkill'|'secondarySkill'|'av'|'ma'|'pa'|'ag'|'st' */, isEliteSkill = false }) {
+  const vi = state.gameData?.advancement?.valueIncreases;
+  if (!vi) return 0;
+  const base = Number(vi[kind] || 0);
+  const elite = isEliteSkill ? Number(vi.eliteSkillBonus || 0) : 0;
+  return base + elite;
+}
+
+export function applyBb2025SkillAdvancement(player, { skillName, isSecondary = false, isEliteSkill = false } = {}) {
+  const out = { ...(player || {}) };
+  out.skills = Array.isArray(out.skills) ? [...out.skills] : [];
+  if (skillName) out.skills.push(skillName);
+
+  const delta = getBb2025ValueIncreaseGp({ kind: isSecondary ? 'secondarySkill' : 'primarySkill', isEliteSkill });
+  out.cost = (Number(out.cost) || 0) + delta;
+  return { player: out, valueIncreaseGp: delta };
+}
+
+export function applyBb2025CharacteristicIncrease(player, statKey /* 'ma'|'st'|'ag'|'pa'|'av' */) {
+  const out = { ...(player || {}) };
+  const key = String(statKey || '').toLowerCase();
+  const current = out[key];
+
+  if (current == null) return { player: out, valueIncreaseGp: 0 };
+
+  if (key === 'ag' || key === 'pa') {
+    const cur = Number(current);
+    if (!Number.isFinite(cur) || cur < 1) return { player: out, valueIncreaseGp: 0 };
+    out[key] = Math.max(1, cur - 1);
+  } else {
+    const cur = Number(current);
+    if (!Number.isFinite(cur)) return { player: out, valueIncreaseGp: 0 };
+    out[key] = cur + 1;
+  }
+
+  const delta = getBb2025ValueIncreaseGp({ kind: key });
+  out.cost = (Number(out.cost) || 0) + delta;
+  return { player: out, valueIncreaseGp: delta };
+}
+
 /**
  * Compute season-level stats for each team in a league.
  * Returns an array sorted for standings and a map for quick lookup.

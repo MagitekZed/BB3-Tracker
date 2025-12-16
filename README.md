@@ -96,11 +96,8 @@ data/
 
 ### 3\. Frontend Configuration
 
-1.  Open `app.js` in the root folder.
-2.  Update the `API_BASE` constant to match your new Cloudflare Worker URL:
-    ```javascript
-    const API_BASE = '[https://your-worker-name.your-subdomain.workers.dev](https://your-worker-name.your-subdomain.workers.dev)';
-    ```
+1.  Open `js/config.js`.
+2.  Update `API_BASE` to match your new Cloudflare Worker URL.
 3.  Commit and Push changes to GitHub.
 
 -----

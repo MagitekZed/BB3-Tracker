@@ -4,7 +4,7 @@ import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, getContrastColor, applyTeamTheme, ulid } from './utils.js';
 import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill, confirmModal, showInfoModal } from './ui-core.js';
 import { handleOpenLeague } from './ui-league.js';
-import { calculateTeamValue, calculateCurrentTeamValue, isPlayerAvailableForMatch } from './rules.js';
+import { calculateTeamValue, calculateCurrentTeamValue, isPlayerAvailableForMatch, computeBb2025WinningsGp, computeBb2025DedicatedFansDelta, computeBb2025SppGain, getBb2025AdvancementCost, applyBb2025SkillAdvancement, applyBb2025CharacteristicIncrease, getBb2025ValueIncreaseGp, getAdvancementCount } from './rules.js';
 
 // --- Scheduling ---
 
@@ -84,7 +84,7 @@ export async function handleStartMatch(matchId) {
       const raceData = state.gameData?.races?.find(r => r.name === teamRace);
       const candidates = (raceData?.positionals || [])
         .filter(p => (p.qtyMin === 0) && (p.qtyMax >= 12))
-        .map(p => ({ name: p.name, cost: p.cost, ma: p.ma, st: p.st, ag: p.ag, pa: p.pa, av: p.av, skills: p.skills || [] }));
+        .map(p => ({ name: p.name, cost: p.cost, ma: p.ma, st: p.st, ag: p.ag, pa: p.pa, av: p.av, skills: p.skills || [], primary: p.primary, secondary: p.secondary }));
       if (candidates.length) return candidates;
       return [{ name: 'Lineman (Journeyman)', cost: 50000, ma: 6, st: 3, ag: 3, pa: 4, av: 8, skills: [] }];
     };
@@ -674,7 +674,7 @@ export async function finalizeMatchStart(activeSide) {
       av: p.av,
       skills: p.skills || [],
       cost: p.cost || 0,
-      live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 }
+      live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, ttmThrow: 0, ttmLand: 0, foul: 0 }
     }));
 
     const injectJourneymen = (baseRoster, side) => {
@@ -683,7 +683,7 @@ export async function finalizeMatchStart(activeSide) {
 
       const typeName = s.journeymen?.[side]?.type;
       const options = s.journeymen?.[side]?.options || [];
-      const tmpl = options.find(o => o.name === typeName) || options[0] || { name: 'Lineman (Journeyman)', cost: 50000, ma: 6, st: 3, ag: 3, pa: 4, av: 8, skills: [] };
+       const tmpl = options.find(o => o.name === typeName) || options[0] || { name: 'Lineman (Journeyman)', cost: 50000, ma: 6, st: 3, ag: 3, pa: 4, av: 8, skills: [], primary: ['G'], secondary: [] };
 
       const maxNum = (baseRoster.length > 0) ? Math.max(...baseRoster.map(p => p.number || 0)) : 0;
       const out = [...baseRoster];
@@ -699,9 +699,11 @@ export async function finalizeMatchStart(activeSide) {
           ag: tmpl.ag,
           pa: tmpl.pa,
           av: tmpl.av,
+          primary: tmpl.primary || ['G'],
+          secondary: tmpl.secondary || [],
           skills: [...(tmpl.skills || []), 'Loner (4+)'],
           cost: tmpl.cost || 0,
-          live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 }
+           live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, ttmThrow: 0, ttmLand: 0, foul: 0 }
         });
       }
       return out;
@@ -725,7 +727,7 @@ export async function finalizeMatchStart(activeSide) {
                   av: starData.av,
                   skills: starData.skills,
                   cost: starData.cost,
-                  live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, foul: 0 }
+                   live: { used: false, injured: false, sentOff: false, td: 0, cas: 0, int: 0, comp: 0, ttmThrow: 0, ttmLand: 0, foul: 0 }
                 });
             }
         }
@@ -1074,23 +1076,1026 @@ export async function handleCancelGame() {
 
 // --- POST GAME SEQUENCE (CHUNK 4) ---
 
-export function openPostGameModal() {
-    if (state.activeMatchPollInterval) {
-        clearInterval(state.activeMatchPollInterval);
-        state.activeMatchPollInterval = null;
+const SKILL_CAT_BY_CODE = { A: 'Agility', D: 'Devious', G: 'General', M: 'Mutation', P: 'Passing', S: 'Strength' };
+
+function pgGetPlayerKey(side, rosterIdx) {
+  const r = state.activeMatchData?.[side]?.roster?.[rosterIdx];
+  if (!r) return null;
+  if (r.playerId) return `p:${r.playerId}`;
+  return `t:${side}:${rosterIdx}`;
+}
+
+function pgGetRosterPlayer(side, rosterIdx) {
+  return state.activeMatchData?.[side]?.roster?.[rosterIdx] || null;
+}
+
+function pgFindSkillDef(skillName) {
+  const name = String(skillName || '').trim();
+  if (!name) return null;
+  const cats = state.gameData?.skillCategories;
+  if (!cats) return null;
+  for (const list of Object.values(cats)) {
+    const found = (list || []).find(s => (typeof s === 'object' ? s.name : s) === name);
+    if (found) return (typeof found === 'object') ? found : { name: found };
+  }
+  return null;
+}
+
+function pgGetResultForSide(side) {
+  const d = state.activeMatchData;
+  if (!d) return 'draw';
+  const my = Number(d[side]?.score || 0);
+  const opp = Number(d[side === 'home' ? 'away' : 'home']?.score || 0);
+  if (my > opp) return 'win';
+  if (my < opp) return 'loss';
+  return 'draw';
+}
+
+function pgComputeMvpWinnerRosterIdx(side) {
+  const pg = state.postGame;
+  const mvp = pg?.teams?.[side]?.mvp;
+  const nominees = Array.isArray(mvp?.nominees) ? mvp.nominees : [];
+  const roll = Number(mvp?.rollD6 || 0);
+  if (nominees.length === 0) return null;
+  if (!roll || roll < 1 || roll > 6) return null;
+  const idx = roll - 1;
+  return nominees[idx] ?? null;
+}
+
+function pgGetTeamWinningsGp(side) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return 0;
+  if (t.winningsGpOverride != null && t.winningsGpOverride !== '') return Number(t.winningsGpOverride) || 0;
+  return Number(t.winningsGpAuto) || 0;
+}
+
+function pgGetTeamDedicatedFansDelta(side) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return 0;
+  if (t.dedicatedFansDeltaOverride != null && t.dedicatedFansDeltaOverride !== '') return Number(t.dedicatedFansDeltaOverride) || 0;
+  return computeBb2025DedicatedFansDelta({ result: t.result, dedicatedFans: t.dedicatedFansBefore, rollD6: t.dedicatedFansRollD6 });
+}
+
+function pgCharacteristicOptionsFromD8(rollD8) {
+  const r = Number(rollD8);
+  if (!r || r < 1 || r > 8) return [];
+  if (r === 1) return ['av'];
+  if (r === 2) return ['av', 'pa'];
+  if (r === 3 || r === 4) return ['av', 'ma', 'pa'];
+  if (r === 5) return ['ma', 'pa'];
+  if (r === 6) return ['ag', 'ma'];
+  if (r === 7) return ['ag', 'st'];
+  if (r === 8) return ['av', 'ma', 'pa', 'ag', 'st'];
+  return [];
+}
+
+function pgComputeExpensiveMistakeType(treasuryGp, rollD6) {
+  const t = Number(treasuryGp) || 0;
+  const roll = Number(rollD6) || 0;
+  if (t < 100000 || !roll || roll < 1 || roll > 6) return null;
+
+  const band = (t >= 600000) ? 5
+    : (t >= 500000) ? 4
+      : (t >= 400000) ? 3
+        : (t >= 300000) ? 2
+          : (t >= 200000) ? 1
+            : 0; // 100-195
+
+  const table = {
+    1: ['Minor Incident', 'Minor Incident', 'Major Incident', 'Major Incident', 'Catastrophe', 'Catastrophe'],
+    2: ['Crisis Averted', 'Minor Incident', 'Minor Incident', 'Major Incident', 'Major Incident', 'Major Incident'],
+    3: ['Crisis Averted', 'Crisis Averted', 'Minor Incident', 'Minor Incident', 'Minor Incident', 'Major Incident'],
+    4: ['Crisis Averted', 'Crisis Averted', 'Crisis Averted', 'Crisis Averted', 'Minor Incident', 'Minor Incident'],
+    5: ['Crisis Averted', 'Crisis Averted', 'Crisis Averted', 'Crisis Averted', 'Crisis Averted', 'Crisis Averted'],
+    6: ['Crisis Averted', 'Crisis Averted', 'Crisis Averted', 'Crisis Averted', 'Crisis Averted', 'Minor Incident']
+  };
+
+  return table[roll]?.[band] || null;
+}
+
+function pgComputeExpensiveMistakesDeltaGp({ treasuryGp, rollD6, rollD3, roll2d6Total }) {
+  const t = Number(treasuryGp) || 0;
+  const kind = pgComputeExpensiveMistakeType(t, rollD6);
+  if (!kind) return { kind: null, deltaGp: 0, needs: null };
+
+  if (kind === 'Crisis Averted') return { kind, deltaGp: 0, needs: null };
+  if (kind === 'Minor Incident') {
+    const d3 = Number(rollD3) || 0;
+    if (d3 < 1 || d3 > 3) return { kind, deltaGp: 0, needs: 'd3' };
+    return { kind, deltaGp: -(d3 * 10000), needs: null };
+  }
+  if (kind === 'Major Incident') {
+    const half = Math.floor(t / 2);
+    const rounded = Math.floor(half / 5000) * 5000;
+    return { kind, deltaGp: rounded - t, needs: null };
+  }
+  if (kind === 'Catastrophe') {
+    const total = Number(roll2d6Total) || 0;
+    if (total < 2 || total > 12) return { kind, deltaGp: 0, needs: '2d6' };
+    const keep = total * 10000;
+    return { kind, deltaGp: keep - t, needs: null };
+  }
+  return { kind, deltaGp: 0, needs: null };
+}
+
+function pgComputeSppGain(side, rosterIdx) {
+  const r = pgGetRosterPlayer(side, rosterIdx);
+  if (!r || r.isStar) return 0;
+  const mvpWinner = pgComputeMvpWinnerRosterIdx(side);
+  return computeBb2025SppGain({
+    td: r.live?.td || 0,
+    cas: r.live?.cas || 0,
+    int: r.live?.int || 0,
+    comp: r.live?.comp || 0,
+    ttmThrow: r.live?.ttmThrow || 0,
+    ttmLand: r.live?.ttmLand || 0,
+    isMvp: mvpWinner === rosterIdx
+  });
+}
+
+function pgGetAdvListForPlayerKey(playerKey) {
+  const pg = state.postGame;
+  pg.advByPlayer = pg.advByPlayer || {};
+  pg.advByPlayer[playerKey] = pg.advByPlayer[playerKey] || [];
+  return pg.advByPlayer[playerKey];
+}
+
+function pgComputeAdvCostsSpp(playerKey) {
+  const pg = state.postGame;
+  const base = pg?.players?.[playerKey];
+  const advs = pgGetAdvListForPlayerKey(playerKey);
+  const baseCount = Number(base?.advancementCount || 0);
+  const costs = [];
+  let count = baseCount;
+  for (const adv of advs) {
+    const fakePlayer = { advancements: new Array(Math.max(0, count)).fill({}) };
+    const cost = getBb2025AdvancementCost(fakePlayer, adv.kind) ?? 0;
+    costs.push(cost);
+    count += 1;
+  }
+  return costs;
+}
+
+function pgComputeSppSpend(playerKey) {
+  return pgComputeAdvCostsSpp(playerKey).reduce((a, b) => a + (Number(b) || 0), 0);
+}
+
+function pgComputeTreasuryBeforeExpensiveMistakesGp(side) {
+  const pg = state.postGame;
+  const team = pg?.teams?.[side];
+  if (!team) return 0;
+
+  let t = Number(team.treasuryBeforeGp || 0);
+  t += pgGetTeamWinningsGp(side);
+  t += Number(team.otherTreasuryDeltaGp || 0);
+
+  const staffCosts = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
+  const base = team.staffBase || { assistantCoaches: 0, cheerleaders: 0, apothecary: false, rerolls: 0, race: '' };
+  const desired = team.staffDesired || base;
+  const coachDelta = (Number(desired.assistantCoaches || 0) - Number(base.assistantCoaches || 0)) * (Number(staffCosts.assistantCoach) || 0);
+  const cheerDelta = (Number(desired.cheerleaders || 0) - Number(base.cheerleaders || 0)) * (Number(staffCosts.cheerleader) || 0);
+  const apoDelta = ((!!desired.apothecary) === (!!base.apothecary)) ? 0 : ((!!desired.apothecary) ? Number(staffCosts.apothecary) || 0 : -(Number(staffCosts.apothecary) || 0));
+  t -= coachDelta;
+  t -= cheerDelta;
+  t -= apoDelta;
+
+  const race = state.gameData?.races?.find(r => r.name === base.race);
+  const rrCost = Number(race?.rerollCost || 50000);
+  const addRr = Math.max(0, Number(desired.addRerolls || 0));
+  t -= addRr * rrCost * 2;
+
+  const hires = pg?.hireByPlayer || {};
+  for (const [key, h] of Object.entries(hires)) {
+    if (!h?.hire) continue;
+    const p = pg.players?.[key];
+    if (!p?.isJourneyman) continue;
+
+    const baseCost = Number(p.baseCost || 0);
+    const advList = pgGetAdvListForPlayerKey(key);
+    let tmp = { cost: baseCost, skills: Array.isArray(p.baseSkills) ? [...p.baseSkills] : [], ma: p.ma, st: p.st, ag: p.ag, pa: p.pa, av: p.av };
+    for (const adv of advList) {
+      if (adv.kind === 'characteristic' && adv.outcomeType === 'skill') {
+        const def = pgFindSkillDef(adv.skillName);
+        const { player } = applyBb2025SkillAdvancement(tmp, { skillName: adv.skillName, isSecondary: adv.skillFrom === 'secondary', isEliteSkill: !!def?.isElite });
+        tmp = player;
+      } else if (adv.kind === 'characteristic') {
+        const { player } = applyBb2025CharacteristicIncrease(tmp, adv.statKey);
+        tmp = player;
+      } else {
+        const def = pgFindSkillDef(adv.skillName);
+        const { player } = applyBb2025SkillAdvancement(tmp, { skillName: adv.skillName, isSecondary: adv.kind === 'chosenSecondary', isEliteSkill: !!def?.isElite });
+        tmp = player;
+      }
     }
-    const d = state.activeMatchData;
-    state.postGame = {
-        step: 1,
-        homeWinnings: 0, awayWinnings: 0,
-        homeFans: 0, awayFans: 0,
-        homeMvp: null, awayMvp: null,
-        injuries: []
+    t -= Number(tmp.cost || baseCost);
+  }
+
+  return t;
+}
+
+function pgValidate() {
+  const pg = state.postGame;
+  const warnings = [];
+  if (!pg) return warnings;
+
+  for (const side of ['home', 'away']) {
+    const t = pg.teams?.[side];
+    if (!t) continue;
+
+    if (t.result !== 'draw') {
+      const roll = Number(t.dedicatedFansRollD6 || 0);
+      if (!roll || roll < 1 || roll > 6) warnings.push(`${t.name}: Dedicated Fans requires a D6 roll (enter 1-6).`);
+    }
+
+    const nominees = t.mvp?.nominees || [];
+    if (nominees.length !== 6) warnings.push(`${t.name}: MVP should nominate exactly 6 players (currently ${nominees.length}).`);
+    const mvpRoll = Number(t.mvp?.rollD6 || 0);
+    if (!mvpRoll || mvpRoll < 1 || mvpRoll > 6) warnings.push(`${t.name}: MVP requires a D6 roll (enter 1-6).`);
+  }
+
+  for (const [key, base] of Object.entries(pg.players || {})) {
+    const side = base.side;
+    const idx = base.rosterIdx;
+    const r = pgGetRosterPlayer(side, idx);
+    if (!r || r.isStar) continue;
+    const baseSpp = Number(base.baseSpp || 0);
+    const gain = pgComputeSppGain(side, idx);
+    const spend = pgComputeSppSpend(key);
+    if ((baseSpp + gain) < spend) warnings.push(`#${r.number} ${r.name}: spending ${spend} SPP but only has ${baseSpp + gain}.`);
+
+    const advs = pgGetAdvListForPlayerKey(key);
+    const baseAdvCount = Number(base.advancementCount || 0);
+    const minCost = getBb2025AdvancementCost({ advancements: new Array(Math.max(0, baseAdvCount)).fill({}) }, 'randomPrimary') ?? null;
+    if (minCost != null && (baseSpp + gain) >= minCost && advs.length === 0) warnings.push(`#${r.number} ${r.name}: has enough SPP for an advancement but none selected (BB2025 expects an advancement).`);
+
+    const existingSkills = new Set((base.baseSkills || []).map(s => String(s).trim()).filter(Boolean));
+    const pickedSkills = new Set();
+    for (const adv of advs) {
+      if (adv.kind === 'characteristic' && adv.outcomeType !== 'skill') continue;
+      const skill = String(adv.skillName || '').trim();
+      if (!skill) warnings.push(`#${r.number} ${r.name}: advancement missing a skill name.`);
+      if (existingSkills.has(skill)) warnings.push(`#${r.number} ${r.name}: already has ${skill}.`);
+      if (pickedSkills.has(skill)) warnings.push(`#${r.number} ${r.name}: duplicate skill selected (${skill}).`);
+      pickedSkills.add(skill);
+
+      const code = String(adv.categoryCode || '').trim().toUpperCase();
+      const categoryName = SKILL_CAT_BY_CODE[code];
+      if (!categoryName) warnings.push(`#${r.number} ${r.name}: missing/invalid skill category code.`);
+      const def = pgFindSkillDef(skill);
+      if (!def) warnings.push(`#${r.number} ${r.name}: skill not found in game data (${skill}).`);
+      if (def && categoryName) {
+        const foundInCategory = (state.gameData?.skillCategories?.[categoryName] || []).some(s => (typeof s === 'object' ? s.name : s) === skill);
+        if (!foundInCategory) warnings.push(`#${r.number} ${r.name}: ${skill} is not in ${categoryName} skills.`);
+      }
+
+      const allowed = (adv.skillFrom === 'secondary' || adv.kind === 'chosenSecondary') ? (base.secondary || []) : (base.primary || []);
+      if (code && Array.isArray(allowed) && allowed.length > 0 && !allowed.includes(code)) {
+        warnings.push(`#${r.number} ${r.name}: category ${code} not allowed (${(adv.skillFrom === 'secondary' || adv.kind === 'chosenSecondary') ? 'Secondary' : 'Primary'}).`);
+      }
+    }
+
+    for (const adv of advs) {
+      if (adv.kind !== 'characteristic') continue;
+      const roll = Number(adv.rollD8 || 0);
+      if (!roll || roll < 1 || roll > 8) warnings.push(`#${r.number} ${r.name}: Characteristic improvement requires a D8 roll (enter 1-8).`);
+      if (adv.outcomeType === 'skill') continue;
+      const options = pgCharacteristicOptionsFromD8(roll);
+      if (!options.length) continue;
+      if (!options.includes(String(adv.statKey || '').toLowerCase())) warnings.push(`#${r.number} ${r.name}: chosen characteristic not allowed by D8 roll (${roll}).`);
+    }
+  }
+
+  for (const side of ['home', 'away']) {
+    const t = pg.teams?.[side];
+    if (!t) continue;
+    const beforeEM = pgComputeTreasuryBeforeExpensiveMistakesGp(side);
+    if (beforeEM < 0) warnings.push(`${t.name}: treasury would go negative before Expensive Mistakes (${Math.round(beforeEM / 1000)}k).`);
+    if (beforeEM >= 100000) {
+      const roll = Number(t.expensive?.rollD6 || 0);
+      if (!roll || roll < 1 || roll > 6) warnings.push(`${t.name}: Expensive Mistakes requires a D6 roll (treasury ≥ 100k).`);
+      const kind = pgComputeExpensiveMistakeType(beforeEM, roll);
+      if (kind === 'Minor Incident') {
+        const d3 = Number(t.expensive?.rollD3 || 0);
+        if (!d3 || d3 < 1 || d3 > 3) warnings.push(`${t.name}: Minor Incident requires a D3 roll (enter 1-3).`);
+      }
+      if (kind === 'Catastrophe') {
+        const total = Number(t.expensive?.roll2d6Total || 0);
+        if (!total || total < 2 || total > 12) warnings.push(`${t.name}: Catastrophe requires a 2D6 total (enter 2-12).`);
+      }
+    }
+  }
+
+  return warnings;
+}
+
+function pgRenderBanner({ pg, d }) {
+  return `
+    <div class="panel-styled" style="margin-bottom:1rem; background:#eee;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
+        <div style="flex:1; text-align:center; min-width:0;">
+          <div style="font-family:'Russo One',sans-serif; color:${pg.teams.home.colors.primary}; font-size:1.4rem; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.home.name}</div>
+          <div style="font-size:2rem; font-weight:900;">${d.home.score}</div>
+        </div>
+        <div style="font-weight:900; color:#555; font-size:1.2rem;">VS</div>
+        <div style="flex:1; text-align:center; min-width:0;">
+          <div style="font-family:'Russo One',sans-serif; color:${pg.teams.away.colors.primary}; font-size:1.4rem; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.away.name}</div>
+          <div style="font-size:2rem; font-weight:900;">${d.away.score}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function pgRenderStepLabel({ step, totalSteps, title }) {
+  return `<div style="margin:0.25rem 0 0.75rem 0; color:#444;"><strong>Step ${step}/${totalSteps}:</strong> ${title}</div>`;
+}
+
+function pgRenderTeamPanel({ pg, side, title, inner }) {
+  const t = pg.teams[side];
+  return `
+    <div class="panel-styled" style="box-shadow: 5px 5px 0 ${t.colors.secondary}; border: 1px solid #333;">
+      <div style="font-family:'Russo One',sans-serif; font-size:1.4rem; color:${t.colors.primary}; text-transform:uppercase; line-height:1;">${t.name}</div>
+      <div class="small" style="color:#555; margin-top:0.2rem;">${title}</div>
+      <div style="margin-top:0.75rem;">${inner}</div>
+    </div>
+  `;
+}
+
+function pgRenderMvpPanel({ pg, d, side }) {
+  const t = pg.teams[side];
+  const roster = d[side].roster || [];
+  const nominees = Array.isArray(t.mvp?.nominees) ? t.mvp.nominees : [];
+  const roll = t.mvp?.rollD6 ?? '';
+  const winnerIdx = pgComputeMvpWinnerRosterIdx(side);
+  const winnerName = (winnerIdx == null) ? '—' : `#${roster[winnerIdx]?.number} ${roster[winnerIdx]?.name}`;
+
+  const options = roster.map((p, i) => {
+    const disabled = p.isStar ? 'disabled' : '';
+    const checked = nominees.includes(i) ? 'checked' : '';
+    return `
+      <label style="display:flex; align-items:center; gap:0.5rem; padding:0.25rem 0;">
+        <input type="checkbox" ${checked} ${disabled} onchange="window.pgToggleMvpNominee('${side}', ${i})">
+        <span class="small">${p.isStar ? '(Star) ' : ''}#${p.number} ${p.name}</span>
+      </label>
+    `;
+  }).join('');
+
+  return pgRenderTeamPanel({
+    pg,
+    side,
+    title: `Nominate 6 • Roll D6`,
+    inner: `
+      <div class="form-field">
+        <label>D6 Roll</label>
+        <input type="number" min="1" max="6" value="${roll}" onchange="window.pgSetMvpRoll('${side}', this.value)">
+      </div>
+      <div class="small" style="margin-top:0.5rem; color:#666;">Selected: ${nominees.length}/6 • Winner: <strong>${winnerName}</strong></div>
+      <div class="panel-styled" style="margin-top:0.75rem; max-height:220px; overflow:auto;">${options}</div>
+    `
+  });
+}
+
+function pgRenderAdvEntry({ pg, side, rosterIdx, adv, advIdx, base, cost }) {
+  const kindLabel = adv.kind === 'randomPrimary' ? 'Random Primary'
+    : adv.kind === 'chosenPrimary' ? 'Chosen Primary'
+      : adv.kind === 'chosenSecondary' ? 'Chosen Secondary'
+        : 'Characteristic';
+
+  const def = pgFindSkillDef(adv.skillName);
+  const eliteTag = (!!def?.isElite && adv.skillName) ? `<span class="tag" style="background:#fff3cd; color:#664d03; margin-left:0.25rem;">ELITE +10k</span>` : '';
+
+  const isSecondary = adv.kind === 'chosenSecondary' || adv.skillFrom === 'secondary';
+  const allowedCodes = isSecondary ? (base?.secondary || []) : (base?.primary || []);
+  const catOpts = (allowedCodes || []).map(c => `<option value="${c}" ${String(adv.categoryCode || '') === String(c) ? 'selected' : ''}>${c}</option>`).join('');
+
+  let inner = '';
+  if (adv.kind === 'characteristic') {
+    const roll = adv.rollD8 ?? '';
+    const options = pgCharacteristicOptionsFromD8(roll);
+    const chooseSkill = adv.outcomeType === 'skill';
+    const stat = String(adv.statKey || '');
+    const statOpts = options.map(s => `<option value="${s}" ${stat === s ? 'selected' : ''}>${s.toUpperCase()}</option>`).join('');
+    const skillFrom = adv.skillFrom || 'primary';
+    const allowedForFallback = (skillFrom === 'secondary') ? (base?.secondary || []) : (base?.primary || []);
+    const fallbackCatOpts = (allowedForFallback || []).map(c => `<option value="${c}" ${String(adv.categoryCode || '') === String(c) ? 'selected' : ''}>${c}</option>`).join('');
+
+    inner = `
+      <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:0.5rem;">
+        <div class="form-field">
+          <label>D8 Roll</label>
+          <input type="number" min="1" max="8" value="${roll}" onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'rollD8', (this.value===''?null:parseInt(this.value)))">
+        </div>
+        <div class="form-field">
+          <label>Take</label>
+          <select onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'outcomeType', this.value)">
+            <option value="stat" ${chooseSkill ? '' : 'selected'}>Characteristic</option>
+            <option value="skill" ${chooseSkill ? 'selected' : ''}>Skill instead</option>
+          </select>
+        </div>
+      </div>
+      ${chooseSkill ? `
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:0.5rem; margin-top:0.5rem;">
+          <div class="form-field">
+            <label>Skill From</label>
+            <select onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'skillFrom', this.value)">
+              <option value="primary" ${skillFrom === 'primary' ? 'selected' : ''}>Primary</option>
+              <option value="secondary" ${skillFrom === 'secondary' ? 'selected' : ''}>Secondary</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Category</label>
+            <select onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'categoryCode', this.value)">${fallbackCatOpts}</select>
+          </div>
+        </div>
+        <div class="form-field" style="margin-top:0.5rem;">
+          <label>Skill</label>
+          <input list="skillList" value="${String(adv.skillName || '')}" onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'skillName', this.value)">
+        </div>
+      ` : `
+        <div class="form-field" style="margin-top:0.5rem;">
+          <label>Characteristic (${options.map(o => o.toUpperCase()).join('/') || '—'})</label>
+          <select onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'statKey', this.value)">
+            <option value="">Select…</option>
+            ${statOpts}
+          </select>
+        </div>
+      `}
+    `;
+  } else {
+    const categoryCode = String(adv.categoryCode || '');
+    const catName = SKILL_CAT_BY_CODE[categoryCode] || '';
+    inner = `
+      <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:0.5rem;">
+        <div class="form-field">
+          <label>Category</label>
+          <select onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'categoryCode', this.value)">${catOpts}</select>
+        </div>
+        <div class="form-field">
+          <label>Skill (${catName || '—'})</label>
+          <input list="skillList" value="${String(adv.skillName || '')}" onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'skillName', this.value)">
+        </div>
+      </div>
+      ${adv.kind === 'randomPrimary' ? `<div class="small" style="margin-top:0.4rem; color:#666;">Random Primary: roll 2D6 twice on the Skill Table and pick one (enter chosen skill).</div>` : ''}
+    `;
+  }
+
+  return `
+    <div class="panel-styled" style="margin-top:0.5rem; padding:0.75rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+        <div style="font-weight:900; color:#333;">${kindLabel} <span class="small" style="color:#666;">(${Number(cost) || 0} SPP)</span>${eliteTag}</div>
+        <button class="secondary-btn" onclick="window.pgRemoveAdvancement('${side}', ${rosterIdx}, ${advIdx})">Remove</button>
+      </div>
+      <div style="margin-top:0.5rem;">${inner}</div>
+    </div>
+  `;
+}
+
+function pgRenderPlayerCard({ pg, d, side, rosterIdx }) {
+  const r = d?.[side]?.roster?.[rosterIdx];
+  if (!r) return '';
+  const key = pgGetPlayerKey(side, rosterIdx);
+  const base = key ? pg.players?.[key] : null;
+  const isStar = !!r.isStar;
+  const isJourneyman = !!r.isJourneyman;
+
+  const baseSpp = Number(base?.baseSpp || 0);
+  const gain = pgComputeSppGain(side, rosterIdx);
+  const spend = (key && !isStar) ? pgComputeSppSpend(key) : 0;
+  const finalSpp = baseSpp + gain - spend;
+
+  const tags = [
+    isStar ? `<span class="tag" style="background:#f8d7da; color:#842029;">STAR</span>` : '',
+    isJourneyman ? `<span class="tag" style="background:#e2e3e5; color:#41464b;">JOURNEYMAN</span>` : '',
+    (pgComputeMvpWinnerRosterIdx(side) === rosterIdx) ? `<span class="tag" style="background:#d1e7dd; color:#0f5132;">MVP</span>` : ''
+  ].filter(Boolean).join(' ');
+
+  const skills = (base?.baseSkills || r.skills || []).filter(Boolean);
+  const skillTags = skills.length
+    ? skills.map(s => `<span class="skill-tag" onclick="event.stopPropagation(); window.showSkill('${String(s).replace(/'/g, \"\\\\'\")}')">${s}</span>`).join(' ')
+    : `<span class="small" style="color:#777; font-style:italic;">No skills</span>`;
+
+  const advs = (key && !isStar) ? pgGetAdvListForPlayerKey(key) : [];
+  const costs = (key && !isStar) ? pgComputeAdvCostsSpp(key) : [];
+
+  const addBtns = isStar ? '' : `
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem;">
+      <button onclick="window.pgAddAdvancement('${side}', ${rosterIdx}, 'randomPrimary')">+ Random Primary</button>
+      <button onclick="window.pgAddAdvancement('${side}', ${rosterIdx}, 'chosenPrimary')">+ Chosen Primary</button>
+      <button onclick="window.pgAddAdvancement('${side}', ${rosterIdx}, 'chosenSecondary')">+ Chosen Secondary</button>
+      <button onclick="window.pgAddAdvancement('${side}', ${rosterIdx}, 'characteristic')">+ Characteristic</button>
+    </div>
+  `;
+
+  return `
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <div style="display:flex; justify-content:space-between; gap:0.75rem; align-items:flex-start;">
+        <div style="min-width:0;">
+          <div style="font-weight:900; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">#${r.number} ${r.name}</div>
+          <div class="small" style="color:#666; margin-top:0.15rem;">${r.position}</div>
+          <div style="margin-top:0.35rem;">${tags}</div>
+        </div>
+        <div style="text-align:right; min-width:12rem;">
+          <div class="small" style="color:#666;">SPP</div>
+          <div style="font-weight:900; color:#222;">${baseSpp} + ${gain} - ${spend} = ${finalSpp}</div>
+        </div>
+      </div>
+
+      <div style="margin-top:0.6rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:0.35rem;">
+        <div class="stat-box"><span class="stat-label">TD</span><span class="stat-value">${r.live?.td || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'td', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'td', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">CAS*</span><span class="stat-value">${r.live?.cas || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'cas', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'cas', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-value">${r.live?.int || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'int', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'int', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">COMP</span><span class="stat-value">${r.live?.comp || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'comp', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'comp', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">TTM T</span><span class="stat-value">${r.live?.ttmThrow || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmThrow', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmThrow', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">TTM L</span><span class="stat-value">${r.live?.ttmLand || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmLand', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmLand', 1)">+</button></div></div>
+      </div>
+      <div class="small" style="margin-top:0.35rem; color:#666;">* CAS should count only SPP-eligible casualties.</div>
+
+      <div style="margin-top:0.5rem;">${skillTags}</div>
+      ${addBtns}
+      ${(advs || []).map((adv, advIdx) => pgRenderAdvEntry({ pg, side, rosterIdx, adv, advIdx, base, cost: costs[advIdx] })).join('')}
+    </div>
+  `;
+}
+
+function pgRenderInjuriesList({ pg, d }) {
+  if (!pg.injuries || pg.injuries.length === 0) return `<div class="small" style="color:#666;">No injuries marked in match.</div>`;
+  return pg.injuries.map((inj, i) => {
+    const r = d?.[inj.side]?.roster?.[inj.rosterIdx];
+    if (!r) return '';
+    const t = pg.teams[inj.side];
+    const isLasting = String(inj.outcome || '').startsWith('-');
+    return `
+      <div class="panel-styled" style="margin-bottom:0.5rem; display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+        <span class="tag" style="background:${t.colors.primary}; color:${getContrastColor(t.colors.primary)};">${t.name}</span>
+        <strong>#${r.number} ${r.name}</strong>
+        <select onchange="window.pgSetInjuryOutcome(${i}, this.value)">
+          <option value="bh" ${inj.outcome === 'bh' ? 'selected' : ''}>Badly Hurt (Recover)</option>
+          <option value="mng" ${inj.outcome === 'mng' ? 'selected' : ''}>Miss Next Game</option>
+          <option value="-ma" ${inj.outcome === '-ma' ? 'selected' : ''}>-1 MA</option>
+          <option value="-st" ${inj.outcome === '-st' ? 'selected' : ''}>-1 ST</option>
+          <option value="-ag" ${inj.outcome === '-ag' ? 'selected' : ''}>-1 AG</option>
+          <option value="-pa" ${inj.outcome === '-pa' ? 'selected' : ''}>-1 PA</option>
+          <option value="-av" ${inj.outcome === '-av' ? 'selected' : ''}>-1 AV</option>
+          <option value="dead" ${inj.outcome === 'dead' ? 'selected' : ''} style="color:red; font-weight:bold;">DEAD</option>
+        </select>
+        <label class="small" style="display:flex; align-items:center; gap:0.35rem; margin-left:auto;">
+          <input type="checkbox" ${inj.tempRetire ? 'checked' : ''} ${isLasting ? '' : 'disabled'} onchange="window.pgToggleTempRetire(${i}, this.checked)">
+          Temporarily Retire (TR)
+        </label>
+      </div>
+    `;
+  }).join('');
+}
+
+function pgRenderJourneymenList({ pg, d, side }) {
+  const roster = d?.[side]?.roster || [];
+  const cards = roster
+    .map((p, idx) => ({ p, idx }))
+    .filter(x => x.p.isJourneyman)
+    .map(({ p, idx }) => {
+      const key = pgGetPlayerKey(side, idx);
+      const hire = pg.hireByPlayer?.[key] || { hire: false, name: p.name || '', number: p.number || '' };
+      return `
+        <div class="panel-styled" style="margin-bottom:0.5rem;">
+          <label style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="checkbox" ${hire.hire ? 'checked' : ''} onchange="window.pgToggleHireJourneyman('${side}', ${idx}, this.checked)">
+            <strong>#${p.number} ${p.name}</strong> <span class="small" style="color:#666;">(${p.position})</span>
+          </label>
+          ${hire.hire ? `
+            <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:0.5rem; margin-top:0.5rem;">
+              <div class="form-field">
+                <label>Name</label>
+                <input value="${String(hire.name || '')}" onchange="window.pgSetHireJourneymanField('${side}', ${idx}, 'name', this.value)">
+              </div>
+              <div class="form-field">
+                <label>Number</label>
+                <input type="number" value="${String(hire.number || '')}" onchange="window.pgSetHireJourneymanField('${side}', ${idx}, 'number', parseInt(this.value))">
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+
+  if (!cards) return `<div class="small" style="color:#666;">No journeymen played for this team.</div>`;
+  return cards;
+}
+
+function pgRenderStaffPanel({ pg, side }) {
+  const t = pg.teams[side];
+  const base = t.staffBase;
+  const desired = t.staffDesired;
+  const staffCosts = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
+  const coachDelta = (Number(desired.assistantCoaches || 0) - Number(base.assistantCoaches || 0)) * (Number(staffCosts.assistantCoach) || 0);
+  const cheerDelta = (Number(desired.cheerleaders || 0) - Number(base.cheerleaders || 0)) * (Number(staffCosts.cheerleader) || 0);
+  const apoDelta = ((!!desired.apothecary) === (!!base.apothecary)) ? 0 : ((!!desired.apothecary) ? Number(staffCosts.apothecary) || 0 : -(Number(staffCosts.apothecary) || 0));
+  const race = state.gameData?.races?.find(r => r.name === base.race);
+  const rrCost = Number(race?.rerollCost || 50000);
+  const rrDelta = Math.max(0, Number(desired.addRerolls || 0)) * rrCost * 2;
+  const totalSpend = coachDelta + cheerDelta + apoDelta + rrDelta;
+  const treasuryAfter = pgComputeTreasuryBeforeExpensiveMistakesGp(side);
+
+  return pgRenderTeamPanel({
+    pg,
+    side,
+    title: `Treasury tracking`,
+    inner: `
+      <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:0.75rem;">
+        <div class="form-field">
+          <label>Assistant Coaches</label>
+          <input type="number" min="0" value="${desired.assistantCoaches}" onchange="window.pgSetStaffField('${side}', 'assistantCoaches', this.value)">
+          <div class="small" style="color:#666;">Was ${base.assistantCoaches}</div>
+        </div>
+        <div class="form-field">
+          <label>Cheerleaders</label>
+          <input type="number" min="0" value="${desired.cheerleaders}" onchange="window.pgSetStaffField('${side}', 'cheerleaders', this.value)">
+          <div class="small" style="color:#666;">Was ${base.cheerleaders}</div>
+        </div>
+        <div class="form-field">
+          <label>Apothecary</label>
+          <select onchange="window.pgSetStaffField('${side}', 'apothecary', this.value==='true')">
+            <option value="false" ${desired.apothecary ? '' : 'selected'}>No</option>
+            <option value="true" ${desired.apothecary ? 'selected' : ''}>Yes</option>
+          </select>
+          <div class="small" style="color:#666;">Was ${base.apothecary ? 'Yes' : 'No'}</div>
+        </div>
+        <div class="form-field">
+          <label>Add Team Re-rolls <span class="small" style="color:#666;">(double cost)</span></label>
+          <input type="number" min="0" value="${desired.addRerolls}" onchange="window.pgSetStaffField('${side}', 'addRerolls', this.value)">
+          <div class="small" style="color:#666;">Reroll cost: ${Math.round(rrCost / 1000)}k</div>
+        </div>
+      </div>
+      <div class="form-field" style="margin-top:0.75rem;">
+        <label>Other treasury adjustments (k) <span class="small" style="color:#666;">(negative = spend)</span></label>
+        <input type="number" value="${Math.round(Number(t.otherTreasuryDeltaGp || 0) / 1000)}" onchange="window.pgSetOtherTreasuryDeltaK('${side}', this.value)">
+      </div>
+      <div style="margin-top:0.5rem; font-weight:900; color:#222;">Treasury before Expensive Mistakes: ${Math.round(treasuryAfter / 1000)}k</div>
+      <div class="small" style="color:#666;">Staff/RR delta spend: ${Math.round(totalSpend / 1000)}k (positive = spend)</div>
+    `
+  });
+}
+
+function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
+  let html = pgRenderBanner({ pg, d });
+
+  if (step === 1) {
+    html += pgRenderStepLabel({ step, totalSteps, title: 'Record outcome & collect winnings' });
+    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">BB2025: Winnings = ((Fan Attendance/2) + TD + (no stalling? +1)) × 10,000gp. Fan Attendance = both teams’ Dedicated Fans.</div>`;
+
+    const renderWinningsPanel = (side) => {
+      const t = pg.teams[side];
+      const opp = pg.teams[side === 'home' ? 'away' : 'home'];
+      const myTd = Number(d[side].score || 0);
+      const fa = Number(t.dedicatedFansBefore || 1) + Number(opp.dedicatedFansBefore || 1);
+      const autoK = Math.round((Number(t.winningsGpAuto || 0)) / 1000);
+      const finalK = Math.round(pgGetTeamWinningsGp(side) / 1000);
+      const overrideK = (t.winningsGpOverride == null) ? '' : Math.round(Number(t.winningsGpOverride || 0) / 1000);
+      return pgRenderTeamPanel({
+        pg,
+        side,
+        title: `${t.result.toUpperCase()} • TD ${myTd} • Fan Attendance ${fa}`,
+        inner: `
+          <div class="form-field">
+            <label><input type="checkbox" ${t.noStallingBonus ? 'checked' : ''} onchange="window.pgSetNoStalling('${side}', this.checked)"> No stalling (+1)</label>
+          </div>
+          <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem; margin-top:0.5rem;">
+            <div class="form-field">
+              <label>Auto Winnings</label>
+              <div style="font-weight:900; font-size:1.1rem;">${autoK}k</div>
+            </div>
+            <div class="form-field">
+              <label>Override (k) <span class="small" style="color:#666;">(blank = auto)</span></label>
+              <input type="number" value="${overrideK}" onchange="window.pgSetWinningsOverrideK('${side}', this.value)">
+            </div>
+          </div>
+          <div style="margin-top:0.5rem; font-weight:900;">Final Winnings: ${finalK}k</div>
+        `
+      });
     };
-    const getInjuries = (roster, side) => roster.map((p, i) => ({ ...p, originalIdx: i, side })).filter(p => p.live.injured);
-    state.postGame.injuries = [...getInjuries(d.home.roster, 'home'), ...getInjuries(d.away.roster, 'away')];
-    renderPostGameStep();
-    els.postGame.el.classList.remove('hidden');
+
+    html += `<div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">${renderWinningsPanel('home')}${renderWinningsPanel('away')}</div>`;
+    return html;
+  }
+
+  if (step === 2) {
+    html += pgRenderStepLabel({ step, totalSteps, title: 'Update Dedicated Fans' });
+    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">BB2025: Win → roll D6; if roll ≥ DF then DF+1. Loss → roll D6; if roll &lt; DF then DF-1. Draw → no change (DF stays 1–7).</div>`;
+
+    const renderDfPanel = (side) => {
+      const t = pg.teams[side];
+      const rollEnabled = t.result !== 'draw';
+      const deltaAuto = computeBb2025DedicatedFansDelta({ result: t.result, dedicatedFans: t.dedicatedFansBefore, rollD6: t.dedicatedFansRollD6 });
+      const deltaFinal = pgGetTeamDedicatedFansDelta(side);
+      const newDf = Math.max(1, Math.min(7, Number(t.dedicatedFansBefore || 1) + deltaFinal));
+      return pgRenderTeamPanel({
+        pg,
+        side,
+        title: `Result: ${t.result.toUpperCase()} • DF ${t.dedicatedFansBefore}`,
+        inner: `
+          <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem;">
+            <div class="form-field">
+              <label>D6 Roll</label>
+              <input type="number" min="1" max="6" value="${t.dedicatedFansRollD6 ?? ''}" ${rollEnabled ? '' : 'disabled'} onchange="window.pgSetDedicatedFansRoll('${side}', this.value)">
+              ${!rollEnabled ? '<div class="small" style="color:#777;">Draw: no roll needed.</div>' : ''}
+            </div>
+            <div class="form-field">
+              <label>Override ΔDF <span class="small" style="color:#666;">(blank = auto)</span></label>
+              <select onchange="window.pgSetDedicatedFansDeltaOverride('${side}', this.value)">
+                <option value="" ${(t.dedicatedFansDeltaOverride == null || t.dedicatedFansDeltaOverride === '') ? 'selected' : ''}>Auto (${deltaAuto >= 0 ? '+' : ''}${deltaAuto})</option>
+                <option value="1" ${Number(t.dedicatedFansDeltaOverride) === 1 ? 'selected' : ''}>+1</option>
+                <option value="0" ${Number(t.dedicatedFansDeltaOverride) === 0 ? 'selected' : ''}>0</option>
+                <option value="-1" ${Number(t.dedicatedFansDeltaOverride) === -1 ? 'selected' : ''}>-1</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:0.5rem; font-weight:900;">New Dedicated Fans: ${newDf}</div>
+        `
+      });
+    };
+
+    html += `<div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">${renderDfPanel('home')}${renderDfPanel('away')}</div>`;
+    return html;
+  }
+
+  if (step === 3) {
+    html += pgRenderStepLabel({ step, totalSteps, title: 'Player advancement (SPP, MVP, spending)' });
+    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">BB2025 MVP: nominate 6 players, roll D6 to select one (1–6). Stars don’t earn SPP; Journeymen do.</div>`;
+    html += `<div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">${pgRenderMvpPanel({ pg, d, side: 'home' })}${pgRenderMvpPanel({ pg, d, side: 'away' })}</div>`;
+    html += `
+      <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:1rem; margin-top:1rem;">
+        <div>
+          <div style="font-family:'Russo One',sans-serif; color:${pg.teams.home.colors.primary}; text-transform:uppercase; margin:0.25rem 0;">${d.home.name} Players</div>
+          ${(d.home.roster || []).map((_, i) => pgRenderPlayerCard({ pg, d, side: 'home', rosterIdx: i })).join('')}
+        </div>
+        <div>
+          <div style="font-family:'Russo One',sans-serif; color:${pg.teams.away.colors.primary}; text-transform:uppercase; margin:0.25rem 0;">${d.away.name} Players</div>
+          ${(d.away.roster || []).map((_, i) => pgRenderPlayerCard({ pg, d, side: 'away', rosterIdx: i })).join('')}
+        </div>
+      </div>
+    `;
+    return html;
+  }
+
+  if (step === 4) {
+    html += pgRenderStepLabel({ step, totalSteps, title: 'Hiring, firing & temporarily retiring' });
+    html += `
+      <div style="display:grid; grid-template-columns: 1fr; gap:1rem;">
+        <div>
+          <div class="small" style="color:#666; margin-bottom:0.5rem;">Mark lasting injuries and optionally set Temporarily Retiring (TR) for season-long recovery.</div>
+          ${pgRenderInjuriesList({ pg, d })}
+        </div>
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">
+          <div>
+            <div style="font-family:'Russo One',sans-serif; color:${pg.teams.home.colors.primary}; text-transform:uppercase; margin-bottom:0.35rem;">${d.home.name} Journeymen</div>
+            ${pgRenderJourneymenList({ pg, d, side: 'home' })}
+          </div>
+          <div>
+            <div style="font-family:'Russo One',sans-serif; color:${pg.teams.away.colors.primary}; text-transform:uppercase; margin-bottom:0.35rem;">${d.away.name} Journeymen</div>
+            ${pgRenderJourneymenList({ pg, d, side: 'away' })}
+          </div>
+        </div>
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">
+          ${pgRenderStaffPanel({ pg, side: 'home' })}
+          ${pgRenderStaffPanel({ pg, side: 'away' })}
+        </div>
+      </div>
+    `;
+    return html;
+  }
+
+  if (step === 5) {
+    html += pgRenderStepLabel({ step, totalSteps, title: 'Expensive mistakes' });
+    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">BB2025: If treasury ≥ 100k at this step, roll D6 and apply the Expensive Mistakes table.</div>`;
+
+    const renderEM = (side) => {
+      const t = pg.teams[side];
+      const treasury = pgComputeTreasuryBeforeExpensiveMistakesGp(side);
+      const required = treasury >= 100000;
+      const roll = t.expensive?.rollD6 ?? '';
+      const kind = pgComputeExpensiveMistakeType(treasury, t.expensive?.rollD6);
+      const { deltaGp, needs } = pgComputeExpensiveMistakesDeltaGp({
+        treasuryGp: treasury,
+        rollD6: t.expensive?.rollD6,
+        rollD3: t.expensive?.rollD3,
+        roll2d6Total: t.expensive?.roll2d6Total
+      });
+      const after = treasury + deltaGp;
+
+      return pgRenderTeamPanel({
+        pg,
+        side,
+        title: `Treasury ${Math.round(treasury / 1000)}k`,
+        inner: required ? `
+          <div class="form-field">
+            <label>D6 Roll</label>
+            <input type="number" min="1" max="6" value="${roll}" onchange="window.pgSetExpensiveField('${side}', 'rollD6', this.value)">
+          </div>
+          <div style="margin-top:0.5rem; font-weight:900;">Result: ${kind || '—'}</div>
+          ${kind === 'Minor Incident' ? `
+            <div class="form-field" style="margin-top:0.5rem;">
+              <label>D3 Roll (1-3)</label>
+              <input type="number" min="1" max="3" value="${t.expensive?.rollD3 ?? ''}" onchange="window.pgSetExpensiveField('${side}', 'rollD3', this.value)">
+            </div>
+          ` : ''}
+          ${kind === 'Catastrophe' ? `
+            <div class="form-field" style="margin-top:0.5rem;">
+              <label>2D6 Total (2-12)</label>
+              <input type="number" min="2" max="12" value="${t.expensive?.roll2d6Total ?? ''}" onchange="window.pgSetExpensiveField('${side}', 'roll2d6Total', this.value)">
+            </div>
+          ` : ''}
+          ${(needs && kind) ? `<div class="small" style="color:#b02a37; margin-top:0.5rem;">Needs: ${needs === 'd3' ? 'D3 roll' : '2D6 total'}.</div>` : ''}
+          <div style="margin-top:0.5rem; font-weight:900;">Treasury after: ${Math.round(after / 1000)}k</div>
+        ` : `<div class="small" style="color:#666;">Treasury under 100k: no Expensive Mistakes roll required.</div>`
+      });
+    };
+
+    html += `<div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">${renderEM('home')}${renderEM('away')}</div>`;
+    return html;
+  }
+
+  html += pgRenderStepLabel({ step, totalSteps, title: 'Prepare for next fixture (review & commit)' });
+
+  const warnings = pgValidate();
+
+  const renderSideSummary = (side) => {
+    const t = pg.teams[side];
+    const winningsK = Math.round(pgGetTeamWinningsGp(side) / 1000);
+    const dfDelta = pgGetTeamDedicatedFansDelta(side);
+    const dfAfter = Math.max(1, Math.min(7, Number(t.dedicatedFansBefore || 1) + dfDelta));
+
+    const beforeEM = pgComputeTreasuryBeforeExpensiveMistakesGp(side);
+    const em = pgComputeExpensiveMistakesDeltaGp({
+      treasuryGp: beforeEM,
+      rollD6: t.expensive?.rollD6,
+      rollD3: t.expensive?.rollD3,
+      roll2d6Total: t.expensive?.roll2d6Total
+    });
+    const afterEM = beforeEM + Number(em.deltaGp || 0);
+
+    const mvpIdx = pgComputeMvpWinnerRosterIdx(side);
+    const mvpName = (mvpIdx == null) ? 'None' : (d[side].roster?.[mvpIdx]?.name || 'None');
+
+    const totalSppSpent = (d[side].roster || []).reduce((sum, p, i) => {
+      const key = pgGetPlayerKey(side, i);
+      if (!key) return sum;
+      return sum + (p.isStar ? 0 : pgComputeSppSpend(key));
+    }, 0);
+
+    return pgRenderTeamPanel({
+      pg,
+      side,
+      title: `Review`,
+      inner: `
+        <div><strong>MVP:</strong> ${mvpName}</div>
+        <div><strong>Winnings:</strong> ${winningsK}k</div>
+        <div><strong>Dedicated Fans:</strong> ${t.dedicatedFansBefore} → ${dfAfter} (${dfDelta >= 0 ? '+' : ''}${dfDelta})</div>
+        <div style="margin-top:0.5rem;"><strong>Treasury before Expensive Mistakes:</strong> ${Math.round(beforeEM / 1000)}k</div>
+        <div><strong>Expensive Mistakes:</strong> ${em.kind || (beforeEM >= 100000 ? '—' : 'Not required')}</div>
+        <div><strong>Treasury after Expensive Mistakes:</strong> ${Math.round(afterEM / 1000)}k</div>
+        <div style="margin-top:0.5rem;"><strong>Total SPP spent:</strong> ${totalSppSpent}</div>
+      `
+    });
+  };
+
+  html += `<div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">${renderSideSummary('home')}${renderSideSummary('away')}</div>`;
+
+  html += warnings.length
+    ? `<div class="panel-styled" style="margin-top:1rem; border:1px solid #b02a37;">
+        <div style="font-weight:900; color:#b02a37; margin-bottom:0.5rem;">Warnings (warn-and-allow)</div>
+        <ul style="margin:0; padding-left:1.2rem;">${warnings.map(w => `<li class="small">${w}</li>`).join('')}</ul>
+      </div>`
+    : `<div class="panel-styled" style="margin-top:1rem; border:1px solid #2a7f2a;">
+        <div style="font-weight:900; color:#2a7f2a;">No warnings detected.</div>
+      </div>`;
+
+  html += `<div class="small" style="margin-top:0.75rem; color:#666;">Click <strong>Commit & Finish</strong> to apply results to team files and save the match report.</div>`;
+  return html;
+}
+
+export async function openPostGameModal() {
+  if (state.activeMatchPollInterval) {
+    clearInterval(state.activeMatchPollInterval);
+    state.activeMatchPollInterval = null;
+  }
+  const d = state.activeMatchData;
+  if (!d) return;
+
+  const [homeT, awayT] = await Promise.all([
+    apiGet(PATHS.team(d.leagueId, d.home.id)),
+    apiGet(PATHS.team(d.leagueId, d.away.id))
+  ]);
+  if (!homeT || !awayT) throw new Error("Could not load team files for post-game.");
+
+  const initTeamState = (side, teamFile, oppFile) => {
+    const result = pgGetResultForSide(side);
+    const myTd = Number(d[side].score || 0);
+    const winningsGpAuto = computeBb2025WinningsGp({
+      myTouchdowns: myTd,
+      myDedicatedFans: teamFile.dedicatedFans || 1,
+      oppDedicatedFans: oppFile.dedicatedFans || 1,
+      noStallingBonus: true
+    });
+    return {
+      teamId: teamFile.id,
+      name: teamFile.name,
+      colors: d[side].colors || teamFile.colors || { primary: '#222', secondary: '#c5a059' },
+      race: teamFile.race,
+      result,
+      dedicatedFansBefore: teamFile.dedicatedFans || 1,
+      treasuryBeforeGp: teamFile.treasury || 0,
+      noStallingBonus: true,
+      winningsGpAuto,
+      winningsGpOverride: null,
+      dedicatedFansRollD6: null,
+      dedicatedFansDeltaOverride: null,
+      mvp: { nominees: [], rollD6: null },
+      staffBase: {
+        assistantCoaches: teamFile.assistantCoaches || 0,
+        cheerleaders: teamFile.cheerleaders || 0,
+        apothecary: !!teamFile.apothecary,
+        rerolls: teamFile.rerolls || 0,
+        race: teamFile.race
+      },
+      staffDesired: {
+        assistantCoaches: teamFile.assistantCoaches || 0,
+        cheerleaders: teamFile.cheerleaders || 0,
+        apothecary: !!teamFile.apothecary,
+        addRerolls: 0
+      },
+      otherTreasuryDeltaGp: 0,
+      expensive: { rollD6: null, rollD3: null, roll2d6Total: null }
+    };
+  };
+
+  const players = {};
+  const initPlayers = (side, teamFile) => {
+    (d[side].roster || []).forEach((r, rosterIdx) => {
+      const key = pgGetPlayerKey(side, rosterIdx);
+      if (!key) return;
+      const basePlayer = r.playerId ? (teamFile.players || []).find(p => p.id === r.playerId) : null;
+      players[key] = {
+        key,
+        side,
+        rosterIdx,
+        playerId: r.playerId || null,
+        isStar: !!r.isStar,
+        isJourneyman: !!r.isJourneyman,
+        baseSpp: Number(basePlayer?.spp || 0),
+        advancementCount: getAdvancementCount(basePlayer),
+        baseSkills: Array.isArray(basePlayer?.skills) ? [...basePlayer.skills] : (Array.isArray(r.skills) ? [...r.skills] : []),
+        baseCost: Number(basePlayer?.cost ?? r.cost ?? 0),
+        ma: basePlayer?.ma ?? r.ma,
+        st: basePlayer?.st ?? r.st,
+        ag: basePlayer?.ag ?? r.ag,
+        pa: basePlayer?.pa ?? r.pa,
+        av: basePlayer?.av ?? r.av,
+        primary: (basePlayer?.primary ?? r.primary ?? []),
+        secondary: (basePlayer?.secondary ?? r.secondary ?? [])
+      };
+    });
+  };
+
+  initPlayers('home', homeT);
+  initPlayers('away', awayT);
+
+  const injuries = [];
+  const addInjuries = (side) => {
+    (d[side].roster || []).forEach((p, idx) => {
+      if (p.live?.injured) injuries.push({ side, rosterIdx: idx, outcome: 'bh', tempRetire: false });
+    });
+  };
+  addInjuries('home');
+  addInjuries('away');
+
+  const hireByPlayer = {};
+  const initHires = (side) => {
+    (d[side].roster || []).forEach((p, idx) => {
+      if (!p.isJourneyman) return;
+      const key = pgGetPlayerKey(side, idx);
+      if (!key) return;
+      hireByPlayer[key] = { hire: false, name: p.name || `Journeyman ${idx + 1}`, number: p.number || '', position: p.position };
+    });
+  };
+  initHires('home');
+  initHires('away');
+
+  state.postGame = {
+    step: 1,
+    teamFiles: { home: homeT, away: awayT },
+    teams: {
+      home: initTeamState('home', homeT, awayT),
+      away: initTeamState('away', awayT, homeT)
+    },
+    players,
+    advByPlayer: {},
+    injuries,
+    hireByPlayer
+  };
+
+  renderPostGameStep();
+  els.postGame.el.classList.remove('hidden');
 }
 
 export function closePostGameModal() {
@@ -1109,7 +2114,169 @@ export function manualAdjustStat(side, playerIdx, stat, delta) {
     }
 }
 
-export function renderPostGameStep() {
+export function postGameRerender() {
+  renderPostGameStep();
+}
+
+export function pgSetNoStalling(side, checked) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return;
+  t.noStallingBonus = !!checked;
+  const opp = pg.teams?.[side === 'home' ? 'away' : 'home'];
+  const d = state.activeMatchData;
+  const myTd = Number(d?.[side]?.score || 0);
+  t.winningsGpAuto = computeBb2025WinningsGp({
+    myTouchdowns: myTd,
+    myDedicatedFans: t.dedicatedFansBefore,
+    oppDedicatedFans: opp?.dedicatedFansBefore || 1,
+    noStallingBonus: t.noStallingBonus
+  });
+  renderPostGameStep();
+}
+
+export function pgSetWinningsOverrideK(side, valueK) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return;
+  const v = String(valueK ?? '').trim();
+  if (v === '') t.winningsGpOverride = null;
+  else t.winningsGpOverride = (Number(v) || 0) * 1000;
+  renderPostGameStep();
+}
+
+export function pgSetDedicatedFansRoll(side, roll) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return;
+  t.dedicatedFansRollD6 = (roll === '' ? null : Number(roll));
+  renderPostGameStep();
+}
+
+export function pgSetDedicatedFansDeltaOverride(side, delta) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return;
+  t.dedicatedFansDeltaOverride = (delta === '' ? null : Number(delta));
+  renderPostGameStep();
+}
+
+export function pgToggleMvpNominee(side, rosterIdx) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return;
+  const r = pgGetRosterPlayer(side, rosterIdx);
+  if (!r || r.isStar) return;
+  t.mvp.nominees = Array.isArray(t.mvp.nominees) ? t.mvp.nominees : [];
+  const idx = t.mvp.nominees.indexOf(rosterIdx);
+  if (idx >= 0) t.mvp.nominees.splice(idx, 1);
+  else t.mvp.nominees.push(rosterIdx);
+  renderPostGameStep();
+}
+
+export function pgSetMvpRoll(side, roll) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return;
+  t.mvp.rollD6 = (roll === '' ? null : Number(roll));
+  renderPostGameStep();
+}
+
+export function pgAddAdvancement(side, rosterIdx, kind) {
+  const key = pgGetPlayerKey(side, rosterIdx);
+  if (!key) return;
+  const base = state.postGame?.players?.[key];
+  if (!base || base.isStar) return;
+  const list = pgGetAdvListForPlayerKey(key);
+  const isSecondary = kind === 'chosenSecondary';
+  const allowed = isSecondary ? (base.secondary || []) : (base.primary || []);
+  const defaultCat = Array.isArray(allowed) && allowed.length ? allowed[0] : '';
+  const adv = { kind, categoryCode: defaultCat, skillName: '', rollD8: null, statKey: '', outcomeType: (kind === 'characteristic' ? 'stat' : 'skill'), skillFrom: isSecondary ? 'secondary' : 'primary' };
+  list.push(adv);
+  renderPostGameStep();
+}
+
+export function pgRemoveAdvancement(side, rosterIdx, advIdx) {
+  const key = pgGetPlayerKey(side, rosterIdx);
+  if (!key) return;
+  const list = pgGetAdvListForPlayerKey(key);
+  if (advIdx < 0 || advIdx >= list.length) return;
+  list.splice(advIdx, 1);
+  renderPostGameStep();
+}
+
+export function pgUpdateAdvancement(side, rosterIdx, advIdx, field, value) {
+  const key = pgGetPlayerKey(side, rosterIdx);
+  if (!key) return;
+  const list = pgGetAdvListForPlayerKey(key);
+  const adv = list[advIdx];
+  if (!adv) return;
+  adv[field] = value;
+  renderPostGameStep();
+}
+
+export function pgSetInjuryOutcome(injuryIdx, outcome) {
+  const pg = state.postGame;
+  if (!pg?.injuries?.[injuryIdx]) return;
+  pg.injuries[injuryIdx].outcome = outcome;
+  renderPostGameStep();
+}
+
+export function pgToggleTempRetire(injuryIdx, checked) {
+  const pg = state.postGame;
+  if (!pg?.injuries?.[injuryIdx]) return;
+  pg.injuries[injuryIdx].tempRetire = !!checked;
+  renderPostGameStep();
+}
+
+export function pgSetStaffField(side, field, value) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t?.staffDesired) return;
+  if (field === 'apothecary') t.staffDesired.apothecary = !!value;
+  else t.staffDesired[field] = Number(value) || 0;
+  renderPostGameStep();
+}
+
+export function pgSetOtherTreasuryDeltaK(side, valueK) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return;
+  const v = String(valueK ?? '').trim();
+  t.otherTreasuryDeltaGp = (v === '' ? 0 : (Number(v) || 0) * 1000);
+  renderPostGameStep();
+}
+
+export function pgToggleHireJourneyman(side, rosterIdx, checked) {
+  const pg = state.postGame;
+  const key = pgGetPlayerKey(side, rosterIdx);
+  if (!key) return;
+  pg.hireByPlayer = pg.hireByPlayer || {};
+  pg.hireByPlayer[key] = pg.hireByPlayer[key] || {};
+  pg.hireByPlayer[key].hire = !!checked;
+  renderPostGameStep();
+}
+
+export function pgSetHireJourneymanField(side, rosterIdx, field, value) {
+  const pg = state.postGame;
+  const key = pgGetPlayerKey(side, rosterIdx);
+  if (!key) return;
+  pg.hireByPlayer = pg.hireByPlayer || {};
+  pg.hireByPlayer[key] = pg.hireByPlayer[key] || {};
+  pg.hireByPlayer[key][field] = value;
+  renderPostGameStep();
+}
+
+export function pgSetExpensiveField(side, field, value) {
+  const pg = state.postGame;
+  const t = pg?.teams?.[side];
+  if (!t) return;
+  t.expensive = t.expensive || {};
+  t.expensive[field] = (value === '' ? null : Number(value));
+  renderPostGameStep();
+}
+
+function renderPostGameStepLegacy() {
     const pg = state.postGame;
     const d = state.activeMatchData;
     const body = els.postGame.body;
@@ -1219,6 +2386,39 @@ export function renderPostGameStep() {
     };
 }
 
+export function renderPostGameStep() {
+  const pg = state.postGame;
+  const d = state.activeMatchData;
+  if (!pg || !d) return;
+
+  const body = els.postGame.body;
+  const headerEl = els.postGame.el.querySelector('.modal-header');
+  headerEl.innerHTML = `<h3>Post-Game Sequence</h3><button class="close-btn" onclick="window.closePostGameModal()">A-</button>`;
+
+  const step = Number(pg.step || 1);
+  const totalSteps = 6;
+
+  body.innerHTML = pgBuildPostGameHtml({ pg, d, step, totalSteps });
+
+  els.postGame.backBtn.style.display = (step === 1) ? 'none' : 'inline-block';
+  els.postGame.nextBtn.textContent = (step === totalSteps) ? 'Commit & Finish' : 'Next';
+
+  const newNext = els.postGame.nextBtn.cloneNode(true);
+  const newBack = els.postGame.backBtn.cloneNode(true);
+  els.postGame.nextBtn.parentNode.replaceChild(newNext, els.postGame.nextBtn);
+  els.postGame.backBtn.parentNode.replaceChild(newBack, els.postGame.backBtn);
+  els.postGame.nextBtn = newNext;
+  els.postGame.backBtn = newBack;
+
+  els.postGame.nextBtn.onclick = () => {
+    if (step < totalSteps) { state.postGame.step++; renderPostGameStep(); }
+    else { commitPostGame(); }
+  };
+  els.postGame.backBtn.onclick = () => {
+    if (step > 1) { state.postGame.step--; renderPostGameStep(); }
+  };
+}
+
 export function randomMvp(side) {
     const roster = state.activeMatchData[side].roster;
     const eligible = roster.map((p,i) => i).filter(i => roster[i].position !== 'Star Player'); 
@@ -1229,117 +2429,327 @@ export function randomMvp(side) {
 }
 
 export async function commitPostGame() {
-    const key = els.inputs.editKey.value;
-    const pg = state.postGame;
-    const d = state.activeMatchData;
-    setStatus('Committing results...');
-    try {
-        const homeT = await apiGet(PATHS.team(d.leagueId, d.home.id));
-        const awayT = await apiGet(PATHS.team(d.leagueId, d.away.id));
-        const league = await apiGet(PATHS.league(d.leagueId));
-        const currentSeason = league.season || 1;
+  const key = els.inputs.editKey.value;
+  const pg = state.postGame;
+  const d = state.activeMatchData;
+  if (!key) return setStatus('Edit key required', 'error');
+  if (!pg || !d) return setStatus('Missing post-game context.', 'error');
 
-        const processTeamUpdates = (team, matchSide, winnings, fans, mvpIdx, opponentName, myScore, oppScore) => {
-            team.treasury = (team.treasury || 0) + (winnings * 1000);
-            team.dedicatedFans = Math.max(1, (team.dedicatedFans || 1) + fans);
-            const playerRecords = [];
-            team.players.forEach((p) => {
-                const matchP = d[matchSide].roster.find(mp => mp.playerId === p.id);
-                if (!matchP) return; 
-                if (matchP.isStar) return;
-                const isMvp = (matchP === d[matchSide].roster[mvpIdx]);
-                let sppGain = (matchP.live.td * 3) + (matchP.live.cas * 2) + (matchP.live.int * 2) + (matchP.live.comp * 1);
-                if (isMvp) sppGain += 4;
-                p.spp = (p.spp || 0) + sppGain;
-                // Always record player in history if they were in the match data
-                playerRecords.push({ 
-                    playerId: p.id,
-                    name: p.name, 
-                    number: p.number, 
-                    position: p.position,
-                    sppGain, 
-                    stats: { ...matchP.live }, 
-                    isMvp 
-                });
-                
-                const injury = pg.injuries.find(inj => inj.side === matchSide && inj.originalIdx === d[matchSide].roster.indexOf(matchP));
-                if (injury && injury.outcome) {
-                    if (injury.outcome === 'dead') { p.dead = true; } 
-                    else if (injury.outcome === 'mng') { p.mng = true; } 
-                    else if (injury.outcome.startsWith('-')) {
-                        const stat = injury.outcome.substring(1); 
-                        p[stat] = (p[stat] || 0) - 1;
-                        p.injuries = (p.injuries || []) + injury.outcome + ',';
-                    }
-                }
-            });
-            team.players = team.players.filter(p => !p.dead);
-            if (!team.history) team.history = [];
-            team.history.push({ 
-                season: currentSeason, 
-                round: d.round, 
-                matchId: d.matchId, 
-                opponentName: opponentName, 
-                result: myScore > oppScore ? 'Win' : myScore < oppScore ? 'Loss' : 'Draw', 
-                score: `${myScore}-${oppScore}`, 
-                winnings, 
-                tv: d[matchSide].tv,
-                inducements: d[matchSide].inducements,
-                playerRecords 
-            });
-        };
-        
-        processTeamUpdates(homeT, 'home', pg.homeWinnings, pg.homeFans, pg.homeMvp, d.away.name, d.home.score, d.away.score);
-        processTeamUpdates(awayT, 'away', pg.awayWinnings, pg.awayFans, pg.awayMvp, d.home.name, d.away.score, d.home.score);
-        await apiSave(PATHS.team(d.leagueId, homeT.id), homeT, `Post-game ${d.matchId} Home`, key);
-        await apiSave(PATHS.team(d.leagueId, awayT.id), awayT, `Post-game ${d.matchId} Away`, key);
-        
-        const m = league.matches.find(x => x.id === d.matchId);
-        if(m) {
-            m.status = 'completed';
-            m.score = { home: d.home.score, away: d.away.score };
-            m.casualties = { 
-                homeInflicted: d.home.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0),
-                awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas||0), 0)
-            };
-            m.hasReport = true;
-            m.reportId = d.matchId;
+  setStatus('Committing results...');
+  try {
+    const warnings = pgValidate();
+    if (warnings.length) {
+      const ok = await confirmModal(
+        'Proceed with warnings?',
+        `<div style="margin-bottom:0.75rem;">The following items may violate BB2025 rules or data constraints:</div><ul style="margin:0; padding-left:1.2rem;">${warnings.map(w => `<li>${w}</li>`).join('')}</ul><div style="margin-top:0.75rem;">Proceed anyway?</div>`,
+        'Proceed',
+        true,
+        true
+      );
+      if (!ok) return;
+    }
+
+    const homeT = await apiGet(PATHS.team(d.leagueId, d.home.id));
+    const awayT = await apiGet(PATHS.team(d.leagueId, d.away.id));
+    const league = await apiGet(PATHS.league(d.leagueId));
+    if (!homeT || !awayT || !league) throw new Error('Could not load league/team files.');
+    const currentSeason = league.season || 1;
+
+    const processTeamUpdates = (team, matchSide, opponentName, myScore, oppScore) => {
+      const sideState = pg.teams[matchSide];
+      const roster = d[matchSide].roster || [];
+      const mvpRosterIdx = pgComputeMvpWinnerRosterIdx(matchSide);
+
+      // Prepare for next fixture: clear previous MNG (served this match)
+      (team.players || []).forEach(p => { if (p.mng) p.mng = false; });
+
+      // Step 1: Winnings
+      const winningsGp = pgGetTeamWinningsGp(matchSide);
+      team.treasury = (team.treasury || 0) + winningsGp;
+
+      // Step 2: Dedicated Fans
+      const dfDelta = pgGetTeamDedicatedFansDelta(matchSide);
+      team.dedicatedFans = Math.max(1, Math.min(7, (team.dedicatedFans || 1) + dfDelta));
+
+      // Step 3: Apply SPP gains + player records
+      const playerRecords = [];
+      roster.forEach((matchP, rosterIdx) => {
+        const sppGain = pgComputeSppGain(matchSide, rosterIdx);
+        if (!matchP.isStar && matchP.playerId) {
+          const tp = (team.players || []).find(p => p.id === matchP.playerId);
+          if (tp) tp.spp = (tp.spp || 0) + sppGain;
         }
+        playerRecords.push({
+          playerId: matchP.playerId || null,
+          name: matchP.name,
+          number: matchP.number,
+          position: matchP.position,
+          isJourneyman: !!matchP.isJourneyman,
+          isStar: !!matchP.isStar,
+          sppGain,
+          stats: { ...(matchP.live || {}) },
+          isMvp: mvpRosterIdx === rosterIdx
+        });
+      });
 
-        const report = {
-            home: { 
-                name: d.home.name,
-                score: d.home.score,
-                tv: d.home.tv,
-                inducements: d.home.inducements,
-                winnings: pg.homeWinnings,
-                fanFactorChange: pg.homeFans,
-                mvp: d.home.roster[pg.homeMvp]?.name || 'None',
-                stats: d.home.roster.map(p => ({ name: p.name, number: p.number, live: p.live })).filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0 || p.live.comp > 0 || p.live.foul > 0) 
-            },
-            away: { 
-                name: d.away.name,
-                score: d.away.score,
-                tv: d.away.tv,
-                inducements: d.away.inducements,
-                winnings: pg.awayWinnings,
-                fanFactorChange: pg.awayFans,
-                mvp: d.away.roster[pg.awayMvp]?.name || 'None',
-                stats: d.away.roster.map(p => ({ name: p.name, number: p.number, live: p.live })).filter(p => p.live.td > 0 || p.live.cas > 0 || p.live.int > 0 || p.live.comp > 0 || p.live.foul > 0) 
-            }
+      // Step 3: Spend SPP / apply advancements to rostered players
+      roster.forEach((matchP, rosterIdx) => {
+        if (!matchP.playerId || matchP.isStar) return;
+        const tp = (team.players || []).find(p => p.id === matchP.playerId);
+        if (!tp) return;
+        const key = pgGetPlayerKey(matchSide, rosterIdx);
+        if (!key) return;
+        const advs = pgGetAdvListForPlayerKey(key);
+        const costs = pgComputeAdvCostsSpp(key);
+
+        tp.advancements = Array.isArray(tp.advancements) ? tp.advancements : [];
+        tp.sppSpent = Number(tp.sppSpent || 0);
+
+        advs.forEach((adv, i) => {
+          const costSpp = Number(costs[i] || 0);
+          tp.spp = (tp.spp || 0) - costSpp;
+          tp.sppSpent += costSpp;
+
+          if (adv.kind === 'characteristic' && adv.outcomeType === 'skill') {
+            const def = pgFindSkillDef(adv.skillName);
+            const { player, valueIncreaseGp } = applyBb2025SkillAdvancement(tp, { skillName: adv.skillName, isSecondary: adv.skillFrom === 'secondary', isEliteSkill: !!def?.isElite });
+            Object.assign(tp, player);
+            tp.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, outcomeType: 'skill', skillName: adv.skillName, categoryCode: adv.categoryCode, skillFrom: adv.skillFrom, isElite: !!def?.isElite, sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
+          } else if (adv.kind === 'characteristic') {
+            const { player, valueIncreaseGp } = applyBb2025CharacteristicIncrease(tp, adv.statKey);
+            Object.assign(tp, player);
+            tp.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, outcomeType: 'stat', statKey: adv.statKey, rollD8: adv.rollD8 ?? null, sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
+          } else {
+            const def = pgFindSkillDef(adv.skillName);
+            const isSecondary = adv.kind === 'chosenSecondary';
+            const { player, valueIncreaseGp } = applyBb2025SkillAdvancement(tp, { skillName: adv.skillName, isSecondary, isEliteSkill: !!def?.isElite });
+            Object.assign(tp, player);
+            tp.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, skillName: adv.skillName, categoryCode: adv.categoryCode, isElite: !!def?.isElite, sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
+          }
+        });
+      });
+
+      // Step 4: Injuries + Temporarily Retiring
+      (pg.injuries || []).filter(x => x.side === matchSide).forEach(inj => {
+        const matchP = roster[inj.rosterIdx];
+        if (!matchP?.playerId) return;
+        const tp = (team.players || []).find(p => p.id === matchP.playerId);
+        if (!tp) return;
+        const outcome = String(inj.outcome || '').trim();
+        if (outcome === 'dead') tp.dead = true;
+        else if (outcome === 'mng') tp.mng = true;
+        else if (outcome.startsWith('-')) {
+          const stat = outcome.substring(1);
+          tp[stat] = (Number(tp[stat]) || 0) - 1;
+          tp.injuries = (tp.injuries || '') + outcome + ',';
+          if (inj.tempRetire) tp.tr = true;
+        }
+      });
+      team.players = (team.players || []).filter(p => !p.dead);
+
+      // Step 4: Staff/Rerolls + other treasury adjustments
+      const desired = sideState.staffDesired;
+      const staffCosts = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
+      const base = sideState.staffBase;
+      const coachDelta = (Number(desired.assistantCoaches || 0) - Number(base.assistantCoaches || 0)) * (Number(staffCosts.assistantCoach) || 0);
+      const cheerDelta = (Number(desired.cheerleaders || 0) - Number(base.cheerleaders || 0)) * (Number(staffCosts.cheerleader) || 0);
+      const apoDelta = ((!!desired.apothecary) === (!!base.apothecary)) ? 0 : ((!!desired.apothecary) ? Number(staffCosts.apothecary) || 0 : -(Number(staffCosts.apothecary) || 0));
+
+      team.assistantCoaches = Number(desired.assistantCoaches || 0);
+      team.cheerleaders = Number(desired.cheerleaders || 0);
+      team.apothecary = !!desired.apothecary;
+      team.treasury = (team.treasury || 0) - coachDelta - cheerDelta - apoDelta;
+
+      const race = state.gameData?.races?.find(r => r.name === base.race);
+      const rrCost = Number(race?.rerollCost || 50000);
+      const addRr = Math.max(0, Number(desired.addRerolls || 0));
+      if (addRr) {
+        team.rerolls = Number(team.rerolls || 0) + addRr;
+        team.treasury = (team.treasury || 0) - (addRr * rrCost * 2);
+      }
+
+      team.treasury = (team.treasury || 0) + Number(sideState.otherTreasuryDeltaGp || 0);
+
+      // Step 4: Hire journeymen (if selected)
+      roster.forEach((matchP, rosterIdx) => {
+        if (!matchP.isJourneyman) return;
+        const key = pgGetPlayerKey(matchSide, rosterIdx);
+        const hire = pg.hireByPlayer?.[key];
+        if (!hire?.hire) return;
+
+        const baseInfo = pg.players?.[key];
+        const baseCost = Number(baseInfo?.baseCost ?? matchP.cost ?? 0);
+        const baseSkills = Array.isArray(baseInfo?.baseSkills) ? [...baseInfo.baseSkills] : (Array.isArray(matchP.skills) ? [...matchP.skills] : []);
+        const stripped = baseSkills.filter(s => String(s).trim() !== 'Loner (4+)');
+
+        let newPlayer = {
+          id: ulid(),
+          number: Number(hire.number || matchP.number || 0),
+          name: String(hire.name || matchP.name || 'Journeyman'),
+          position: matchP.position,
+          qty: 16,
+          cost: baseCost,
+          ma: matchP.ma,
+          st: matchP.st,
+          ag: matchP.ag,
+          pa: matchP.pa,
+          av: matchP.av,
+          skills: stripped,
+          primary: baseInfo?.primary || matchP.primary || ['G'],
+          secondary: baseInfo?.secondary || matchP.secondary || [],
+          spp: 0
         };
 
-        await apiSave(PATHS.match(d.leagueId, d.matchId), report, `Match report ${d.matchId}`, key);
-        await apiSave(PATHS.league(d.leagueId), league, `Complete match ${d.matchId}`, key);
-        await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
-        els.postGame.el.classList.add('hidden');
-        handleOpenLeague(d.leagueId);
-        setStatus('Match finalized successfully!', 'ok');
-    } catch(e) { setStatus(e.message, 'error'); }
+        // Add SPP gained this match
+        newPlayer.spp = (newPlayer.spp || 0) + pgComputeSppGain(matchSide, rosterIdx);
+
+        // Apply purchased advancements (and adjust cost)
+        const advs = pgGetAdvListForPlayerKey(key);
+        const costs = pgComputeAdvCostsSpp(key);
+        newPlayer.advancements = [];
+        newPlayer.sppSpent = 0;
+        advs.forEach((adv, i) => {
+          const costSpp = Number(costs[i] || 0);
+          newPlayer.spp = (newPlayer.spp || 0) - costSpp;
+          newPlayer.sppSpent += costSpp;
+          if (adv.kind === 'characteristic' && adv.outcomeType === 'skill') {
+            const def = pgFindSkillDef(adv.skillName);
+            const { player, valueIncreaseGp } = applyBb2025SkillAdvancement(newPlayer, { skillName: adv.skillName, isSecondary: adv.skillFrom === 'secondary', isEliteSkill: !!def?.isElite });
+            newPlayer = player;
+            newPlayer.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, outcomeType: 'skill', skillName: adv.skillName, categoryCode: adv.categoryCode, skillFrom: adv.skillFrom, isElite: !!def?.isElite, sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
+          } else if (adv.kind === 'characteristic') {
+            const { player, valueIncreaseGp } = applyBb2025CharacteristicIncrease(newPlayer, adv.statKey);
+            newPlayer = player;
+            newPlayer.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, outcomeType: 'stat', statKey: adv.statKey, rollD8: adv.rollD8 ?? null, sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
+          } else {
+            const def = pgFindSkillDef(adv.skillName);
+            const isSecondary = adv.kind === 'chosenSecondary';
+            const { player, valueIncreaseGp } = applyBb2025SkillAdvancement(newPlayer, { skillName: adv.skillName, isSecondary, isEliteSkill: !!def?.isElite });
+            newPlayer = player;
+            newPlayer.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, skillName: adv.skillName, categoryCode: adv.categoryCode, isElite: !!def?.isElite, sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
+          }
+        });
+
+        team.treasury = (team.treasury || 0) - Number(newPlayer.cost || baseCost);
+        team.players = team.players || [];
+        team.players.push(newPlayer);
+      });
+
+      // Step 5: Expensive Mistakes (after all earnings/spend this step)
+      const treasuryBeforeEM = team.treasury || 0;
+      const em = pgComputeExpensiveMistakesDeltaGp({
+        treasuryGp: treasuryBeforeEM,
+        rollD6: sideState.expensive?.rollD6,
+        rollD3: sideState.expensive?.rollD3,
+        roll2d6Total: sideState.expensive?.roll2d6Total
+      });
+      team.treasury = (team.treasury || 0) + Number(em.deltaGp || 0);
+
+      // Step 6: Prepare for next fixture
+      team.teamValue = calculateTeamValue(team);
+
+      if (!team.history) team.history = [];
+      team.history.push({
+        season: currentSeason,
+        round: d.round,
+        matchId: d.matchId,
+        opponentName,
+        result: myScore > oppScore ? 'Win' : myScore < oppScore ? 'Loss' : 'Draw',
+        score: `${myScore}-${oppScore}`,
+        winningsK: Math.round(winningsGp / 1000),
+        winningsGp,
+        dedicatedFansBefore: sideState.dedicatedFansBefore,
+        dedicatedFansRollD6: sideState.dedicatedFansRollD6 ?? null,
+        dedicatedFansDelta: dfDelta,
+        tv: d[matchSide].tv,
+        inducements: d[matchSide].inducements,
+        playerRecords,
+        expensiveMistakes: {
+          treasuryBeforeGp: treasuryBeforeEM,
+          rollD6: sideState.expensive?.rollD6 ?? null,
+          rollD3: sideState.expensive?.rollD3 ?? null,
+          roll2d6Total: sideState.expensive?.roll2d6Total ?? null,
+          result: em.kind,
+          deltaGp: em.deltaGp
+        }
+      });
+    };
+
+    processTeamUpdates(homeT, 'home', d.away.name, d.home.score, d.away.score);
+    processTeamUpdates(awayT, 'away', d.home.name, d.away.score, d.home.score);
+
+    await apiSave(PATHS.team(d.leagueId, homeT.id), homeT, `Post-game ${d.matchId} Home`, key);
+    await apiSave(PATHS.team(d.leagueId, awayT.id), awayT, `Post-game ${d.matchId} Away`, key);
+
+    const m = league.matches.find(x => x.id === d.matchId);
+    if (m) {
+      m.status = 'completed';
+      m.score = { home: d.home.score, away: d.away.score };
+      m.casualties = {
+        homeInflicted: d.home.roster.reduce((sum, p) => sum + (p.live?.cas || 0), 0),
+        awayInflicted: d.away.roster.reduce((sum, p) => sum + (p.live?.cas || 0), 0)
+      };
+      m.hasReport = true;
+      m.reportId = d.matchId;
+    }
+
+    const report = {
+      schemaVersion: 2,
+      matchId: d.matchId,
+      leagueId: d.leagueId,
+      round: d.round,
+      home: {
+        name: d.home.name,
+        score: d.home.score,
+        tv: d.home.tv,
+        inducements: d.home.inducements,
+        winnings: Math.round(pgGetTeamWinningsGp('home') / 1000),
+        winningsGp: pgGetTeamWinningsGp('home'),
+        fanFactorChange: pgGetTeamDedicatedFansDelta('home'),
+        dedicatedFansDelta: pgGetTeamDedicatedFansDelta('home'),
+        mvp: (() => {
+          const idx = pgComputeMvpWinnerRosterIdx('home');
+          return (idx == null) ? 'None' : (d.home.roster[idx]?.name || 'None');
+        })(),
+        stats: d.home.roster
+          .map(p => ({ name: p.name, number: p.number, live: p.live }))
+          .filter(p => (p.live.td || 0) > 0 || (p.live.cas || 0) > 0 || (p.live.int || 0) > 0 || (p.live.comp || 0) > 0 || (p.live.foul || 0) > 0 || (p.live.ttmThrow || 0) > 0 || (p.live.ttmLand || 0) > 0),
+        postGame: pg.teams.home
+      },
+      away: {
+        name: d.away.name,
+        score: d.away.score,
+        tv: d.away.tv,
+        inducements: d.away.inducements,
+        winnings: Math.round(pgGetTeamWinningsGp('away') / 1000),
+        winningsGp: pgGetTeamWinningsGp('away'),
+        fanFactorChange: pgGetTeamDedicatedFansDelta('away'),
+        dedicatedFansDelta: pgGetTeamDedicatedFansDelta('away'),
+        mvp: (() => {
+          const idx = pgComputeMvpWinnerRosterIdx('away');
+          return (idx == null) ? 'None' : (d.away.roster[idx]?.name || 'None');
+        })(),
+        stats: d.away.roster
+          .map(p => ({ name: p.name, number: p.number, live: p.live }))
+          .filter(p => (p.live.td || 0) > 0 || (p.live.cas || 0) > 0 || (p.live.int || 0) > 0 || (p.live.comp || 0) > 0 || (p.live.foul || 0) > 0 || (p.live.ttmThrow || 0) > 0 || (p.live.ttmLand || 0) > 0),
+        postGame: pg.teams.away
+      }
+    };
+
+    await apiSave(PATHS.match(d.leagueId, d.matchId), report, `Match report ${d.matchId}`, key);
+    await apiSave(PATHS.league(d.leagueId), league, `Complete match ${d.matchId}`, key);
+    await apiDelete(PATHS.activeMatch(d.matchId), `Cleanup ${d.matchId}`, key);
+    els.postGame.el.classList.add('hidden');
+    handleOpenLeague(d.leagueId);
+    setStatus('Match finalized successfully!', 'ok');
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
 }
 
 export async function handleEndGame() {
   const confirmed = await confirmModal("End Game?", "Proceed to Post-Game Sequence? (MVP, Winnings, etc.)", "Proceed", false);
   if(!confirmed) return;
-  openPostGameModal(); 
+  try { await openPostGameModal(); }
+  catch (e) { setStatus(e.message, 'error'); }
 }
