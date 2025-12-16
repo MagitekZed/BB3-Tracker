@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KCGT7TAP6E4YMTGHW5DQ2RN6",
+  "leagueId": "01KCGP9ZG1KPX3AECN0BFP1YGY",
+  "round": 3,
+  "home": {
+    "name": "Amazons",
+    "score": 2,
+    "tv": 590000,
+    "inducements": {
+      "Star: Dribl": 1,
+      "Star: Karla Von Kill": 1,
+      "Star: Morg ‘n’ Thorg": 0,
+      "Star: Akhorne The Squirrel": 0,
+      "Temp Agency Cheerleaders": 2,
+      "Bloodweiser Keg": 1,
+      "Weather Mage": 1
+    },
+    "winnings": 50,
+    "winningsGp": 50000,
+    "fanFactorChange": 1,
+    "dedicatedFansDelta": 1,
+    "mvp": "Eagle Warrior Linewoman",
+    "stats": [
+      {
+        "name": "Eagle Warrior Linewoman",
+        "number": 1,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 1,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Eagle Warrior Linewoman",
+        "number": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 1,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Eagle Warrior Linewoman",
+        "number": 3,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KCGPACYZY3NBCA4ZFNBXBPTK",
+      "name": "Amazons",
+      "colors": {
+        "primary": "#1e8a00",
+        "secondary": "#c5a059"
+      },
+      "race": "Amazon",
+      "result": "win",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 1000000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 40000,
+      "winningsGpOverride": 50000,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDeltaOverride": 1,
+      "mvp": {
+        "nominees": [
+          2
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 0,
+        "race": "Amazon"
+      },
+      "staffDesired": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": 5,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "Norse",
+    "score": 1,
+    "tv": 780000,
+    "inducements": {
+      "Star: Morg ‘n’ Thorg": 1
+    },
+    "winnings": 40,
+    "winningsGp": 40000,
+    "fanFactorChange": -1,
+    "dedicatedFansDelta": -1,
+    "mvp": "Norse Raider Lineman",
+    "stats": [
+      {
+        "name": "Norse Raider Lineman",
+        "number": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 1,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Norse Raider Lineman",
+        "number": 3,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KCGPBJR94R81D2REP21EZ48N",
+      "name": "Norse",
+      "colors": {
+        "primary": "#1e00ff",
+        "secondary": "#c7c7c7"
+      },
+      "race": "Norse",
+      "result": "loss",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 515000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 30000,
+      "winningsGpOverride": 40000,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDeltaOverride": -1,
+      "mvp": {
+        "nominees": [
+          1
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 0,
+        "race": "Norse"
+      },
+      "staffDesired": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": 2,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  }
+}
