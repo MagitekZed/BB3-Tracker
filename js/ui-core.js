@@ -140,7 +140,7 @@ export function confirmModal(title, message, confirmLabel = 'Confirm', isDanger 
     modal.innerHTML = `
       <div class="modal-content">
           <div class="modal-header"><h3>${title}</h3></div>
-          <div class="confirm-message" style="margin-bottom: 1rem;"></div>
+          <div class="confirm-message" style="margin-bottom: 1rem; overflow-y: auto; flex: 1; max-height: 60vh;"></div>
           <div class="modal-actions">
               <button id="confirmCancelBtn" class="secondary-btn">Cancel</button>
               <button id="confirmOkBtn" class="${btnClass}">${confirmLabel}</button>

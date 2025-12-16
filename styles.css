@@ -451,7 +451,26 @@ body.mode-coach .coach-header {
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
 #skillModal.modal { z-index: 5000; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 2px solid var(--gold-accent); padding-bottom: 0.5rem; }
-.close-btn { font-size: 1.5rem; background: none; border: none; cursor: pointer; padding: 0 0.5rem; }
+.close-btn { font-size: 1.5rem; background: none; border: none; cursor: pointer; padding: 0 0.5rem; font-family: system-ui, -apple-system, Segoe UI, Arial, sans-serif; font-weight: 900; text-transform: none; line-height: 1; }
+
+/* Post-game wizard player cards */
+.pg-player-header { display:flex; justify-content:space-between; gap:0.75rem; align-items:flex-start; }
+.pg-player-left { min-width:0; }
+.pg-player-name { font-weight: 900; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pg-player-tags { margin-top: 0.35rem; }
+.pg-player-right { text-align: right; }
+.pg-player-spp { font-weight: 900; color:#222; }
+.pg-stat-grid { margin-top:0.6rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:0.35rem; }
+.pg-stat-buttons { display:flex; justify-content:center; gap:0.35rem; margin-top:0.15rem; }
+.pg-player-card .stat-label { font-size: 0.6rem; }
+.pg-player-card .stat-value { font-size: 1.05rem; }
+
+@media (max-width: 520px) {
+  .pg-player-header { flex-direction: column; gap: 0.5rem; }
+  .pg-player-right { text-align: left; }
+  .pg-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pg-player-card .skill-tag { font-size: 0.75rem; padding: 2px 5px; }
+}
 
 .action-sheet { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none; }
 .action-sheet.hidden { display: none !important; }

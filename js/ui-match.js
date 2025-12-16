@@ -1326,9 +1326,6 @@ function pgValidate() {
     if ((baseSpp + gain) < spend) warnings.push(`#${r.number} ${r.name}: spending ${spend} SPP but only has ${baseSpp + gain}.`);
 
     const advs = pgGetAdvListForPlayerKey(key);
-    const baseAdvCount = Number(base.advancementCount || 0);
-    const minCost = getBb2025AdvancementCost({ advancements: new Array(Math.max(0, baseAdvCount)).fill({}) }, 'randomPrimary') ?? null;
-    if (minCost != null && (baseSpp + gain) >= minCost && advs.length === 0) warnings.push(`#${r.number} ${r.name}: has enough SPP for an advancement but none selected (BB2025 expects an advancement).`);
 
     const existingSkills = new Set((base.baseSkills || []).map(s => String(s).trim()).filter(Boolean));
     const pickedSkills = new Set();
@@ -1589,26 +1586,26 @@ function pgRenderPlayerCard({ pg, d, side, rosterIdx }) {
   `;
 
   return `
-    <div class="panel-styled" style="margin-bottom:0.75rem;">
-      <div style="display:flex; justify-content:space-between; gap:0.75rem; align-items:flex-start;">
-        <div style="min-width:0;">
-          <div style="font-weight:900; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">#${r.number} ${r.name}</div>
-          <div class="small" style="color:#666; margin-top:0.15rem;">${r.position}</div>
-          <div style="margin-top:0.35rem;">${tags}</div>
+    <div class="panel-styled pg-player-card" style="margin-bottom:0.75rem;">
+      <div class="pg-player-header">
+        <div class="pg-player-left">
+          <div class="pg-player-name">#${r.number} ${r.name}</div>
+          <div class="small pg-player-pos">${r.position}</div>
+          <div class="pg-player-tags">${tags}</div>
         </div>
-        <div style="text-align:right; min-width:12rem;">
-          <div class="small" style="color:#666;">SPP</div>
-          <div style="font-weight:900; color:#222;">${baseSpp} + ${gain} - ${spend} = ${finalSpp}</div>
+        <div class="pg-player-right">
+          <div class="small">SPP</div>
+          <div class="pg-player-spp">${baseSpp} + ${gain} - ${spend} = ${finalSpp}</div>
         </div>
       </div>
 
-      <div style="margin-top:0.6rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:0.35rem;">
-        <div class="stat-box"><span class="stat-label">TD</span><span class="stat-value">${r.live?.td || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'td', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'td', 1)">+</button></div></div>
-        <div class="stat-box"><span class="stat-label">CAS*</span><span class="stat-value">${r.live?.cas || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'cas', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'cas', 1)">+</button></div></div>
-        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-value">${r.live?.int || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'int', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'int', 1)">+</button></div></div>
-        <div class="stat-box"><span class="stat-label">COMP</span><span class="stat-value">${r.live?.comp || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'comp', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'comp', 1)">+</button></div></div>
-        <div class="stat-box"><span class="stat-label">TTM T</span><span class="stat-value">${r.live?.ttmThrow || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmThrow', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmThrow', 1)">+</button></div></div>
-        <div class="stat-box"><span class="stat-label">TTM L</span><span class="stat-value">${r.live?.ttmLand || 0}</span><div><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmLand', -1)">-</button><button onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmLand', 1)">+</button></div></div>
+      <div class="pg-stat-grid">
+        <div class="stat-box"><span class="stat-label">TD</span><span class="stat-value">${r.live?.td || 0}</span><div class="pg-stat-buttons"><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'td', -1)">-</button><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'td', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">CAS*</span><span class="stat-value">${r.live?.cas || 0}</span><div class="pg-stat-buttons"><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'cas', -1)">-</button><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'cas', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">INT</span><span class="stat-value">${r.live?.int || 0}</span><div class="pg-stat-buttons"><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'int', -1)">-</button><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'int', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">COMP</span><span class="stat-value">${r.live?.comp || 0}</span><div class="pg-stat-buttons"><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'comp', -1)">-</button><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'comp', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">TTM T</span><span class="stat-value">${r.live?.ttmThrow || 0}</span><div class="pg-stat-buttons"><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmThrow', -1)">-</button><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmThrow', 1)">+</button></div></div>
+        <div class="stat-box"><span class="stat-label">TTM L</span><span class="stat-value">${r.live?.ttmLand || 0}</span><div class="pg-stat-buttons"><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmLand', -1)">-</button><button class="stat-btn-small" onclick="window.manualAdjustStat('${side}', ${rosterIdx}, 'ttmLand', 1)">+</button></div></div>
       </div>
       <div class="small" style="margin-top:0.35rem; color:#666;">* CAS should count only SPP-eligible casualties.</div>
 
@@ -1742,7 +1739,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
 
   if (step === 1) {
     html += pgRenderStepLabel({ step, totalSteps, title: 'Record outcome & collect winnings' });
-    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">BB2025: Winnings = ((Fan Attendance/2) + TD + (no stalling? +1)) × 10,000gp. Fan Attendance = both teams’ Dedicated Fans.</div>`;
+    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">Winnings = ((Fan Attendance/2) + TD + (no stalling? +1)) x 10,000gp. Fan Attendance = both teams' Dedicated Fans.</div>`;
 
     const renderWinningsPanel = (side) => {
       const t = pg.teams[side];
@@ -1755,7 +1752,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
       return pgRenderTeamPanel({
         pg,
         side,
-        title: `${t.result.toUpperCase()} • TD ${myTd} • Fan Attendance ${fa}`,
+        title: `${t.result.toUpperCase()} - TD ${myTd} - Fan Attendance ${fa}`,
         inner: `
           <div class="form-field">
             <label><input type="checkbox" ${t.noStallingBonus ? 'checked' : ''} onchange="window.pgSetNoStalling('${side}', this.checked)"> No stalling (+1)</label>
@@ -1781,7 +1778,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
 
   if (step === 2) {
     html += pgRenderStepLabel({ step, totalSteps, title: 'Update Dedicated Fans' });
-    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">BB2025: Win → roll D6; if roll ≥ DF then DF+1. Loss → roll D6; if roll &lt; DF then DF-1. Draw → no change (DF stays 1–7).</div>`;
+    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">Win: roll D6; if roll >= DF then DF+1. Loss: roll D6; if roll < DF then DF-1. Draw: no change (DF stays 1-7).</div>`;
 
     const renderDfPanel = (side) => {
       const t = pg.teams[side];
@@ -1821,7 +1818,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
 
   if (step === 3) {
     html += pgRenderStepLabel({ step, totalSteps, title: 'Player advancement (SPP, MVP, spending)' });
-    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">BB2025 MVP: nominate 6 players, roll D6 to select one (1–6). Stars don’t earn SPP; Journeymen do.</div>`;
+    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">MVP: nominate 6 players, roll D6 to select one (1-6). Stars don't earn SPP; Journeymen do.</div>`;
     html += `<div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">${pgRenderMvpPanel({ pg, d, side: 'home' })}${pgRenderMvpPanel({ pg, d, side: 'away' })}</div>`;
     html += `
       <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:1rem; margin-top:1rem;">
@@ -1867,7 +1864,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
 
   if (step === 5) {
     html += pgRenderStepLabel({ step, totalSteps, title: 'Expensive mistakes' });
-    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">BB2025: If treasury ≥ 100k at this step, roll D6 and apply the Expensive Mistakes table.</div>`;
+    html += `<div class="small" style="color:#666; margin-bottom:0.75rem;">If treasury >= 100k at this step, roll D6 and apply the Expensive Mistakes table.</div>`;
 
     const renderEM = (side) => {
       const t = pg.teams[side];
@@ -2393,7 +2390,7 @@ export function renderPostGameStep() {
 
   const body = els.postGame.body;
   const headerEl = els.postGame.el.querySelector('.modal-header');
-  headerEl.innerHTML = `<h3>Post-Game Sequence</h3><button class="close-btn" onclick="window.closePostGameModal()">A-</button>`;
+  headerEl.innerHTML = `<h3>Post-Game Sequence</h3><button class="close-btn" onclick="window.closePostGameModal()">×</button>`;
 
   const step = Number(pg.step || 1);
   const totalSteps = 6;
@@ -2441,7 +2438,7 @@ export async function commitPostGame() {
     if (warnings.length) {
       const ok = await confirmModal(
         'Proceed with warnings?',
-        `<div style="margin-bottom:0.75rem;">The following items may violate BB2025 rules or data constraints:</div><ul style="margin:0; padding-left:1.2rem;">${warnings.map(w => `<li>${w}</li>`).join('')}</ul><div style="margin-top:0.75rem;">Proceed anyway?</div>`,
+        `<div style="margin-bottom:0.75rem;">The following items may violate rules or data constraints:</div><ul style="margin:0; padding-left:1.2rem;">${warnings.map(w => `<li>${w}</li>`).join('')}</ul><div style="margin-top:0.75rem;">Proceed anyway?</div>`,
         'Proceed',
         true,
         true
