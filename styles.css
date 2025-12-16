@@ -135,8 +135,10 @@ body {
 
 .modal-body-scroll {
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
   padding-right: 5px; /* Prevent scrollbar overlap */
+  box-sizing: border-box;
 }
 
 /* Pre-Match Grid (Responsive) */
