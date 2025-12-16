@@ -129,6 +129,8 @@ body {
   font-weight: 800 !important;
   color: #222;
   border: 1px solid #888;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .modal-body-scroll {
@@ -445,6 +447,7 @@ body.mode-coach .coach-header {
 .skill-tag:hover { background: #fff; border-color: #555; }
 
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+#skillModal.modal { z-index: 5000; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 2px solid var(--gold-accent); padding-bottom: 0.5rem; }
 .close-btn { font-size: 1.5rem; background: none; border: none; cursor: pointer; padding: 0 0.5rem; }
 
