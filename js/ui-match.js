@@ -2,7 +2,7 @@ import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, getContrastColor, applyTeamTheme, ulid } from './utils.js';
-import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill, confirmModal } from './ui-core.js';
+import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill, confirmModal, showInfoModal } from './ui-core.js';
 import { handleOpenLeague } from './ui-league.js';
 import { calculateTeamValue, calculateCurrentTeamValue, isPlayerAvailableForMatch } from './rules.js';
 
@@ -379,7 +379,8 @@ function renderPreMatchSetup() {
           const unitCost = getInducementUnitCost(side, item.name);
           const max = getInducementMax(side, item.name);
           const maxLabel = (max != null) ? ` • max ${max}` : '';
-          html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #eee; padding-bottom:2px;"><div style="font-size:0.85rem;"><div>${item.name}</div><div style="color:#666">${unitCost/1000}k${maxLabel}</div></div><div style="display:flex; align-items:center; gap:5px;"><button onclick="window.changeInducement('${side}', '${item.name}', -1)" style="padding:0 5px;">-</button><span style="font-weight:bold; width:20px; text-align:center;">${count}</span><button onclick="window.changeInducement('${side}', '${item.name}', 1)" style="padding:0 5px;">+</button></div></div>`;
+          const safeItemName = item.name.replace(/'/g, "\\'");
+          html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; border-bottom:1px solid #eee; padding-bottom:2px;"><div style="font-size:0.85rem; min-width:0;"><div><span onclick="window.showInducementInfo('${safeItemName}')" style="cursor:pointer; text-decoration:underline;">${item.name}</span></div><div style="color:#666">${unitCost/1000}k${maxLabel}</div></div><div style="display:flex; align-items:center; gap:5px;"><button onclick="window.changeInducement('${side}', '${safeItemName}', -1)" style="padding:0 5px;">-</button><span style="font-weight:bold; width:20px; text-align:center;">${count}</span><button onclick="window.changeInducement('${side}', '${safeItemName}', 1)" style="padding:0 5px;">+</button></div></div>`;
       });
       const teamTags = getTeamTags(teamRace);
       const eligibleStars = stars.filter(star => {
@@ -395,7 +396,7 @@ function renderPreMatchSetup() {
               const playsFor = getPlaysFor(star);
               const isAny = playsFor.some(p => p.toLowerCase().startsWith('any'));
               let reason = isAny ? (playsFor.find(p => p.toLowerCase().startsWith('any')) || 'Any') : (playsFor.find(t => teamTags.includes(t)) || "");
-              html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; border-bottom:1px solid #eee;"><div style="font-size:0.8rem;"><div>${star.name}</div><div style="color:#666">${star.cost/1000}k - <span style="font-style:italic; font-size:0.75rem">(${reason})</span></div></div><div>${isHired ? `<button onclick="window.toggleStar('${side}', '${safeName}', 0)" style="color:red; font-size:0.8rem;">Remove</button>` : `<button onclick="window.toggleStar('${side}', '${safeName}', 1)" style="color:green; font-size:0.8rem;">Hire</button>`}</div></div>`;
+              html += `<div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px; border-bottom:1px solid #eee;"><div style="font-size:0.8rem; min-width:0;"><div><span onclick="window.showStarInfo('${safeName}')" style="cursor:pointer; text-decoration:underline;">${star.name}</span></div><div style="color:#666">${star.cost/1000}k - <span style="font-style:italic; font-size:0.75rem">(${reason})</span></div></div><div>${isHired ? `<button onclick="window.toggleStar('${side}', '${safeName}', 0)" style="color:red; font-size:0.8rem;">Remove</button>` : `<button onclick="window.toggleStar('${side}', '${safeName}', 1)" style="color:green; font-size:0.8rem;">Hire</button>`}</div></div>`;
           });
       }
       return html;
@@ -484,6 +485,63 @@ export function setJourneymanType(side, typeName) {
   if (!state.setupMatch?.journeymen?.[side]) return;
   state.setupMatch.journeymen[side].type = typeName;
   renderPreMatchSetup();
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+export function showInducementInfo(itemName) {
+  const item = (state.gameData?.inducements || []).find(i => i.name === itemName);
+  if (!item) return;
+  const title = item.name;
+  const costText = item.priceText || `${Math.round((item.cost || 0) / 1000)}k`;
+  const html = `
+    <div style="text-align:left">
+      <div style="font-weight:bold; margin-bottom:0.25rem;">${escapeHtml(costText)}</div>
+      ${item.max != null ? `<div class="small" style="color:#555; margin-bottom:0.5rem;">Max per match: <strong>${item.max}</strong></div>` : ''}
+      <div class="small" style="color:#666;">Click skills in player cards to view their rules.</div>
+    </div>
+  `;
+  showInfoModal(title, html, true);
+}
+
+export function showStarInfo(starName) {
+  const star = (state.gameData?.starPlayers || []).find(s => s.name === starName);
+  if (!star) return;
+
+  const skillsHtml = (star.skills || []).map(skill => (
+    `<span class="skill-tag" style="cursor:pointer" onclick='window.showSkill(${JSON.stringify(skill)})'>${escapeHtml(skill)}</span>`
+  )).join(' ');
+
+  const playsFor = Array.isArray(star.playsFor) ? star.playsFor : (star.playsFor ? [star.playsFor] : []);
+  const special = (star.specialRules || '').trim();
+
+  const html = `
+    <div style="text-align:left">
+      <div class="small" style="color:#666; margin-bottom:0.35rem;">${escapeHtml(star.profile || 'Star Player')}</div>
+      <div class="stat-grid" style="margin:0.5rem 0 0.75rem;">
+        <div class="stat-box"><div class="stat-label">MA</div><div class="stat-value">${escapeHtml(star.ma)}</div></div>
+        <div class="stat-box"><div class="stat-label">ST</div><div class="stat-value">${escapeHtml(star.st)}</div></div>
+        <div class="stat-box"><div class="stat-label">AG</div><div class="stat-value">${escapeHtml(star.ag)}</div></div>
+        <div class="stat-box"><div class="stat-label">PA</div><div class="stat-value">${escapeHtml(star.pa ?? '-')}</div></div>
+        <div class="stat-box"><div class="stat-label">AV</div><div class="stat-value">${escapeHtml(star.av)}</div></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; gap:0.75rem; flex-wrap:wrap;">
+        <div><strong>Cost:</strong> ${(star.cost || 0) / 1000}k</div>
+        <div class="small" style="color:#666;"><strong>Plays For:</strong> ${escapeHtml(playsFor.join(', ') || '—')}</div>
+      </div>
+      ${skillsHtml ? `<div style="margin-top:0.75rem;"><div style="font-weight:bold; margin-bottom:0.25rem;">Skills</div><div class="card-skills" style="justify-content:flex-start;">${skillsHtml}</div></div>` : ''}
+      ${special ? `<div style="margin-top:0.75rem;"><div style="font-weight:bold; margin-bottom:0.25rem;">Special Rules</div><div class="small" style="white-space:pre-wrap; color:#444;">${escapeHtml(special)}</div></div>` : ''}
+    </div>
+  `;
+
+  showInfoModal(star.name, html, true);
 }
 
 export async function confirmMatchStart() {

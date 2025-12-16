@@ -509,6 +509,15 @@ body.mode-coach .coach-header {
   grid-template-columns: 1fr 1fr 1fr; 
   gap: 0.5rem; /* Tighter gap */
 }
+
+/* Pre-match shop should always be single-column (we hide one team panel at a time). */
+.sheet-grid.pre-match-grid {
+  grid-template-columns: 1fr !important;
+}
+.sheet-grid.pre-match-grid > .panel-styled {
+  grid-column: 1 / -1;
+  width: 100%;
+}
 .sheet-btn { 
   padding: 0.5rem; font-size: 0.75rem; 
   height: 80px; /* Reduced height from 100px */

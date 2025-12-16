@@ -100,13 +100,18 @@ export function showSkill(skillName) {
       const found = state.gameData.Traits.find(s => s.name.startsWith(cleanName));
       if (found) desc = found.description;
   }
-  els.modal.title.textContent = skillName;
-  els.modal.body.textContent = desc;
-  els.modal.el.classList.remove('hidden');
+  showInfoModal(skillName, desc, false);
 }
 
 export function closeSkillModal() {
   els.modal.el.classList.add('hidden');
+}
+
+export function showInfoModal(title, message, messageIsHtml = false) {
+  els.modal.title.textContent = title;
+  if (messageIsHtml) els.modal.body.innerHTML = message;
+  else els.modal.body.textContent = message;
+  els.modal.el.classList.remove('hidden');
 }
 
 // Mobile Match Nav Button Logic
