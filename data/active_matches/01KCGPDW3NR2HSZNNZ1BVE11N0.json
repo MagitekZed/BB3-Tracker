@@ -376,7 +376,7 @@
       "primary": "#1e8a00",
       "secondary": "#c5a059"
     },
-    "score": 0,
+    "score": 1,
     "roster": [
       {
         "playerId": "01KCGPB0Q1RXQ09K8K8STB9714",
@@ -450,7 +450,7 @@
           "used": false,
           "injured": false,
           "sentOff": false,
-          "td": 0,
+          "td": 1,
           "cas": 0,
           "int": 0,
           "comp": 0,
