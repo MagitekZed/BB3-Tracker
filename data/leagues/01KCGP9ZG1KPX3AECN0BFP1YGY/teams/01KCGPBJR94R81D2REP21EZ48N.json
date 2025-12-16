@@ -31,7 +31,9 @@
         "S",
         "P"
       ],
-      "spp": 3
+      "spp": 3,
+      "advancements": [],
+      "sppSpent": 0
     },
     {
       "id": "01KCGPC4MNXR4D5G5G4JSMJSM9",
@@ -59,7 +61,9 @@
         "S",
         "P"
       ],
-      "spp": 3
+      "spp": 9,
+      "advancements": [],
+      "sppSpent": 0
     },
     {
       "id": "01KCGPC4S17HB8G8C20VS3GSD8",
@@ -88,7 +92,9 @@
         "S",
         "P"
       ],
-      "spp": 0
+      "spp": 3,
+      "advancements": [],
+      "sppSpent": 0
     },
     {
       "id": "01KCGPC4X91BX2KRGE8CA1PJH0",
@@ -113,14 +119,16 @@
         "S",
         "P"
       ],
-      "spp": 4
+      "spp": 4,
+      "advancements": [],
+      "sppSpent": 0
     }
   ],
   "colors": {
     "primary": "#1e00ff",
     "secondary": "#c7c7c7"
   },
-  "treasury": 515000,
+  "treasury": 275000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
@@ -218,6 +226,297 @@
           "isMvp": true
         }
       ]
+    },
+    {
+      "season": 1,
+      "round": 3,
+      "matchId": "01KCGT7TAP6E4YMTGHW5DQ2RN6",
+      "opponentName": "Amazons",
+      "result": "Loss",
+      "score": "1-2",
+      "winningsK": 40,
+      "winningsGp": 40000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDelta": -1,
+      "tv": 780000,
+      "inducements": {
+        "Star: Morg ‘n’ Thorg": 1
+      },
+      "playerRecords": [
+        {
+          "playerId": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
+          "name": "Norse Raider Lineman",
+          "number": 1,
+          "position": "Norse Berserker",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPC4MNXR4D5G5G4JSMJSM9",
+          "name": "Norse Raider Lineman",
+          "number": 2,
+          "position": "Valkyrie",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 6,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 1,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KCGPC4S17HB8G8C20VS3GSD8",
+          "name": "Norse Raider Lineman",
+          "number": 3,
+          "position": "Yhetee",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 3,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPC4X91BX2KRGE8CA1PJH0",
+          "name": "Norse Raider Lineman",
+          "number": 4,
+          "position": "Ulfwerener",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCJTPASFEA62VMEBKHA7QVC3",
+          "name": "Journeyman 1",
+          "number": 95,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCJTPASFW64YECBF9WPYESKE",
+          "name": "Journeyman 2",
+          "number": 96,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCJTPASF1TSYY62P2R4KX76A",
+          "name": "Journeyman 3",
+          "number": 97,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCJTPASFSB0ZPS4KFHHTF1XS",
+          "name": "Journeyman 4",
+          "number": 98,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCJTPASF8MKCKEJMGHF9E00Q",
+          "name": "Journeyman 5",
+          "number": 99,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCJTPASF70C1B7KHF2V7PC6S",
+          "name": "Journeyman 6",
+          "number": 100,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCJTPASF4EYVWAJEN97331WD",
+          "name": "Journeyman 7",
+          "number": 101,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCJTPASFN8F7E0HBS6AG5M98",
+          "name": "Morg ‘n’ Thorg",
+          "number": 99,
+          "position": "Star Player",
+          "isJourneyman": false,
+          "isStar": true,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 555000,
+        "rollD6": 2,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": "Major Incident",
+        "deltaGp": -280000
+      }
     }
   ]
 }
