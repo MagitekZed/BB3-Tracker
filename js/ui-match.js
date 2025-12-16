@@ -1573,7 +1573,7 @@ function pgRenderPlayerCard({ pg, d, side, rosterIdx }) {
 
   const skills = (base?.baseSkills || r.skills || []).filter(Boolean);
   const skillTags = skills.length
-    ? skills.map(s => `<span class="skill-tag" onclick="event.stopPropagation(); window.showSkill('${String(s).replace(/'/g, \"\\\\'\")}')">${s}</span>`).join(' ')
+    ? skills.map(s => `<span class="skill-tag" onclick='event.stopPropagation(); window.showSkill(${JSON.stringify(String(s))})'>${s}</span>`).join(' ')
     : `<span class="small" style="color:#777; font-style:italic;">No skills</span>`;
 
   const advs = (key && !isStar) ? pgGetAdvListForPlayerKey(key) : [];
