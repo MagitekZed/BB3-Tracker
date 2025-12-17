@@ -2,10 +2,18 @@ import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, normalizeName, getContrastColor, ulid } from './utils.js';
-import { computeStandings, computeSeasonStats } from './rules.js';
+import { computeSeasonStats } from './rules.js';
+import { collectSeasonPlayerRows, aggregatePlayerStats } from './stats.js';
 import { showSection, updateBreadcrumbs, setActiveNav, goHome, confirmModal } from './ui-core.js';
 import { handleOpenTeam, handleEditTeam, renderTeamEditor } from './ui-team.js';
 import { handleStartMatch, handleOpenScoreboard } from './ui-match.js';
+
+const LEAGUE_TABS = [
+  { id: 'standings', label: 'Standings' },
+  { id: 'leaders', label: 'Leaders' },
+  { id: 'teamStats', label: 'Team Stats' },
+  { id: 'playerStats', label: 'Player Stats' }
+];
 
 export function renderLeagueList() {
   if (!state.leaguesIndex.length) {
@@ -39,6 +47,9 @@ export async function handleOpenLeague(id) {
     if (!league) throw new Error("League file not found.");
     state.currentLeague = league;
     state.viewLeagueId = id;
+    state.leagueTeamsCache = null;
+    state.leagueStatsCache = null;
+    state.leagueTeamsCacheForLeagueId = id;
     
     renderLeagueView();
     showSection('view');
@@ -49,6 +60,50 @@ export async function handleOpenLeague(id) {
   } catch (e) { setStatus(e.message, 'error'); }
 }
 
+function renderLeagueTabs() {
+  const tabsEl = els.leagueView?.tabs;
+  if (!tabsEl) return;
+
+  tabsEl.innerHTML = LEAGUE_TABS.map(t => `
+    <button class="tab-btn ${state.leagueTab === t.id ? 'active' : ''}" onclick="window.setLeagueTab('${t.id}')">${t.label}</button>
+  `).join('');
+}
+
+function renderLeagueTabTools() {
+  const toolsEl = els.leagueView?.tabTools;
+  if (!toolsEl) return;
+
+  if (state.leagueTab !== 'playerStats') {
+    toolsEl.innerHTML = '';
+    return;
+  }
+
+  toolsEl.innerHTML = `
+    <input
+      type="search"
+      placeholder="Search players..."
+      value="${state.leaguePlayerSearch || ''}"
+      oninput="window.setLeaguePlayerSearch(this.value)"
+    />
+  `;
+}
+
+function getTabLabel(tabId) {
+  return LEAGUE_TABS.find(t => t.id === tabId)?.label || 'Standings';
+}
+
+export function setLeagueTab(tabId) {
+  const next = String(tabId || 'standings');
+  if (!LEAGUE_TABS.some(t => t.id === next)) return;
+  state.leagueTab = next;
+  renderLeagueView();
+}
+
+export function setLeaguePlayerSearch(value) {
+  state.leaguePlayerSearch = String(value ?? '');
+  renderLeagueView();
+}
+
 export function renderLeagueView() {
   const l = state.currentLeague;
   if (!l) return;
@@ -57,9 +112,61 @@ export function renderLeagueView() {
   document.getElementById('leagueTeamsSection').className = 'panel-styled';
   document.getElementById('leagueMatchesSection').className = 'panel-styled';
 
-  const standings = computeSeasonStats(l);
+  if (!state.leagueTab) state.leagueTab = 'standings';
+  renderLeagueTabs();
+
+  const headingEl = els.leagueView?.tabHeading;
+  if (headingEl) headingEl.textContent = getTabLabel(state.leagueTab);
+
+  renderLeagueTabTools();
+  void renderLeagueTabContent(l);
+  renderMatchesList(l);
+}
+
+let leagueTabLoadToken = 0;
+async function renderLeagueTabContent(league) {
+  const token = ++leagueTabLoadToken;
+
+  if (state.leagueTab === 'standings') {
+    renderStandingsTab(league);
+    return;
+  }
+
+  try {
+    const cachedTeams = (state.leagueTeamsCache && state.leagueTeamsCacheForLeagueId === league.id)
+      ? state.leagueTeamsCache
+      : null;
+
+    if (!cachedTeams) {
+      els.containers.standings.innerHTML = `<div class="small" style="color:#666;">Loading...</div>`;
+    }
+
+    const teamFiles = cachedTeams || await ensureLeagueTeamsLoaded(league);
+    if (token !== leagueTabLoadToken) return;
+
+    if (state.leagueTab === 'leaders') {
+      renderLeadersTab(league, teamFiles);
+      return;
+    }
+    if (state.leagueTab === 'teamStats') {
+      renderTeamStatsTab(league, teamFiles);
+      return;
+    }
+    if (state.leagueTab === 'playerStats') {
+      renderPlayerStatsTab(league, teamFiles);
+      return;
+    }
+
+    els.containers.standings.innerHTML = `<div class="small" style="color:#666;">Not implemented.</div>`;
+  } catch (e) {
+    els.containers.standings.innerHTML = `<div class="small" style="color:#b00020;">Failed to load stats: ${e.message}</div>`;
+  }
+}
+
+function renderStandingsTab(league) {
+  const standings = computeSeasonStats(league);
   els.containers.standings.innerHTML = `
-    <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${l.season} standings</div>
+    <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${league.season} standings</div>
     <table class="responsive-table">
       <thead>
         <tr>
@@ -68,29 +175,170 @@ export function renderLeagueView() {
       </thead>
       <tbody>${standings.map((s, i) => `
         <tr>
-          <td data-label="Rank">${i+1}</td>
-          <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${l.id}', '${s.id}')">${s.name}</button></td>
+          <td data-label="Rank">${i + 1}</td>
+          <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${league.id}', '${s.id}')">${s.name}</button></td>
           <td data-label="GP">${s.games}</td>
           <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
           <td data-label="Points">${s.points}</td>
-          <td data-label="TD F/A">${s.tdFor}/${s.tdAgainst} (${s.tdDiff>=0?'+':''}${s.tdDiff})</td>
-          <td data-label="CAS F/A">${s.casFor}/${s.casAgainst} (${s.casDiff>=0?'+':''}${s.casDiff})</td>
+          <td data-label="TD F/A">${s.tdFor}/${s.tdAgainst} (${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff})</td>
+          <td data-label="CAS F/A">${s.casFor}/${s.casAgainst} (${s.casDiff >= 0 ? '+' : ''}${s.casDiff})</td>
         </tr>`).join('')}
-    </tbody></table>`;
-  
-  if (els.containers.rosterQuick) {
-    els.containers.rosterQuick.innerHTML = `<div class="roster-tiles">
-      ${l.teams.map(t => {
-        const prim = t.colors?.primary || '#8a1c1c';
-        return `
-        <div class="roster-tile" style="border-top-color: ${prim}">
-          <div class="roster-tile-title"><button class="team-link" onclick="window.handleOpenTeam('${l.id}', '${t.id}')">${t.name}</button></div>
-          <div class="roster-tile-meta"><span><strong>Race:</strong> ${t.race}</span><span><strong>Coach:</strong> ${t.coachName}</span></div>
-        </div>`;
-      }).join('')}
-    </div>`;
+      </tbody>
+    </table>`;
+}
+
+async function ensureLeagueTeamsLoaded(league) {
+  if (state.leagueTeamsCache && state.leagueTeamsCacheForLeagueId === league.id) return state.leagueTeamsCache;
+
+  const teamIds = (league.teams || []).map(t => t.id).filter(Boolean);
+  const entries = await Promise.all(teamIds.map(async (teamId) => {
+    const team = await apiGet(PATHS.team(league.id, teamId));
+    return [teamId, team];
+  }));
+
+  const map = new Map(entries.filter(([, t]) => t));
+  state.leagueTeamsCache = map;
+  state.leagueTeamsCacheForLeagueId = league.id;
+  state.leagueStatsCache = null;
+  return map;
+}
+
+function getSeasonPlayerStats(league, teamFiles) {
+  const key = `${league.id}:${league.season}`;
+  const cached = state.leagueStatsCache;
+  if (cached?.key === key && Array.isArray(cached.players)) return cached.players;
+
+  const players = aggregatePlayerStats(collectSeasonPlayerRows(teamFiles, league.season));
+  state.leagueStatsCache = { key, players };
+  return players;
+}
+
+function renderLeadersTab(league, teamFiles) {
+  const season = league.season;
+  const players = getSeasonPlayerStats(league, teamFiles);
+
+  const top = (key, n = 5) =>
+    players
+      .filter(p => (p[key] || 0) > 0)
+      .sort((a, b) => (b[key] || 0) - (a[key] || 0))
+      .slice(0, n);
+
+  const renderBlock = (label, key) => {
+    const list = top(key);
+    return `
+      <div class="leader-block">
+        <div class="leader-block-title">${label}</div>
+        ${list.length ? `
+          <table class="responsive-table">
+            <thead><tr><th>Player</th><th>Team</th><th>${label}</th></tr></thead>
+            <tbody>${list.map(p => `
+              <tr>
+                <td data-label="Player">${p.number ? `#${p.number} ` : ''}${p.name}</td>
+                <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${league.id}', '${p.teamId}')">${p.teamName}</button></td>
+                <td data-label="${label}">${p[key] || 0}</td>
+              </tr>
+            `).join('')}</tbody>
+          </table>
+        ` : `<div class="small" style="color:#666;">No data yet.</div>`}
+      </div>`;
+  };
+
+  els.containers.standings.innerHTML = `
+    <div class="small" style="margin-bottom:0.75rem; color:#555;">Season ${season} leaders</div>
+    <div class="leaders-grid">
+      ${renderBlock('Touchdowns', 'td')}
+      ${renderBlock('Casualties', 'cas')}
+      ${renderBlock('Interceptions', 'int')}
+      ${renderBlock('Completions', 'comp')}
+      ${renderBlock('SPP Gained', 'sppGain')}
+    </div>
+  `;
+}
+
+function renderTeamStatsTab(league, teamFiles) {
+  const season = league.season;
+  const standings = computeSeasonStats(league);
+  const tvK = (team) => {
+    const tv = Number(team?.teamValue);
+    return Number.isFinite(tv) && tv > 0 ? `${Math.round(tv / 1000)}k` : '-';
+  };
+
+  els.containers.standings.innerHTML = `
+    <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${season} team stats</div>
+    <table class="responsive-table">
+      <thead>
+        <tr>
+          <th>Team</th><th>Coach</th><th>GP</th><th>W-D-L</th><th>Pts</th><th>TD +/-</th><th>CAS +/-</th><th>TV</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${standings.map(s => {
+          const team = teamFiles.get(s.id);
+          return `
+            <tr>
+              <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${league.id}', '${s.id}')">${s.name}</button></td>
+              <td data-label="Coach">${s.coachName || '-'}</td>
+              <td data-label="GP">${s.games}</td>
+              <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
+              <td data-label="Pts">${s.points}</td>
+              <td data-label="TD +/-">${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff}</td>
+              <td data-label="CAS +/-">${s.casDiff >= 0 ? '+' : ''}${s.casDiff}</td>
+              <td data-label="TV">${tvK(team)}</td>
+            </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderPlayerStatsTab(league, teamFiles) {
+  const season = league.season;
+  const q = (state.leaguePlayerSearch || '').trim().toLowerCase();
+  let players = [...getSeasonPlayerStats(league, teamFiles)];
+
+  if (q) {
+    players = players.filter(p =>
+      String(p.name || '').toLowerCase().includes(q) ||
+      String(p.position || '').toLowerCase().includes(q) ||
+      String(p.teamName || '').toLowerCase().includes(q) ||
+      String(p.number || '').includes(q)
+    );
   }
-  renderMatchesList(l);
+
+  players.sort((a, b) => (b.sppGain - a.sppGain) || (b.td - a.td) || (b.cas - a.cas));
+
+  els.containers.standings.innerHTML = `
+    <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${season} player stats</div>
+    ${players.length ? `
+      <table class="responsive-table">
+        <thead>
+          <tr>
+            <th>Player</th><th>Team</th><th>GP</th><th>TD</th><th>CAS</th><th>INT</th><th>COMP</th><th>MVP</th><th>SPP</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${players.map(p => `
+            <tr>
+              <td data-label="Player">
+                <div class="player-cell">
+                  <div>${p.number ? `#${p.number} ` : ''}${p.name}</div>
+                  ${p.position ? `<div class="small" style="color:#666;">${p.position}</div>` : ''}
+                </div>
+              </td>
+              <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${league.id}', '${p.teamId}')">${p.teamName}</button></td>
+              <td data-label="GP">${p.games}</td>
+              <td data-label="TD">${p.td}</td>
+              <td data-label="CAS">${p.cas}</td>
+              <td data-label="INT">${p.int}</td>
+              <td data-label="COMP">${p.comp}</td>
+              <td data-label="MVP">${p.mvp}</td>
+              <td data-label="SPP">${p.sppGain}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` : `<div class="small" style="color:#666;">No player stats found.</div>`}
+  `;
 }
 
 export function renderMatchesList(league) {

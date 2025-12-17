@@ -36,6 +36,14 @@ export const state = {
   // Navigation State
   viewLeagueId: null,
   viewTeamId: null,
+
+  // League View UI State
+  leagueTab: 'standings',
+  leaguePlayerSearch: '',
+  leagueScope: 'season',
+  leagueStatsCache: null,
+  leagueTeamsCache: null,
+  leagueTeamsCacheForLeagueId: null,
   
   // Action Sheet State
   selectedPlayerIdx: null,
@@ -135,12 +143,16 @@ export const els = {
     coach: document.getElementById('coachSection'),
     admin: document.getElementById('adminSection')
   },
+  leagueView: {
+    tabHeading: document.getElementById('leagueTabHeading'),
+    tabs: document.getElementById('leagueTabs'),
+    tabTools: document.getElementById('leagueTabTools')
+  },
   containers: {
     leagueList: document.getElementById('leagueListContainer'),
     standings: document.getElementById('standingsContainer'),
     matches: document.getElementById('matchesContainer'),
     inProgress: document.getElementById('inProgressContainer'),
-    rosterQuick: document.getElementById('rosterQuickViewContainer'),
     manageTeams: document.getElementById('leagueManageTeamsList'),
     manageTeamEditor: document.getElementById('leagueManageTeamEditor'),
     teamSummary: document.getElementById('teamSummary'),

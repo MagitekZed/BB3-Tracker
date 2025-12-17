@@ -1,6 +1,6 @@
 import { state, els } from './state.js';
 import { init, goHome, goAdmin, handleMobileMatchNav, showSkill, closeSkillModal, showSection } from './ui-core.js';
-import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, handleDeleteMatch, renderManageForm, handleViewMatchReport } from './ui-league.js';
+import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, handleDeleteMatch, renderManageForm, handleViewMatchReport, setLeagueTab, setLeaguePlayerSearch } from './ui-league.js';
 import { handleOpenTeam, handleManageTeamDirect, handleEditTeam, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
 import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame, closePreMatchModal, changeInducement, setCustomInducement, confirmMatchStart, toggleStar, randomMvp, closePostGameModal, manualAdjustStat, postGameRerender, pgSetNoStalling, pgSetWinningsOverrideK, pgSetDedicatedFansRoll, pgSetDedicatedFansDeltaOverride, pgToggleMvpNominee, pgSetMvpRoll, pgAddAdvancement, pgRemoveAdvancement, pgUpdateAdvancement, pgSetInjuryOutcome, pgToggleTempRetire, pgSetStaffField, pgSetOtherTreasuryDeltaK, pgToggleHireJourneyman, pgSetHireJourneymanField, pgSetExpensiveField, openInGameShop, handleUseInducement, setJourneymanType, handlePreMatchPrimary, handlePreMatchBack, showInducementInfo, showStarInfo } from './ui-match.js';
 import { handleScanRepo, attachTeam, restoreLeague, deleteOrphanFile, deleteLeagueFolder } from './ui-admin.js';
@@ -18,6 +18,8 @@ window.handleManageLeague = handleManageLeague;
 window.handleDeleteLeague = handleDeleteLeague;
 window.handleDeleteMatch = handleDeleteMatch;
 window.handleViewMatchReport = handleViewMatchReport;
+window.setLeagueTab = setLeagueTab;
+window.setLeaguePlayerSearch = setLeaguePlayerSearch;
 
 window.handleOpenTeam = handleOpenTeam;
 window.handleManageTeamDirect = handleManageTeamDirect;
