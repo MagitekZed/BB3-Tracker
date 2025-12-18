@@ -228,9 +228,9 @@ async function renderLeagueTabContent(league) {
 function renderStandingsTab(league) {
   const standings = computeSeasonStats(league);
   els.containers.standings.innerHTML = `
-    <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${league.season} standings</div>
+    <div class="league-subheading">Season ${league.season} standings</div>
     <div class="table-scroll">
-      <table class="league-table">
+      <table class="league-table standings-table">
         <thead>
           <tr>
             <th>#</th><th>Team</th><th>GP</th><th>W-D-L</th><th>Pts</th><th>TD F/A</th><th>CAS F/A</th>
@@ -367,7 +367,7 @@ function renderLeadersTab(league, teamFiles) {
   `;
 
   els.containers.standings.innerHTML = `
-    <div class="small" style="margin-bottom:0.75rem; color:#555;">Season ${season} leaders</div>
+    <div class="league-subheading">Season ${season} leaders</div>
     <div class="leaders-grid">
       ${renderStatBlock('Touchdowns', 'td')}
       ${renderStatBlock('Injuries Inflicted', 'cas')}
@@ -388,9 +388,9 @@ function renderTeamStatsTab(league, teamFiles) {
   };
 
   els.containers.standings.innerHTML = `
-    <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${season} team stats</div>
+    <div class="league-subheading">Season ${season} team stats</div>
     <div class="table-scroll">
-      <table class="league-table">
+      <table class="league-table team-stats-table">
         <thead>
           <tr>
             <th>Team</th><th>Coach</th><th>GP</th><th>W-D-L</th><th>Pts</th><th>TD +/-</th><th>CAS +/-</th><th>TV</th>
@@ -467,10 +467,10 @@ function renderPlayerStatsTab(league, teamFiles) {
     `<th class="sortable" onclick="window.setLeaguePlayerSort('${key}')">${label}${sortIndicator(key)}</th>`;
 
   els.containers.standings.innerHTML = `
-    <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${season} player stats</div>
+    <div class="league-subheading">Season ${season} player stats</div>
     ${players.length ? `
       <div class="table-scroll">
-        <table class="league-table">
+        <table class="league-table player-stats-table">
           <thead>
             <tr>
               ${sortableTh('Player', 'name')}
