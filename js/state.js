@@ -40,6 +40,8 @@ export const state = {
   // League View UI State
   leagueTab: 'standings',
   leaguePlayerSearch: '',
+  leaguePlayerSortKey: 'sppGain',
+  leaguePlayerSortDir: 'desc',
   leagueScope: 'season',
   leagueStatsCache: null,
   leagueTeamsCache: null,

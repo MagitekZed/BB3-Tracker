@@ -15,6 +15,47 @@ const LEAGUE_TABS = [
   { id: 'playerStats', label: 'Player Stats' }
 ];
 
+const PLAYER_SORTABLE_KEYS = new Set([
+  'name',
+  'teamName',
+  'games',
+  'td',
+  'cas',
+  'int',
+  'comp',
+  'mvp',
+  'sppGain'
+]);
+
+function safeHexColor(value, fallback) {
+  const s = String(value || '').trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(s)) return s;
+  return fallback;
+}
+
+function hexToRgba(hex, alpha) {
+  const h = safeHexColor(hex, null);
+  const a = Math.max(0, Math.min(1, Number(alpha) || 0));
+  if (!h) return `rgba(0,0,0,${a})`;
+  const r = parseInt(h.slice(1, 3), 16);
+  const g = parseInt(h.slice(3, 5), 16);
+  const b = parseInt(h.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function buildTeamStyleVars(colors) {
+  const prim = safeHexColor(colors?.primary, '#444444');
+  const sec = safeHexColor(colors?.secondary, prim);
+  const text = getContrastColor(prim);
+  const primBg = hexToRgba(prim, 0.14);
+  const secBg = hexToRgba(sec, 0.06);
+  return `--team-primary:${prim};--team-secondary:${sec};--team-text:${text};--team-primary-bg:${primBg};--team-secondary-bg:${secBg};`;
+}
+
+function getLeagueTeamColors(league, teamId) {
+  return (league?.teams || []).find(t => t.id === teamId)?.colors || null;
+}
+
 export function renderLeagueList() {
   if (!state.leaguesIndex.length) {
     els.containers.leagueList.innerHTML = `<div class="panel-styled">No leagues found. Create one to get started.</div>`;
@@ -65,7 +106,7 @@ function renderLeagueTabs() {
   if (!tabsEl) return;
 
   tabsEl.innerHTML = LEAGUE_TABS.map(t => `
-    <button class="tab-btn ${state.leagueTab === t.id ? 'active' : ''}" onclick="window.setLeagueTab('${t.id}')">${t.label}</button>
+    <button class="league-tab-btn ${state.leagueTab === t.id ? 'active' : ''}" onclick="window.setLeagueTab('${t.id}')">${t.label}</button>
   `).join('');
 }
 
@@ -78,14 +119,21 @@ function renderLeagueTabTools() {
     return;
   }
 
-  toolsEl.innerHTML = `
-    <input
-      type="search"
-      placeholder="Search players..."
-      value="${state.leaguePlayerSearch || ''}"
-      oninput="window.setLeaguePlayerSearch(this.value)"
-    />
-  `;
+  const existing = toolsEl.querySelector('input[data-role="league-player-search"]');
+  if (existing) {
+    const nextValue = state.leaguePlayerSearch || '';
+    if (existing.value !== nextValue) existing.value = nextValue;
+    return;
+  }
+
+  toolsEl.innerHTML = '';
+  const input = document.createElement('input');
+  input.type = 'search';
+  input.placeholder = 'Search players...';
+  input.value = state.leaguePlayerSearch || '';
+  input.setAttribute('data-role', 'league-player-search');
+  input.addEventListener('input', (e) => setLeaguePlayerSearch(e.target.value));
+  toolsEl.appendChild(input);
 }
 
 function getTabLabel(tabId) {
@@ -101,6 +149,20 @@ export function setLeagueTab(tabId) {
 
 export function setLeaguePlayerSearch(value) {
   state.leaguePlayerSearch = String(value ?? '');
+  renderLeagueView();
+}
+
+export function setLeaguePlayerSort(key) {
+  const k = String(key || '');
+  if (!PLAYER_SORTABLE_KEYS.has(k)) return;
+
+  if (state.leaguePlayerSortKey === k) {
+    state.leaguePlayerSortDir = (state.leaguePlayerSortDir === 'asc') ? 'desc' : 'asc';
+  } else {
+    state.leaguePlayerSortKey = k;
+    state.leaguePlayerSortDir = 'desc';
+  }
+
   renderLeagueView();
 }
 
@@ -167,24 +229,29 @@ function renderStandingsTab(league) {
   const standings = computeSeasonStats(league);
   els.containers.standings.innerHTML = `
     <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${league.season} standings</div>
-    <table class="responsive-table">
-      <thead>
-        <tr>
-          <th>#</th><th>Team</th><th>GP</th><th>W-D-L</th><th>Pts</th><th>TD F/A</th><th>CAS F/A</th>
-        </tr>
-      </thead>
-      <tbody>${standings.map((s, i) => `
-        <tr>
-          <td data-label="Rank">${i + 1}</td>
-          <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${league.id}', '${s.id}')">${s.name}</button></td>
-          <td data-label="GP">${s.games}</td>
-          <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
-          <td data-label="Points">${s.points}</td>
-          <td data-label="TD F/A">${s.tdFor}/${s.tdAgainst} (${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff})</td>
-          <td data-label="CAS F/A">${s.casFor}/${s.casAgainst} (${s.casDiff >= 0 ? '+' : ''}${s.casDiff})</td>
-        </tr>`).join('')}
-      </tbody>
-    </table>`;
+    <div class="table-scroll">
+      <table class="league-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Team</th><th>GP</th><th>W-D-L</th><th>Pts</th><th>TD F/A</th><th>CAS F/A</th>
+          </tr>
+        </thead>
+        <tbody>${standings.map((s, i) => {
+          const styleVars = buildTeamStyleVars(getLeagueTeamColors(league, s.id));
+          return `
+            <tr class="league-row" style="${styleVars}">
+              <td>${i + 1}</td>
+              <td><button class="team-chip" style="${styleVars}" onclick="window.handleOpenTeam('${league.id}', '${s.id}')">${s.name}</button></td>
+              <td>${s.games}</td>
+              <td>${s.wins}-${s.draws}-${s.losses}</td>
+              <td>${s.points}</td>
+              <td>${s.tdFor}/${s.tdAgainst} (${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff})</td>
+              <td>${s.casFor}/${s.casAgainst} (${s.casDiff >= 0 ? '+' : ''}${s.casDiff})</td>
+            </tr>`;
+        }).join('')}
+        </tbody>
+      </table>
+    </div>`;
 }
 
 async function ensureLeagueTeamsLoaded(league) {
@@ -223,34 +290,91 @@ function renderLeadersTab(league, teamFiles) {
       .sort((a, b) => (b[key] || 0) - (a[key] || 0))
       .slice(0, n);
 
-  const renderBlock = (label, key) => {
+  const teamStyle = (teamId) => {
+    const team = teamFiles.get(teamId);
+    return buildTeamStyleVars(team?.colors || getLeagueTeamColors(league, teamId));
+  };
+
+  const renderStatBlock = (label, key) => {
     const list = top(key);
     return `
       <div class="leader-block">
         <div class="leader-block-title">${label}</div>
         ${list.length ? `
-          <table class="responsive-table">
-            <thead><tr><th>Player</th><th>Team</th><th>${label}</th></tr></thead>
-            <tbody>${list.map(p => `
-              <tr>
-                <td data-label="Player">${p.number ? `#${p.number} ` : ''}${p.name}</td>
-                <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${league.id}', '${p.teamId}')">${p.teamName}</button></td>
-                <td data-label="${label}">${p[key] || 0}</td>
-              </tr>
-            `).join('')}</tbody>
-          </table>
+          <div class="leader-list">
+            ${list.map((p, idx) => {
+              const styleVars = teamStyle(p.teamId);
+              return `
+                <div class="leader-item league-row" style="${styleVars}">
+                  <div class="leader-rank">${idx + 1}</div>
+                  <div class="leader-player">${p.number ? `#${p.number} ` : ''}${p.name}</div>
+                  <div class="leader-meta">
+                    <button class="team-chip" style="${styleVars}" onclick="window.handleOpenTeam('${league.id}', '${p.teamId}')">${p.teamName}</button>
+                    <div class="leader-value">${p[key] || 0}</div>
+                  </div>
+                </div>`;
+            }).join('')}
+          </div>
         ` : `<div class="small" style="color:#666;">No data yet.</div>`}
       </div>`;
   };
 
+  const outPlayers = [];
+  for (const [teamId, team] of teamFiles.entries()) {
+    for (const p of (team?.players || [])) {
+      if (!p?.mng && !p?.tr) continue;
+      outPlayers.push({
+        teamId,
+        teamName: team?.name || (league?.teams || []).find(t => t.id === teamId)?.name || 'Unknown Team',
+        number: p.number,
+        name: p.name || 'Unknown',
+        position: p.position || '',
+        mng: !!p.mng,
+        tr: !!p.tr
+      });
+    }
+  }
+
+  outPlayers.sort((a, b) =>
+    String(a.teamName).localeCompare(String(b.teamName))
+    || (Number(a.number) || 0) - (Number(b.number) || 0)
+    || String(a.name).localeCompare(String(b.name))
+  );
+
+  const renderInjuriesBlock = () => `
+    <div class="leader-block">
+      <div class="leader-block-title">Injuries / Retired</div>
+      ${outPlayers.length ? `
+        <div class="leader-list">
+          ${outPlayers.map(p => {
+            const styleVars = teamStyle(p.teamId);
+            const status = [p.mng ? 'MNG' : null, p.tr ? 'TR' : null].filter(Boolean).join('/');
+            return `
+              <div class="leader-item league-row" style="${styleVars}">
+                <div class="leader-rank">${status}</div>
+                <div class="leader-player">
+                  <div>${p.number ? `#${p.number} ` : ''}${p.name}</div>
+                  ${p.position ? `<div class="small" style="color:#666;">${p.position}</div>` : ''}
+                </div>
+                <div class="leader-meta">
+                  <button class="team-chip" style="${styleVars}" onclick="window.handleOpenTeam('${league.id}', '${p.teamId}')">${p.teamName}</button>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+      ` : `<div class="small" style="color:#666;">No players currently out.</div>`}
+    </div>
+  `;
+
   els.containers.standings.innerHTML = `
     <div class="small" style="margin-bottom:0.75rem; color:#555;">Season ${season} leaders</div>
     <div class="leaders-grid">
-      ${renderBlock('Touchdowns', 'td')}
-      ${renderBlock('Casualties', 'cas')}
-      ${renderBlock('Interceptions', 'int')}
-      ${renderBlock('Completions', 'comp')}
-      ${renderBlock('SPP Gained', 'sppGain')}
+      ${renderStatBlock('Touchdowns', 'td')}
+      ${renderStatBlock('Injuries Inflicted', 'cas')}
+      ${renderStatBlock('Interceptions', 'int')}
+      ${renderStatBlock('Completions', 'comp')}
+      ${renderStatBlock('SPP Gained', 'sppGain')}
+      ${renderInjuriesBlock()}
     </div>
   `;
 }
@@ -265,29 +389,32 @@ function renderTeamStatsTab(league, teamFiles) {
 
   els.containers.standings.innerHTML = `
     <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${season} team stats</div>
-    <table class="responsive-table">
-      <thead>
-        <tr>
-          <th>Team</th><th>Coach</th><th>GP</th><th>W-D-L</th><th>Pts</th><th>TD +/-</th><th>CAS +/-</th><th>TV</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${standings.map(s => {
-          const team = teamFiles.get(s.id);
-          return `
-            <tr>
-              <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${league.id}', '${s.id}')">${s.name}</button></td>
-              <td data-label="Coach">${s.coachName || '-'}</td>
-              <td data-label="GP">${s.games}</td>
-              <td data-label="W-D-L">${s.wins}-${s.draws}-${s.losses}</td>
-              <td data-label="Pts">${s.points}</td>
-              <td data-label="TD +/-">${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff}</td>
-              <td data-label="CAS +/-">${s.casDiff >= 0 ? '+' : ''}${s.casDiff}</td>
-              <td data-label="TV">${tvK(team)}</td>
-            </tr>`;
-        }).join('')}
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table class="league-table">
+        <thead>
+          <tr>
+            <th>Team</th><th>Coach</th><th>GP</th><th>W-D-L</th><th>Pts</th><th>TD +/-</th><th>CAS +/-</th><th>TV</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${standings.map(s => {
+            const team = teamFiles.get(s.id);
+            const styleVars = buildTeamStyleVars(team?.colors || getLeagueTeamColors(league, s.id));
+            return `
+              <tr class="league-row" style="${styleVars}">
+                <td><button class="team-chip" style="${styleVars}" onclick="window.handleOpenTeam('${league.id}', '${s.id}')">${s.name}</button></td>
+                <td>${s.coachName || '-'}</td>
+                <td>${s.games}</td>
+                <td>${s.wins}-${s.draws}-${s.losses}</td>
+                <td>${s.points}</td>
+                <td>${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff}</td>
+                <td>${s.casDiff >= 0 ? '+' : ''}${s.casDiff}</td>
+                <td>${tvK(team)}</td>
+              </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
   `;
 }
 
@@ -305,38 +432,83 @@ function renderPlayerStatsTab(league, teamFiles) {
     );
   }
 
-  players.sort((a, b) => (b.sppGain - a.sppGain) || (b.td - a.td) || (b.cas - a.cas));
+  const sortKey = PLAYER_SORTABLE_KEYS.has(state.leaguePlayerSortKey) ? state.leaguePlayerSortKey : 'sppGain';
+  const dir = (state.leaguePlayerSortDir === 'asc') ? 1 : -1;
+  const stringKeys = new Set(['name', 'teamName']);
+
+  players.sort((a, b) => {
+    const av = a?.[sortKey];
+    const bv = b?.[sortKey];
+
+    let cmp = 0;
+    if (stringKeys.has(sortKey)) {
+      cmp = String(av || '').localeCompare(String(bv || ''), undefined, { sensitivity: 'base' });
+    } else {
+      cmp = (Number(av) || 0) - (Number(bv) || 0);
+    }
+
+    if (cmp) return cmp * dir;
+
+    const sppCmp = (b.sppGain - a.sppGain);
+    if (sppCmp) return sppCmp;
+    const tdCmp = (b.td - a.td);
+    if (tdCmp) return tdCmp;
+    const casCmp = (b.cas - a.cas);
+    if (casCmp) return casCmp;
+    return String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' });
+  });
+
+  const sortIndicator = (key) => {
+    if (sortKey !== key) return '';
+    return (dir === 1) ? ' ^' : ' v';
+  };
+
+  const sortableTh = (label, key) =>
+    `<th class="sortable" onclick="window.setLeaguePlayerSort('${key}')">${label}${sortIndicator(key)}</th>`;
 
   els.containers.standings.innerHTML = `
     <div class="small" style="margin-bottom:0.5rem; color:#555;">Season ${season} player stats</div>
     ${players.length ? `
-      <table class="responsive-table">
-        <thead>
-          <tr>
-            <th>Player</th><th>Team</th><th>GP</th><th>TD</th><th>CAS</th><th>INT</th><th>COMP</th><th>MVP</th><th>SPP</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${players.map(p => `
+      <div class="table-scroll">
+        <table class="league-table">
+          <thead>
             <tr>
-              <td data-label="Player">
-                <div class="player-cell">
-                  <div>${p.number ? `#${p.number} ` : ''}${p.name}</div>
-                  ${p.position ? `<div class="small" style="color:#666;">${p.position}</div>` : ''}
-                </div>
-              </td>
-              <td data-label="Team"><button class="team-link" onclick="window.handleOpenTeam('${league.id}', '${p.teamId}')">${p.teamName}</button></td>
-              <td data-label="GP">${p.games}</td>
-              <td data-label="TD">${p.td}</td>
-              <td data-label="CAS">${p.cas}</td>
-              <td data-label="INT">${p.int}</td>
-              <td data-label="COMP">${p.comp}</td>
-              <td data-label="MVP">${p.mvp}</td>
-              <td data-label="SPP">${p.sppGain}</td>
+              ${sortableTh('Player', 'name')}
+              ${sortableTh('Team', 'teamName')}
+              ${sortableTh('GP', 'games')}
+              ${sortableTh('TD', 'td')}
+              ${sortableTh('CAS', 'cas')}
+              ${sortableTh('INT', 'int')}
+              ${sortableTh('COMP', 'comp')}
+              ${sortableTh('MVP', 'mvp')}
+              ${sortableTh('SPP', 'sppGain')}
             </tr>
-          `).join('')}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            ${players.map(p => {
+              const team = teamFiles.get(p.teamId);
+              const styleVars = buildTeamStyleVars(team?.colors || getLeagueTeamColors(league, p.teamId));
+              return `
+                <tr class="league-row" style="${styleVars}">
+                  <td>
+                    <div class="player-cell">
+                      <div>${p.number ? `#${p.number} ` : ''}${p.name}</div>
+                      ${p.position ? `<div class="small" style="color:#666;">${p.position}</div>` : ''}
+                    </div>
+                  </td>
+                  <td><button class="team-chip" style="${styleVars}" onclick="window.handleOpenTeam('${league.id}', '${p.teamId}')">${p.teamName}</button></td>
+                  <td>${p.games}</td>
+                  <td>${p.td}</td>
+                  <td>${p.cas}</td>
+                  <td>${p.int}</td>
+                  <td>${p.comp}</td>
+                  <td>${p.mvp}</td>
+                  <td>${p.sppGain}</td>
+                </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
     ` : `<div class="small" style="color:#666;">No player stats found.</div>`}
   `;
 }
