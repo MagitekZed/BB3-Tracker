@@ -398,8 +398,8 @@ th.sortable:hover { background: #dedede; }
 /* League tables: favor horizontal scroll on mobile */
 .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .standings-table { width: auto; min-width: 720px; }
-.team-stats-table { width: auto; }
-.player-stats-table { width: auto; }
+.team-stats-table { width: 100%; }
+.player-stats-table { width: 100%; }
 
 .league-table th, .league-table td { white-space: nowrap; }
 .player-stats-table th:first-child, .player-stats-table td:first-child { min-width: 280px; white-space: normal; }
@@ -425,6 +425,7 @@ th.sortable:hover { background: #dedede; }
 }
 
 @media (max-width: 768px) {
+  .team-stats-table, .player-stats-table { width: auto; }
   .league-table th { padding: 0.5rem 0.5rem; font-size: 0.75rem; }
   .league-table td { padding: 0.5rem 0.5rem; font-size: 0.85rem; }
   .team-chip { padding: 0.22rem 0.45rem !important; font-size: 0.75rem !important; }
