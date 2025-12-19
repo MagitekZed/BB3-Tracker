@@ -398,8 +398,13 @@ th.sortable:hover { background: #dedede; }
 /* League tables: favor horizontal scroll on mobile */
 .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .standings-table { width: auto; min-width: 720px; }
+<<<<<<< HEAD
 .team-stats-table { width: 100%; }
 .player-stats-table { width: 100%; }
+=======
+.team-stats-table { width: auto; }
+.player-stats-table { width: auto; }
+>>>>>>> 04ab5063d044f6e491e7ddbebd8081482e57c445
 
 .league-table th, .league-table td { white-space: nowrap; }
 .player-stats-table th:first-child, .player-stats-table td:first-child { min-width: 280px; white-space: normal; }
