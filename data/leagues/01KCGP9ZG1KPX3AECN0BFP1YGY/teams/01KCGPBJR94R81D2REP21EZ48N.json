@@ -142,13 +142,13 @@
     "primary": "#1e00ff",
     "secondary": "#c7c7c7"
   },
-  "treasury": 155000,
-  "rerolls": 1,
+  "treasury": 275000,
+  "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 510000,
+  "teamValue": 450000,
   "history": [
     {
       "season": 1,
@@ -565,151 +565,11 @@
       "season": 1,
       "type": "rerolls",
       "label": "Bought 1 re-roll",
-      "undoBefore": {
-        "treasury": 275000,
-        "rerolls": 0,
-        "apothecary": false,
-        "assistantCoaches": 0,
-        "cheerleaders": 0,
-        "dedicatedFans": 1,
-        "players": [
-          {
-            "id": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
-            "number": 1,
-            "name": "Norse Raider Lineman",
-            "position": "Norse Berserker",
-            "qty": 16,
-            "cost": 90000,
-            "ma": 6,
-            "st": 3,
-            "ag": 3,
-            "pa": 5,
-            "av": 8,
-            "skills": [
-              "Block",
-              "Frenzy",
-              "Jump Up"
-            ],
-            "primary": [
-              "G"
-            ],
-            "secondary": [
-              "A",
-              "S",
-              "P"
-            ],
-            "spp": 3,
-            "advancements": [],
-            "sppSpent": 0
-          },
-          {
-            "id": "01KCGPC4MNXR4D5G5G4JSMJSM9",
-            "number": 2,
-            "name": "Norse Raider Lineman",
-            "position": "Valkyrie",
-            "qty": 16,
-            "cost": 115000,
-            "ma": 7,
-            "st": 3,
-            "ag": 3,
-            "pa": 3,
-            "av": 8,
-            "skills": [
-              "Catch",
-              "Dauntless",
-              "Pass",
-              "Strip Ball",
-              "Block"
-            ],
-            "primary": [
-              "G"
-            ],
-            "secondary": [
-              "A",
-              "S",
-              "P"
-            ],
-            "spp": 3,
-            "advancements": [
-              {
-                "id": "01KCTJ02RCX235YAR507TJYK1W",
-                "at": "2025-12-19T05:40:51.087Z",
-                "sppCost": 6,
-                "valueIncreaseGp": 20000,
-                "kind": "chosenPrimary",
-                "outcomeType": "skill",
-                "skillName": "Block",
-                "categoryCode": "G",
-                "skillFrom": "primary",
-                "isElite": false
-              }
-            ],
-            "sppSpent": 6
-          },
-          {
-            "id": "01KCGPC4S17HB8G8C20VS3GSD8",
-            "number": 3,
-            "name": "Norse Raider Lineman",
-            "position": "Yhetee",
-            "qty": 16,
-            "cost": 140000,
-            "ma": 5,
-            "st": 5,
-            "ag": 4,
-            "pa": -1,
-            "av": 9,
-            "skills": [
-              "Claws",
-              "Disturbing Presence",
-              "Frenzy",
-              "Loner (4+)",
-              "Unchannelled Fury"
-            ],
-            "primary": [
-              "G"
-            ],
-            "secondary": [
-              "A",
-              "S",
-              "P"
-            ],
-            "spp": 3,
-            "advancements": [],
-            "sppSpent": 0
-          },
-          {
-            "id": "01KCGPC4X91BX2KRGE8CA1PJH0",
-            "number": 4,
-            "name": "Norse Raider Lineman",
-            "position": "Ulfwerener",
-            "qty": 16,
-            "cost": 105000,
-            "ma": 6,
-            "st": 4,
-            "ag": 4,
-            "pa": -1,
-            "av": 9,
-            "skills": [
-              "Frenzy"
-            ],
-            "primary": [
-              "G"
-            ],
-            "secondary": [
-              "A",
-              "S",
-              "P"
-            ],
-            "spp": 4,
-            "advancements": [],
-            "sppSpent": 0
-          }
-        ]
-      },
       "delta": {
         "treasuryGp": -120000,
         "tvGp": 60000
-      }
+      },
+      "cancelledAt": "2025-12-19T21:16:12.805Z"
     }
   ]
 }
