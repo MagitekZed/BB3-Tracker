@@ -311,28 +311,44 @@ function renderTeamTabContent({ team, season, seasonStats, history, matchLogRows
   if (tab === 'history') {
     const txs = Array.isArray(team.transactions) ? [...team.transactions] : [];
     txs.sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')));
+    const mostRecentTxId = txs[0]?.id || null;
 
-    const txRows = txs.map(tx => {
+    const txRows = txs.map((tx, idx) => {
       const when = tx.at ? new Date(tx.at).toLocaleString() : '-';
       const type = tx.type || '-';
       const label = tx.label || '-';
+      const cancelledAt = tx.cancelledAt ? new Date(tx.cancelledAt).toLocaleString() : null;
       const dTre = tx?.delta?.treasuryGp;
       const dTv = tx?.delta?.tvGp;
       const dSpp = tx?.delta?.sppCost;
+
+      const isMostRecent = mostRecentTxId && tx.id === mostRecentTxId && idx === 0;
+      const cancelledBadge = tx.cancelledAt ? `<span class="tx-badge cancelled">CANCELLED</span>` : '';
+
+      let revertCell = '';
+      if (isMostRecent) {
+        if (tx.cancelledAt || !tx.undoBefore) {
+          revertCell = `<button class="secondary-btn" disabled>Revert Changes</button>`;
+        } else {
+          revertCell = `<button class="danger-btn" onclick="window.revertMostRecentTeamChange('${tx.id}')">Revert Changes</button>`;
+        }
+      }
+
       return `
         <tr>
-          <td data-label="When">${escapeHtml(when)}</td>
+          <td data-label="When">${escapeHtml(when)}${cancelledAt ? `<div class="small tx-cancelled-at">Cancelled: ${escapeHtml(cancelledAt)}</div>` : ''}</td>
           <td data-label="Type">${escapeHtml(type)}</td>
-          <td data-label="Detail">${escapeHtml(label)}</td>
+          <td data-label="Detail">${escapeHtml(label)}${cancelledBadge}</td>
           <td data-label="Treasury">${dTre == null ? '-' : escapeHtml(formatSignedK(dTre))}</td>
           <td data-label="TV">${dTv == null ? '-' : escapeHtml(formatSignedK(dTv))}</td>
           <td data-label="SPP">${dSpp == null ? '-' : escapeHtml(String(dSpp))}</td>
+          <td data-label="Revert">${revertCell}</td>
         </tr>
       `;
     }).join('');
 
     const txTable = txs.length
-      ? `<table class="responsive-table"><thead><tr><th>When</th><th>Type</th><th>Detail</th><th>Treasury</th><th>TV</th><th>SPP</th></tr></thead><tbody>${txRows}</tbody></table>`
+      ? `<table class="responsive-table"><thead><tr><th>When</th><th>Type</th><th>Detail</th><th>Treasury</th><th>TV</th><th>SPP</th><th>Revert</th></tr></thead><tbody>${txRows}</tbody></table>`
       : `<div class="small" style="color:#666;">No transactions yet.</div>`;
 
     const allHistory = Array.isArray(team.history) ? [...team.history] : [];
@@ -406,14 +422,87 @@ function ensureTransactions(team) {
   return team.transactions;
 }
 
+function cloneJson(data) {
+  return JSON.parse(JSON.stringify(data ?? null));
+}
+
+function createUndoSnapshot(team) {
+  return {
+    treasury: Number(team?.treasury) || 0,
+    rerolls: Number(team?.rerolls) || 0,
+    apothecary: !!team?.apothecary,
+    assistantCoaches: Number(team?.assistantCoaches) || 0,
+    cheerleaders: Number(team?.cheerleaders) || 0,
+    dedicatedFans: Number(team?.dedicatedFans) || 0,
+    players: cloneJson(Array.isArray(team?.players) ? team.players : [])
+  };
+}
+
+function applyUndoSnapshot(team, snap) {
+  const s = snap || {};
+  team.treasury = Number(s.treasury) || 0;
+  team.rerolls = Number(s.rerolls) || 0;
+  team.apothecary = !!s.apothecary;
+  team.assistantCoaches = Number(s.assistantCoaches) || 0;
+  team.cheerleaders = Number(s.cheerleaders) || 0;
+  team.dedicatedFans = Number(s.dedicatedFans) || 0;
+  team.players = cloneJson(Array.isArray(s.players) ? s.players : []);
+}
+
 function addTeamTransaction(team, tx) {
   const list = ensureTransactions(team);
+  for (const existing of list) {
+    if (!existing) continue;
+    delete existing.undoBefore;
+  }
   list.push({
     id: ulid(),
     at: new Date().toISOString(),
     season: state.currentLeague?.season ?? null,
     ...tx
   });
+}
+
+function getMostRecentTransaction(team) {
+  const txs = ensureTransactions(team);
+  let best = null;
+  for (const tx of txs) {
+    if (!tx) continue;
+    if (!best) { best = tx; continue; }
+    if (String(tx.at || '').localeCompare(String(best.at || '')) > 0) best = tx;
+  }
+  return best;
+}
+
+export async function revertMostRecentTeamChange(txId) {
+  const team = state.currentTeam;
+  if (!team) return;
+
+  const tx = getMostRecentTransaction(team);
+  if (!tx) return setStatus('No team transactions yet.', 'error');
+
+  if (txId && tx.id !== txId) return setStatus('Only the most recent change can be reverted.', 'error');
+
+  if (tx.cancelledAt) return setStatus('Most recent change is already cancelled.', 'error');
+  if (!tx.undoBefore) return setStatus('Most recent change is not revertible.', 'error');
+
+  const label = tx.label || tx.type || 'Change';
+  const ok = await confirmModal('Revert changes?', `Revert: ${label}?`, 'Revert', true);
+  if (!ok) return;
+
+  applyUndoSnapshot(team, tx.undoBefore);
+  tx.cancelledAt = new Date().toISOString();
+  delete tx.undoBefore;
+
+  state.teamDevDraft = {};
+
+  try {
+    await saveCurrentTeam({ message: `Revert change: ${label}` });
+    setStatus(`Reverted: ${label}`, 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
 }
 
 async function confirmProceedWithWarnings({ title, intro, warnings, confirmLabel }) {
@@ -485,6 +574,8 @@ export async function teamHirePlayer() {
   });
   if (!ok) return;
 
+  const undoBefore = createUndoSnapshot(team);
+
   const nextPlayer = {
     id: ulid(),
     number,
@@ -513,6 +604,7 @@ export async function teamHirePlayer() {
     type: 'hire_player',
     label: `Hired ${name} (${pos.name})`,
     playerId: nextPlayer.id,
+    undoBefore,
     delta: { treasuryGp: -costGp, tvGp: tvAfter - tvBefore }
   });
 
@@ -547,6 +639,8 @@ export async function fireTeamPlayer(playerId) {
     : await confirmModal('Fire player?', `${intro}\n\nThis cannot be undone.`, 'Fire', true);
   if (!ok) return;
 
+  const undoBefore = createUndoSnapshot(team);
+
   const tvBefore = calculateTeamValue(team);
   team.players = remaining;
   const tvAfter = calculateTeamValue(team);
@@ -555,6 +649,7 @@ export async function fireTeamPlayer(playerId) {
     type: 'fire_player',
     label: `Fired ${player.name} (${player.position || 'Player'})`,
     playerId,
+    undoBefore,
     delta: { treasuryGp: 0, tvGp: tvAfter - tvBefore }
   });
 
@@ -992,6 +1087,8 @@ export async function applyTeamAdvancement(playerId) {
   });
   if (!ok) return;
 
+  const undoBefore = createUndoSnapshot(team);
+
   updated.spp = sppAfter;
   updated.sppSpent = (Number(updated.sppSpent) || 0) + (Number(costSpp) || 0);
 
@@ -1012,6 +1109,7 @@ export async function applyTeamAdvancement(playerId) {
     type: 'advancement',
     label: `Advancement: ${player.name} ${advLabel}`,
     playerId,
+    undoBefore,
     delta: { tvGp: tvAfter - tvBefore, sppCost: Number(costSpp) || 0 }
   });
 
@@ -1056,6 +1154,8 @@ export async function teamAdjustStaff(field, delta) {
   });
   if (!ok) return;
 
+  const undoBefore = createUndoSnapshot(team);
+
   const tvBefore = calculateTeamValue(team);
   team[field] = next;
   team.treasury = treasuryAfter;
@@ -1064,6 +1164,7 @@ export async function teamAdjustStaff(field, delta) {
   addTeamTransaction(team, {
     type: deltaCount > 0 ? 'hire_staff' : 'fire_staff',
     label: `${deltaCount > 0 ? 'Hired' : 'Fired'} ${Math.abs(deltaCount)} ${label}${Math.abs(deltaCount) === 1 ? '' : 's'}`,
+    undoBefore,
     delta: { treasuryGp: deltaTreasury, tvGp: tvAfter - tvBefore }
   });
 
@@ -1106,6 +1207,8 @@ export async function teamAdjustRerolls(delta) {
     : true;
   if (!ok) return;
 
+  const undoBefore = createUndoSnapshot(team);
+
   const tvBefore = calculateTeamValue(team);
   team.rerolls = next;
   team.treasury = treasuryAfter;
@@ -1114,6 +1217,7 @@ export async function teamAdjustRerolls(delta) {
   addTeamTransaction(team, {
     type: 'rerolls',
     label: `${deltaCount > 0 ? 'Bought' : 'Removed'} ${Math.abs(deltaCount)} re-roll${Math.abs(deltaCount) === 1 ? '' : 's'}`,
+    undoBefore,
     delta: { treasuryGp: deltaTreasury, tvGp: tvAfter - tvBefore }
   });
 
@@ -1158,6 +1262,8 @@ export async function teamSetApothecary(nextValue) {
     : await confirmModal('Update apothecary?', `${next ? 'Buy' : 'Remove'} Apothecary?`, 'Apply');
   if (!ok) return;
 
+  const undoBefore = createUndoSnapshot(team);
+
   const tvBefore = calculateTeamValue(team);
   team.apothecary = next;
   team.treasury = treasuryAfter;
@@ -1166,6 +1272,7 @@ export async function teamSetApothecary(nextValue) {
   addTeamTransaction(team, {
     type: 'apothecary',
     label: `${next ? 'Bought' : 'Removed'} Apothecary`,
+    undoBefore,
     delta: { treasuryGp: deltaTreasury, tvGp: tvAfter - tvBefore }
   });
 
@@ -1205,6 +1312,8 @@ export async function teamApplyTreasuryAdjust(direction) {
   });
   if (!ok) return;
 
+  const undoBefore = createUndoSnapshot(team);
+
   const tvBefore = calculateTeamValue(team);
   team.treasury = treasuryAfter;
   const tvAfter = calculateTeamValue(team);
@@ -1212,6 +1321,7 @@ export async function teamApplyTreasuryAdjust(direction) {
   addTeamTransaction(team, {
     type: 'treasury_adjust',
     label: `Treasury ${deltaGp >= 0 ? '+' : ''}${formatK(deltaGp)}${reason ? ` (${reason})` : ''}`,
+    undoBefore,
     delta: { treasuryGp: deltaGp, tvGp: tvAfter - tvBefore }
   });
 

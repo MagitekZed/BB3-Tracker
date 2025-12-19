@@ -571,6 +571,25 @@ th.sortable:hover { background: #dedede; }
 .player-pos { color: #666; font-size: 0.75rem; font-family: monospace; }
 .stat-badge { font-size: 0.65rem; background: var(--gold-accent); color: black; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left:4px; }
 
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.tx-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.tx-badge.cancelled { background: #666; color: #fff; }
+.tx-cancelled-at { margin-top: 0.2rem; color: #777; }
+
+@media (max-width: 700px) {
+  .responsive-table td[data-label="Revert"]:empty { display: none; }
+}
+
 /* Coach View - Improved Visibility */
 body.mode-coach .coach-header {
   background: var(--team-primary); color: var(--team-text);
