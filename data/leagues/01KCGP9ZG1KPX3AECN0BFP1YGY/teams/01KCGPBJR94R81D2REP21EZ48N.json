@@ -41,7 +41,7 @@
       "name": "Norse Raider Lineman",
       "position": "Valkyrie",
       "qty": 16,
-      "cost": 95000,
+      "cost": 115000,
       "ma": 7,
       "st": 3,
       "ag": 3,
@@ -51,7 +51,8 @@
         "Catch",
         "Dauntless",
         "Pass",
-        "Strip Ball"
+        "Strip Ball",
+        "Block"
       ],
       "primary": [
         "G"
@@ -61,9 +62,22 @@
         "S",
         "P"
       ],
-      "spp": 9,
-      "advancements": [],
-      "sppSpent": 0
+      "spp": 3,
+      "advancements": [
+        {
+          "id": "01KCTJ02RCX235YAR507TJYK1W",
+          "at": "2025-12-19T05:40:51.087Z",
+          "sppCost": 6,
+          "valueIncreaseGp": 20000,
+          "kind": "chosenPrimary",
+          "outcomeType": "skill",
+          "skillName": "Block",
+          "categoryCode": "G",
+          "skillFrom": "primary",
+          "isElite": false
+        }
+      ],
+      "sppSpent": 6
     },
     {
       "id": "01KCGPC4S17HB8G8C20VS3GSD8",
@@ -134,7 +148,7 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 430000,
+  "teamValue": 450000,
   "history": [
     {
       "season": 1,
@@ -516,6 +530,20 @@
         "roll2d6Total": null,
         "result": "Major Incident",
         "deltaGp": -280000
+      }
+    }
+  ],
+  "transactions": [
+    {
+      "id": "01KCTJ02RH1HA9ATTHXXCV8C6J",
+      "at": "2025-12-19T05:40:51.089Z",
+      "season": 1,
+      "type": "advancement",
+      "label": "Advancement: Norse Raider Lineman +Block",
+      "playerId": "01KCGPC4MNXR4D5G5G4JSMJSM9",
+      "delta": {
+        "tvGp": 20000,
+        "sppCost": 6
       }
     }
   ]
