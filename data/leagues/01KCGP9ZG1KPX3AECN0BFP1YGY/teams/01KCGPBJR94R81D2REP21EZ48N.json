@@ -85,7 +85,7 @@
       "name": "Norse Raider Lineman",
       "position": "Yhetee",
       "qty": 16,
-      "cost": 160000,
+      "cost": 140000,
       "ma": 5,
       "st": 5,
       "ag": 4,
@@ -96,8 +96,7 @@
         "Disturbing Presence",
         "Frenzy",
         "Loner (4+)",
-        "Unchannelled Fury",
-        "Tackle"
+        "Unchannelled Fury"
       ],
       "primary": [
         "G"
@@ -107,22 +106,9 @@
         "S",
         "P"
       ],
-      "spp": 0,
-      "advancements": [
-        {
-          "id": "01KCTQA0N4MYAKVXPZANAPYYNY",
-          "at": "2025-12-19T07:13:39.493Z",
-          "sppCost": 3,
-          "valueIncreaseGp": 20000,
-          "kind": "randomPrimary",
-          "outcomeType": "skill",
-          "skillName": "Tackle",
-          "categoryCode": "G",
-          "skillFrom": "primary",
-          "isElite": false
-        }
-      ],
-      "sppSpent": 3
+      "spp": 3,
+      "advancements": [],
+      "sppSpent": 0
     },
     {
       "id": "01KCGPC4X91BX2KRGE8CA1PJH0",
@@ -162,7 +148,7 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 470000,
+  "teamValue": 450000,
   "history": [
     {
       "season": 1,
@@ -567,151 +553,11 @@
       "type": "advancement",
       "label": "Advancement: Norse Raider Lineman +Tackle",
       "playerId": "01KCGPC4S17HB8G8C20VS3GSD8",
-      "undoBefore": {
-        "treasury": 275000,
-        "rerolls": 0,
-        "apothecary": false,
-        "assistantCoaches": 0,
-        "cheerleaders": 0,
-        "dedicatedFans": 1,
-        "players": [
-          {
-            "id": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
-            "number": 1,
-            "name": "Norse Raider Lineman",
-            "position": "Norse Berserker",
-            "qty": 16,
-            "cost": 90000,
-            "ma": 6,
-            "st": 3,
-            "ag": 3,
-            "pa": 5,
-            "av": 8,
-            "skills": [
-              "Block",
-              "Frenzy",
-              "Jump Up"
-            ],
-            "primary": [
-              "G"
-            ],
-            "secondary": [
-              "A",
-              "S",
-              "P"
-            ],
-            "spp": 3,
-            "advancements": [],
-            "sppSpent": 0
-          },
-          {
-            "id": "01KCGPC4MNXR4D5G5G4JSMJSM9",
-            "number": 2,
-            "name": "Norse Raider Lineman",
-            "position": "Valkyrie",
-            "qty": 16,
-            "cost": 115000,
-            "ma": 7,
-            "st": 3,
-            "ag": 3,
-            "pa": 3,
-            "av": 8,
-            "skills": [
-              "Catch",
-              "Dauntless",
-              "Pass",
-              "Strip Ball",
-              "Block"
-            ],
-            "primary": [
-              "G"
-            ],
-            "secondary": [
-              "A",
-              "S",
-              "P"
-            ],
-            "spp": 3,
-            "advancements": [
-              {
-                "id": "01KCTJ02RCX235YAR507TJYK1W",
-                "at": "2025-12-19T05:40:51.087Z",
-                "sppCost": 6,
-                "valueIncreaseGp": 20000,
-                "kind": "chosenPrimary",
-                "outcomeType": "skill",
-                "skillName": "Block",
-                "categoryCode": "G",
-                "skillFrom": "primary",
-                "isElite": false
-              }
-            ],
-            "sppSpent": 6
-          },
-          {
-            "id": "01KCGPC4S17HB8G8C20VS3GSD8",
-            "number": 3,
-            "name": "Norse Raider Lineman",
-            "position": "Yhetee",
-            "qty": 16,
-            "cost": 140000,
-            "ma": 5,
-            "st": 5,
-            "ag": 4,
-            "pa": -1,
-            "av": 9,
-            "skills": [
-              "Claws",
-              "Disturbing Presence",
-              "Frenzy",
-              "Loner (4+)",
-              "Unchannelled Fury"
-            ],
-            "primary": [
-              "G"
-            ],
-            "secondary": [
-              "A",
-              "S",
-              "P"
-            ],
-            "spp": 3,
-            "advancements": [],
-            "sppSpent": 0
-          },
-          {
-            "id": "01KCGPC4X91BX2KRGE8CA1PJH0",
-            "number": 4,
-            "name": "Norse Raider Lineman",
-            "position": "Ulfwerener",
-            "qty": 16,
-            "cost": 105000,
-            "ma": 6,
-            "st": 4,
-            "ag": 4,
-            "pa": -1,
-            "av": 9,
-            "skills": [
-              "Frenzy"
-            ],
-            "primary": [
-              "G"
-            ],
-            "secondary": [
-              "A",
-              "S",
-              "P"
-            ],
-            "spp": 4,
-            "advancements": [],
-            "sppSpent": 0
-          }
-        ]
-      },
       "delta": {
         "tvGp": 20000,
         "sppCost": 3
-      }
+      },
+      "cancelledAt": "2025-12-19T07:14:06.299Z"
     }
   ]
 }
