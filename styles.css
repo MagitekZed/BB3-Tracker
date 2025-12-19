@@ -496,6 +496,25 @@ th.sortable:hover { background: #dedede; }
   }
 }
 
+/* Team Staff Controls */
+.staff-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid #ddd;
+}
+.staff-row:first-child { border-top: none; padding-top: 0; }
+.staff-row-left { min-width: 0; }
+.staff-row-controls { display: flex; align-items: center; gap: 0.5rem; }
+.staff-row-count { min-width: 2.5rem; text-align: center; font-weight: 900; }
+
+@media (max-width: 520px) {
+  .staff-row { flex-direction: column; align-items: stretch; }
+  .staff-row-controls { justify-content: flex-end; }
+}
+
 /* Scoreboard */
 .scoreboard-layout {
   display: flex; justify-content: space-between; align-items: flex-start;

@@ -2,7 +2,7 @@ import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, normalizeName, getContrastColor, applyTeamTheme, ulid } from './utils.js';
-import { calculateTeamValue, computeSeasonStats } from './rules.js';
+import { calculateTeamValue, calculateCurrentTeamValue, computeSeasonStats, isPlayerAvailableForMatch, getBb2025AdvancementCost, applyBb2025SkillAdvancement, applyBb2025CharacteristicIncrease } from './rules.js';
 import { showSection, updateBreadcrumbs, goHome, showSkill, confirmModal } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, renderManageForm } from './ui-league.js';
 
@@ -14,6 +14,8 @@ export async function handleOpenTeam(leagueId, teamId) {
     if (!teamData) throw new Error("Team file not found.");
     state.currentTeam = teamData;
     state.viewTeamId = teamId;
+    state.teamTab = 'overview';
+    state.teamDevDraft = {};
     
     applyTeamTheme(teamData);
     
@@ -27,7 +29,7 @@ export async function handleOpenTeam(leagueId, teamId) {
         hdrContainer.innerHTML = `
           <div><h2 style="color:${text}; border:none; margin:0;">${teamData.name}</h2></div>
           <div class="team-header-actions">
-             <button onclick="showSection('view')" class="secondary-btn">← Back</button>
+             <button onclick="window.handleOpenLeague('${leagueId}')" class="secondary-btn">&larr; Back</button>
              <button onclick="window.handleManageTeamDirect()" class="primary-btn">Manage</button>
           </div>
         `;
@@ -50,8 +52,16 @@ export async function handleManageTeamDirect() {
 export function renderTeamView() {
   const t = state.currentTeam;
   const tv = calculateTeamValue(t);
-  
-  const staffInfo = `RR: ${t.rerolls||0} | Fan: ${t.dedicatedFans||0} | Apo: ${t.apothecary?'Yes':'No'}`;
+  const ctv = calculateCurrentTeamValue(t);
+
+  const roster = Array.isArray(t.players) ? t.players : [];
+  const availableCount = roster.filter(isPlayerAvailableForMatch).length;
+  const mngCount = roster.filter(p => !!p?.mng).length;
+  const trCount = roster.filter(p => !!p?.tr).length;
+  const deadCount = roster.filter(p => !!p?.dead).length;
+
+  const treasuryK = Math.floor((Number(t.treasury) || 0) / 1000);
+  const staffInfo = `RR: ${t.rerolls || 0} | DF: ${t.dedicatedFans || 0} | Apo: ${t.apothecary ? 'Yes' : 'No'} | AC: ${t.assistantCoaches || 0} | Cheer: ${t.cheerleaders || 0}`;
 
   const seasonStats = state.currentLeague ? computeSeasonStats(state.currentLeague).find(s => s.id === t.id) : null;
   const season = state.currentLeague?.season;
@@ -65,61 +75,1157 @@ export function renderTeamView() {
       <td data-label="Winnings">${h.winnings ? h.winnings + 'k' : '-'}</td>
     </tr>
   `).join('');
-  
+
   els.containers.teamSummary.innerHTML = `
     <div class="panel-styled" style="margin-bottom:0.75rem;">
-      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; border-bottom:1px solid #ccc; padding-bottom:0.5rem; margin-bottom:0.5rem;">
-         <span><strong>Race:</strong> ${t.race}</span>
-         <span><strong>Coach:</strong> ${t.coachName}</span>
-         <span><strong>TV:</strong> ${(tv/1000)}k</span>
+      <div class="season-stats-grid" style="margin-bottom:0.35rem;">
+        <div><strong>Race:</strong> ${t.race}</div>
+        <div><strong>Coach:</strong> ${t.coachName || '-'}</div>
+        <div><strong>Treasury:</strong> ${treasuryK}k</div>
+        <div><strong>TV / CTV:</strong> ${Math.floor(tv / 1000)}k / ${Math.floor(ctv / 1000)}k</div>
+        <div><strong>Players:</strong> ${roster.length} (Avail ${availableCount}${mngCount ? ` &bull; MNG ${mngCount}` : ''}${trCount ? ` &bull; TR ${trCount}` : ''}${deadCount ? ` &bull; Dead ${deadCount}` : ''})</div>
       </div>
       <div class="small" style="color:#666;">${staffInfo}</div>
     </div>
 
-    <div class="panel-styled" style="margin-bottom:0.75rem;">
-      <h4 style="margin-top:0;">Season ${season || '-'} Stats</h4>
-      ${seasonStats ? `
-        <div class="season-stats-grid">
-          <div><strong>Record:</strong> ${seasonStats.wins}-${seasonStats.draws}-${seasonStats.losses} (${seasonStats.games} GP)</div>
-          <div><strong>Points:</strong> ${seasonStats.points}</div>
-          <div><strong>TD F/A:</strong> ${seasonStats.tdFor}/${seasonStats.tdAgainst} (${seasonStats.tdDiff>=0?'+':''}${seasonStats.tdDiff})</div>
-          <div><strong>CAS F/A:</strong> ${seasonStats.casFor}/${seasonStats.casAgainst} (${seasonStats.casDiff>=0?'+':''}${seasonStats.casDiff})</div>
-        </div>
-      ` : `<div class="small" style="color:#666;">No completed games yet.</div>`}
-    </div>
-
-    <div class="panel-styled">
-      <h4 style="margin-top:0;">Season Match Log</h4>
-      ${history.length ? `
-        <table class="responsive-table">
-          <thead><tr><th>Rnd</th><th>Opponent</th><th>Result</th><th>Score</th><th>Winnings</th></tr></thead>
-          <tbody>${matchLogRows}</tbody>
-        </table>
-      ` : `<div class="small" style="color:#666;">No games logged for this season.</div>`}
+    <div class="league-tabs-header" style="margin-bottom:0.75rem;">
+      <h3 style="margin:0;">Team</h3>
+      <div class="league-tabs team-tabs">
+        <button class="secondary-btn league-tab-btn ${state.teamTab === 'overview' ? 'active' : ''}" onclick="window.setTeamTab('overview')">Overview</button>
+        <button class="secondary-btn league-tab-btn ${state.teamTab === 'roster' ? 'active' : ''}" onclick="window.setTeamTab('roster')">Roster</button>
+        <button class="secondary-btn league-tab-btn ${state.teamTab === 'development' ? 'active' : ''}" onclick="window.setTeamTab('development')">Development</button>
+        <button class="secondary-btn league-tab-btn ${state.teamTab === 'staff' ? 'active' : ''}" onclick="window.setTeamTab('staff')">Staff &amp; Treasury</button>
+        <button class="secondary-btn league-tab-btn ${state.teamTab === 'history' ? 'active' : ''}" onclick="window.setTeamTab('history')">History</button>
+      </div>
     </div>
   `;
-  
-  const rows = (t.players || []).map(p => {
-    const skillsHtml = (p.skills||[]).map(s => 
-      `<span class="skill-tag" onclick="window.showSkill('${s}')">${s}</span>`
-    ).join(' ');
-    const costK = p.cost ? Math.floor(p.cost/1000) + 'k' : '-';
+
+  els.containers.teamRoster.innerHTML = renderTeamTabContent({ team: t, season, seasonStats, history, matchLogRows });
+}
+
+export function setTeamTab(tab) {
+  state.teamTab = tab;
+  renderTeamView();
+}
+
+function renderTeamTabContent({ team, season, seasonStats, history, matchLogRows }) {
+  const tab = state.teamTab || 'overview';
+  const roster = Array.isArray(team.players) ? team.players : [];
+  const race = state.gameData?.races?.find(r => r.name === team.race) || null;
+
+  if (tab === 'overview') {
     return `
-    <tr>
-      <td data-label="#">${p.number||''}</td>
-      <td data-label="Name">${p.name}</td>
-      <td data-label="Pos">${p.position}</td>
-      <td data-label="Cost">${costK}</td>
-      <td data-label="MA">${p.ma}</td>
-      <td data-label="ST">${p.st}</td>
-      <td data-label="AG">${p.ag}</td>
-      <td data-label="PA">${p.pa}</td>
-      <td data-label="AV">${p.av}</td>
-      <td data-label="Skills">${skillsHtml}</td>
-      <td data-label="SPP">${p.spp}</td>
-    </tr>`;
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Season ${season || '-'} Stats</h4>
+        ${seasonStats ? `
+          <div class="season-stats-grid">
+            <div><strong>Record:</strong> ${seasonStats.wins}-${seasonStats.draws}-${seasonStats.losses} (${seasonStats.games} GP)</div>
+            <div><strong>Points:</strong> ${seasonStats.points}</div>
+            <div><strong>TD F/A:</strong> ${seasonStats.tdFor}/${seasonStats.tdAgainst} (${seasonStats.tdDiff >= 0 ? '+' : ''}${seasonStats.tdDiff})</div>
+            <div><strong>CAS F/A:</strong> ${seasonStats.casFor}/${seasonStats.casAgainst} (${seasonStats.casDiff >= 0 ? '+' : ''}${seasonStats.casDiff})</div>
+          </div>
+        ` : `<div class="small" style="color:#666;">No completed games yet.</div>`}
+      </div>
+
+      <div class="panel-styled">
+        <h4 style="margin-top:0;">Season Match Log</h4>
+        ${history.length ? `
+          <table class="responsive-table">
+            <thead><tr><th>Rnd</th><th>Opponent</th><th>Result</th><th>Score</th><th>Winnings</th></tr></thead>
+            <tbody>${matchLogRows}</tbody>
+          </table>
+        ` : `<div class="small" style="color:#666;">No games logged for this season.</div>`}
+      </div>
+    `;
+  }
+
+  if (tab === 'roster') {
+    const positionals = Array.isArray(race?.positionals) ? race.positionals : [];
+    const nextNumber = getNextPlayerNumber(roster);
+    const posOptions = positionals.map(p => {
+      const costK = Math.floor((Number(p.cost) || 0) / 1000);
+      return `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)} (${costK}k)</option>`;
+    }).join('');
+
+    const rows = roster.map(p => {
+      const skillsHtml = (p.skills || []).map(s =>
+        `<span class="skill-tag" onclick="window.showSkill('${s}')">${s}</span>`
+      ).join(' ');
+      const costK = p.cost ? Math.floor(p.cost / 1000) + 'k' : '-';
+      const status = [
+        p.dead ? `<span class="stat-badge" style="background:#a00; color:#fff;">DEAD</span>` : '',
+        p.tr ? `<span class="stat-badge" style="background:#666; color:#fff;">TR</span>` : '',
+        p.mng ? `<span class="stat-badge" style="background:#c97a00; color:#111;">MNG</span>` : ''
+      ].filter(Boolean).join(' ');
+      const canFire = !p.isStar && !p.isJourneyman;
+
+      return `
+        <tr>
+          <td data-label="#">${p.number || ''}</td>
+          <td data-label="Name">${escapeHtml(p.name || '-')}</td>
+          <td data-label="Pos">${escapeHtml(p.position || '-')}</td>
+          <td data-label="Status">${status || '<span class="small" style="color:#666;">OK</span>'}</td>
+          <td data-label="Cost">${costK}</td>
+          <td data-label="MA">${p.ma ?? '-'}</td>
+          <td data-label="ST">${p.st ?? '-'}</td>
+          <td data-label="AG">${p.ag ?? '-'}</td>
+          <td data-label="PA">${p.pa ?? '-'}</td>
+          <td data-label="AV">${p.av ?? '-'}</td>
+          <td data-label="Skills">${skillsHtml || '<span class="small" style="color:#666;">None</span>'}</td>
+          <td data-label="SPP">${p.spp ?? 0}</td>
+          <td data-label="Actions">${canFire ? `<button class="danger-btn" onclick="window.fireTeamPlayer('${p.id}')">Fire</button>` : ''}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const rosterTable = roster.length
+      ? `<table class="responsive-table"><thead><tr><th style="width:30px">#</th><th>Name</th><th>Pos</th><th>Status</th><th>Cost</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`
+      : `<div class="small" style="color:#666;">No players yet.</div>`;
+
+    return `
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Hire Player</h4>
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+          <div class="form-field">
+            <label>Position</label>
+            <select id="teamHirePos">${posOptions || `<option value="">No roster data</option>`}</select>
+          </div>
+          <div class="form-field">
+            <label>Name (optional)</label>
+            <input id="teamHireName" type="text" placeholder="Player name..." />
+          </div>
+          <div class="form-field">
+            <label>Number</label>
+            <input id="teamHireNumber" type="number" min="1" max="99" value="${nextNumber}" />
+          </div>
+        </div>
+        <div class="small" style="color:#666; margin-top:0.35rem;">Paid from Treasury. Firing players gives no refund. Team Draft List max is 16 players.</div>
+        <div style="margin-top:0.6rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="primary-btn" onclick="window.teamHirePlayer()">Hire</button>
+        </div>
+      </div>
+
+      <div class="panel-styled">
+        <h4 style="margin-top:0;">Roster</h4>
+        ${rosterTable}
+      </div>
+    `;
+  }
+
+  if (tab === 'development') {
+    const devPlayers = roster.filter(p => !p?.isStar && !p?.isJourneyman);
+    const playerCards = devPlayers.map(p => renderDevelopmentCard({ team, player: p, race })).join('');
+    return `
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Development (SPP)</h4>
+        <div class="small" style="color:#666;">Spend SPP to buy Skills or Characteristic improvements. Dice are not rolled in-app; enter results where needed.</div>
+      </div>
+
+      ${playerCards || `<div class="panel-styled"><div class="small" style="color:#666;">No eligible players.</div></div>`}
+    `;
+  }
+
+  if (tab === 'staff') {
+    const staffCosts = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
+    const rerollCost = Number(race?.rerollCost) || 50000;
+    const buyRerollCost = rerollCost * 2;
+    const treasuryGp = Number(team.treasury) || 0;
+    return `
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Staff &amp; Treasury</h4>
+        <div class="season-stats-grid">
+          <div><strong>Treasury:</strong> ${formatK(treasuryGp)}</div>
+          <div><strong>Re-rolls:</strong> ${team.rerolls || 0}</div>
+          <div><strong>Assistant Coaches:</strong> ${team.assistantCoaches || 0}</div>
+          <div><strong>Cheerleaders:</strong> ${team.cheerleaders || 0}</div>
+          <div><strong>Apothecary:</strong> ${team.apothecary ? 'Yes' : 'No'}</div>
+          <div><strong>Dedicated Fans:</strong> ${team.dedicatedFans || 0}</div>
+        </div>
+      </div>
+
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Team Re-rolls</h4>
+        <div class="small" style="color:#666; margin-bottom:0.5rem;">Buying a re-roll between games costs double: ${formatK(buyRerollCost)} each. Removing gives no refund.</div>
+        <div class="staff-row">
+          <div class="staff-row-left"><strong>Re-rolls</strong><div class="small" style="color:#666;">Base: ${formatK(rerollCost)}</div></div>
+          <div class="staff-row-controls">
+            <button class="secondary-btn" onclick="window.teamAdjustRerolls(-1)">-</button>
+            <div class="staff-row-count">${team.rerolls || 0}</div>
+            <button class="primary-btn" onclick="window.teamAdjustRerolls(1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Sideline Staff</h4>
+
+        <div class="staff-row">
+          <div class="staff-row-left"><strong>Assistant Coaches</strong><div class="small" style="color:#666;">${formatK(staffCosts.assistantCoach)} each</div></div>
+          <div class="staff-row-controls">
+            <button class="secondary-btn" onclick="window.teamAdjustStaff('assistantCoaches', -1)">-</button>
+            <div class="staff-row-count">${team.assistantCoaches || 0}</div>
+            <button class="primary-btn" onclick="window.teamAdjustStaff('assistantCoaches', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="staff-row">
+          <div class="staff-row-left"><strong>Cheerleaders</strong><div class="small" style="color:#666;">${formatK(staffCosts.cheerleader)} each</div></div>
+          <div class="staff-row-controls">
+            <button class="secondary-btn" onclick="window.teamAdjustStaff('cheerleaders', -1)">-</button>
+            <div class="staff-row-count">${team.cheerleaders || 0}</div>
+            <button class="primary-btn" onclick="window.teamAdjustStaff('cheerleaders', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="staff-row">
+          <div class="staff-row-left"><strong>Apothecary</strong><div class="small" style="color:#666;">${formatK(staffCosts.apothecary)} (one-time)</div></div>
+          <div class="staff-row-controls">
+            ${team.apothecary
+              ? `<button class="danger-btn" onclick="window.teamSetApothecary(false)">Remove</button>`
+              : `<button class="primary-btn" onclick="window.teamSetApothecary(true)">Buy</button>`}
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-styled">
+        <h4 style="margin-top:0;">Manual Treasury Adjustment</h4>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Amount (k)</label>
+            <input id="teamTreasuryAdjustK" type="number" step="5" placeholder="e.g. 50" />
+          </div>
+          <div class="form-field">
+            <label>Reason (optional)</label>
+            <input id="teamTreasuryAdjustReason" type="text" placeholder="Notes..." />
+          </div>
+        </div>
+        <div class="small" style="color:#666; margin-top:0.35rem;">Use this for corrections or commissioner adjustments.</div>
+        <div style="margin-top:0.6rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="secondary-btn" onclick="window.teamApplyTreasuryAdjust(-1)">Spend</button>
+          <button class="primary-btn" onclick="window.teamApplyTreasuryAdjust(1)">Add</button>
+        </div>
+      </div>
+    `;
+  }
+
+  if (tab === 'history') {
+    const txs = Array.isArray(team.transactions) ? [...team.transactions] : [];
+    txs.sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')));
+
+    const txRows = txs.map(tx => {
+      const when = tx.at ? new Date(tx.at).toLocaleString() : '-';
+      const type = tx.type || '-';
+      const label = tx.label || '-';
+      const dTre = tx?.delta?.treasuryGp;
+      const dTv = tx?.delta?.tvGp;
+      const dSpp = tx?.delta?.sppCost;
+      return `
+        <tr>
+          <td data-label="When">${escapeHtml(when)}</td>
+          <td data-label="Type">${escapeHtml(type)}</td>
+          <td data-label="Detail">${escapeHtml(label)}</td>
+          <td data-label="Treasury">${dTre == null ? '-' : escapeHtml(formatSignedK(dTre))}</td>
+          <td data-label="TV">${dTv == null ? '-' : escapeHtml(formatSignedK(dTv))}</td>
+          <td data-label="SPP">${dSpp == null ? '-' : escapeHtml(String(dSpp))}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const txTable = txs.length
+      ? `<table class="responsive-table"><thead><tr><th>When</th><th>Type</th><th>Detail</th><th>Treasury</th><th>TV</th><th>SPP</th></tr></thead><tbody>${txRows}</tbody></table>`
+      : `<div class="small" style="color:#666;">No transactions yet.</div>`;
+
+    const allHistory = Array.isArray(team.history) ? [...team.history] : [];
+    allHistory.sort((a, b) => {
+      const sa = Number(a.season) || 0;
+      const sb = Number(b.season) || 0;
+      if (sb !== sa) return sb - sa;
+      return (Number(b.round) || 0) - (Number(a.round) || 0);
+    });
+
+    const historyRows = allHistory.map(h => `
+      <tr>
+        <td data-label="Season">${h.season ?? '-'}</td>
+        <td data-label="Round">${h.round ?? '-'}</td>
+        <td data-label="Opponent">${escapeHtml(h.opponentName || '-')}</td>
+        <td data-label="Result">${escapeHtml(h.result || '-')}</td>
+        <td data-label="Score">${escapeHtml(h.score || '-')}</td>
+        <td data-label="Winnings">${h.winningsK != null ? escapeHtml(String(h.winningsK) + 'k') : (h.winnings ? escapeHtml(String(h.winnings) + 'k') : '-')}</td>
+      </tr>
+    `).join('');
+
+    const historyTable = allHistory.length
+      ? `<table class="responsive-table"><thead><tr><th>Season</th><th>Round</th><th>Opponent</th><th>Result</th><th>Score</th><th>Winnings</th></tr></thead><tbody>${historyRows}</tbody></table>`
+      : `<div class="small" style="color:#666;">No games logged.</div>`;
+
+    return `
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Transactions</h4>
+        ${txTable}
+      </div>
+
+      <div class="panel-styled">
+        <h4 style="margin-top:0;">Match History</h4>
+        ${historyTable}
+      </div>
+    `;
+  }
+
+  return `<div class="panel-styled"><div class="small" style="color:#666;">Unknown tab.</div></div>`;
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function formatK(gp) {
+  const val = Math.floor((Number(gp) || 0) / 1000);
+  return `${val}k`;
+}
+
+function formatSignedK(gp) {
+  const k = Math.round((Number(gp) || 0) / 1000);
+  if (!k) return '0k';
+  return `${k > 0 ? '+' : ''}${k}k`;
+}
+
+function getNextPlayerNumber(players) {
+  const used = new Set((players || []).map(p => Number(p?.number)).filter(n => Number.isFinite(n)));
+  let n = 1;
+  while (used.has(n)) n += 1;
+  return n;
+}
+
+function ensureTransactions(team) {
+  team.transactions = Array.isArray(team.transactions) ? team.transactions : [];
+  return team.transactions;
+}
+
+function addTeamTransaction(team, tx) {
+  const list = ensureTransactions(team);
+  list.push({
+    id: ulid(),
+    at: new Date().toISOString(),
+    season: state.currentLeague?.season ?? null,
+    ...tx
+  });
+}
+
+async function confirmProceedWithWarnings({ title, intro, warnings, confirmLabel }) {
+  if (!Array.isArray(warnings) || warnings.length === 0) return true;
+  const html = `
+    <div style="margin-bottom:0.75rem;">${escapeHtml(intro || '')}</div>
+    <div style="font-weight:800; margin-bottom:0.35rem;">Proceed anyway?</div>
+    <ul style="margin-top:0; padding-left:1.25rem;">
+      ${warnings.map(w => `<li>${escapeHtml(w)}</li>`).join('')}
+    </ul>
+    <div class="small" style="color:#666;">This is allowed, but may violate BB2025 rules.</div>
+  `;
+  return confirmModal(title, html, confirmLabel || 'Proceed', true, true);
+}
+
+async function saveCurrentTeam({ message }) {
+  const key = els.inputs.editKey?.value;
+  if (!key) throw new Error('Edit key required');
+  const l = state.currentLeague;
+  const t = state.currentTeam;
+  if (!l || !t) throw new Error('No league/team loaded');
+  t.teamValue = calculateTeamValue(t);
+  await apiSave(PATHS.team(l.id, t.id), t, message, key);
+}
+
+export async function teamHirePlayer() {
+  const team = state.currentTeam;
+  const league = state.currentLeague;
+  if (!team || !league) return;
+
+  const race = state.gameData?.races?.find(r => r.name === team.race);
+  if (!race) return setStatus('Race rules not found.', 'error');
+
+  const posName = document.getElementById('teamHirePos')?.value;
+  const pos = (race.positionals || []).find(p => p.name === posName);
+  if (!pos) return setStatus('Select a position to hire.', 'error');
+
+  const rawName = document.getElementById('teamHireName')?.value;
+  const name = String(rawName || '').trim() || pos.name;
+
+  const rawNumber = document.getElementById('teamHireNumber')?.value;
+  let number = parseInt(rawNumber, 10);
+  if (!Number.isFinite(number) || number < 1) number = getNextPlayerNumber(team.players || []);
+
+  const roster = Array.isArray(team.players) ? team.players : [];
+  const warnings = [];
+
+  const costGp = Number(pos.cost) || 0;
+  const treasuryBefore = Number(team.treasury) || 0;
+  const treasuryAfter = treasuryBefore - costGp;
+
+  if (treasuryAfter < 0) warnings.push(`Treasury (${formatK(treasuryBefore)}) is less than cost (${formatK(costGp)}).`);
+
+  const totalAfter = roster.length + 1;
+  if (totalAfter > 16) warnings.push(`Team Draft List max is 16 players; this would make ${totalAfter}.`);
+
+  const posMax = Number(pos.qtyMax ?? 0) || 0;
+  const posCount = roster.filter(p => !p?.dead && p?.position === pos.name).length;
+  if (posMax && (posCount + 1 > posMax)) warnings.push(`Max ${posMax} of "${pos.name}" allowed; you currently have ${posCount}.`);
+
+  const numberUsed = roster.some(p => Number(p?.number) === number);
+  if (numberUsed) warnings.push(`Jersey number ${number} is already used.`);
+
+  const ok = await confirmProceedWithWarnings({
+    title: 'Hire player with warnings?',
+    intro: `Hire ${name} (${pos.name}) for ${formatK(costGp)}.`,
+    warnings,
+    confirmLabel: 'Hire Anyway'
+  });
+  if (!ok) return;
+
+  const nextPlayer = {
+    id: ulid(),
+    number,
+    name,
+    position: pos.name,
+    cost: Number(pos.cost) || 0,
+    ma: pos.ma,
+    st: pos.st,
+    ag: pos.ag,
+    pa: pos.pa,
+    av: pos.av,
+    skills: Array.isArray(pos.skills) ? [...pos.skills] : [],
+    primary: Array.isArray(pos.primary) ? [...pos.primary] : (pos.primary ? [pos.primary] : []),
+    secondary: Array.isArray(pos.secondary) ? [...pos.secondary] : (pos.secondary ? [pos.secondary] : []),
+    spp: 0,
+    sppSpent: 0,
+    advancements: []
+  };
+
+  const tvBefore = calculateTeamValue(team);
+  team.players = [...roster, nextPlayer];
+  team.treasury = treasuryAfter;
+  const tvAfter = calculateTeamValue(team);
+
+  addTeamTransaction(team, {
+    type: 'hire_player',
+    label: `Hired ${name} (${pos.name})`,
+    playerId: nextPlayer.id,
+    delta: { treasuryGp: -costGp, tvGp: tvAfter - tvBefore }
+  });
+
+  try {
+    await saveCurrentTeam({ message: `Hire player: ${name}` });
+    setStatus(`Hired ${name}.`, 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
+}
+
+export async function fireTeamPlayer(playerId) {
+  const team = state.currentTeam;
+  const league = state.currentLeague;
+  if (!team || !league) return;
+
+  const roster = Array.isArray(team.players) ? team.players : [];
+  const idx = roster.findIndex(p => p.id === playerId);
+  if (idx === -1) return setStatus('Player not found.', 'error');
+  const player = roster[idx];
+
+  const remaining = roster.filter(p => p.id !== playerId);
+  const eligibleAfter = remaining.filter(isPlayerAvailableForMatch).length;
+
+  const warnings = [];
+  if (eligibleAfter < 11) warnings.push(`Firing this player would leave ${eligibleAfter} eligible players for the next game (minimum 11).`);
+
+  const intro = `Fire ${player.name} (#${player.number || '?'})? No refund.`;
+  const ok = warnings.length
+    ? await confirmProceedWithWarnings({ title: 'Fire player with warnings?', intro, warnings, confirmLabel: 'Fire' })
+    : await confirmModal('Fire player?', `${intro}\n\nThis cannot be undone.`, 'Fire', true);
+  if (!ok) return;
+
+  const tvBefore = calculateTeamValue(team);
+  team.players = remaining;
+  const tvAfter = calculateTeamValue(team);
+
+  addTeamTransaction(team, {
+    type: 'fire_player',
+    label: `Fired ${player.name} (${player.position || 'Player'})`,
+    playerId,
+    delta: { treasuryGp: 0, tvGp: tvAfter - tvBefore }
+  });
+
+  try {
+    await saveCurrentTeam({ message: `Fire player: ${player.name}` });
+    setStatus(`Fired ${player.name}.`, 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
+}
+
+function categoryNameFromCode(code) {
+  const c = String(code || '').toUpperCase();
+  const map = { A: 'Agility', D: 'Devious', G: 'General', M: 'Mutation', P: 'Passing', S: 'Strength' };
+  return map[c] || null;
+}
+
+function categoryLabelFromCode(code) {
+  const c = String(code || '').toUpperCase();
+  const name = categoryNameFromCode(c);
+  return name ? `${c} - ${name}` : c;
+}
+
+function normalizeCategoryCodes(input) {
+  if (Array.isArray(input)) return input.map(x => String(x || '').trim()).filter(Boolean);
+  const raw = String(input || '').trim();
+  if (!raw) return [];
+  if (raw.includes(',')) return raw.split(',').map(s => s.trim()).filter(Boolean);
+  if (raw.includes(' ')) return raw.split(' ').map(s => s.trim()).filter(Boolean);
+  if (raw.length > 1) return raw.split('').map(s => s.trim()).filter(Boolean);
+  return [raw];
+}
+
+function getPlayerCategoryGroups(player, race) {
+  const primary = normalizeCategoryCodes(player?.primary);
+  const secondary = normalizeCategoryCodes(player?.secondary);
+  if (primary.length || secondary.length) return { primary, secondary };
+
+  const positional = (race?.positionals || []).find(p => p.name === player?.position) || null;
+  return {
+    primary: normalizeCategoryCodes(positional?.primary),
+    secondary: normalizeCategoryCodes(positional?.secondary)
+  };
+}
+
+function getSkillDefByName(skillName) {
+  const clean = String(skillName || '').trim();
+  if (!clean) return null;
+  const cats = state.gameData?.skillCategories;
+  if (!cats) return null;
+  for (const list of Object.values(cats)) {
+    const found = (list || []).find(s => (typeof s === 'object' && s?.name === clean));
+    if (found) return found;
+  }
+  return null;
+}
+
+function getSkillDefsForCategoryCode(code) {
+  const name = categoryNameFromCode(code);
+  if (!name) return [];
+  const list = state.gameData?.skillCategories?.[name] || [];
+  return Array.isArray(list) ? list.filter(s => typeof s === 'object' && s?.name) : [];
+}
+
+function characteristicOptionsFromD8(rollD8) {
+  const r = Number(rollD8);
+  if (!r || r < 1 || r > 8) return [];
+  if (r === 1) return ['av'];
+  if (r === 2) return ['av', 'pa'];
+  if (r === 3 || r === 4) return ['av', 'ma', 'pa'];
+  if (r === 5) return ['ma', 'pa'];
+  if (r === 6) return ['ag', 'ma'];
+  if (r === 7) return ['ag', 'st'];
+  if (r === 8) return ['av', 'ma', 'pa', 'ag', 'st'];
+  return [];
+}
+
+function statLabel(statKey) {
+  const k = String(statKey || '').toLowerCase();
+  const map = { ma: 'MA', st: 'ST', ag: 'AG', pa: 'PA', av: 'AV' };
+  return map[k] || statKey;
+}
+
+function getDefaultDevDraft(player, race) {
+  const cats = getPlayerCategoryGroups(player, race);
+  const defaultPrimary = cats.primary[0] || 'G';
+  return {
+    kind: 'chosenPrimary',
+    categoryCode: defaultPrimary,
+    skillName: '',
+    rollD8: null,
+    statKey: '',
+    outcomeType: 'skill',
+    skillFrom: 'primary'
+  };
+}
+
+function getDevDraft(player, race) {
+  state.teamDevDraft = state.teamDevDraft || {};
+  if (!state.teamDevDraft[player.id]) state.teamDevDraft[player.id] = getDefaultDevDraft(player, race);
+  return state.teamDevDraft[player.id];
+}
+
+export function teamDevUpdate(playerId, field, value) {
+  const team = state.currentTeam;
+  if (!team) return;
+  const roster = Array.isArray(team.players) ? team.players : [];
+  const player = roster.find(p => p.id === playerId);
+  if (!player) return;
+
+  const race = state.gameData?.races?.find(r => r.name === team.race) || null;
+  const cats = getPlayerCategoryGroups(player, race);
+
+  const draft = getDevDraft(player, race);
+  draft[field] = value;
+
+  if (field === 'kind') {
+    const kind = String(value || '');
+    const defaultPrimary = cats.primary[0] || 'G';
+    const defaultSecondary = cats.secondary[0] || defaultPrimary;
+    draft.kind = kind;
+    draft.skillName = '';
+    draft.rollD8 = null;
+    draft.statKey = '';
+    draft.skillFrom = (kind === 'chosenSecondary') ? 'secondary' : 'primary';
+    draft.outcomeType = (kind === 'characteristic') ? 'stat' : 'skill';
+    draft.categoryCode = (kind === 'chosenSecondary') ? defaultSecondary : defaultPrimary;
+  }
+
+  if (field === 'skillFrom') {
+    const which = String(value || '') === 'secondary' ? 'secondary' : 'primary';
+    const defaultPrimary = cats.primary[0] || 'G';
+    const defaultSecondary = cats.secondary[0] || defaultPrimary;
+    draft.skillFrom = which;
+    draft.categoryCode = (which === 'secondary') ? defaultSecondary : defaultPrimary;
+    draft.skillName = '';
+  }
+
+  if (field === 'categoryCode') {
+    draft.categoryCode = String(value || '');
+    draft.skillName = '';
+  }
+
+  if (field === 'rollD8') {
+    const roll = value == null || value === '' ? null : Number(value);
+    draft.rollD8 = (roll == null || !Number.isFinite(roll)) ? null : roll;
+    const options = characteristicOptionsFromD8(draft.rollD8);
+    if (draft.outcomeType === 'stat' && options.length && !options.includes(String(draft.statKey || '').toLowerCase())) {
+      draft.statKey = options[0];
+    }
+  }
+
+  if (field === 'outcomeType') {
+    const next = String(value || '') === 'skill' ? 'skill' : 'stat';
+    draft.outcomeType = next;
+    draft.skillName = '';
+    if (next === 'skill') {
+      draft.skillFrom = draft.skillFrom || 'primary';
+    } else {
+      const options = characteristicOptionsFromD8(draft.rollD8);
+      if (options.length) draft.statKey = options[0];
+    }
+  }
+
+  if (field === 'statKey') {
+    draft.statKey = String(value || '').toLowerCase();
+  }
+
+  if (field === 'skillName') {
+    draft.skillName = String(value || '');
+  }
+
+  if (state.teamTab === 'development') renderTeamView();
+}
+
+export function resetTeamDevDraft(playerId) {
+  state.teamDevDraft = state.teamDevDraft || {};
+  delete state.teamDevDraft[playerId];
+  if (state.teamTab === 'development') renderTeamView();
+}
+
+function renderDevelopmentCard({ team, player, race }) {
+  const cats = getPlayerCategoryGroups(player, race);
+  const primaryCodes = cats.primary.length ? cats.primary : ['G'];
+  const secondaryCodes = cats.secondary.length ? cats.secondary : primaryCodes;
+
+  const draft = getDevDraft(player, race);
+  const kind = draft.kind || 'chosenPrimary';
+  const costRandom = getBb2025AdvancementCost(player, 'randomPrimary');
+  const costChosenPrimary = getBb2025AdvancementCost(player, 'chosenPrimary');
+  const costChosenSecondary = getBb2025AdvancementCost(player, 'chosenSecondary');
+  const costCharacteristic = getBb2025AdvancementCost(player, 'characteristic');
+
+  const costForCurrent = getBb2025AdvancementCost(player, kind) ?? 0;
+  const sppAvail = Number(player.spp) || 0;
+  const advCount = Array.isArray(player.advancements) ? player.advancements.length : 0;
+
+  const skillsHtml = (player.skills || []).map(s => `<span class="skill-tag" onclick="window.showSkill('${s}')">${escapeHtml(s)}</span>`).join(' ');
+  const statsLine = `MA ${player.ma ?? '-'} &nbsp; ST ${player.st ?? '-'} &nbsp; AG ${player.ag ?? '-'} &nbsp; PA ${player.pa ?? '-'} &nbsp; AV ${player.av ?? '-'}`;
+
+  const kindOptions = [
+    { v: 'randomPrimary', label: `Random Primary (${costRandom ?? '?'} SPP)` },
+    { v: 'chosenPrimary', label: `Chosen Primary (${costChosenPrimary ?? '?'} SPP)` },
+    { v: 'chosenSecondary', label: `Chosen Secondary (${costChosenSecondary ?? '?'} SPP)` },
+    { v: 'characteristic', label: `Characteristic (${costCharacteristic ?? '?'} SPP, roll D8)` }
+  ].map(o => `<option value="${o.v}" ${kind === o.v ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
+
+  const kindHelp = (kind === 'randomPrimary')
+    ? `<div class="small" style="color:#666; margin-top:0.25rem;">Random Primary: roll 2D6 twice on the Skill Table for the chosen category, then select one of the two results.</div>`
+    : (kind === 'characteristic')
+      ? `<div class="small" style="color:#666; margin-top:0.25rem;">Characteristic: spend SPP, roll D8, then choose an allowed characteristic (or choose a skill instead; SPP spent is still the characteristic cost).</div>`
+      : '';
+
+  const needsSkill = (kind !== 'characteristic') || (draft.outcomeType === 'skill');
+  const isSecondary = (kind === 'chosenSecondary') || (kind === 'characteristic' && draft.outcomeType === 'skill' && draft.skillFrom === 'secondary');
+  const categoryCodes = (kind === 'characteristic' && draft.outcomeType === 'skill')
+    ? (draft.skillFrom === 'secondary' ? secondaryCodes : primaryCodes)
+    : (kind === 'chosenSecondary' ? secondaryCodes : primaryCodes);
+
+  const categoryCode = categoryCodes.includes(String(draft.categoryCode || '')) ? String(draft.categoryCode || '') : categoryCodes[0];
+  const catOptions = categoryCodes.map(c => `<option value="${c}" ${c === categoryCode ? 'selected' : ''}>${escapeHtml(categoryLabelFromCode(c))}</option>`).join('');
+
+  const skillDefs = getSkillDefsForCategoryCode(categoryCode);
+  const skillOptions = [
+    `<option value="">Select skill...</option>`,
+    ...skillDefs.map(s => {
+      const elite = s?.isElite ? ' (Elite)' : '';
+      const selected = (draft.skillName === s.name) ? 'selected' : '';
+      return `<option value="${escapeHtml(s.name)}" ${selected}>${escapeHtml(s.name + elite)}</option>`;
+    })
+  ].join('');
+
+  const roll = draft.rollD8 ?? '';
+  const statOptions = characteristicOptionsFromD8(roll).map(k => `<option value="${k}" ${String(draft.statKey || '').toLowerCase() === k ? 'selected' : ''}>${statLabel(k)}</option>`).join('');
+  const allowedStats = characteristicOptionsFromD8(roll).map(statLabel).join('/');
+
+  const outcomeControls = (kind === 'characteristic') ? `
+    <div class="form-grid" style="margin-top:0.5rem;">
+      <div class="form-field">
+        <label>D8 Roll</label>
+        <input type="number" min="1" max="8" value="${roll}" onchange="window.teamDevUpdate('${player.id}', 'rollD8', (this.value===''?null:parseInt(this.value)))" />
+      </div>
+      <div class="form-field">
+        <label>Outcome</label>
+        <select onchange="window.teamDevUpdate('${player.id}', 'outcomeType', this.value)">
+          <option value="stat" ${draft.outcomeType === 'stat' ? 'selected' : ''}>Characteristic</option>
+          <option value="skill" ${draft.outcomeType === 'skill' ? 'selected' : ''}>Skill Instead</option>
+        </select>
+      </div>
+      ${draft.outcomeType === 'stat' ? `
+        <div class="form-field">
+          <label>Characteristic (${allowedStats || '&mdash;'})</label>
+          <select onchange="window.teamDevUpdate('${player.id}', 'statKey', this.value)">
+            ${statOptions || `<option value="">Enter D8 roll</option>`}
+          </select>
+        </div>
+      ` : `
+        <div class="form-field">
+          <label>Skill From</label>
+          <select onchange="window.teamDevUpdate('${player.id}', 'skillFrom', this.value)">
+            <option value="primary" ${draft.skillFrom !== 'secondary' ? 'selected' : ''}>Primary</option>
+            <option value="secondary" ${draft.skillFrom === 'secondary' ? 'selected' : ''}>Secondary</option>
+          </select>
+        </div>
+      `}
+    </div>
+  ` : '';
+
+  const skillControls = needsSkill ? `
+    <div class="form-grid" style="margin-top:0.5rem;">
+      <div class="form-field">
+        <label>Category</label>
+        <select onchange="window.teamDevUpdate('${player.id}', 'categoryCode', this.value)">
+          ${catOptions || `<option value="">No categories</option>`}
+        </select>
+      </div>
+      <div class="form-field" style="grid-column: span 2;">
+        <label>Skill ${isSecondary ? '(Secondary)' : '(Primary)'} </label>
+        <select onchange="window.teamDevUpdate('${player.id}', 'skillName', this.value)">
+          ${skillOptions}
+        </select>
+      </div>
+    </div>
+  ` : '';
+
+  const past = (player.advancements || []).map(a => {
+    const when = a.at ? new Date(a.at).toLocaleDateString() : '';
+    const what = a.outcomeType === 'stat'
+      ? `${statLabel(a.statKey)} (${a.rollD8 ? `D8 ${a.rollD8}` : 'D8'})`
+      : `${a.skillName}${a.isElite ? ' (Elite)' : ''}`;
+    return `<li>${escapeHtml(`${when} ${what}`.trim())}</li>`;
   }).join('');
-  els.containers.teamRoster.innerHTML = `<table class="responsive-table"><thead><tr><th style="width:30px">#</th><th>Name</th><th>Pos</th><th>Cost</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th></tr></thead><tbody>${rows}</tbody></table>`;
+
+  return `
+    <div class="panel-styled pg-player-card" style="margin-bottom:0.75rem;">
+      <div class="pg-player-header">
+        <div class="pg-player-left">
+          <div class="pg-player-name">#${escapeHtml(player.number || '?')} ${escapeHtml(player.name || 'Player')}</div>
+          <div class="small" style="color:#666;">${escapeHtml(player.position || '')}</div>
+          <div class="pg-player-tags" style="margin-top:0.35rem;">${skillsHtml || '<span class="small" style="color:#666;">No skills</span>'}</div>
+        </div>
+        <div class="pg-player-right">
+          <div class="pg-player-spp">SPP: ${sppAvail}</div>
+          <div class="small" style="color:#666;">Adv: ${advCount} • Spent: ${player.sppSpent || 0}</div>
+        </div>
+      </div>
+
+      <div class="small" style="color:#333; margin-top:0.35rem;">${statsLine}</div>
+
+      <div style="margin-top:0.75rem; border-top:1px solid #ccc; padding-top:0.75rem;">
+        <div class="form-field">
+          <label>Advancement Type</label>
+          <select onchange="window.teamDevUpdate('${player.id}', 'kind', this.value)">
+            ${kindOptions}
+          </select>
+          ${kindHelp}
+        </div>
+
+        ${outcomeControls}
+        ${skillControls}
+
+        <div class="small" style="color:#666; margin-top:0.35rem;">Cost: ${costForCurrent} SPP ${sppAvail - costForCurrent < 0 ? `(after: ${sppAvail - costForCurrent})` : ''}</div>
+
+        <div style="margin-top:0.6rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="secondary-btn" onclick="window.resetTeamDevDraft('${player.id}')">Reset</button>
+          <button class="primary-btn" onclick="window.applyTeamAdvancement('${player.id}')">Apply</button>
+        </div>
+
+        ${past ? `
+          <details style="margin-top:0.6rem;">
+            <summary class="small" style="color:#666; cursor:pointer;">Past advancements (${advCount})</summary>
+            <ul style="margin-top:0.35rem; padding-left:1.25rem;">${past}</ul>
+          </details>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+export async function applyTeamAdvancement(playerId) {
+  const team = state.currentTeam;
+  if (!team) return;
+  const roster = Array.isArray(team.players) ? team.players : [];
+  const idx = roster.findIndex(p => p.id === playerId);
+  if (idx === -1) return setStatus('Player not found.', 'error');
+  const player = roster[idx];
+
+  const race = state.gameData?.races?.find(r => r.name === team.race) || null;
+  const cats = getPlayerCategoryGroups(player, race);
+  const primaryCodes = cats.primary.length ? cats.primary : ['G'];
+  const secondaryCodes = cats.secondary.length ? cats.secondary : primaryCodes;
+
+  const draft = getDevDraft(player, race);
+  const kind = String(draft.kind || 'chosenPrimary');
+  const costSpp = getBb2025AdvancementCost(player, kind);
+
+  const warnings = [];
+  if (costSpp == null) warnings.push('Could not determine SPP cost for this advancement.');
+
+  const sppBefore = Number(player.spp) || 0;
+  const sppAfter = sppBefore - (Number(costSpp) || 0);
+  if (sppAfter < 0) warnings.push(`Not enough SPP (${sppBefore}) to buy this advancement (cost ${costSpp}).`);
+
+  const tvBefore = calculateTeamValue(team);
+
+  let updated = { ...player };
+  let valueIncreaseGp = 0;
+  let advRecord = null;
+  let advLabel = '';
+
+  if (kind === 'characteristic') {
+    const outcome = (String(draft.outcomeType || 'stat') === 'skill') ? 'skill' : 'stat';
+
+    if (outcome === 'stat') {
+      const roll = Number(draft.rollD8);
+      if (!roll || roll < 1 || roll > 8) warnings.push('Characteristic improvements require a D8 roll (1-8).');
+
+      const options = characteristicOptionsFromD8(roll);
+      const statKey = String(draft.statKey || '').toLowerCase();
+      if (!statKey) warnings.push('Select a characteristic to improve.');
+      if (options.length && statKey && !options.includes(statKey)) warnings.push(`Chosen characteristic (${statLabel(statKey)}) is not allowed by D8 roll (${roll}).`);
+
+      const statAdvCount = (player.advancements || []).filter(a => a.outcomeType === 'stat' && String(a.statKey || '').toLowerCase() === statKey).length;
+      if (statKey && statAdvCount >= 2) warnings.push(`A characteristic cannot be improved more than twice (already improved ${statLabel(statKey)} ${statAdvCount}x).`);
+
+      const out = applyBb2025CharacteristicIncrease(player, statKey);
+      updated = out.player;
+      valueIncreaseGp = out.valueIncreaseGp;
+      advLabel = `+${statLabel(statKey)}`;
+      advRecord = { kind, outcomeType: 'stat', statKey, rollD8: roll || null };
+    } else {
+      const skillFrom = (String(draft.skillFrom || 'primary') === 'secondary') ? 'secondary' : 'primary';
+      const isSecondary = (skillFrom === 'secondary');
+      const allowed = isSecondary ? secondaryCodes : primaryCodes;
+
+      const categoryCode = String(draft.categoryCode || '').toUpperCase();
+      if (!allowed.includes(categoryCode)) warnings.push(`Category ${categoryCode} is not available as a ${skillFrom} skill.`);
+
+      const skillName = String(draft.skillName || '').trim();
+      if (!skillName) warnings.push('Select a skill.');
+      if ((player.skills || []).includes(skillName)) warnings.push(`Player already has "${skillName}".`);
+
+      const def = getSkillDefByName(skillName);
+      const out = applyBb2025SkillAdvancement(player, { skillName, isSecondary, isEliteSkill: !!def?.isElite });
+      updated = out.player;
+      valueIncreaseGp = out.valueIncreaseGp;
+      advLabel = `+${skillName}`;
+      advRecord = { kind, outcomeType: 'skill', skillName, categoryCode, skillFrom, isElite: !!def?.isElite };
+    }
+  } else {
+    const isSecondary = (kind === 'chosenSecondary');
+    const allowed = isSecondary ? secondaryCodes : primaryCodes;
+
+    const categoryCode = String(draft.categoryCode || '').toUpperCase();
+    if (!allowed.includes(categoryCode)) warnings.push(`Category ${categoryCode} is not available for this advancement type.`);
+
+    const skillName = String(draft.skillName || '').trim();
+    if (!skillName) warnings.push('Select a skill.');
+    if ((player.skills || []).includes(skillName)) warnings.push(`Player already has "${skillName}".`);
+
+    const def = getSkillDefByName(skillName);
+    const out = applyBb2025SkillAdvancement(player, { skillName, isSecondary, isEliteSkill: !!def?.isElite });
+    updated = out.player;
+    valueIncreaseGp = out.valueIncreaseGp;
+    advLabel = `+${skillName}`;
+    advRecord = { kind, outcomeType: 'skill', skillName, categoryCode, skillFrom: isSecondary ? 'secondary' : 'primary', isElite: !!def?.isElite };
+  }
+
+  const ok = await confirmProceedWithWarnings({
+    title: 'Apply advancement with warnings?',
+    intro: `${player.name}: ${advLabel} (cost ${costSpp ?? '?'} SPP).`,
+    warnings,
+    confirmLabel: 'Apply Anyway'
+  });
+  if (!ok) return;
+
+  updated.spp = sppAfter;
+  updated.sppSpent = (Number(updated.sppSpent) || 0) + (Number(costSpp) || 0);
+
+  const existingAdv = Array.isArray(updated.advancements) ? [...updated.advancements] : [];
+  const record = {
+    id: ulid(),
+    at: new Date().toISOString(),
+    sppCost: Number(costSpp) || 0,
+    valueIncreaseGp,
+    ...advRecord
+  };
+  updated.advancements = [...existingAdv, record];
+
+  team.players = roster.map(p => (p.id === playerId ? updated : p));
+  const tvAfter = calculateTeamValue(team);
+
+  addTeamTransaction(team, {
+    type: 'advancement',
+    label: `Advancement: ${player.name} ${advLabel}`,
+    playerId,
+    delta: { tvGp: tvAfter - tvBefore, sppCost: Number(costSpp) || 0 }
+  });
+
+  try {
+    await saveCurrentTeam({ message: `Advancement: ${player.name} ${advLabel}` });
+    resetTeamDevDraft(playerId);
+    setStatus(`Advancement applied: ${player.name} ${advLabel}`, 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
+}
+
+export async function teamAdjustStaff(field, delta) {
+  const team = state.currentTeam;
+  if (!team) return;
+  const staffCosts = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
+
+  const allowed = new Set(['assistantCoaches', 'cheerleaders']);
+  if (!allowed.has(field)) return setStatus('Unknown staff field.', 'error');
+
+  const current = Number(team[field]) || 0;
+  const next = current + (Number(delta) || 0);
+  if (next < 0) return setStatus('Cannot go below 0.', 'error');
+
+  const unitCost = (field === 'assistantCoaches') ? Number(staffCosts.assistantCoach) || 0 : Number(staffCosts.cheerleader) || 0;
+  const treasuryBefore = Number(team.treasury) || 0;
+  const deltaCount = next - current;
+  const deltaTreasury = (deltaCount > 0) ? -(unitCost * deltaCount) : 0;
+  const treasuryAfter = treasuryBefore + deltaTreasury;
+
+  const warnings = [];
+  if (deltaCount > 0 && treasuryAfter < 0) warnings.push(`Treasury (${formatK(treasuryBefore)}) is less than cost (${formatK(-deltaTreasury)}).`);
+  if (deltaCount < 0) warnings.push('Firing sideline staff gives no refund.');
+
+  const label = (field === 'assistantCoaches') ? 'Assistant Coach' : 'Cheerleader';
+  const ok = await confirmProceedWithWarnings({
+    title: 'Apply staff change with warnings?',
+    intro: `${deltaCount > 0 ? 'Hire' : 'Fire'} ${Math.abs(deltaCount)} ${label}${Math.abs(deltaCount) === 1 ? '' : 's'}.`,
+    warnings,
+    confirmLabel: 'Apply'
+  });
+  if (!ok) return;
+
+  const tvBefore = calculateTeamValue(team);
+  team[field] = next;
+  team.treasury = treasuryAfter;
+  const tvAfter = calculateTeamValue(team);
+
+  addTeamTransaction(team, {
+    type: deltaCount > 0 ? 'hire_staff' : 'fire_staff',
+    label: `${deltaCount > 0 ? 'Hired' : 'Fired'} ${Math.abs(deltaCount)} ${label}${Math.abs(deltaCount) === 1 ? '' : 's'}`,
+    delta: { treasuryGp: deltaTreasury, tvGp: tvAfter - tvBefore }
+  });
+
+  try {
+    await saveCurrentTeam({ message: `${deltaCount > 0 ? 'Hire' : 'Fire'} staff: ${label}` });
+    setStatus(`${label}${Math.abs(deltaCount) === 1 ? '' : 's'} updated.`, 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
+}
+
+export async function teamAdjustRerolls(delta) {
+  const team = state.currentTeam;
+  if (!team) return;
+  const race = state.gameData?.races?.find(r => r.name === team.race) || null;
+  const rerollCost = Number(race?.rerollCost) || 50000;
+  const buyCost = rerollCost * 2;
+
+  const current = Number(team.rerolls) || 0;
+  const next = current + (Number(delta) || 0);
+  if (next < 0) return setStatus('Cannot go below 0.', 'error');
+
+  const treasuryBefore = Number(team.treasury) || 0;
+  const deltaCount = next - current;
+  const deltaTreasury = (deltaCount > 0) ? -(buyCost * deltaCount) : 0;
+  const treasuryAfter = treasuryBefore + deltaTreasury;
+
+  const warnings = [];
+  if (deltaCount > 0 && treasuryAfter < 0) warnings.push(`Treasury (${formatK(treasuryBefore)}) is less than cost (${formatK(-deltaTreasury)}).`);
+  if (deltaCount < 0) warnings.push('BB2025 does not allow removing Team Re-rolls once purchased (and there is no refund).');
+
+  const ok = warnings.length
+    ? await confirmProceedWithWarnings({
+      title: 'Adjust re-rolls with warnings?',
+      intro: `${deltaCount > 0 ? 'Buy' : 'Remove'} ${Math.abs(deltaCount)} re-roll${Math.abs(deltaCount) === 1 ? '' : 's'}.`,
+      warnings,
+      confirmLabel: 'Apply'
+    })
+    : true;
+  if (!ok) return;
+
+  const tvBefore = calculateTeamValue(team);
+  team.rerolls = next;
+  team.treasury = treasuryAfter;
+  const tvAfter = calculateTeamValue(team);
+
+  addTeamTransaction(team, {
+    type: 'rerolls',
+    label: `${deltaCount > 0 ? 'Bought' : 'Removed'} ${Math.abs(deltaCount)} re-roll${Math.abs(deltaCount) === 1 ? '' : 's'}`,
+    delta: { treasuryGp: deltaTreasury, tvGp: tvAfter - tvBefore }
+  });
+
+  try {
+    await saveCurrentTeam({ message: `Adjust re-rolls` });
+    setStatus('Re-rolls updated.', 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
+}
+
+export async function teamSetApothecary(nextValue) {
+  const team = state.currentTeam;
+  if (!team) return;
+
+  const race = state.gameData?.races?.find(r => r.name === team.race) || null;
+  const allowed = race?.apothecaryAllowed !== false;
+  const staffCosts = state.gameData?.staffCosts || { apothecary: 50000 };
+
+  const next = !!nextValue;
+  const current = !!team.apothecary;
+  if (next === current) return;
+
+  const treasuryBefore = Number(team.treasury) || 0;
+  const cost = Number(staffCosts.apothecary) || 0;
+  const deltaTreasury = next ? -cost : 0;
+  const treasuryAfter = treasuryBefore + deltaTreasury;
+
+  const warnings = [];
+  if (next && !allowed) warnings.push('This team roster cannot hire an Apothecary.');
+  if (next && treasuryAfter < 0) warnings.push(`Treasury (${formatK(treasuryBefore)}) is less than cost (${formatK(cost)}).`);
+  if (!next) warnings.push('Removing an Apothecary gives no refund.');
+
+  const ok = warnings.length
+    ? await confirmProceedWithWarnings({
+      title: 'Update apothecary with warnings?',
+      intro: `${next ? 'Buy' : 'Remove'} Apothecary.`,
+      warnings,
+      confirmLabel: 'Apply'
+    })
+    : await confirmModal('Update apothecary?', `${next ? 'Buy' : 'Remove'} Apothecary?`, 'Apply');
+  if (!ok) return;
+
+  const tvBefore = calculateTeamValue(team);
+  team.apothecary = next;
+  team.treasury = treasuryAfter;
+  const tvAfter = calculateTeamValue(team);
+
+  addTeamTransaction(team, {
+    type: 'apothecary',
+    label: `${next ? 'Bought' : 'Removed'} Apothecary`,
+    delta: { treasuryGp: deltaTreasury, tvGp: tvAfter - tvBefore }
+  });
+
+  try {
+    await saveCurrentTeam({ message: `${next ? 'Buy' : 'Remove'} apothecary` });
+    setStatus('Apothecary updated.', 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
+}
+
+export async function teamApplyTreasuryAdjust(direction) {
+  const team = state.currentTeam;
+  if (!team) return;
+
+  const rawK = document.getElementById('teamTreasuryAdjustK')?.value;
+  const amountK = Number(rawK);
+  if (!Number.isFinite(amountK) || amountK <= 0) return setStatus('Enter a positive amount (k).', 'error');
+
+  const sign = (Number(direction) || 0) >= 0 ? 1 : -1;
+  const deltaGp = Math.round(amountK * 1000) * sign;
+  const reason = String(document.getElementById('teamTreasuryAdjustReason')?.value || '').trim();
+
+  const treasuryBefore = Number(team.treasury) || 0;
+  const treasuryAfter = treasuryBefore + deltaGp;
+
+  const warnings = [];
+  if (!reason) warnings.push('No reason provided (recommended for audit trail).');
+  if (treasuryAfter < 0) warnings.push(`Treasury would go negative (${formatK(treasuryAfter)}).`);
+
+  const ok = await confirmProceedWithWarnings({
+    title: 'Apply treasury adjustment with warnings?',
+    intro: `Treasury adjustment: ${deltaGp >= 0 ? '+' : ''}${formatK(deltaGp)}.`,
+    warnings,
+    confirmLabel: 'Apply'
+  });
+  if (!ok) return;
+
+  const tvBefore = calculateTeamValue(team);
+  team.treasury = treasuryAfter;
+  const tvAfter = calculateTeamValue(team);
+
+  addTeamTransaction(team, {
+    type: 'treasury_adjust',
+    label: `Treasury ${deltaGp >= 0 ? '+' : ''}${formatK(deltaGp)}${reason ? ` (${reason})` : ''}`,
+    delta: { treasuryGp: deltaGp, tvGp: tvAfter - tvBefore }
+  });
+
+  try {
+    await saveCurrentTeam({ message: `Treasury adjust: ${deltaGp >= 0 ? '+' : ''}${formatK(deltaGp)}` });
+    const kInput = document.getElementById('teamTreasuryAdjustK');
+    const rInput = document.getElementById('teamTreasuryAdjustReason');
+    if (kInput) kInput.value = '';
+    if (rInput) rInput.value = '';
+    setStatus('Treasury updated.', 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
 }
 
 // --- Team Editor ---
@@ -149,6 +1255,8 @@ function createEmptyTeam(id) {
     race: defaultRace, 
     coachName: '', 
     players: [], 
+    history: [],
+    transactions: [],
     colors: { primary: '#222222', secondary: '#c5a059' },
     treasury: 1000000, rerolls: 0, apothecary: false, assistantCoaches: 0, cheerleaders: 0, dedicatedFans: 1
   };

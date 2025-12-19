@@ -46,6 +46,10 @@ export const state = {
   leagueStatsCache: null,
   leagueTeamsCache: null,
   leagueTeamsCacheForLeagueId: null,
+
+  // Team View UI State
+  teamTab: 'overview',
+  teamDevDraft: {},
   
   // Action Sheet State
   selectedPlayerIdx: null,
