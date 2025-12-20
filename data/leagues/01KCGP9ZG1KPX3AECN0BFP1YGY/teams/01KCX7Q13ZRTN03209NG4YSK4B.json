@@ -32,7 +32,7 @@
         "A",
         "S"
       ],
-      "spp": 1,
+      "spp": 5,
       "sppSpent": 3,
       "advancements": [
         {
@@ -164,7 +164,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 3,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -318,7 +318,7 @@
       "sppSpent": 0,
       "advancements": [],
       "injuries": "",
-      "mng": true
+      "mng": false
     },
     {
       "id": "01KCX7QHBJDA9NVYF2SVKKAREV",
@@ -668,6 +668,274 @@
         "result": "Major Incident",
         "deltaGp": -520000
       }
+    },
+    {
+      "season": 1,
+      "round": 5,
+      "matchId": "01KCX85H6PB4QNZFHD836DJ648",
+      "matchType": "playoff",
+      "opponentName": "Norse",
+      "result": "Win",
+      "score": "1-0",
+      "winningsK": 40,
+      "winningsGp": 40000,
+      "dedicatedFansBefore": 2,
+      "dedicatedFansRollD6": 4,
+      "dedicatedFansDelta": 1,
+      "tv": 460000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KCX7QF7EBH7F8JREK3EE70G2",
+          "name": "Player",
+          "number": 1,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KCX7QFCCRKCTEWAH1S8XPN3X",
+          "name": "Player",
+          "number": 2,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QFHEK6EN63KMHYM8Z1Y2",
+          "name": "Player",
+          "number": 3,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QFPRXS4FERQDB9EHC4WF",
+          "name": "Player",
+          "number": 4,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QFXG639PHQD6Q48GRE5H",
+          "name": "Player",
+          "number": 5,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 3,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QG43REZH70AR2NJFH3BV",
+          "name": "Player",
+          "number": 6,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QGBRYS31BG71HRGC1FEA",
+          "name": "Player",
+          "number": 7,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QGJEG4XG8S3EMPK8ZRAQ",
+          "name": "Player",
+          "number": 8,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QGT4KQP7XH7NJ8XGPV68",
+          "name": "Player",
+          "number": 9,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QHBJDA9NVYF2SVKKAREV",
+          "name": "Player",
+          "number": 11,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX86A57P9EBKD4D9183BP3T",
+          "name": "Journeyman 1",
+          "number": 102,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 560000,
+        "rollD6": 5,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": "Crisis Averted",
+        "deltaGp": 0
+      }
     }
   ],
   "transactions": [],
@@ -675,11 +943,11 @@
     "primary": "#8c009e",
     "secondary": "#424242"
   },
-  "treasury": 520000,
+  "treasury": 560000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
-  "dedicatedFans": 2,
+  "dedicatedFans": 3,
   "teamValue": 460000
 }
