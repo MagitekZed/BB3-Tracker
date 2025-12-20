@@ -545,6 +545,31 @@
         "tvGp": 20000,
         "sppCost": 6
       }
+    },
+    {
+      "id": "01KCTQA0N5EQF0HG10BC958JGH",
+      "at": "2025-12-19T07:13:39.493Z",
+      "season": 1,
+      "type": "advancement",
+      "label": "Advancement: Norse Raider Lineman +Tackle",
+      "playerId": "01KCGPC4S17HB8G8C20VS3GSD8",
+      "delta": {
+        "tvGp": 20000,
+        "sppCost": 3
+      },
+      "cancelledAt": "2025-12-19T07:14:06.299Z"
+    },
+    {
+      "id": "01KCW7GBQR7VC9X0ZQG06368GD",
+      "at": "2025-12-19T21:15:59.097Z",
+      "season": 1,
+      "type": "rerolls",
+      "label": "Bought 1 re-roll",
+      "delta": {
+        "treasuryGp": -120000,
+        "tvGp": 60000
+      },
+      "cancelledAt": "2025-12-19T21:16:12.805Z"
     }
   ]
 }
