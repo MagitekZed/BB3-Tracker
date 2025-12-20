@@ -315,7 +315,7 @@
         ],
         "cost": 50000,
         "live": {
-          "used": false,
+          "used": true,
           "injured": false,
           "sentOff": false,
           "td": 0,
@@ -324,7 +324,7 @@
           "comp": 0,
           "ttmThrow": 0,
           "ttmLand": 0,
-          "foul": 0
+          "foul": 1
         }
       },
       {
