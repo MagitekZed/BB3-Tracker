@@ -142,7 +142,7 @@
     "primary": "#1e00ff",
     "secondary": "#c7c7c7"
   },
-  "treasury": 375000,
+  "treasury": 435000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
@@ -1357,6 +1357,15 @@
         "tvGp": 60000
       },
       "cancelledAt": "2025-12-19T21:16:12.805Z"
+    },
+    {
+      "id": "01KCXFV5D8Y6C3KJJ6ED5W560W",
+      "at": "2025-12-20T09:00:56.104Z",
+      "type": "league",
+      "label": "Glittering Prize: 2nd place (+60k)",
+      "delta": {
+        "treasuryGp": 60000
+      }
     }
   ]
 }
