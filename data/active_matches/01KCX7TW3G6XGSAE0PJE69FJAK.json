@@ -1,0 +1,881 @@
+{
+  "matchId": "01KCX7TW3G6XGSAE0PJE69FJAK",
+  "leagueId": "01KCGP9ZG1KPX3AECN0BFP1YGY",
+  "round": 4,
+  "status": "in_progress",
+  "activeTeam": "home",
+  "pregame": {
+    "ctv": {
+      "home": 590000,
+      "away": 440000
+    },
+    "higherSide": "home",
+    "pettyCash": {
+      "home": 0,
+      "away": 620000
+    },
+    "treasurySpent": {
+      "home": 470000,
+      "away": 0
+    },
+    "journeymen": {
+      "home": {
+        "needed": 8,
+        "type": "Eagle Warrior (Human, Lineman)"
+      },
+      "away": {
+        "needed": 0,
+        "type": "Rotter Lineman (Human, Lineman)"
+      }
+    }
+  },
+  "home": {
+    "id": "01KCGPACYZY3NBCA4ZFNBXBPTK",
+    "name": "Amazons",
+    "colors": {
+      "primary": "#1e8a00",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KCGPB0Q1RXQ09K8K8STB9714",
+        "number": 1,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Piranha Warrior Blitzer",
+        "ma": 7,
+        "st": 3,
+        "ag": 3,
+        "pa": 5,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Hit and Run",
+          "Jump Up"
+        ],
+        "cost": 90000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPB5F7XFMW6E851E1JDT3M",
+        "number": 2,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPB5WRMNBA4TSCH3RM61WG",
+        "number": 3,
+        "name": "Eagle Warrior Linewoman",
+        "position": "Eagle Warrior Linewoman",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Dodge"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814XAA24BG6739DENKA",
+        "isJourneyman": true,
+        "number": 94,
+        "name": "Journeyman 1",
+        "position": "Eagle Warrior (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Dodge",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814H2Z664B3B62MGZ5Q",
+        "isJourneyman": true,
+        "number": 95,
+        "name": "Journeyman 2",
+        "position": "Eagle Warrior (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Dodge",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X8144JF3RGBZBTPQZ1PG",
+        "isJourneyman": true,
+        "number": 96,
+        "name": "Journeyman 3",
+        "position": "Eagle Warrior (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Dodge",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814YPAYG9KK89Q8CQ6Y",
+        "isJourneyman": true,
+        "number": 97,
+        "name": "Journeyman 4",
+        "position": "Eagle Warrior (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Dodge",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X8141C3VS0TFWMMXZHCA",
+        "isJourneyman": true,
+        "number": 98,
+        "name": "Journeyman 5",
+        "position": "Eagle Warrior (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Dodge",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814ARYQN5CEQNCSB5C9",
+        "isJourneyman": true,
+        "number": 99,
+        "name": "Journeyman 6",
+        "position": "Eagle Warrior (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Dodge",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814QEPJFKZCRD1S3X7T",
+        "isJourneyman": true,
+        "number": 100,
+        "name": "Journeyman 7",
+        "position": "Eagle Warrior (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Dodge",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814VJBXMA1MMYE83G2S",
+        "isJourneyman": true,
+        "number": 101,
+        "name": "Journeyman 8",
+        "position": "Eagle Warrior (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Dodge",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814R33VJ3CTG8JB98ZC",
+        "isStar": true,
+        "number": 99,
+        "name": "Grak",
+        "position": "Star Player",
+        "ma": 5,
+        "st": 5,
+        "ag": 4,
+        "pa": 4,
+        "av": 10,
+        "skills": [
+          "Bone Head",
+          "Kick Team-mate",
+          "Loner (4+)",
+          "Mighty Blow",
+          "Thick Skull\nDodge",
+          "Lethal Flight",
+          "Loner (4+)",
+          "Right Stuff",
+          "Stunty",
+          "Sure Hands"
+        ],
+        "cost": 250000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814Q92B6W53ZNNJEM2D",
+        "isStar": true,
+        "number": 99,
+        "name": "Zolcath the Zoat",
+        "position": "Star Player",
+        "ma": 5,
+        "st": 5,
+        "ag": 4,
+        "pa": 5,
+        "av": 10,
+        "skills": [
+          "Disturbing Presence",
+          "Juggernaut",
+          "Loner (4+)",
+          "Mighty Blow",
+          "Prehensile Tail",
+          "Regeneration",
+          "Sure Feet"
+        ],
+        "cost": 220000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {
+      "Star: Grak": 1,
+      "Star: Zolcath the Zoat": 1
+    },
+    "ctv": 590000,
+    "tv": 590000
+  },
+  "away": {
+    "id": "01KCX7Q13ZRTN03209NG4YSK4B",
+    "name": "Nurgle",
+    "colors": {
+      "primary": "#8c009e",
+      "secondary": "#424242"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KCX7QF7EBH7F8JREK3EE70G2",
+        "number": 1,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QFCCRKCTEWAH1S8XPN3X",
+        "number": 2,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QFHEK6EN63KMHYM8Z1Y2",
+        "number": 3,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QFPRXS4FERQDB9EHC4WF",
+        "number": 4,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QFXG639PHQD6Q48GRE5H",
+        "number": 5,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QG43REZH70AR2NJFH3BV",
+        "number": 6,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QGBRYS31BG71HRGC1FEA",
+        "number": 7,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QGJEG4XG8S3EMPK8ZRAQ",
+        "number": 8,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QGT4KQP7XH7NJ8XGPV68",
+        "number": 9,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QH1ST14D9PZMAD06T46G",
+        "number": 10,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QHBJDA9NVYF2SVKKAREV",
+        "number": 11,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X8149Q9X9KRTF9GBZT69",
+        "isStar": true,
+        "number": 99,
+        "name": "Bilerot Vomitflesh",
+        "position": "Star Player",
+        "ma": 4,
+        "st": 5,
+        "ag": 4,
+        "pa": 6,
+        "av": 10,
+        "skills": [
+          "Dirty Player",
+          "Disturbing Presence",
+          "Foul Appearance",
+          "Lone Fouler",
+          "Loner (4+)",
+          "Regeneration",
+          "Unsteady"
+        ],
+        "cost": 180000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7X814VAARE1J2018C87AW",
+        "isStar": true,
+        "number": 99,
+        "name": "Morg ‘n’ Thorg",
+        "position": "Star Player",
+        "ma": 6,
+        "st": 6,
+        "ag": 3,
+        "pa": 4,
+        "av": 11,
+        "skills": [
+          "Block",
+          "Bullseye",
+          "Hatred (Undead)",
+          "Loner (4+)",
+          "Mighty Blow",
+          "Thick Skull",
+          "Throw Team-Mate"
+        ],
+        "cost": 340000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {
+      "Extra Team Training": 1,
+      "Star: Bilerot Vomitflesh": 1,
+      "Star: Morg ‘n’ Thorg": 1,
+      "Riotous Rookies": 0
+    },
+    "ctv": 440000,
+    "tv": 440000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
