@@ -1,0 +1,773 @@
+{
+  "matchId": "01KCX85H6PB4QNZFHD836DJ648",
+  "leagueId": "01KCGP9ZG1KPX3AECN0BFP1YGY",
+  "round": 5,
+  "status": "in_progress",
+  "activeTeam": "away",
+  "pregame": {
+    "ctv": {
+      "home": 460000,
+      "away": 800000
+    },
+    "higherSide": "away",
+    "pettyCash": {
+      "home": 340000,
+      "away": 0
+    },
+    "treasurySpent": {
+      "home": 0,
+      "away": 0
+    },
+    "journeymen": {
+      "home": {
+        "needed": 1,
+        "type": "Rotter Lineman (Human, Lineman)"
+      },
+      "away": {
+        "needed": 7,
+        "type": "Norse Raider (Human, Lineman)"
+      }
+    }
+  },
+  "home": {
+    "id": "01KCX7Q13ZRTN03209NG4YSK4B",
+    "name": "Nurgle",
+    "colors": {
+      "primary": "#8c009e",
+      "secondary": "#424242"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KCX7QF7EBH7F8JREK3EE70G2",
+        "number": 1,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden",
+          "Block"
+        ],
+        "cost": 60000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QFCCRKCTEWAH1S8XPN3X",
+        "number": 2,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QFHEK6EN63KMHYM8Z1Y2",
+        "number": 3,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QFPRXS4FERQDB9EHC4WF",
+        "number": 4,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QFXG639PHQD6Q48GRE5H",
+        "number": 5,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QG43REZH70AR2NJFH3BV",
+        "number": 6,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QGBRYS31BG71HRGC1FEA",
+        "number": 7,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QGJEG4XG8S3EMPK8ZRAQ",
+        "number": 8,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QGT4KQP7XH7NJ8XGPV68",
+        "number": 9,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7QHBJDA9NVYF2SVKKAREV",
+        "number": 11,
+        "name": "Player",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Decay",
+          "Plague Ridden"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX86A57P9EBKD4D9183BP3T",
+        "isJourneyman": true,
+        "number": 102,
+        "name": "Journeyman 1",
+        "position": "Rotter Lineman (Human, Lineman)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "primary": [
+          "D",
+          "G",
+          "M"
+        ],
+        "secondary": [
+          "A",
+          "S"
+        ],
+        "skills": [
+          "Decay",
+          "Plague Ridden",
+          "Loner (4+)"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {},
+    "ctv": 460000,
+    "tv": 460000
+  },
+  "away": {
+    "id": "01KCGPBJR94R81D2REP21EZ48N",
+    "name": "Norse",
+    "colors": {
+      "primary": "#1e00ff",
+      "secondary": "#c7c7c7"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
+        "number": 1,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Berserker",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 5,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Frenzy",
+          "Jump Up"
+        ],
+        "cost": 90000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4MNXR4D5G5G4JSMJSM9",
+        "number": 2,
+        "name": "Norse Raider Lineman",
+        "position": "Valkyrie",
+        "ma": 7,
+        "st": 3,
+        "ag": 3,
+        "pa": 3,
+        "av": 8,
+        "skills": [
+          "Catch",
+          "Dauntless",
+          "Pass",
+          "Strip Ball",
+          "Block"
+        ],
+        "cost": 115000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4S17HB8G8C20VS3GSD8",
+        "number": 3,
+        "name": "Norse Raider Lineman",
+        "position": "Yhetee",
+        "ma": 5,
+        "st": 5,
+        "ag": 4,
+        "pa": -1,
+        "av": 9,
+        "skills": [
+          "Claws",
+          "Disturbing Presence",
+          "Frenzy",
+          "Loner (4+)",
+          "Unchannelled Fury"
+        ],
+        "cost": 140000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4X91BX2KRGE8CA1PJH0",
+        "number": 4,
+        "name": "Norse Raider Lineman",
+        "position": "Ulfwerener",
+        "ma": 6,
+        "st": 4,
+        "ag": 4,
+        "pa": -1,
+        "av": 9,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 105000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX86A57TKST87GFMW74ADHN",
+        "isJourneyman": true,
+        "number": 95,
+        "name": "Journeyman 1",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX86A57BKT7J93BVD5Q45E2",
+        "isJourneyman": true,
+        "number": 96,
+        "name": "Journeyman 2",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX86A570THSKPP1HCS8QSNK",
+        "isJourneyman": true,
+        "number": 97,
+        "name": "Journeyman 3",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX86A576NPDCXM8RSVENKQE",
+        "isJourneyman": true,
+        "number": 98,
+        "name": "Journeyman 4",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX86A57QEE4P8FETVCW6SC2",
+        "isJourneyman": true,
+        "number": 99,
+        "name": "Journeyman 5",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX86A57JTWTKTNCK6ZHERN2",
+        "isJourneyman": true,
+        "number": 100,
+        "name": "Journeyman 6",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX86A57DARRXH29E6JM128F",
+        "isJourneyman": true,
+        "number": 101,
+        "name": "Journeyman 7",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {},
+    "ctv": 800000,
+    "tv": 800000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
