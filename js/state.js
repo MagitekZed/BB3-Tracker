@@ -43,6 +43,7 @@ export const state = {
   leaguePlayerSortKey: 'sppGain',
   leaguePlayerSortDir: 'desc',
   leagueScope: 'season',
+  leagueSeasonView: null,
   leagueStatsCache: null,
   leagueTeamsCache: null,
   leagueTeamsCacheForLeagueId: null,

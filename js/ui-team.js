@@ -69,7 +69,7 @@ export function renderTeamView() {
 
   const seasonStats = state.currentLeague ? computeSeasonStats(state.currentLeague).find(s => s.id === t.id) : null;
   const season = state.currentLeague?.season;
-  const history = (t.history || []).filter(h => !h.season || h.season === season);
+  const history = (t.history || []).filter(h => (h.season ?? 1) === season);
   const matchLogRows = history.map(h => `
     <tr>
       <td data-label="Rnd">${h.round ?? '-'}</td>

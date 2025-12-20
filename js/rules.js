@@ -172,10 +172,11 @@ export function computeSeasonStats(league, season = league?.season) {
   const map = new Map();
   (league.teams || []).forEach(t => map.set(t.id, base(t)));
 
+  const seasonNumber = Number(season || 1);
+
   (league.matches || [])
     .filter(m => m.status === 'completed')
-    // future-friendly: allow match.season override, otherwise assume current season
-    .filter(m => !m.season || m.season === season)
+    .filter(m => (m.season ?? 1) === seasonNumber)
     .filter(m => String(m.type || 'regular') !== 'playoff')
     .forEach(m => {
       const h = map.get(m.homeTeamId);

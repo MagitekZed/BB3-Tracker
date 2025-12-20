@@ -258,6 +258,13 @@ body.mode-coach .breadcrumbs {
   border-radius: 4px;
 }
 
+.league-tab-tools select {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-weight: 800;
+}
+
 .league-subheading {
   text-align: center;
   font-weight: 800;

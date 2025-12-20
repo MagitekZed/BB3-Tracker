@@ -28,6 +28,25 @@ const PLAYER_SORTABLE_KEYS = new Set([
   'sppGain'
 ]);
 
+function getLeagueViewSeason(league) {
+  const current = Number(league?.season || 1);
+  const selectedRaw = state.leagueSeasonView;
+  const selected = (selectedRaw == null || selectedRaw === '') ? null : Number(selectedRaw);
+  if (Number.isFinite(selected) && selected >= 1 && selected <= current) return selected;
+  return current;
+}
+
+export function setLeagueSeasonView(season) {
+  const league = state.currentLeague;
+  if (!league) return;
+
+  const current = Number(league?.season || 1);
+  const next = Number(season || 0);
+  state.leagueSeasonView = (Number.isFinite(next) && next >= 1 && next <= current) ? next : null;
+  state.leagueStatsCache = null;
+  renderLeagueView();
+}
+
 function safeHexColor(value, fallback) {
   const s = String(value || '').trim();
   if (/^#[0-9a-fA-F]{6}$/.test(s)) return s;
@@ -91,6 +110,7 @@ export async function handleOpenLeague(id) {
     state.viewLeagueId = id;
     state.leagueTeamsCache = null;
     state.leagueStatsCache = null;
+    state.leagueSeasonView = null;
     state.leagueTeamsCacheForLeagueId = id;
     
     renderLeagueView();
@@ -114,27 +134,74 @@ function renderLeagueTabs() {
 function renderLeagueTabTools() {
   const toolsEl = els.leagueView?.tabTools;
   if (!toolsEl) return;
+  const league = state.currentLeague;
+  if (!league) return;
 
-  if (state.leagueTab !== 'playerStats') {
+  const currentSeason = Number(league.season || 1);
+  const viewSeason = getLeagueViewSeason(league);
+  const isHistory = viewSeason !== currentSeason;
+
+  let seasonSelect = toolsEl.querySelector('select[data-role="league-season-select"]');
+  let seasonNote = toolsEl.querySelector('[data-role="league-season-note"]');
+  let seasonCurrentBtn = toolsEl.querySelector('button[data-role="league-season-current"]');
+  let searchInput = toolsEl.querySelector('input[data-role="league-player-search"]');
+
+  if (!seasonSelect) {
     toolsEl.innerHTML = '';
-    return;
+
+    const seasonWrap = document.createElement('div');
+    seasonWrap.style.display = 'flex';
+    seasonWrap.style.alignItems = 'center';
+    seasonWrap.style.gap = '0.5rem';
+
+    const label = document.createElement('div');
+    label.className = 'small';
+    label.textContent = 'Season';
+
+    seasonSelect = document.createElement('select');
+    seasonSelect.setAttribute('data-role', 'league-season-select');
+    seasonSelect.addEventListener('change', (e) => setLeagueSeasonView(e.target.value));
+
+    seasonWrap.appendChild(label);
+    seasonWrap.appendChild(seasonSelect);
+
+    seasonNote = document.createElement('div');
+    seasonNote.className = 'small';
+    seasonNote.style.color = '#666';
+    seasonNote.setAttribute('data-role', 'league-season-note');
+
+    seasonCurrentBtn = document.createElement('button');
+    seasonCurrentBtn.className = 'secondary-btn';
+    seasonCurrentBtn.textContent = 'Current';
+    seasonCurrentBtn.setAttribute('data-role', 'league-season-current');
+    seasonCurrentBtn.onclick = () => setLeagueSeasonView(currentSeason);
+
+    searchInput = document.createElement('input');
+    searchInput.type = 'search';
+    searchInput.placeholder = 'Search players...';
+    searchInput.value = state.leaguePlayerSearch || '';
+    searchInput.setAttribute('data-role', 'league-player-search');
+    searchInput.addEventListener('input', (e) => setLeaguePlayerSearch(e.target.value));
+
+    toolsEl.appendChild(seasonWrap);
+    toolsEl.appendChild(seasonNote);
+    toolsEl.appendChild(seasonCurrentBtn);
+    toolsEl.appendChild(searchInput);
   }
 
-  const existing = toolsEl.querySelector('input[data-role="league-player-search"]');
-  if (existing) {
-    const nextValue = state.leaguePlayerSearch || '';
-    if (existing.value !== nextValue) existing.value = nextValue;
-    return;
-  }
+  seasonSelect.innerHTML = Array.from({ length: currentSeason }, (_, i) => {
+    const n = i + 1;
+    return `<option value="${n}">Season ${n}</option>`;
+  }).join('');
+  if (String(seasonSelect.value) !== String(viewSeason)) seasonSelect.value = String(viewSeason);
 
-  toolsEl.innerHTML = '';
-  const input = document.createElement('input');
-  input.type = 'search';
-  input.placeholder = 'Search players...';
-  input.value = state.leaguePlayerSearch || '';
-  input.setAttribute('data-role', 'league-player-search');
-  input.addEventListener('input', (e) => setLeaguePlayerSearch(e.target.value));
-  toolsEl.appendChild(input);
+  seasonNote.textContent = isHistory ? `Viewing Season ${viewSeason} (history).` : `Viewing Season ${viewSeason}.`;
+  seasonCurrentBtn.style.display = isHistory ? '' : 'none';
+
+  const showSearch = state.leagueTab === 'playerStats';
+  searchInput.style.display = showSearch ? '' : 'none';
+  const nextValue = state.leaguePlayerSearch || '';
+  if (showSearch && searchInput.value !== nextValue) searchInput.value = nextValue;
 }
 
 function getTabLabel(tabId) {
@@ -337,7 +404,7 @@ export async function openPlayoffsManager() {
     const standings = computeSeasonStats(league);
 
     const regularMatches = (league.matches || [])
-      .filter(m => (m.season ?? season) === season)
+      .filter(m => (m.season ?? 1) === season)
       .filter(m => String(m.type || 'regular') !== 'playoff');
     const regularIncomplete = regularMatches.filter(m => m.status !== 'completed');
 
@@ -417,7 +484,7 @@ export async function openPlayoffsManager() {
 
     league.matches = Array.isArray(league.matches) ? league.matches : [];
 
-    const seasonMatches = league.matches.filter(m => (m.season ?? season) === season);
+    const seasonMatches = league.matches.filter(m => (m.season ?? 1) === season);
     const maxRound = Math.max(0, ...seasonMatches.map(m => Number(m.round) || 0));
 
     const baseStages = stageOrder.filter(s => s !== 'thirdPlace');
@@ -597,7 +664,7 @@ export async function openPlayoffsManager() {
 
         try {
           const toRemove = (league.matches || [])
-            .filter(m => (m.season ?? season) === season)
+            .filter(m => (m.season ?? 1) === season)
             .filter(m => String(m.type || 'regular') === 'playoff');
 
           league.matches = (league.matches || [])
@@ -986,10 +1053,22 @@ export async function startNextSeason() {
 export function renderLeagueView() {
   const l = state.currentLeague;
   if (!l) return;
+  const viewSeason = getLeagueViewSeason(l);
   
   document.getElementById('leagueHeader').innerHTML = `<h2>${l.name}</h2><div class="small">Season ${l.season} (${l.status})</div>`;
   document.getElementById('leagueTeamsSection').className = 'panel-styled';
   document.getElementById('leagueMatchesSection').className = 'panel-styled';
+
+  const matchesHeading = document.querySelector('#leagueMatchesSection h3');
+  if (matchesHeading) matchesHeading.textContent = `Matches (Season ${viewSeason})`;
+  const isCurrentSeason = viewSeason === Number(l.season || 1);
+  const schedBtn = document.getElementById('desktopSchedBtn');
+  if (schedBtn) {
+    schedBtn.disabled = !isCurrentSeason;
+    schedBtn.title = isCurrentSeason ? '' : 'Switch to the current season to schedule matches.';
+  }
+  const mobileBtn = document.getElementById('mobileAddMatchBtn');
+  if (mobileBtn) mobileBtn.classList.toggle('hidden', !isCurrentSeason);
 
   if (!state.leagueTab) state.leagueTab = 'standings';
   renderLeagueTabs();
@@ -999,7 +1078,7 @@ export function renderLeagueView() {
 
   renderLeagueTabTools();
   void renderLeagueTabContent(l);
-  renderMatchesList(l);
+  renderMatchesList(l, viewSeason);
 }
 
 let leagueTabLoadToken = 0;
@@ -1057,18 +1136,20 @@ function getLeaguePhaseLabel(status) {
 }
 
 function renderSeasonTab(league) {
-  const season = Number(league?.season || 1);
+  const season = getLeagueViewSeason(league);
   const status = String(league?.status || 'active');
-  const phaseLabel = getLeaguePhaseLabel(status);
+  const isCurrentSeason = season === Number(league?.season || 1);
+  const phaseLabel = isCurrentSeason ? getLeaguePhaseLabel(status) : 'Archived';
 
   const matches = Array.isArray(league?.matches) ? league.matches : [];
-  const seasonMatches = matches.filter(m => (m.season ?? season) === season);
+  const seasonMatches = matches.filter(m => (m.season ?? 1) === season);
   const regularMatches = seasonMatches.filter(m => String(m.type || 'regular') !== 'playoff');
   const playoffMatches = seasonMatches.filter(m => String(m.type || 'regular') === 'playoff');
   const regularComplete = regularMatches.length ? regularMatches.every(m => m.status === 'completed') : false;
   const playoffComplete = playoffMatches.length ? playoffMatches.every(m => m.status === 'completed') : false;
 
-  const playoffs = (league?.playoffs && league.playoffs.season === season) ? league.playoffs : null;
+  const playoffs = ((league?.playoffs && league.playoffs.season === season) ? league.playoffs : null)
+    || (league?.playoffsHistory?.[String(season)] || league?.playoffsHistory?.[season] || null);
   const hasBracket = !!playoffs?.bracketSize;
   const prizesAwarded = !!playoffs?.prizesAwardedAt;
 
@@ -1094,7 +1175,7 @@ function renderSeasonTab(league) {
         <div class="small" style="color:#666; margin-bottom:0.5rem;">Bracket: ${playoffs.bracketSize} teams • ${playoffs.status || 'in_progress'}${prizesAwarded ? ' • prizes awarded' : ''}</div>
       ` : `<div class="small" style="color:#666; margin-bottom:0.5rem;">No play-offs configured for this season.</div>`}
       <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
-        <button class="${hasBracket ? 'secondary-btn' : 'primary-btn'}" onclick="window.openPlayoffsManager()">${playoffsCtaLabel}</button>
+        ${isCurrentSeason ? `<button class="${hasBracket ? 'secondary-btn' : 'primary-btn'}" onclick="window.openPlayoffsManager()">${playoffsCtaLabel}</button>` : ''}
       </div>
       ${playoffsNote}
     </div>
@@ -1113,13 +1194,14 @@ function renderSeasonTab(league) {
     </div>
   `;
 
-  els.containers.standings.innerHTML = summary + playoffsCard + offseasonCard;
+  els.containers.standings.innerHTML = isCurrentSeason ? (summary + playoffsCard + offseasonCard) : (summary + playoffsCard);
 }
 
 function renderStandingsTab(league) {
-  const standings = computeSeasonStats(league);
+  const season = getLeagueViewSeason(league);
+  const standings = computeSeasonStats(league, season);
   els.containers.standings.innerHTML = `
-    <div class="league-subheading">Season ${league.season} standings</div>
+    <div class="league-subheading">Season ${season} standings</div>
     <div class="table-scroll">
       <table class="league-table standings-table">
         <thead>
@@ -1161,19 +1243,19 @@ async function ensureLeagueTeamsLoaded(league) {
   return map;
 }
 
-function getSeasonPlayerStats(league, teamFiles) {
-  const key = `${league.id}:${league.season}`;
+function getSeasonPlayerStats(league, teamFiles, season) {
+  const key = `${league.id}:${season}`;
   const cached = state.leagueStatsCache;
   if (cached?.key === key && Array.isArray(cached.players)) return cached.players;
 
-  const players = aggregatePlayerStats(collectSeasonPlayerRows(teamFiles, league.season));
+  const players = aggregatePlayerStats(collectSeasonPlayerRows(teamFiles, season));
   state.leagueStatsCache = { key, players };
   return players;
 }
 
 function renderLeadersTab(league, teamFiles) {
-  const season = league.season;
-  const players = getSeasonPlayerStats(league, teamFiles);
+  const season = getLeagueViewSeason(league);
+  const players = getSeasonPlayerStats(league, teamFiles, season);
 
   const top = (key, n = 5) =>
     players
@@ -1271,11 +1353,23 @@ function renderLeadersTab(league, teamFiles) {
 }
 
 function renderTeamStatsTab(league, teamFiles) {
-  const season = league.season;
-  const standings = computeSeasonStats(league);
+  const season = getLeagueViewSeason(league);
+  const standings = computeSeasonStats(league, season);
   const tvK = (team) => {
     const tv = Number(team?.teamValue);
     return Number.isFinite(tv) && tv > 0 ? `${Math.round(tv / 1000)}k` : '-';
+  };
+  const seasonTvK = (team) => {
+    if (!team) return '-';
+    const history = Array.isArray(team.history) ? team.history : [];
+    const entries = history.filter(h => (h.season ?? 1) === season);
+    if (!entries.length) return tvK(team);
+    const last = entries.reduce(
+      (best, cur) => (Number(cur?.round) || 0) > (Number(best?.round) || 0) ? cur : best,
+      entries[0]
+    );
+    const tv = Number(last?.tv);
+    return Number.isFinite(tv) && tv > 0 ? `${Math.round(tv / 1000)}k` : tvK(team);
   };
 
   els.containers.standings.innerHTML = `
@@ -1300,7 +1394,7 @@ function renderTeamStatsTab(league, teamFiles) {
                 <td>${s.points}</td>
                 <td>${s.tdDiff >= 0 ? '+' : ''}${s.tdDiff}</td>
                 <td>${s.casDiff >= 0 ? '+' : ''}${s.casDiff}</td>
-                <td>${tvK(team)}</td>
+                <td>${seasonTvK(team)}</td>
               </tr>`;
           }).join('')}
         </tbody>
@@ -1310,9 +1404,9 @@ function renderTeamStatsTab(league, teamFiles) {
 }
 
 function renderPlayerStatsTab(league, teamFiles) {
-  const season = league.season;
+  const season = getLeagueViewSeason(league);
   const q = (state.leaguePlayerSearch || '').trim().toLowerCase();
-  let players = [...getSeasonPlayerStats(league, teamFiles)];
+  let players = [...getSeasonPlayerStats(league, teamFiles, season)];
 
   if (q) {
     players = players.filter(p =>
@@ -1404,14 +1498,14 @@ function renderPlayerStatsTab(league, teamFiles) {
   `;
 }
 
-export function renderMatchesList(league) {
+export function renderMatchesList(league, seasonOverride = null) {
   if(!league.matches || !league.matches.length) {
     els.containers.matches.innerHTML = '<div class="small">No matches scheduled.</div>';
     return;
   }
   
-  const season = Number(league.season || 1);
-  const seasonMatches = league.matches.filter(m => (m.season ?? season) === season);
+  const season = Number(seasonOverride || getLeagueViewSeason(league));
+  const seasonMatches = league.matches.filter(m => (m.season ?? 1) === season);
 
   const active = seasonMatches.filter(m => m.status === 'in_progress');
   const others = seasonMatches.filter(m => m.status !== 'in_progress').sort((a,b) => a.round - b.round);

@@ -1,4 +1,5 @@
 export function collectSeasonPlayerRows(teamFiles, season, opts = {}) {
+  const seasonNumber = Number(season || 1);
   const options = {
     includeStars: false,
     includeJourneymen: false,
@@ -6,11 +7,11 @@ export function collectSeasonPlayerRows(teamFiles, season, opts = {}) {
     ...opts
   };
 
-  const rows = [];
+    const rows = [];
   for (const [teamId, team] of teamFiles.entries()) {
     const teamName = team?.name || 'Unknown Team';
     const history = (team?.history || [])
-      .filter(h => !h.season || h.season === season)
+      .filter(h => (h.season ?? 1) === seasonNumber)
       .filter(h => options.includePlayoffs || String(h.matchType || 'regular') !== 'playoff');
     for (const h of history) {
       for (const pr of (h.playerRecords || [])) {
