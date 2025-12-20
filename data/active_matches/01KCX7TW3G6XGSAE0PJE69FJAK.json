@@ -61,7 +61,7 @@
           "td": 0,
           "cas": 0,
           "int": 0,
-          "comp": 0,
+          "comp": 1,
           "ttmThrow": 0,
           "ttmLand": 0,
           "foul": 0
