@@ -7,40 +7,10 @@
   "coachName": "",
   "players": [
     {
-      "id": "01KCX7P705NQBR73QXPSR745TD",
-      "number": 1,
-      "name": "Player",
+      "id": "01KCXG74KWTP6AW1JM6TXAX5TK",
+      "number": 12,
+      "name": "Bloodborn Marauder (Human, Lineman)",
       "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 50000,
-      "ma": 6,
-      "st": 3,
-      "ag": 3,
-      "pa": 4,
-      "av": 8,
-      "skills": [
-        "Frenzy"
-      ],
-      "primary": [
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "D",
-        "S"
-      ],
-      "spp": 11,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7P7JQC94C6M0YVF3RASN3",
-      "number": 2,
-      "name": "Player",
-      "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
       "cost": 50000,
       "ma": 6,
       "st": 3,
@@ -62,14 +32,14 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "rookieSeason": 2
     },
     {
-      "id": "01KCX7P81JYH6Y8PEHW8WG2SHB",
-      "number": 3,
-      "name": "Player",
+      "id": "01KCXG74KWEMHRY5PJ8F7Y3EBR",
+      "number": 12,
+      "name": "Bloodborn Marauder (Human, Lineman)",
       "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
       "cost": 50000,
       "ma": 6,
       "st": 3,
@@ -91,14 +61,14 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "rookieSeason": 2
     },
     {
-      "id": "01KCX7P8E26GMAWZHW4ZQQ5XMC",
-      "number": 4,
-      "name": "Player",
+      "id": "01KCXG74KXP1WBW2CNP1TF8E00",
+      "number": 12,
+      "name": "Bloodborn Marauder (Human, Lineman)",
       "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
       "cost": 50000,
       "ma": 6,
       "st": 3,
@@ -120,14 +90,14 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "rookieSeason": 2
     },
     {
-      "id": "01KCX7P8S200V7131KTDTX5E82",
-      "number": 5,
-      "name": "Player",
+      "id": "01KCXG74KXJSREZ8NDMYYYEAAB",
+      "number": 12,
+      "name": "Bloodborn Marauder (Human, Lineman)",
       "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
       "cost": 50000,
       "ma": 6,
       "st": 3,
@@ -149,181 +119,8 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7P91WWR0K7DKK6SAG9XPK",
-      "number": 6,
-      "name": "Player",
-      "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 50000,
-      "ma": 6,
-      "st": 3,
-      "ag": 3,
-      "pa": 4,
-      "av": 8,
-      "skills": [
-        "Frenzy"
-      ],
-      "primary": [
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "D",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7P9AS3PE5CVJT62V3GN0K",
-      "number": 7,
-      "name": "Player",
-      "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 50000,
-      "ma": 6,
-      "st": 3,
-      "ag": 3,
-      "pa": 4,
-      "av": 8,
-      "skills": [
-        "Frenzy"
-      ],
-      "primary": [
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "D",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7P9JXRFKN3PYZKQ42ZKK0",
-      "number": 8,
-      "name": "Player",
-      "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 50000,
-      "ma": 6,
-      "st": 3,
-      "ag": 3,
-      "pa": 4,
-      "av": 8,
-      "skills": [
-        "Frenzy"
-      ],
-      "primary": [
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "D",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7P9V3D4GR6FBA4SZFJDG1",
-      "number": 9,
-      "name": "Player",
-      "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 50000,
-      "ma": 6,
-      "st": 3,
-      "ag": 3,
-      "pa": 4,
-      "av": 8,
-      "skills": [
-        "Frenzy"
-      ],
-      "primary": [
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "D",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7PA3MP4TKH1Z92BFMNDCD",
-      "number": 10,
-      "name": "Player",
-      "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 50000,
-      "ma": 6,
-      "st": 3,
-      "ag": 3,
-      "pa": 4,
-      "av": 8,
-      "skills": [
-        "Frenzy"
-      ],
-      "primary": [
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "D",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7PAD5G6W2R2SVZPGCG90F",
-      "number": 11,
-      "name": "Player",
-      "position": "Bloodborn Marauder (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 50000,
-      "ma": 6,
-      "st": 3,
-      "ag": 3,
-      "pa": 4,
-      "av": 8,
-      "skills": [
-        "Frenzy"
-      ],
-      "primary": [
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "D",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "rookieSeason": 2
     }
   ],
   "history": [
@@ -873,17 +670,366 @@
       "delta": {
         "treasuryGp": 30000
       }
+    },
+    {
+      "id": "01KCXG74KX2W7BF5055MVHWMJ4",
+      "at": "2025-12-20T09:07:28.509Z",
+      "season": 1,
+      "type": "redraft",
+      "label": "Re-drafted for Season 2",
+      "undoBefore": {
+        "treasury": 1050000,
+        "rerolls": 3,
+        "apothecary": true,
+        "assistantCoaches": 2,
+        "cheerleaders": 0,
+        "dedicatedFans": 2,
+        "redraft": null,
+        "players": [
+          {
+            "id": "01KCX7P705NQBR73QXPSR745TD",
+            "number": 1,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 11,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7P7JQC94C6M0YVF3RASN3",
+            "number": 2,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7P81JYH6Y8PEHW8WG2SHB",
+            "number": 3,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7P8E26GMAWZHW4ZQQ5XMC",
+            "number": 4,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7P8S200V7131KTDTX5E82",
+            "number": 5,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7P91WWR0K7DKK6SAG9XPK",
+            "number": 6,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7P9AS3PE5CVJT62V3GN0K",
+            "number": 7,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7P9JXRFKN3PYZKQ42ZKK0",
+            "number": 8,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7P9V3D4GR6FBA4SZFJDG1",
+            "number": 9,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7PA3MP4TKH1Z92BFMNDCD",
+            "number": 10,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7PAD5G6W2R2SVZPGCG90F",
+            "number": 11,
+            "name": "Player",
+            "position": "Bloodborn Marauder (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "D",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          }
+        ]
+      },
+      "delta": {
+        "treasuryGp": -200000,
+        "tvGp": null
+      }
     }
   ],
   "colors": {
     "primary": "#222222",
     "secondary": "#c5a059"
   },
-  "treasury": 1050000,
+  "treasury": 850000,
   "rerolls": 3,
   "apothecary": true,
   "assistantCoaches": 2,
   "cheerleaders": 0,
   "dedicatedFans": 2,
-  "teamValue": 800000
+  "teamValue": 450000,
+  "redraft": {
+    "fromSeason": 1,
+    "toSeason": 2,
+    "at": "2025-12-20T09:07:28.509Z",
+    "budgetGp": 1300000,
+    "spentGp": 450000,
+    "capApplied": true
+  }
 }

@@ -7,294 +7,10 @@
   "coachName": "Coach 4",
   "players": [
     {
-      "id": "01KCX7QF7EBH7F8JREK3EE70G2",
-      "number": 1,
-      "name": "Player",
+      "id": "01KCXG8BJ4CB7HGWQB9YATKKE1",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
       "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 60000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden",
-        "Block"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 5,
-      "sppSpent": 3,
-      "advancements": [
-        {
-          "id": "01KCX82PN44YHKSBR6WC0DVCZQ",
-          "matchId": "01KCX7TW3G6XGSAE0PJE69FJAK",
-          "kind": "randomPrimary",
-          "skillName": "Block",
-          "categoryCode": "D",
-          "isElite": false,
-          "sppCost": 3,
-          "valueIncreaseGp": 20000,
-          "at": "2025-12-20T06:45:14.532Z"
-        }
-      ],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QFCCRKCTEWAH1S8XPN3X",
-      "number": 2,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 40000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 2,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QFHEK6EN63KMHYM8Z1Y2",
-      "number": 3,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 40000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QFPRXS4FERQDB9EHC4WF",
-      "number": 4,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 40000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QFXG639PHQD6Q48GRE5H",
-      "number": 5,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 40000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 3,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QG43REZH70AR2NJFH3BV",
-      "number": 6,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 40000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 3,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QGBRYS31BG71HRGC1FEA",
-      "number": 7,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 40000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QGJEG4XG8S3EMPK8ZRAQ",
-      "number": 8,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 40000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QGT4KQP7XH7NJ8XGPV68",
-      "number": 9,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
-      "cost": 40000,
-      "ma": 5,
-      "st": 3,
-      "ag": 4,
-      "pa": 6,
-      "av": 9,
-      "skills": [
-        "Decay",
-        "Plague Ridden"
-      ],
-      "primary": [
-        "D",
-        "G",
-        "M"
-      ],
-      "secondary": [
-        "A",
-        "S"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
-      "injuries": ""
-    },
-    {
-      "id": "01KCX7QH1ST14D9PZMAD06T46G",
-      "number": 10,
-      "name": "Player",
-      "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
       "cost": 40000,
       "ma": 5,
       "st": 3,
@@ -318,14 +34,13 @@
       "sppSpent": 0,
       "advancements": [],
       "injuries": "",
-      "mng": false
+      "rookieSeason": 2
     },
     {
-      "id": "01KCX7QHBJDA9NVYF2SVKKAREV",
-      "number": 11,
-      "name": "Player",
+      "id": "01KCXG8BJ4DCNPTMJJY44VGHB5",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
       "position": "Rotter Lineman (Human, Lineman)",
-      "rookieSeason": 1,
       "cost": 40000,
       "ma": 5,
       "st": 3,
@@ -348,7 +63,278 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ4QG7Y95GSGMCWFN42",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ42Y053C857BPQ1Z8Y",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ41N1P24STZFAEZJAB",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ4NA8B3PRNJACP29Q8",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ488FV32EV53Y5EV3X",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ4RVCDTCF5VGP3CD5Y",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ4GMFCPF7VAR569YXJ",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ48149DCQSV8KP0NSW",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG8BJ43K7D162PBNNJZ6T3",
+      "number": 12,
+      "name": "Rotter Lineman (Human, Lineman)",
+      "position": "Rotter Lineman (Human, Lineman)",
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Decay",
+        "Plague Ridden"
+      ],
+      "primary": [
+        "D",
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
     }
   ],
   "history": [
@@ -957,18 +943,392 @@
         "treasuryGp": 0,
         "tvGp": 60000
       }
+    },
+    {
+      "id": "01KCXG8BJ5MKVS375C15T0X8VZ",
+      "at": "2025-12-20T09:08:08.389Z",
+      "season": 1,
+      "type": "redraft",
+      "label": "Re-drafted for Season 2",
+      "undoBefore": {
+        "treasury": 660000,
+        "rerolls": 0,
+        "apothecary": false,
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "dedicatedFans": 3,
+        "redraft": null,
+        "players": [
+          {
+            "id": "01KCX7QF7EBH7F8JREK3EE70G2",
+            "number": 1,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 60000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden",
+              "Block"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 5,
+            "sppSpent": 3,
+            "advancements": [
+              {
+                "id": "01KCX82PN44YHKSBR6WC0DVCZQ",
+                "matchId": "01KCX7TW3G6XGSAE0PJE69FJAK",
+                "kind": "randomPrimary",
+                "skillName": "Block",
+                "categoryCode": "D",
+                "isElite": false,
+                "sppCost": 3,
+                "valueIncreaseGp": 20000,
+                "at": "2025-12-20T06:45:14.532Z"
+              }
+            ],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QFCCRKCTEWAH1S8XPN3X",
+            "number": 2,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 2,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QFHEK6EN63KMHYM8Z1Y2",
+            "number": 3,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QFPRXS4FERQDB9EHC4WF",
+            "number": 4,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QFXG639PHQD6Q48GRE5H",
+            "number": 5,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 3,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QG43REZH70AR2NJFH3BV",
+            "number": 6,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 3,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QGBRYS31BG71HRGC1FEA",
+            "number": 7,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QGJEG4XG8S3EMPK8ZRAQ",
+            "number": 8,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QGT4KQP7XH7NJ8XGPV68",
+            "number": 9,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KCX7QH1ST14D9PZMAD06T46G",
+            "number": 10,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": "",
+            "mng": false
+          },
+          {
+            "id": "01KCX7QHBJDA9NVYF2SVKKAREV",
+            "number": 11,
+            "name": "Player",
+            "position": "Rotter Lineman (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 40000,
+            "ma": 5,
+            "st": 3,
+            "ag": 4,
+            "pa": 6,
+            "av": 9,
+            "skills": [
+              "Decay",
+              "Plague Ridden"
+            ],
+            "primary": [
+              "D",
+              "G",
+              "M"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          }
+        ]
+      },
+      "delta": {
+        "treasuryGp": 200000,
+        "tvGp": null
+      }
     }
   ],
   "colors": {
     "primary": "#8c009e",
     "secondary": "#424242"
   },
-  "treasury": 660000,
+  "treasury": 860000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 3,
-  "teamValue": 460000,
-  "trophyRerollSeason": 2
+  "teamValue": 440000,
+  "trophyRerollSeason": 2,
+  "redraft": {
+    "fromSeason": 1,
+    "toSeason": 2,
+    "at": "2025-12-20T09:08:08.389Z",
+    "budgetGp": 1300000,
+    "spentGp": 440000,
+    "capApplied": true
+  }
 }

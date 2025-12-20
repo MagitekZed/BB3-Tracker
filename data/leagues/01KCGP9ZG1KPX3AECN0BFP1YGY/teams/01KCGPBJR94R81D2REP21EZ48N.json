@@ -7,148 +7,358 @@
   "coachName": "coach 2",
   "players": [
     {
-      "id": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
-      "number": 1,
-      "name": "Norse Raider Lineman",
-      "position": "Norse Berserker",
-      "qty": 16,
-      "cost": 90000,
+      "id": "01KCXG65WK0NG8AF99KADCHAB5",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
       "ma": 6,
       "st": 3,
       "ag": 3,
-      "pa": 5,
+      "pa": 4,
       "av": 8,
       "skills": [
         "Block",
-        "Frenzy",
-        "Jump Up"
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
       ],
       "primary": [
         "G"
       ],
       "secondary": [
         "A",
-        "S",
-        "P"
+        "P",
+        "S"
       ],
-      "spp": 14,
+      "spp": 0,
+      "sppSpent": 0,
       "advancements": [],
-      "sppSpent": 0
+      "injuries": "",
+      "rookieSeason": 2
     },
     {
-      "id": "01KCGPC4MNXR4D5G5G4JSMJSM9",
-      "number": 2,
-      "name": "Norse Raider Lineman",
-      "position": "Valkyrie",
-      "qty": 16,
-      "cost": 115000,
-      "ma": 7,
+      "id": "01KCXG65WMZ98VVBR4A9TMQ4NH",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
       "st": 3,
       "ag": 3,
-      "pa": 3,
+      "pa": 4,
       "av": 8,
       "skills": [
-        "Catch",
-        "Dauntless",
-        "Pass",
-        "Strip Ball",
-        "Block"
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
       ],
       "primary": [
         "G"
       ],
       "secondary": [
         "A",
-        "S",
-        "P"
+        "P",
+        "S"
       ],
-      "spp": 7,
-      "advancements": [
-        {
-          "id": "01KCTJ02RCX235YAR507TJYK1W",
-          "at": "2025-12-19T05:40:51.087Z",
-          "sppCost": 6,
-          "valueIncreaseGp": 20000,
-          "kind": "chosenPrimary",
-          "outcomeType": "skill",
-          "skillName": "Block",
-          "categoryCode": "G",
-          "skillFrom": "primary",
-          "isElite": false
-        }
-      ],
-      "sppSpent": 6
-    },
-    {
-      "id": "01KCGPC4S17HB8G8C20VS3GSD8",
-      "number": 3,
-      "name": "Norse Raider Lineman",
-      "position": "Yhetee",
-      "qty": 16,
-      "cost": 140000,
-      "ma": 5,
-      "st": 5,
-      "ag": 4,
-      "pa": -1,
-      "av": 9,
-      "skills": [
-        "Claws",
-        "Disturbing Presence",
-        "Frenzy",
-        "Loner (4+)",
-        "Unchannelled Fury"
-      ],
-      "primary": [
-        "G"
-      ],
-      "secondary": [
-        "A",
-        "S",
-        "P"
-      ],
-      "spp": 5,
+      "spp": 0,
+      "sppSpent": 0,
       "advancements": [],
-      "sppSpent": 0
+      "injuries": "",
+      "rookieSeason": 2
     },
     {
-      "id": "01KCGPC4X91BX2KRGE8CA1PJH0",
-      "number": 4,
-      "name": "Norse Raider Lineman",
-      "position": "Ulfwerener",
-      "qty": 16,
-      "cost": 105000,
+      "id": "01KCXG65WMKF3MXSA7HSK2WJNA",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
       "ma": 6,
-      "st": 4,
-      "ag": 4,
-      "pa": -1,
-      "av": 9,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
       "skills": [
-        "Frenzy"
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
       ],
       "primary": [
         "G"
       ],
       "secondary": [
         "A",
-        "S",
-        "P"
+        "P",
+        "S"
       ],
-      "spp": 4,
+      "spp": 0,
+      "sppSpent": 0,
       "advancements": [],
-      "sppSpent": 0
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG65WM61R0Z4F10N3EYTF4",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG65WMEQZ13CTNW6J4BW78",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG65WM9WFR18ZNVG78FXV1",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG65WMDEPW6QF9CW85QTPJ",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG65WMN3GPRH2BVA52VSQD",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG65WM483GSV0H9CJ3GSWT",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG65WMG35Q14VV5YPRSEC0",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
+    },
+    {
+      "id": "01KCXG65WMT6DBG8N9ARGYFMDR",
+      "number": 5,
+      "name": "Norse Raider (Human, Lineman)",
+      "position": "Norse Raider (Human, Lineman)",
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Block",
+        "Drunkard",
+        "Thick Skull",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": "",
+      "rookieSeason": 2
     }
   ],
   "colors": {
     "primary": "#1e00ff",
     "secondary": "#c7c7c7"
   },
-  "treasury": 435000,
+  "treasury": 750000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 2,
-  "teamValue": 450000,
+  "teamValue": 550000,
   "history": [
     {
       "season": 1,
@@ -1366,6 +1576,167 @@
       "delta": {
         "treasuryGp": 60000
       }
+    },
+    {
+      "id": "01KCXG65WMNCVD575Q35P8XA60",
+      "at": "2025-12-20T09:06:57.044Z",
+      "season": 1,
+      "type": "redraft",
+      "label": "Re-drafted for Season 2",
+      "undoBefore": {
+        "treasury": 435000,
+        "rerolls": 0,
+        "apothecary": false,
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "dedicatedFans": 2,
+        "redraft": null,
+        "players": [
+          {
+            "id": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
+            "number": 1,
+            "name": "Norse Raider Lineman",
+            "position": "Norse Berserker",
+            "qty": 16,
+            "cost": 90000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 5,
+            "av": 8,
+            "skills": [
+              "Block",
+              "Frenzy",
+              "Jump Up"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S",
+              "P"
+            ],
+            "spp": 14,
+            "advancements": [],
+            "sppSpent": 0
+          },
+          {
+            "id": "01KCGPC4MNXR4D5G5G4JSMJSM9",
+            "number": 2,
+            "name": "Norse Raider Lineman",
+            "position": "Valkyrie",
+            "qty": 16,
+            "cost": 115000,
+            "ma": 7,
+            "st": 3,
+            "ag": 3,
+            "pa": 3,
+            "av": 8,
+            "skills": [
+              "Catch",
+              "Dauntless",
+              "Pass",
+              "Strip Ball",
+              "Block"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S",
+              "P"
+            ],
+            "spp": 7,
+            "advancements": [
+              {
+                "id": "01KCTJ02RCX235YAR507TJYK1W",
+                "at": "2025-12-19T05:40:51.087Z",
+                "sppCost": 6,
+                "valueIncreaseGp": 20000,
+                "kind": "chosenPrimary",
+                "outcomeType": "skill",
+                "skillName": "Block",
+                "categoryCode": "G",
+                "skillFrom": "primary",
+                "isElite": false
+              }
+            ],
+            "sppSpent": 6
+          },
+          {
+            "id": "01KCGPC4S17HB8G8C20VS3GSD8",
+            "number": 3,
+            "name": "Norse Raider Lineman",
+            "position": "Yhetee",
+            "qty": 16,
+            "cost": 140000,
+            "ma": 5,
+            "st": 5,
+            "ag": 4,
+            "pa": -1,
+            "av": 9,
+            "skills": [
+              "Claws",
+              "Disturbing Presence",
+              "Frenzy",
+              "Loner (4+)",
+              "Unchannelled Fury"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S",
+              "P"
+            ],
+            "spp": 5,
+            "advancements": [],
+            "sppSpent": 0
+          },
+          {
+            "id": "01KCGPC4X91BX2KRGE8CA1PJH0",
+            "number": 4,
+            "name": "Norse Raider Lineman",
+            "position": "Ulfwerener",
+            "qty": 16,
+            "cost": 105000,
+            "ma": 6,
+            "st": 4,
+            "ag": 4,
+            "pa": -1,
+            "av": 9,
+            "skills": [
+              "Frenzy"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S",
+              "P"
+            ],
+            "spp": 4,
+            "advancements": [],
+            "sppSpent": 0
+          }
+        ]
+      },
+      "delta": {
+        "treasuryGp": 315000,
+        "tvGp": null
+      }
     }
-  ]
+  ],
+  "redraft": {
+    "fromSeason": 1,
+    "toSeason": 2,
+    "at": "2025-12-20T09:06:57.044Z",
+    "budgetGp": 1300000,
+    "spentGp": 550000,
+    "capApplied": true
+  }
 }
