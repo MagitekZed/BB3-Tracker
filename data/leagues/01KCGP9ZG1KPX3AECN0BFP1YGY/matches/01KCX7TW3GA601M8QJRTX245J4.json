@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KCX7TW3GA601M8QJRTX245J4",
+  "leagueId": "01KCGP9ZG1KPX3AECN0BFP1YGY",
+  "round": 4,
+  "home": {
+    "name": "Norse",
+    "score": 0,
+    "tv": 800000,
+    "inducements": {},
+    "winnings": 25,
+    "winningsGp": 25000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Norse Raider Lineman",
+    "stats": [],
+    "postGame": {
+      "teamId": "01KCGPBJR94R81D2REP21EZ48N",
+      "name": "Norse",
+      "colors": {
+        "primary": "#1e00ff",
+        "secondary": "#c7c7c7"
+      },
+      "race": "Norse",
+      "result": "draw",
+      "dedicatedFansBefore": 2,
+      "treasuryBeforeGp": 320000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 25000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 0,
+        "race": "Norse"
+      },
+      "staffDesired": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": 4,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "Khorne",
+    "score": 0,
+    "tv": 800000,
+    "inducements": {},
+    "winnings": 25,
+    "winningsGp": 25000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Player",
+    "stats": [],
+    "postGame": {
+      "teamId": "01KCX7NVFQFM37NSQSS1YRAG4W",
+      "name": "Khorne",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      },
+      "race": "Khorne",
+      "result": "draw",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 1000000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 25000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 2,
+        "cheerleaders": 0,
+        "apothecary": true,
+        "rerolls": 3,
+        "race": "Khorne"
+      },
+      "staffDesired": {
+        "assistantCoaches": 2,
+        "cheerleaders": 0,
+        "apothecary": true,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": 4,
+        "rollD3": 3,
+        "roll2d6Total": null
+      }
+    }
+  }
+}

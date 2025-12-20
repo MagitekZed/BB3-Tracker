@@ -12,7 +12,7 @@
       "name": "Eagle Warrior Linewoman",
       "position": "Piranha Warrior Blitzer",
       "qty": 16,
-      "cost": 90000,
+      "cost": 110000,
       "ma": 7,
       "st": 3,
       "ag": 3,
@@ -21,7 +21,8 @@
       "skills": [
         "Dodge",
         "Hit and Run",
-        "Jump Up"
+        "Jump Up",
+        "Dodge"
       ],
       "primary": [
         "G"
@@ -30,9 +31,21 @@
         "A",
         "S"
       ],
-      "spp": 4,
-      "advancements": [],
-      "sppSpent": 0
+      "spp": 12,
+      "advancements": [
+        {
+          "id": "01KCX82PN48FJFV1K4Y88JJ0CV",
+          "matchId": "01KCX7TW3G6XGSAE0PJE69FJAK",
+          "kind": "randomPrimary",
+          "skillName": "Dodge",
+          "categoryCode": "G",
+          "isElite": false,
+          "sppCost": 3,
+          "valueIncreaseGp": 20000,
+          "at": "2025-12-20T06:45:14.532Z"
+        }
+      ],
+      "sppSpent": 3
     },
     {
       "id": "01KCGPB5F7XFMW6E851E1JDT3M",
@@ -57,7 +70,7 @@
         "A",
         "S"
       ],
-      "spp": 2,
+      "spp": 5,
       "advancements": [],
       "sppSpent": 0
     },
@@ -84,7 +97,32 @@
         "A",
         "S"
       ],
-      "spp": 11,
+      "spp": 18,
+      "advancements": [],
+      "sppSpent": 0
+    },
+    {
+      "id": "01KCXFT9B1KCKM8JJ8FRW3CMW0",
+      "number": 94,
+      "name": "Journeyman 1",
+      "position": "Eagle Warrior (Human, Lineman)",
+      "rookieSeason": 1,
+      "qty": 16,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge"
+      ],
+      "primary": "G",
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
       "advancements": [],
       "sppSpent": 0
     }
@@ -93,13 +131,13 @@
     "primary": "#1e8a00",
     "secondary": "#c5a059"
   },
-  "treasury": 1050000,
+  "treasury": 600000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
-  "dedicatedFans": 2,
-  "teamValue": 190000,
+  "dedicatedFans": 3,
+  "teamValue": 260000,
   "history": [
     {
       "season": 1,
@@ -485,6 +523,881 @@
       ],
       "expensiveMistakes": {
         "treasuryBeforeGp": 1050000,
+        "rollD6": 5,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": "Crisis Averted",
+        "deltaGp": 0
+      }
+    },
+    {
+      "season": 1,
+      "round": 2,
+      "matchId": "01KCGPDW3NR2HSZNNZ1BVE11N0",
+      "matchType": "regular",
+      "opponentName": "Norse",
+      "result": "Win",
+      "score": "2-1",
+      "winningsK": 45,
+      "winningsGp": 45000,
+      "dedicatedFansBefore": 2,
+      "dedicatedFansRollD6": 6,
+      "dedicatedFansDelta": 1,
+      "tv": 590000,
+      "inducements": {
+        "Weather Mage": 0,
+        "Star: Karla Von Kill": 1,
+        "Star: Morg ‘n’ Thorg": 0,
+        "Star: Boa Kon’ssstriktr": 0,
+        "Star: Akhorne The Squirrel": 1
+      },
+      "playerRecords": [
+        {
+          "playerId": "01KCGPB0Q1RXQ09K8K8STB9714",
+          "name": "Eagle Warrior Linewoman",
+          "number": 1,
+          "position": "Piranha Warrior Blitzer",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 1,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPB5F7XFMW6E851E1JDT3M",
+          "name": "Eagle Warrior Linewoman",
+          "number": 2,
+          "position": "Eagle Warrior Linewoman",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 3,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPB5WRMNBA4TSCH3RM61WG",
+          "name": "Eagle Warrior Linewoman",
+          "number": 3,
+          "position": "Eagle Warrior Linewoman",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 7,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KCGV8M2H2XEG153XGWRJ3QT4",
+          "name": "Journeyman 1",
+          "number": 94,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2HM24KVRGB739GBAEB",
+          "name": "Journeyman 2",
+          "number": 95,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2HSH2D77WT7R1ATR3K",
+          "name": "Journeyman 3",
+          "number": 96,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2H6J0JRC70CGWH2EVJ",
+          "name": "Journeyman 4",
+          "number": 97,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2HC4WDECPMRMF6N03R",
+          "name": "Journeyman 5",
+          "number": 98,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2HS4PWNATJSJA37EBN",
+          "name": "Journeyman 6",
+          "number": 99,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2HAK69MS7CYTVV5KCA",
+          "name": "Journeyman 7",
+          "number": 100,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2H7DVGXS22MG9WPM5B",
+          "name": "Journeyman 8",
+          "number": 101,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2HTQR5M7PNAE9BPD7N",
+          "name": "Karla Von Kill",
+          "number": 99,
+          "position": "Star Player",
+          "isJourneyman": false,
+          "isStar": true,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGV8M2HMHDRE086TQA1PE8N",
+          "name": "Akhorne The Squirrel",
+          "number": 99,
+          "position": "Star Player",
+          "isJourneyman": false,
+          "isStar": true,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 1095000,
+        "rollD6": 6,
+        "rollD3": 3,
+        "roll2d6Total": null,
+        "result": "Minor Incident",
+        "deltaGp": -30000
+      }
+    },
+    {
+      "season": 1,
+      "round": 4,
+      "matchId": "01KCX7TW3G6XGSAE0PJE69FJAK",
+      "matchType": "playoff",
+      "opponentName": "Nurgle",
+      "result": "Loss",
+      "score": "0-1",
+      "winningsK": 30,
+      "winningsGp": 30000,
+      "dedicatedFansBefore": 3,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDelta": 1,
+      "tv": 590000,
+      "inducements": {
+        "Star: Grak": 1,
+        "Star: Zolcath the Zoat": 1
+      },
+      "playerRecords": [
+        {
+          "playerId": "01KCGPB0Q1RXQ09K8K8STB9714",
+          "name": "Eagle Warrior Linewoman",
+          "number": 1,
+          "position": "Piranha Warrior Blitzer",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 5,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 1,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KCGPB5F7XFMW6E851E1JDT3M",
+          "name": "Eagle Warrior Linewoman",
+          "number": 2,
+          "position": "Eagle Warrior Linewoman",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPB5WRMNBA4TSCH3RM61WG",
+          "name": "Eagle Warrior Linewoman",
+          "number": 3,
+          "position": "Eagle Warrior Linewoman",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814XAA24BG6739DENKA",
+          "name": "Journeyman 1",
+          "number": 94,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814H2Z664B3B62MGZ5Q",
+          "name": "Journeyman 2",
+          "number": 95,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X8144JF3RGBZBTPQZ1PG",
+          "name": "Journeyman 3",
+          "number": 96,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 1,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814YPAYG9KK89Q8CQ6Y",
+          "name": "Journeyman 4",
+          "number": 97,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X8141C3VS0TFWMMXZHCA",
+          "name": "Journeyman 5",
+          "number": 98,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814ARYQN5CEQNCSB5C9",
+          "name": "Journeyman 6",
+          "number": 99,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 1
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814QEPJFKZCRD1S3X7T",
+          "name": "Journeyman 7",
+          "number": 100,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814VJBXMA1MMYE83G2S",
+          "name": "Journeyman 8",
+          "number": 101,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814R33VJ3CTG8JB98ZC",
+          "name": "Grak",
+          "number": 99,
+          "position": "Star Player",
+          "isJourneyman": false,
+          "isStar": true,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814Q92B6W53ZNNJEM2D",
+          "name": "Zolcath the Zoat",
+          "number": 99,
+          "position": "Star Player",
+          "isJourneyman": false,
+          "isStar": true,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 625000,
+        "rollD6": 6,
+        "rollD3": 1,
+        "roll2d6Total": null,
+        "result": "Minor Incident",
+        "deltaGp": -10000
+      }
+    },
+    {
+      "season": 1,
+      "round": 5,
+      "matchId": "01KCX85H6P55TT3ZNTVBT3XAXD",
+      "matchType": "playoff",
+      "opponentName": "Khorne",
+      "result": "Loss",
+      "score": "0-1",
+      "winningsK": 35,
+      "winningsGp": 35000,
+      "dedicatedFansBefore": 4,
+      "dedicatedFansRollD6": 3,
+      "dedicatedFansDelta": -1,
+      "tv": 610000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KCGPB0Q1RXQ09K8K8STB9714",
+          "name": "Eagle Warrior Linewoman",
+          "number": 1,
+          "position": "Piranha Warrior Blitzer",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KCGPB5F7XFMW6E851E1JDT3M",
+          "name": "Eagle Warrior Linewoman",
+          "number": 2,
+          "position": "Eagle Warrior Linewoman",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCGPB5WRMNBA4TSCH3RM61WG",
+          "name": "Eagle Warrior Linewoman",
+          "number": 3,
+          "position": "Eagle Warrior Linewoman",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCXFQ44V0W20EXQ1ZAHHRBGJ",
+          "name": "Journeyman 1",
+          "number": 94,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCXFQ44VCJY8JV2BA8QQCZXW",
+          "name": "Journeyman 2",
+          "number": 95,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCXFQ44V4J40N05JNZ8F252X",
+          "name": "Journeyman 3",
+          "number": 96,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCXFQ44V3H24441MGSSTFJ6S",
+          "name": "Journeyman 4",
+          "number": 97,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCXFQ44VJXTQ30GRXBNW3JCX",
+          "name": "Journeyman 5",
+          "number": 98,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCXFQ44VSBFPECKRSEHF7HJ8",
+          "name": "Journeyman 6",
+          "number": 99,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCXFQ44VJ03Q6HY5HAX3PXW1",
+          "name": "Journeyman 7",
+          "number": 100,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCXFQ44VWQCH71Q1EDE9VNRT",
+          "name": "Journeyman 8",
+          "number": 101,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 600000,
         "rollD6": 5,
         "rollD3": null,
         "roll2d6Total": null,

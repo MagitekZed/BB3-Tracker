@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KCX7TW3G6XGSAE0PJE69FJAK",
+  "leagueId": "01KCGP9ZG1KPX3AECN0BFP1YGY",
+  "round": 4,
+  "home": {
+    "name": "Amazons",
+    "score": 0,
+    "tv": 590000,
+    "inducements": {
+      "Star: Grak": 1,
+      "Star: Zolcath the Zoat": 1
+    },
+    "winnings": 30,
+    "winningsGp": 30000,
+    "fanFactorChange": 1,
+    "dedicatedFansDelta": 1,
+    "mvp": "Eagle Warrior Linewoman",
+    "stats": [
+      {
+        "name": "Eagle Warrior Linewoman",
+        "number": 1,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 1,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Journeyman 3",
+        "number": 96,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Journeyman 6",
+        "number": 99,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 1
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KCGPACYZY3NBCA4ZFNBXBPTK",
+      "name": "Amazons",
+      "colors": {
+        "primary": "#1e8a00",
+        "secondary": "#c5a059"
+      },
+      "race": "Amazon",
+      "result": "loss",
+      "dedicatedFansBefore": 3,
+      "treasuryBeforeGp": 595000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 30000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDeltaOverride": 1,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 0,
+        "race": "Amazon"
+      },
+      "staffDesired": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": 6,
+        "rollD3": 1,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "Nurgle",
+    "score": 1,
+    "tv": 440000,
+    "inducements": {
+      "Extra Team Training": 1,
+      "Star: Bilerot Vomitflesh": 1,
+      "Star: Morg ‘n’ Thorg": 1,
+      "Riotous Rookies": 0
+    },
+    "winnings": 40,
+    "winningsGp": 40000,
+    "fanFactorChange": 1,
+    "dedicatedFansDelta": 1,
+    "mvp": "Player",
+    "stats": [
+      {
+        "name": "Player",
+        "number": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player",
+        "number": 6,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player",
+        "number": 8,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 1
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KCX7Q13ZRTN03209NG4YSK4B",
+      "name": "Nurgle",
+      "colors": {
+        "primary": "#8c009e",
+        "secondary": "#424242"
+      },
+      "race": "Nurgle",
+      "result": "win",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 1000000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 40000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDeltaOverride": 1,
+      "mvp": {
+        "nominees": [
+          0
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 0,
+        "race": "Nurgle"
+      },
+      "staffDesired": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": 2,
+        "rollD3": null,
+        "roll2d6Total": 8
+      }
+    }
+  }
+}

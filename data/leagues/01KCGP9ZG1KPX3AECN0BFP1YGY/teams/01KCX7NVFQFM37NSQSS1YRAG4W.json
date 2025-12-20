@@ -1,0 +1,889 @@
+{
+  "schemaVersion": 1,
+  "id": "01KCX7NVFQFM37NSQSS1YRAG4W",
+  "slug": "khorne",
+  "name": "Khorne",
+  "race": "Khorne",
+  "coachName": "",
+  "players": [
+    {
+      "id": "01KCX7P705NQBR73QXPSR745TD",
+      "number": 1,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 11,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7P7JQC94C6M0YVF3RASN3",
+      "number": 2,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7P81JYH6Y8PEHW8WG2SHB",
+      "number": 3,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7P8E26GMAWZHW4ZQQ5XMC",
+      "number": 4,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7P8S200V7131KTDTX5E82",
+      "number": 5,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7P91WWR0K7DKK6SAG9XPK",
+      "number": 6,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7P9AS3PE5CVJT62V3GN0K",
+      "number": 7,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7P9JXRFKN3PYZKQ42ZKK0",
+      "number": 8,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7P9V3D4GR6FBA4SZFJDG1",
+      "number": 9,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7PA3MP4TKH1Z92BFMNDCD",
+      "number": 10,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KCX7PAD5G6W2R2SVZPGCG90F",
+      "number": 11,
+      "name": "Player",
+      "position": "Bloodborn Marauder (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Frenzy"
+      ],
+      "primary": [
+        "G",
+        "M"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [
+    {
+      "season": 1,
+      "round": 4,
+      "matchId": "01KCX7TW3GA601M8QJRTX245J4",
+      "matchType": "playoff",
+      "opponentName": "Norse",
+      "result": "Draw",
+      "score": "0-0",
+      "winningsK": 25,
+      "winningsGp": 25000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDelta": 0,
+      "tv": 800000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KCX7P705NQBR73QXPSR745TD",
+          "name": "Player",
+          "number": 1,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KCX7P7JQC94C6M0YVF3RASN3",
+          "name": "Player",
+          "number": 2,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P81JYH6Y8PEHW8WG2SHB",
+          "name": "Player",
+          "number": 3,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P8E26GMAWZHW4ZQQ5XMC",
+          "name": "Player",
+          "number": 4,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P8S200V7131KTDTX5E82",
+          "name": "Player",
+          "number": 5,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P91WWR0K7DKK6SAG9XPK",
+          "name": "Player",
+          "number": 6,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P9AS3PE5CVJT62V3GN0K",
+          "name": "Player",
+          "number": 7,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P9JXRFKN3PYZKQ42ZKK0",
+          "name": "Player",
+          "number": 8,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P9V3D4GR6FBA4SZFJDG1",
+          "name": "Player",
+          "number": 9,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7PA3MP4TKH1Z92BFMNDCD",
+          "name": "Player",
+          "number": 10,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7PAD5G6W2R2SVZPGCG90F",
+          "name": "Player",
+          "number": 11,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 1025000,
+        "rollD6": 4,
+        "rollD3": 3,
+        "roll2d6Total": null,
+        "result": "Minor Incident",
+        "deltaGp": -30000
+      }
+    },
+    {
+      "season": 1,
+      "round": 5,
+      "matchId": "01KCX85H6P55TT3ZNTVBT3XAXD",
+      "matchType": "playoff",
+      "opponentName": "Amazons",
+      "result": "Win",
+      "score": "1-0",
+      "winningsK": 45,
+      "winningsGp": 45000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": 3,
+      "dedicatedFansDelta": 1,
+      "tv": 800000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KCX7P705NQBR73QXPSR745TD",
+          "name": "Player",
+          "number": 1,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 7,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KCX7P7JQC94C6M0YVF3RASN3",
+          "name": "Player",
+          "number": 2,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P81JYH6Y8PEHW8WG2SHB",
+          "name": "Player",
+          "number": 3,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P8E26GMAWZHW4ZQQ5XMC",
+          "name": "Player",
+          "number": 4,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P8S200V7131KTDTX5E82",
+          "name": "Player",
+          "number": 5,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P91WWR0K7DKK6SAG9XPK",
+          "name": "Player",
+          "number": 6,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P9AS3PE5CVJT62V3GN0K",
+          "name": "Player",
+          "number": 7,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P9JXRFKN3PYZKQ42ZKK0",
+          "name": "Player",
+          "number": 8,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7P9V3D4GR6FBA4SZFJDG1",
+          "name": "Player",
+          "number": 9,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7PA3MP4TKH1Z92BFMNDCD",
+          "name": "Player",
+          "number": 10,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7PAD5G6W2R2SVZPGCG90F",
+          "name": "Player",
+          "number": 11,
+          "position": "Bloodborn Marauder (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 1040000,
+        "rollD6": 4,
+        "rollD3": 2,
+        "roll2d6Total": null,
+        "result": "Minor Incident",
+        "deltaGp": -20000
+      }
+    }
+  ],
+  "transactions": [
+    {
+      "id": "01KCXFV5D8YSBARTN2K9P04YYY",
+      "at": "2025-12-20T09:00:56.104Z",
+      "type": "league",
+      "label": "Glittering Prize: 3rd place (+30k)",
+      "delta": {
+        "treasuryGp": 30000
+      }
+    }
+  ],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  },
+  "treasury": 1050000,
+  "rerolls": 3,
+  "apothecary": true,
+  "assistantCoaches": 2,
+  "cheerleaders": 0,
+  "dedicatedFans": 2,
+  "teamValue": 800000
+}
