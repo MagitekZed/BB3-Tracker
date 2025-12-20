@@ -1,0 +1,750 @@
+{
+  "matchId": "01KCX7TW3GA601M8QJRTX245J4",
+  "leagueId": "01KCGP9ZG1KPX3AECN0BFP1YGY",
+  "round": 4,
+  "status": "in_progress",
+  "activeTeam": "home",
+  "pregame": {
+    "ctv": {
+      "home": 800000,
+      "away": 800000
+    },
+    "higherSide": "tie",
+    "pettyCash": {
+      "home": 0,
+      "away": 0
+    },
+    "treasurySpent": {
+      "home": 0,
+      "away": 0
+    },
+    "journeymen": {
+      "home": {
+        "needed": 7,
+        "type": "Norse Raider (Human, Lineman)"
+      },
+      "away": {
+        "needed": 0,
+        "type": "Bloodborn Marauder (Human, Lineman)"
+      }
+    }
+  },
+  "home": {
+    "id": "01KCGPBJR94R81D2REP21EZ48N",
+    "name": "Norse",
+    "colors": {
+      "primary": "#1e00ff",
+      "secondary": "#c7c7c7"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KCGPC4FZS9TMBQ6ZVW7R64ZG",
+        "number": 1,
+        "name": "Norse Raider Lineman",
+        "position": "Norse Berserker",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 5,
+        "av": 8,
+        "skills": [
+          "Block",
+          "Frenzy",
+          "Jump Up"
+        ],
+        "cost": 90000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4MNXR4D5G5G4JSMJSM9",
+        "number": 2,
+        "name": "Norse Raider Lineman",
+        "position": "Valkyrie",
+        "ma": 7,
+        "st": 3,
+        "ag": 3,
+        "pa": 3,
+        "av": 8,
+        "skills": [
+          "Catch",
+          "Dauntless",
+          "Pass",
+          "Strip Ball",
+          "Block"
+        ],
+        "cost": 115000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4S17HB8G8C20VS3GSD8",
+        "number": 3,
+        "name": "Norse Raider Lineman",
+        "position": "Yhetee",
+        "ma": 5,
+        "st": 5,
+        "ag": 4,
+        "pa": -1,
+        "av": 9,
+        "skills": [
+          "Claws",
+          "Disturbing Presence",
+          "Frenzy",
+          "Loner (4+)",
+          "Unchannelled Fury"
+        ],
+        "cost": 140000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCGPC4X91BX2KRGE8CA1PJH0",
+        "number": 4,
+        "name": "Norse Raider Lineman",
+        "position": "Ulfwerener",
+        "ma": 6,
+        "st": 4,
+        "ag": 4,
+        "pa": -1,
+        "av": 9,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 105000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX83JXF96945ZXPGGHY89DR",
+        "isJourneyman": true,
+        "number": 95,
+        "name": "Journeyman 1",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX83JXFHGTPX683XSBWW3BV",
+        "isJourneyman": true,
+        "number": 96,
+        "name": "Journeyman 2",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX83JXFPGA84WXW9QAK05YX",
+        "isJourneyman": true,
+        "number": 97,
+        "name": "Journeyman 3",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX83JXFB8XTN76GTCMA9FNE",
+        "isJourneyman": true,
+        "number": 98,
+        "name": "Journeyman 4",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX83JXFW4XN50FH252TA2QS",
+        "isJourneyman": true,
+        "number": 99,
+        "name": "Journeyman 5",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX83JXF6AXWZB5GYQDRVK8J",
+        "isJourneyman": true,
+        "number": 100,
+        "name": "Journeyman 6",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX83JXFJN9KDJT76D6CNPR2",
+        "isJourneyman": true,
+        "number": 101,
+        "name": "Journeyman 7",
+        "position": "Norse Raider (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "primary": "G",
+        "secondary": [
+          "A",
+          "P",
+          "S"
+        ],
+        "skills": [
+          "Block",
+          "Drunkard",
+          "Thick Skull",
+          "Unsteady",
+          "Loner (4+)"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 0,
+    "apothecary": false,
+    "inducements": {},
+    "ctv": 800000,
+    "tv": 800000
+  },
+  "away": {
+    "id": "01KCX7NVFQFM37NSQSS1YRAG4W",
+    "name": "Khorne",
+    "colors": {
+      "primary": "#222222",
+      "secondary": "#c5a059"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KCX7P705NQBR73QXPSR745TD",
+        "number": 1,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7P7JQC94C6M0YVF3RASN3",
+        "number": 2,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7P81JYH6Y8PEHW8WG2SHB",
+        "number": 3,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7P8E26GMAWZHW4ZQQ5XMC",
+        "number": 4,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7P8S200V7131KTDTX5E82",
+        "number": 5,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7P91WWR0K7DKK6SAG9XPK",
+        "number": 6,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7P9AS3PE5CVJT62V3GN0K",
+        "number": 7,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7P9JXRFKN3PYZKQ42ZKK0",
+        "number": 8,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7P9V3D4GR6FBA4SZFJDG1",
+        "number": 9,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7PA3MP4TKH1Z92BFMNDCD",
+        "number": 10,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KCX7PAD5G6W2R2SVZPGCG90F",
+        "number": 11,
+        "name": "Player",
+        "position": "Bloodborn Marauder (Human, Lineman)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Frenzy"
+        ],
+        "cost": 50000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 3,
+    "apothecary": true,
+    "inducements": {},
+    "ctv": 800000,
+    "tv": 800000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
