@@ -3,7 +3,7 @@
   "leagueId": "01KCGP9ZG1KPX3AECN0BFP1YGY",
   "round": 5,
   "status": "in_progress",
-  "activeTeam": "away",
+  "activeTeam": "home",
   "pregame": {
     "ctv": {
       "home": 610000,
@@ -718,7 +718,7 @@
   },
   "turn": {
     "home": 0,
-    "away": 0
+    "away": 1
   },
   "log": []
 }
