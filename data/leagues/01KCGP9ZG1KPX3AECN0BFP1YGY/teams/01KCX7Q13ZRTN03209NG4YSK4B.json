@@ -12,7 +12,7 @@
       "name": "Player",
       "position": "Rotter Lineman (Human, Lineman)",
       "rookieSeason": 1,
-      "cost": 40000,
+      "cost": 60000,
       "ma": 5,
       "st": 3,
       "ag": 4,
@@ -20,7 +20,8 @@
       "av": 9,
       "skills": [
         "Decay",
-        "Plague Ridden"
+        "Plague Ridden",
+        "Block"
       ],
       "primary": [
         "D",
@@ -31,9 +32,21 @@
         "A",
         "S"
       ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": [],
+      "spp": 1,
+      "sppSpent": 3,
+      "advancements": [
+        {
+          "id": "01KCX82PN44YHKSBR6WC0DVCZQ",
+          "matchId": "01KCX7TW3G6XGSAE0PJE69FJAK",
+          "kind": "randomPrimary",
+          "skillName": "Block",
+          "categoryCode": "D",
+          "isElite": false,
+          "sppCost": 3,
+          "valueIncreaseGp": 20000,
+          "at": "2025-12-20T06:45:14.532Z"
+        }
+      ],
       "injuries": ""
     },
     {
@@ -61,7 +74,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 2,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -181,7 +194,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 3,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -304,7 +317,8 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": true
     },
     {
       "id": "01KCX7QHBJDA9NVYF2SVKKAREV",
@@ -337,17 +351,335 @@
       "injuries": ""
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "season": 1,
+      "round": 4,
+      "matchId": "01KCX7TW3G6XGSAE0PJE69FJAK",
+      "matchType": "playoff",
+      "opponentName": "Amazons",
+      "result": "Win",
+      "score": "1-0",
+      "winningsK": 40,
+      "winningsGp": 40000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": null,
+      "dedicatedFansDelta": 1,
+      "tv": 440000,
+      "inducements": {
+        "Extra Team Training": 1,
+        "Star: Bilerot Vomitflesh": 1,
+        "Star: Morg ‘n’ Thorg": 1,
+        "Riotous Rookies": 0
+      },
+      "playerRecords": [
+        {
+          "playerId": "01KCX7QF7EBH7F8JREK3EE70G2",
+          "name": "Player",
+          "number": 1,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KCX7QFCCRKCTEWAH1S8XPN3X",
+          "name": "Player",
+          "number": 2,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 1,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QFHEK6EN63KMHYM8Z1Y2",
+          "name": "Player",
+          "number": 3,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QFPRXS4FERQDB9EHC4WF",
+          "name": "Player",
+          "number": 4,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QFXG639PHQD6Q48GRE5H",
+          "name": "Player",
+          "number": 5,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QG43REZH70AR2NJFH3BV",
+          "name": "Player",
+          "number": 6,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 3,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QGBRYS31BG71HRGC1FEA",
+          "name": "Player",
+          "number": 7,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QGJEG4XG8S3EMPK8ZRAQ",
+          "name": "Player",
+          "number": 8,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 1
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QGT4KQP7XH7NJ8XGPV68",
+          "name": "Player",
+          "number": 9,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QH1ST14D9PZMAD06T46G",
+          "name": "Player",
+          "number": 10,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": true,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7QHBJDA9NVYF2SVKKAREV",
+          "name": "Player",
+          "number": 11,
+          "position": "Rotter Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X8149Q9X9KRTF9GBZT69",
+          "name": "Bilerot Vomitflesh",
+          "number": 99,
+          "position": "Star Player",
+          "isJourneyman": false,
+          "isStar": true,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KCX7X814VAARE1J2018C87AW",
+          "name": "Morg ‘n’ Thorg",
+          "number": 99,
+          "position": "Star Player",
+          "isJourneyman": false,
+          "isStar": true,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 1040000,
+        "rollD6": 2,
+        "rollD3": null,
+        "roll2d6Total": 8,
+        "result": "Major Incident",
+        "deltaGp": -520000
+      }
+    }
+  ],
   "transactions": [],
   "colors": {
     "primary": "#8c009e",
     "secondary": "#424242"
   },
-  "treasury": 1000000,
+  "treasury": 520000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
-  "dedicatedFans": 1,
-  "teamValue": 440000
+  "dedicatedFans": 2,
+  "teamValue": 460000
 }
