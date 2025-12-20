@@ -573,8 +573,12 @@ function computeRedraftSpend({ draft, race, fromSeason }) {
     + (Number(staff.rerolls || 0) * rerollCost);
 
   const roster = Array.isArray(draft.draftPlayers) ? draft.draftPlayers : [];
-  const rehireIds = Object.entries(draft.rehire || {}).filter(([, v]) => !!v).map(([id]) => id);
-  const rehired = roster.filter(p => rehireIds.includes(p.id));
+  const rehireIdSet = new Set(
+    Object.entries(draft.rehire || {})
+      .filter(([, v]) => !!v)
+      .map(([id]) => String(id))
+  );
+  const rehired = roster.filter(p => rehireIdSet.has(String(p?.id)));
   const rehireSpentGp = rehired.reduce((sum, p) => sum + (Number(p.cost || 0) + getAgentFeeGp(p, fromSeason)), 0);
 
   const newHires = Array.isArray(draft.newHires) ? draft.newHires : [];
@@ -1012,8 +1016,12 @@ export async function teamRedraftFinalize() {
   const remainingGp = budget.finalGp - spend.totalSpentGp;
 
   const roster = Array.isArray(draft.draftPlayers) ? draft.draftPlayers : [];
-  const selectedRehireIds = Object.entries(draft.rehire || {}).filter(([, v]) => !!v).map(([id]) => id);
-  const rehired = roster.filter(p => selectedRehireIds.includes(p.id));
+  const selectedRehireIdSet = new Set(
+    Object.entries(draft.rehire || {})
+      .filter(([, v]) => !!v)
+      .map(([id]) => String(id))
+  );
+  const rehired = roster.filter(p => selectedRehireIdSet.has(String(p?.id)));
   const newHires = Array.isArray(draft.newHires) ? draft.newHires : [];
 
   const warnings = [];
