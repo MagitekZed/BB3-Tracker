@@ -1168,12 +1168,103 @@ function renderSeasonTab(league) {
     ? `<div class="small" style="margin-top:0.6rem; color:#b00020;">${regularMatches.filter(m => m.status !== 'completed').length} regular-season match(es) are not completed.</div>`
     : '';
 
+  const teamChipHtml = (teamId) => {
+    const tid = String(teamId || '');
+    const team = (league.teams || []).find(t => t.id === tid);
+    if (!team) return `<span class="tag">${escapeHtml(tid || '-')}</span>`;
+    const styleVars = buildTeamStyleVars(team.colors);
+    return `<button class="team-chip" style="${styleVars}" onclick="window.handleOpenTeam('${league.id}', '${tid}')">${escapeHtml(team.name || tid)}</button>`;
+  };
+
+  const seasonMatchById = new Map(seasonMatches.map(m => [m.id, m]));
+  const getPlayoffStageMatches = (stage) => {
+    const ids = Array.isArray(playoffs?.rounds?.[stage]) ? playoffs.rounds[stage] : null;
+    if (ids) return ids.map(id => seasonMatchById.get(id)).filter(Boolean);
+    return playoffMatches.filter(m => String(m.playoff?.stage || '') === String(stage || ''));
+  };
+
+  const derivedPlacements = (() => {
+    const p = playoffs?.placements;
+    if (p?.firstTeamId && p?.secondTeamId && p?.thirdTeamId) return p;
+
+    const finalMatch = getPlayoffStageMatches('final')[0] || null;
+    const thirdMatch = getPlayoffStageMatches('thirdPlace')[0] || null;
+    const finalWinner = (finalMatch?.status === 'completed') ? getPlayoffWinnerTeamId(finalMatch) : null;
+    const finalLoser = (finalMatch?.status === 'completed') ? getPlayoffLoserTeamId(finalMatch) : null;
+    const thirdWinner = (thirdMatch?.status === 'completed') ? getPlayoffWinnerTeamId(thirdMatch) : null;
+    if (finalWinner && finalLoser && thirdWinner) return { firstTeamId: finalWinner, secondTeamId: finalLoser, thirdTeamId: thirdWinner };
+    return null;
+  })();
+
+  const placementsHtml = (hasBracket && derivedPlacements)
+    ? `
+      <div class="panel-styled" style="margin-top:0.5rem; padding:0.65rem;">
+        <div class="small" style="font-weight:800; text-transform:uppercase; color:#333; margin-bottom:0.4rem;">Results</div>
+        <div style="display:grid; gap:0.35rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;"><div><strong>Champion</strong></div><div>${teamChipHtml(derivedPlacements.firstTeamId)}</div></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;"><div><strong>Runner-up</strong></div><div>${teamChipHtml(derivedPlacements.secondTeamId)}</div></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;"><div><strong>Third</strong></div><div>${teamChipHtml(derivedPlacements.thirdTeamId)}</div></div>
+        </div>
+      </div>
+    `
+    : '';
+
+  const fixturesHtml = (hasBracket && playoffMatches.length)
+    ? (() => {
+      const stageOrder = Array.isArray(playoffs?.stageOrder) ? playoffs.stageOrder : getPlayoffStageOrder(playoffs?.bracketSize);
+      const stageRows = [];
+
+      const pushMatchRow = (stage, match) => {
+        if (!match) return;
+        const score = (match.status === 'completed') ? `${Number(match.score?.home ?? 0)}-${Number(match.score?.away ?? 0)}` : '-';
+        const winnerTeamId = (match.status === 'completed') ? getPlayoffWinnerTeamId(match) : null;
+        stageRows.push(`
+          <tr>
+            <td>${escapeHtml(getPlayoffStageLabel(stage))}</td>
+            <td>${teamChipHtml(match.homeTeamId)} vs ${teamChipHtml(match.awayTeamId)}</td>
+            <td style="text-align:center; font-family:Consolas, monospace;">${escapeHtml(score)}</td>
+            <td>${winnerTeamId ? teamChipHtml(winnerTeamId) : `<span class="small" style="color:#666;">${escapeHtml(match.status || '-')}</span>`}</td>
+          </tr>
+        `);
+      };
+
+      if (stageOrder.length && playoffs?.rounds) {
+        stageOrder.forEach(stage => {
+          getPlayoffStageMatches(stage).forEach(m => pushMatchRow(stage, m));
+        });
+      } else {
+        playoffMatches
+          .slice()
+          .sort((a, b) => (Number(a.round) || 0) - (Number(b.round) || 0))
+          .forEach(m => pushMatchRow(m.playoff?.stage || 'playoff', m));
+      }
+
+      if (!stageRows.length) return '';
+
+      return `
+        <details style="margin-top:0.5rem;">
+          <summary style="cursor:pointer; font-weight:800;">Play-off fixtures</summary>
+          <div class="table-scroll" style="margin-top:0.5rem;">
+            <table class="league-table standings-table">
+              <thead>
+                <tr><th>Stage</th><th>Match</th><th>Score</th><th>Winner</th></tr>
+              </thead>
+              <tbody>${stageRows.join('')}</tbody>
+            </table>
+          </div>
+        </details>
+      `;
+    })()
+    : '';
+
   const playoffsCard = `
     <div class="panel-styled" style="margin-bottom:0.75rem;">
       <h4 style="margin-top:0;">Play-offs</h4>
       ${hasBracket ? `
         <div class="small" style="color:#666; margin-bottom:0.5rem;">Bracket: ${playoffs.bracketSize} teams • ${playoffs.status || 'in_progress'}${prizesAwarded ? ' • prizes awarded' : ''}</div>
       ` : `<div class="small" style="color:#666; margin-bottom:0.5rem;">No play-offs configured for this season.</div>`}
+      ${placementsHtml}
+      ${fixturesHtml}
       <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
         ${isCurrentSeason ? `<button class="${hasBracket ? 'secondary-btn' : 'primary-btn'}" onclick="window.openPlayoffsManager()">${playoffsCtaLabel}</button>` : ''}
       </div>
