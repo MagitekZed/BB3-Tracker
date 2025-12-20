@@ -50,6 +50,7 @@ export const state = {
   // Team View UI State
   teamTab: 'overview',
   teamDevDraft: {},
+  teamRedraft: null,
   
   // Action Sheet State
   selectedPlayerIdx: null,

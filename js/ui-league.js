@@ -9,6 +9,7 @@ import { handleOpenTeam, handleEditTeam, renderTeamEditor } from './ui-team.js';
 import { handleStartMatch, handleOpenScoreboard } from './ui-match.js';
 
 const LEAGUE_TABS = [
+  { id: 'season', label: 'Season' },
   { id: 'standings', label: 'Standings' },
   { id: 'leaders', label: 'Leaders' },
   { id: 'teamStats', label: 'Team Stats' },
@@ -66,7 +67,7 @@ export function renderLeagueList() {
       <div class="league-card-main">
         <div class="league-card-title">${l.name}</div>
         <div class="league-meta">
-          <span class="tag ${l.status === 'active' ? 'in_progress' : 'scheduled'}">${l.status}</span>
+          <span class="tag ${l.status === 'completed' ? 'completed' : (l.status === 'active' || l.status === 'playoffs') ? 'in_progress' : 'scheduled'}">${l.status}</span>
           Season ${l.season}
         </div>
       </div>
@@ -166,6 +167,822 @@ export function setLeaguePlayerSort(key) {
   renderLeagueView();
 }
 
+// --- Phase 7: Season / Play-offs / Off-season ---
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getEditKey() {
+  return String(els.inputs.editKey?.value || els.mobileKey?.input?.value || '').trim();
+}
+
+function getPlayoffStageOrder(bracketSize) {
+  const n = Number(bracketSize || 0);
+  if (n === 4) return ['semifinals', 'final', 'thirdPlace'];
+  if (n === 8) return ['quarterfinals', 'semifinals', 'final', 'thirdPlace'];
+  if (n === 16) return ['roundOf16', 'quarterfinals', 'semifinals', 'final', 'thirdPlace'];
+  return [];
+}
+
+function getPlayoffStageLabel(stage) {
+  const s = String(stage || '');
+  if (s === 'roundOf16') return 'Round of 16';
+  if (s === 'quarterfinals') return 'Quarterfinals';
+  if (s === 'semifinals') return 'Semi-finals';
+  if (s === 'final') return 'Final';
+  if (s === 'thirdPlace') return 'Third-place Play-off';
+  return s || 'Play-off';
+}
+
+function generateSeedOrder(n) {
+  const size = Number(n || 0);
+  if (size === 2) return [1, 2];
+  if (size < 2 || (size & (size - 1)) !== 0) return [];
+  const prev = generateSeedOrder(size / 2);
+  const out = [];
+  for (const seed of prev) {
+    out.push(seed);
+    out.push(size + 1 - seed);
+  }
+  return out;
+}
+
+function getPlayoffWinnerTeamId(match) {
+  if (!match) return null;
+  if (match.winnerTeamId) return match.winnerTeamId;
+  const hs = Number(match.score?.home);
+  const as = Number(match.score?.away);
+  if (!Number.isFinite(hs) || !Number.isFinite(as)) return null;
+  if (hs > as) return match.homeTeamId;
+  if (as > hs) return match.awayTeamId;
+  return null;
+}
+
+function getPlayoffLoserTeamId(match) {
+  const winner = getPlayoffWinnerTeamId(match);
+  if (!winner) return null;
+  if (winner === match.homeTeamId) return match.awayTeamId;
+  if (winner === match.awayTeamId) return match.homeTeamId;
+  return null;
+}
+
+async function saveLeagueAndIndex(league, key, note) {
+  await apiSave(PATHS.league(league.id), league, note, key);
+
+  const freshIndex = (await apiGet(PATHS.leaguesIndex)) || [];
+  const idxEntry = { id: league.id, name: league.name, season: league.season, status: league.status };
+  const i = freshIndex.findIndex(x => x.id === league.id);
+  if (i >= 0) freshIndex[i] = idxEntry;
+  else freshIndex.push(idxEntry);
+  await apiSave(PATHS.leaguesIndex, freshIndex, `Update index for ${league.id}`, key);
+  state.leaguesIndex = freshIndex;
+}
+
+async function pickWinnerModal({ title, homeLabel, awayLabel }) {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '12050';
+
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width:520px; width:95%;">
+        <div class="modal-header"><h3>${escapeHtml(title)}</h3><button class="close-btn">×</button></div>
+        <div style="text-align:left; margin-bottom:0.75rem;">Play-offs require a winner. Record who advanced (Extra Time / Penalties as needed).</div>
+        <div class="panel-styled" style="margin-bottom:0.75rem;">
+          <label style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+            <input type="radio" name="poWinnerPick" value="home" checked>
+            <span><strong>Home:</strong> ${escapeHtml(homeLabel)}</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="radio" name="poWinnerPick" value="away">
+            <span><strong>Away:</strong> ${escapeHtml(awayLabel)}</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="secondary-btn" id="poPickCancel">Cancel</button>
+          <button class="primary-btn" id="poPickOk">Set Winner</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const close = (val) => {
+      modal.remove();
+      resolve(val);
+    };
+
+    modal.querySelector('.close-btn').onclick = () => close(null);
+    modal.querySelector('#poPickCancel').onclick = () => close(null);
+    modal.querySelector('#poPickOk').onclick = () => {
+      const picked = modal.querySelector('input[name="poWinnerPick"]:checked')?.value || 'home';
+      close(picked);
+    };
+  });
+}
+
+export async function openPlayoffsManager() {
+  const l = state.currentLeague;
+  if (!l) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'flex';
+  modal.style.zIndex = '12000';
+
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width:1100px; width:95%; max-height:90vh; display:flex; flex-direction:column;">
+      <div class="modal-header">
+        <h3>Play-offs</h3>
+        <button class="close-btn">×</button>
+      </div>
+      <div class="modal-body-scroll" id="playoffsBody"></div>
+      <div class="modal-actions" style="justify-content:flex-end;">
+        <button class="secondary-btn" id="playoffsCloseBtn">Close</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const close = () => modal.remove();
+  modal.querySelector('.close-btn').onclick = close;
+  modal.querySelector('#playoffsCloseBtn').onclick = close;
+
+  const body = modal.querySelector('#playoffsBody');
+
+  const render = () => {
+    const league = state.currentLeague;
+    const season = Number(league?.season || 1);
+    const playoffs = (league?.playoffs && league.playoffs.season === season) ? league.playoffs : null;
+
+    if (!playoffs) {
+      renderSetup(league, season);
+      return;
+    }
+
+    renderManage(league, season, playoffs);
+  };
+
+  const renderSetup = (league, season) => {
+    const key = getEditKey();
+    const sizes = [4, 8, 16].filter(n => n <= (league.teams || []).length);
+    const standings = computeSeasonStats(league);
+
+    const regularMatches = (league.matches || [])
+      .filter(m => (m.season ?? season) === season)
+      .filter(m => String(m.type || 'regular') !== 'playoff');
+    const regularIncomplete = regularMatches.filter(m => m.status !== 'completed');
+
+    if (!sizes.length) {
+      body.innerHTML = `<div class="panel-styled">Not enough teams to start play-offs. Need at least 4.</div>`;
+      return;
+    }
+
+    body.innerHTML = `
+      <div class="league-subheading">Start Play-offs</div>
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <div class="small" style="color:#666; margin-bottom:0.5rem;">Seeds are based on current standings (points, TD diff, CAS diff).</div>
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+          <div class="form-field">
+            <label>Bracket size</label>
+            <select id="poBracketSize">${sizes.map(n => `<option value="${n}">${n} teams</option>`).join('')}</select>
+          </div>
+        </div>
+        ${regularIncomplete.length ? `<div class="small" style="margin-top:0.6rem; color:#b00020;">Warning: ${regularIncomplete.length} regular-season match(es) are not completed.</div>` : ''}
+        ${!key ? `<div class="small" style="margin-top:0.6rem; color:#b00020;">Enter your Edit Key to start play-offs.</div>` : ''}
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end; margin-top:0.75rem;">
+          <button class="primary-btn" id="poStartBtn" ${key ? '' : 'disabled'}>Start Play-offs</button>
+        </div>
+      </div>
+
+      <div class="panel-styled">
+        <h4 style="margin-top:0;">Current standings (seeding preview)</h4>
+        <div class="table-scroll">
+          <table class="league-table standings-table">
+            <thead><tr><th>#</th><th>Team</th><th>Pts</th><th>TD Diff</th><th>CAS Diff</th></tr></thead>
+            <tbody>
+              ${standings.map((s, i) => `<tr><td>${i + 1}</td><td>${escapeHtml(s.name)}</td><td>${s.points}</td><td>${s.tdDiff}</td><td>${s.casDiff}</td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    const startBtn = body.querySelector('#poStartBtn');
+    startBtn.onclick = async () => {
+      const editKey = getEditKey();
+      if (!editKey) return setStatus('Edit key required.', 'error');
+      const size = Number(body.querySelector('#poBracketSize')?.value || 0);
+      if (![4, 8, 16].includes(size)) return setStatus('Invalid bracket size.', 'error');
+
+      const msg = `<div style="text-align:left;">
+        <div style="margin-bottom:0.5rem;"><strong>Start ${size}-team play-offs</strong> for Season ${season}?</div>
+        <div class="small" style="color:#666;">This will schedule the first play-off round as new fixtures.</div>
+        ${regularIncomplete.length ? `<div class="small" style="margin-top:0.5rem; color:#b00020;">${regularIncomplete.length} regular-season match(es) are incomplete. You can still proceed.</div>` : ''}
+      </div>`;
+      const ok = await confirmModal('Start play-offs?', msg, 'Start', false, true);
+      if (!ok) return;
+
+      try {
+        await startPlayoffs(size, editKey);
+        setStatus('Play-offs started.', 'ok');
+        renderLeagueView();
+        render();
+      } catch (e) {
+        setStatus(`Play-offs start failed: ${e.message}`, 'error');
+      }
+    };
+  };
+
+  const startPlayoffs = async (bracketSize, key) => {
+    const league = state.currentLeague;
+    const season = Number(league.season || 1);
+    if (league.playoffs && league.playoffs.season === season) throw new Error('Play-offs already exist for this season.');
+
+    const size = Number(bracketSize || 0);
+    const stageOrder = getPlayoffStageOrder(size);
+    if (!stageOrder.length) throw new Error('Unsupported bracket size.');
+
+    const standings = computeSeasonStats(league);
+    const qualified = standings.map(s => s.id).filter(Boolean).slice(0, size);
+    if (qualified.length < size) throw new Error(`Need ${size} teams for this bracket.`);
+
+    league.matches = Array.isArray(league.matches) ? league.matches : [];
+
+    const seasonMatches = league.matches.filter(m => (m.season ?? season) === season);
+    const maxRound = Math.max(0, ...seasonMatches.map(m => Number(m.round) || 0));
+
+    const baseStages = stageOrder.filter(s => s !== 'thirdPlace');
+    const stageRounds = {};
+    let roundCursor = maxRound + 1;
+    baseStages.forEach(stage => { stageRounds[stage] = roundCursor++; });
+    if (stageOrder.includes('thirdPlace')) stageRounds.thirdPlace = stageRounds.final;
+
+    const rounds = {};
+    stageOrder.forEach(stage => { rounds[stage] = []; });
+
+    const firstStage = baseStages[0];
+    const seedOrder = generateSeedOrder(size);
+    if (!seedOrder.length) throw new Error('Failed to generate bracket.');
+
+    const today = new Date().toISOString().split('T')[0];
+    for (let i = 0; i < seedOrder.length; i += 2) {
+      const seedHome = seedOrder[i];
+      const seedAway = seedOrder[i + 1];
+      const homeTeamId = qualified[seedHome - 1];
+      const awayTeamId = qualified[seedAway - 1];
+      const matchId = ulid();
+      league.matches.push({
+        id: matchId,
+        season,
+        round: stageRounds[firstStage],
+        homeTeamId,
+        awayTeamId,
+        status: 'scheduled',
+        date: today,
+        type: 'playoff',
+        playoff: { stage: firstStage, bracketSize: size, seedHome, seedAway }
+      });
+      rounds[firstStage].push(matchId);
+    }
+
+    league.playoffs = {
+      season,
+      bracketSize: size,
+      status: 'in_progress',
+      stageOrder,
+      stageRounds,
+      rounds,
+      qualifiedTeamIds: qualified,
+      createdAt: new Date().toISOString(),
+      prizesAwardedAt: null
+    };
+
+    league.status = 'playoffs';
+
+    await saveLeagueAndIndex(league, key, `Start play-offs (S${season})`);
+  };
+
+  const renderManage = (league, season, playoffs) => {
+    const key = getEditKey();
+    const matchById = new Map((league.matches || []).map(m => [m.id, m]));
+    const stageOrder = Array.isArray(playoffs.stageOrder) ? playoffs.stageOrder : getPlayoffStageOrder(playoffs.bracketSize);
+    const rounds = playoffs.rounds || {};
+
+    const baseStages = stageOrder.filter(s => s !== 'thirdPlace');
+    const nextStage = (() => {
+      for (let idx = 1; idx < baseStages.length; idx++) {
+        const s = baseStages[idx];
+        const ids = Array.isArray(rounds[s]) ? rounds[s] : [];
+        if (!ids.length) return { prev: baseStages[idx - 1], next: s };
+      }
+      return null;
+    })();
+
+    const stageIsComplete = (stage) => {
+      const ids = Array.isArray(rounds[stage]) ? rounds[stage] : [];
+      if (!ids.length) return false;
+      return ids.every(id => matchById.get(id)?.status === 'completed');
+    };
+
+    const prevIds = nextStage ? (Array.isArray(rounds[nextStage.prev]) ? rounds[nextStage.prev] : []) : [];
+    const prevMissingWinners = nextStage
+      ? prevIds
+        .map(id => matchById.get(id))
+        .filter(m => m?.status === 'completed')
+        .filter(m => !getPlayoffWinnerTeamId(m))
+        .length
+      : 0;
+
+    const canGenerateNext = !!nextStage && stageIsComplete(nextStage.prev) && prevMissingWinners === 0;
+
+    const finalId = Array.isArray(rounds.final) ? rounds.final[0] : null;
+    const thirdId = Array.isArray(rounds.thirdPlace) ? rounds.thirdPlace[0] : null;
+    const finalMatch = finalId ? matchById.get(finalId) : null;
+    const thirdMatch = thirdId ? matchById.get(thirdId) : null;
+    const finalWinner = (finalMatch?.status === 'completed') ? getPlayoffWinnerTeamId(finalMatch) : null;
+    const finalLoser = (finalMatch?.status === 'completed') ? getPlayoffLoserTeamId(finalMatch) : null;
+    const thirdWinner = (thirdMatch?.status === 'completed') ? getPlayoffWinnerTeamId(thirdMatch) : null;
+    const canAwardPrizes = !playoffs.prizesAwardedAt && finalWinner && finalLoser && thirdWinner;
+    const awardLabel = playoffs.prizesAwardedAt ? 'Prizes Awarded' : 'Award Glittering Prizes';
+
+    const actionRow = `
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end; margin-bottom:0.75rem;">
+        ${nextStage ? `<button class="primary-btn" id="poGenNextBtn" ${canGenerateNext && key ? '' : 'disabled'}>Generate ${escapeHtml(getPlayoffStageLabel(nextStage.next))}</button>` : ''}
+        <button class="secondary-btn" id="poAwardBtn" ${(canAwardPrizes && key) ? '' : 'disabled'}>${escapeHtml(awardLabel)}</button>
+        <button class="danger-btn" id="poResetBtn" ${key ? '' : 'disabled'}>Reset Play-offs</button>
+      </div>
+      ${!key ? `<div class="small" style="color:#b00020; margin-bottom:0.75rem;">Enter your Edit Key to make changes.</div>` : ''}
+      ${nextStage && stageIsComplete(nextStage.prev) && prevMissingWinners ? `<div class="small" style="color:#b00020; margin-bottom:0.75rem;">${prevMissingWinners} match(es) need a recorded winner before advancing.</div>` : ''}
+      ${playoffs.prizesAwardedAt ? `<div class="small" style="color:#2e7d32; margin-bottom:0.75rem;">Glittering Prizes awarded.</div>` : ''}
+    `;
+
+    const renderMatchRow = (m) => {
+      const homeName = league.teams.find(t => t.id === m.homeTeamId)?.name || m.homeTeamId;
+      const awayName = league.teams.find(t => t.id === m.awayTeamId)?.name || m.awayTeamId;
+      const score = (m.status === 'completed' && m.score) ? `${m.score.home}-${m.score.away}` : '';
+      const winnerId = getPlayoffWinnerTeamId(m);
+      const winnerName = winnerId ? (league.teams.find(t => t.id === winnerId)?.name || winnerId) : null;
+
+      const isTie = (m.status === 'completed') && (Number(m.score?.home) === Number(m.score?.away));
+      const needsWinner = isTie && !m.winnerTeamId;
+
+      let actions = '';
+      if (m.status === 'scheduled') {
+        actions = `<button class="link-button" data-action="start" data-match="${m.id}" style="color:green; font-weight:bold">Start</button>`;
+      } else if (m.status === 'in_progress') {
+        actions = `<button class="link-button" data-action="view" data-match="${m.id}" style="font-weight:bold">View Board</button>`;
+      } else if (m.status === 'completed') {
+        actions = (m.reportId || m.hasReport)
+          ? `<button class="link-button" data-action="report" data-match="${m.id}" style="font-weight:bold">View Report</button>`
+          : `<span class="tag completed">Final</span>`;
+      }
+
+      if (needsWinner) {
+        actions += ` <button class="secondary-btn" data-action="winner" data-match="${m.id}">Set Winner</button>`;
+      }
+
+      return `
+        <tr>
+          <td data-label="Round">${m.round ?? '-'}</td>
+          <td data-label="Home">${escapeHtml(homeName)}</td>
+          <td data-label="Away">${escapeHtml(awayName)}</td>
+          <td data-label="Score">${escapeHtml(score)}</td>
+          <td data-label="Winner">${winnerName ? escapeHtml(winnerName) : (m.status === 'completed' ? '<span class="small" style="color:#b00020;">TBD</span>' : '<span class="small" style="color:#666;">—</span>')}</td>
+          <td data-label="Status">${actions}</td>
+        </tr>
+      `;
+    };
+
+    const stageBlocks = stageOrder.map(stage => {
+      const ids = Array.isArray(rounds[stage]) ? rounds[stage] : [];
+      const matches = ids.map(id => matchById.get(id)).filter(Boolean);
+      return `
+        <div class="panel-styled" style="margin-bottom:0.75rem;">
+          <h4 style="margin-top:0;">${escapeHtml(getPlayoffStageLabel(stage))}</h4>
+          ${matches.length ? `
+            <div class="table-scroll">
+              <table class="responsive-table">
+                <thead><tr><th>Rd</th><th>Home</th><th>Away</th><th>Score</th><th>Winner</th><th>Status</th></tr></thead>
+                <tbody>${matches.map(renderMatchRow).join('')}</tbody>
+              </table>
+            </div>
+          ` : `<div class="small" style="color:#666;">Not scheduled yet.</div>`}
+        </div>
+      `;
+    }).join('');
+
+    body.innerHTML = `
+      <div class="league-subheading">Season ${season} play-offs</div>
+      <div class="small" style="color:#666; text-align:center; margin-bottom:0.75rem;">Bracket: ${playoffs.bracketSize} teams • ${escapeHtml(playoffs.status || 'in_progress')}</div>
+      ${actionRow}
+      ${stageBlocks}
+    `;
+
+    const resetBtn = body.querySelector('#poResetBtn');
+    if (resetBtn) {
+      resetBtn.onclick = async () => {
+        const editKey = getEditKey();
+        if (!editKey) return setStatus('Edit key required.', 'error');
+        const ok = await confirmModal('Reset play-offs?', 'This will remove all play-off fixtures from the league. Match report files (if any) may remain as orphans.', 'Reset', true);
+        if (!ok) return;
+
+        try {
+          const toRemove = (league.matches || [])
+            .filter(m => (m.season ?? season) === season)
+            .filter(m => String(m.type || 'regular') === 'playoff');
+
+          league.matches = (league.matches || [])
+            .filter(m => !(toRemove.includes(m)));
+
+          delete league.playoffs;
+          league.status = 'active';
+
+          await saveLeagueAndIndex(league, editKey, `Reset play-offs (S${season})`);
+          setStatus('Play-offs reset.', 'ok');
+          renderLeagueView();
+          render();
+        } catch (e) {
+          setStatus(`Reset failed: ${e.message}`, 'error');
+        }
+      };
+    }
+
+    const genBtn = body.querySelector('#poGenNextBtn');
+    if (genBtn) {
+      genBtn.onclick = async () => {
+        const editKey = getEditKey();
+        if (!editKey) return setStatus('Edit key required.', 'error');
+        try {
+          await generateNextRound(editKey);
+          setStatus('Next round scheduled.', 'ok');
+          renderLeagueView();
+          render();
+        } catch (e) {
+          setStatus(`Advance failed: ${e.message}`, 'error');
+        }
+      };
+    }
+
+    const awardBtn = body.querySelector('#poAwardBtn');
+    if (awardBtn) {
+      awardBtn.onclick = async () => {
+        const editKey = getEditKey();
+        if (!editKey) return setStatus('Edit key required.', 'error');
+        try {
+          await awardGlitteringPrizes(editKey);
+          setStatus('Glittering Prizes awarded.', 'ok');
+          renderLeagueView();
+          render();
+        } catch (e) {
+          setStatus(`Award failed: ${e.message}`, 'error');
+        }
+      };
+    }
+
+    body.querySelectorAll('button[data-action]').forEach(btn => {
+      btn.addEventListener('click', async (ev) => {
+        const action = btn.getAttribute('data-action');
+        const matchId = btn.getAttribute('data-match');
+        if (!action || !matchId) return;
+
+        if (action === 'start') return window.handleStartMatch(matchId);
+        if (action === 'view') return window.handleOpenScoreboard(matchId);
+        if (action === 'report') return window.handleViewMatchReport(matchId);
+
+        if (action === 'winner') {
+          const editKey = getEditKey();
+          if (!editKey) return setStatus('Edit key required.', 'error');
+
+          const match = (state.currentLeague?.matches || []).find(m => m.id === matchId);
+          if (!match) return setStatus('Match not found.', 'error');
+
+          const homeName = league.teams.find(t => t.id === match.homeTeamId)?.name || match.homeTeamId;
+          const awayName = league.teams.find(t => t.id === match.awayTeamId)?.name || match.awayTeamId;
+          const picked = await pickWinnerModal({ title: 'Set play-off winner', homeLabel: homeName, awayLabel: awayName });
+          if (!picked) return;
+
+          match.winnerTeamId = (picked === 'home') ? match.homeTeamId : match.awayTeamId;
+          await saveLeagueAndIndex(state.currentLeague, editKey, `Set play-off winner ${matchId}`);
+
+          renderLeagueView();
+          render();
+        }
+      });
+    });
+  };
+
+  const generateNextRound = async (key) => {
+    const league = state.currentLeague;
+    const season = Number(league.season || 1);
+    const playoffs = (league.playoffs && league.playoffs.season === season) ? league.playoffs : null;
+    if (!playoffs) throw new Error('No play-offs found.');
+
+    const matchById = new Map((league.matches || []).map(m => [m.id, m]));
+    const stageOrder = Array.isArray(playoffs.stageOrder) ? playoffs.stageOrder : getPlayoffStageOrder(playoffs.bracketSize);
+    const baseStages = stageOrder.filter(s => s !== 'thirdPlace');
+    const rounds = playoffs.rounds || {};
+    const stageRounds = playoffs.stageRounds || {};
+
+    let nextStage = null;
+    let prevStage = null;
+    for (let idx = 1; idx < baseStages.length; idx++) {
+      const s = baseStages[idx];
+      const ids = Array.isArray(rounds[s]) ? rounds[s] : [];
+      if (!ids.length) {
+        nextStage = s;
+        prevStage = baseStages[idx - 1];
+        break;
+      }
+    }
+
+    if (!nextStage || !prevStage) throw new Error('No further rounds to generate.');
+
+    const prevIds = Array.isArray(rounds[prevStage]) ? rounds[prevStage] : [];
+    if (!prevIds.length) throw new Error('Previous round is missing matches.');
+
+    const prevMatches = prevIds.map(id => matchById.get(id)).filter(Boolean);
+    const notDone = prevMatches.filter(m => m.status !== 'completed').length;
+    if (notDone) throw new Error('Previous round is not complete.');
+
+    const winners = [];
+    const losers = [];
+    prevMatches.forEach(m => {
+      const w = getPlayoffWinnerTeamId(m);
+      if (!w) throw new Error('A previous match is missing a winner (likely a tie).');
+      winners.push(w);
+      if (nextStage === 'final') {
+        const loser = getPlayoffLoserTeamId(m);
+        if (!loser) throw new Error('Could not determine loser for a semi-final.');
+        losers.push(loser);
+      }
+    });
+
+    const today = new Date().toISOString().split('T')[0];
+    const makeMatch = (homeTeamId, awayTeamId, stage, round) => {
+      const id = ulid();
+      league.matches.push({
+        id,
+        season,
+        round,
+        homeTeamId,
+        awayTeamId,
+        status: 'scheduled',
+        date: today,
+        type: 'playoff',
+        playoff: { stage, bracketSize: playoffs.bracketSize }
+      });
+      return id;
+    };
+
+    rounds[nextStage] = [];
+
+    if (nextStage === 'final') {
+      const finalRound = Number(stageRounds.final) || Math.max(0, ...prevMatches.map(m => Number(m.round) || 0)) + 1;
+      const finalId = makeMatch(winners[0], winners[1], 'final', finalRound);
+      rounds.final = [finalId];
+
+      if (stageOrder.includes('thirdPlace')) {
+        const thirdId = makeMatch(losers[0], losers[1], 'thirdPlace', finalRound);
+        rounds.thirdPlace = [thirdId];
+      }
+    } else {
+      const roundNumber = Number(stageRounds[nextStage]) || (Math.max(0, ...prevMatches.map(m => Number(m.round) || 0)) + 1);
+      for (let i = 0; i < winners.length; i += 2) {
+        const id = makeMatch(winners[i], winners[i + 1], nextStage, roundNumber);
+        rounds[nextStage].push(id);
+      }
+    }
+
+    playoffs.rounds = rounds;
+    playoffs.status = 'in_progress';
+
+    await saveLeagueAndIndex(league, key, `Schedule play-off round ${nextStage} (S${season})`);
+  };
+
+  const awardGlitteringPrizes = async (key) => {
+    const league = state.currentLeague;
+    const season = Number(league?.season || 1);
+    const playoffs = (league?.playoffs && league.playoffs.season === season) ? league.playoffs : null;
+    if (!playoffs) throw new Error('No play-offs found.');
+    if (playoffs.prizesAwardedAt) throw new Error('Prizes already awarded.');
+
+    const matchById = new Map((league.matches || []).map(m => [m.id, m]));
+    const finalId = Array.isArray(playoffs.rounds?.final) ? playoffs.rounds.final[0] : null;
+    const thirdId = Array.isArray(playoffs.rounds?.thirdPlace) ? playoffs.rounds.thirdPlace[0] : null;
+    const finalMatch = finalId ? matchById.get(finalId) : null;
+    const thirdMatch = thirdId ? matchById.get(thirdId) : null;
+
+    if (!finalMatch || finalMatch.status !== 'completed') throw new Error('Final is not complete.');
+    if (!thirdMatch || thirdMatch.status !== 'completed') throw new Error('Third-place match is not complete.');
+
+    const firstTeamId = getPlayoffWinnerTeamId(finalMatch);
+    const secondTeamId = getPlayoffLoserTeamId(finalMatch);
+    const thirdTeamId = getPlayoffWinnerTeamId(thirdMatch);
+    if (!firstTeamId || !secondTeamId || !thirdTeamId) throw new Error('Missing winner/loser info for prizes.');
+
+    const firstName = league.teams.find(t => t.id === firstTeamId)?.name || firstTeamId;
+    const secondName = league.teams.find(t => t.id === secondTeamId)?.name || secondTeamId;
+    const thirdName = league.teams.find(t => t.id === thirdTeamId)?.name || thirdTeamId;
+
+    const msg = `
+      <div style="text-align:left">
+        <div style="margin-bottom:0.5rem;">Award Glittering Prizes for Season ${season}?</div>
+        <ul style="margin:0; padding-left:1.2rem;">
+          <li><strong>1st:</strong> ${escapeHtml(firstName)} (+100k, League Trophy)</li>
+          <li><strong>2nd:</strong> ${escapeHtml(secondName)} (+60k)</li>
+          <li><strong>3rd:</strong> ${escapeHtml(thirdName)} (+30k)</li>
+        </ul>
+        <div class="small" style="margin-top:0.75rem; color:#666;">These winnings are awarded after the final Post-game Sequence (not subject to Expensive Mistakes).</div>
+      </div>
+    `;
+
+    const ok = await confirmModal('Award Glittering Prizes?', msg, 'Award', true, true);
+    if (!ok) return;
+
+    const teamIds = (league.teams || []).map(t => t.id).filter(Boolean);
+    const teamFiles = new Map();
+    for (const teamId of teamIds) {
+      const team = await apiGet(PATHS.team(league.id, teamId));
+      if (!team) throw new Error(`Team file not found: ${teamId}`);
+      teamFiles.set(teamId, team);
+    }
+
+    const at = new Date().toISOString();
+
+    const addTx = (team, label, deltaTreasuryGp, deltaTvGp = null) => {
+      team.transactions = Array.isArray(team.transactions) ? team.transactions : [];
+      team.transactions.push({
+        id: ulid(),
+        at,
+        type: 'league',
+        label,
+        delta: {
+          treasuryGp: deltaTreasuryGp,
+          tvGp: deltaTvGp ?? undefined
+        }
+      });
+    };
+
+    for (const team of teamFiles.values()) {
+      if ('trophyRerollSeason' in team) delete team.trophyRerollSeason;
+    }
+
+    const prizeMap = new Map([
+      [firstTeamId, 100000],
+      [secondTeamId, 60000],
+      [thirdTeamId, 30000]
+    ]);
+
+    for (const [teamId, prizeGp] of prizeMap.entries()) {
+      const team = teamFiles.get(teamId);
+      if (!team) continue;
+      team.treasury = Number(team.treasury || 0) + Number(prizeGp || 0);
+      const label = (teamId === firstTeamId)
+        ? `Glittering Prize: 1st place (+100k)`
+        : (teamId === secondTeamId)
+          ? `Glittering Prize: 2nd place (+60k)`
+          : `Glittering Prize: 3rd place (+30k)`;
+      addTx(team, label, prizeGp);
+    }
+
+    const champion = teamFiles.get(firstTeamId);
+    if (champion) {
+      champion.trophyRerollSeason = season + 1;
+      const race = state.gameData?.races?.find(r => r.name === champion.race);
+      const rrCost = Number(race?.rerollCost || 50000);
+      addTx(champion, `League Trophy: +1 Team Re-roll for Season ${season + 1}`, 0, rrCost);
+    }
+
+    for (const [teamId, team] of teamFiles.entries()) {
+      await apiSave(PATHS.team(league.id, teamId), team, `Glittering Prizes (S${season})`, key);
+    }
+
+    playoffs.placements = { firstTeamId, secondTeamId, thirdTeamId };
+    playoffs.prizesAwardedAt = at;
+    playoffs.status = 'completed';
+    league.status = 'offseason';
+
+    await saveLeagueAndIndex(league, key, `Award Glittering Prizes (S${season})`);
+  };
+
+  render();
+}
+
+export async function beginOffseason() {
+  const l = state.currentLeague;
+  if (!l) return;
+
+  const key = getEditKey();
+  if (!key) return setStatus('Edit key required', 'error');
+
+  const season = Number(l.season || 1);
+  const msg = `
+    <div style="text-align:left">
+      <div style="margin-bottom:0.5rem;">Begin the Off-season for Season ${season}?</div>
+      <div class="small" style="color:#666;">This enables Re-drafting on team pages and prepares for Season ${season + 1}.</div>
+    </div>
+  `;
+
+  const ok = await confirmModal('Begin Off-season?', msg, 'Begin', false, true);
+  if (!ok) return;
+
+  try {
+    l.status = 'offseason';
+    l.offseason = { season, startedAt: new Date().toISOString() };
+    await saveLeagueAndIndex(l, key, `Begin off-season (S${season})`);
+    setStatus('Off-season started.', 'ok');
+    renderLeagueView();
+  } catch (e) {
+    setStatus(`Failed to begin off-season: ${e.message}`, 'error');
+  }
+}
+
+export async function startNextSeason() {
+  const l = state.currentLeague;
+  if (!l) return;
+
+  const key = getEditKey();
+  if (!key) return setStatus('Edit key required', 'error');
+
+  const fromSeason = Number(l.season || 1);
+  const toSeason = fromSeason + 1;
+
+  const warnings = [];
+  if (String(l.status || '') !== 'offseason') warnings.push('League status is not "offseason".');
+  if (l.playoffs && l.playoffs.season === fromSeason && !l.playoffs.prizesAwardedAt) warnings.push('Play-offs exist but Glittering Prizes are not awarded yet.');
+
+  const teamIds = (l.teams || []).map(t => t.id).filter(Boolean);
+  const teamFiles = [];
+  const notRedrafted = [];
+
+  for (const teamId of teamIds) {
+    const t = await apiGet(PATHS.team(l.id, teamId));
+    if (!t) throw new Error(`Team file not found: ${teamId}`);
+    teamFiles.push(t);
+    if (Number(t.redraft?.toSeason || 0) !== toSeason) {
+      notRedrafted.push(t.name || teamId);
+    }
+  }
+
+  if (notRedrafted.length) warnings.push(`Teams not re-drafted for Season ${toSeason}: ${notRedrafted.join(', ')}`);
+
+  const html = `
+    <div style="text-align:left">
+      <div style="margin-bottom:0.5rem;">Start Season ${toSeason}?</div>
+      ${warnings.length ? `
+        <div style="font-weight:800; margin-bottom:0.35rem;">Warnings</div>
+        <ul style="margin:0; padding-left:1.2rem;">${warnings.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul>
+      ` : `<div class="small" style="color:#666;">All teams appear ready.</div>`}
+      <div class="small" style="margin-top:0.75rem; color:#666;">This will advance the league season, clear MNG/TR flags for all teams, and keep match history for prior seasons.</div>
+    </div>
+  `;
+
+  const ok = await confirmModal('Start new season?', html, `Start Season ${toSeason}`, true, true);
+  if (!ok) return;
+
+  try {
+    // Archive play-offs (if present for the outgoing season)
+    if (l.playoffs && l.playoffs.season === fromSeason) {
+      l.playoffsHistory = l.playoffsHistory || {};
+      l.playoffsHistory[String(fromSeason)] = l.playoffs;
+      delete l.playoffs;
+    }
+
+    l.season = toSeason;
+    l.status = 'active';
+    l.offseason = { ...(l.offseason || {}), endedAt: new Date().toISOString(), nextSeason: toSeason };
+
+    // Clear seasonal availability flags
+    for (const t of teamFiles) {
+      (t.players || []).forEach(p => {
+        if (p.mng) p.mng = false;
+        if (p.tr) p.tr = false;
+      });
+      await apiSave(PATHS.team(l.id, t.id), t, `Start Season ${toSeason} cleanup`, key);
+    }
+
+    await saveLeagueAndIndex(l, key, `Start Season ${toSeason}`);
+
+    state.leagueTeamsCache = null;
+    state.leagueStatsCache = null;
+    state.leagueTeamsCacheForLeagueId = null;
+
+    setStatus(`Season ${toSeason} started.`, 'ok');
+    renderLeagueView();
+  } catch (e) {
+    setStatus(`Failed to start season: ${e.message}`, 'error');
+  }
+}
+
 export function renderLeagueView() {
   const l = state.currentLeague;
   if (!l) return;
@@ -188,6 +1005,11 @@ export function renderLeagueView() {
 let leagueTabLoadToken = 0;
 async function renderLeagueTabContent(league) {
   const token = ++leagueTabLoadToken;
+
+  if (state.leagueTab === 'season') {
+    renderSeasonTab(league);
+    return;
+  }
 
   if (state.leagueTab === 'standings') {
     renderStandingsTab(league);
@@ -223,6 +1045,75 @@ async function renderLeagueTabContent(league) {
   } catch (e) {
     els.containers.standings.innerHTML = `<div class="small" style="color:#b00020;">Failed to load stats: ${e.message}</div>`;
   }
+}
+
+function getLeaguePhaseLabel(status) {
+  const s = String(status || 'active');
+  if (s === 'upcoming') return 'Upcoming';
+  if (s === 'playoffs') return 'Play-offs';
+  if (s === 'offseason') return 'Off-season';
+  if (s === 'completed') return 'Completed';
+  return 'Regular Season';
+}
+
+function renderSeasonTab(league) {
+  const season = Number(league?.season || 1);
+  const status = String(league?.status || 'active');
+  const phaseLabel = getLeaguePhaseLabel(status);
+
+  const matches = Array.isArray(league?.matches) ? league.matches : [];
+  const seasonMatches = matches.filter(m => (m.season ?? season) === season);
+  const regularMatches = seasonMatches.filter(m => String(m.type || 'regular') !== 'playoff');
+  const playoffMatches = seasonMatches.filter(m => String(m.type || 'regular') === 'playoff');
+  const regularComplete = regularMatches.length ? regularMatches.every(m => m.status === 'completed') : false;
+  const playoffComplete = playoffMatches.length ? playoffMatches.every(m => m.status === 'completed') : false;
+
+  const playoffs = (league?.playoffs && league.playoffs.season === season) ? league.playoffs : null;
+  const hasBracket = !!playoffs?.bracketSize;
+  const prizesAwarded = !!playoffs?.prizesAwardedAt;
+
+  const summary = `
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <div class="league-subheading">Season ${season} (${phaseLabel})</div>
+      <div class="small" style="color:#666; text-align:center;">
+        Regular: ${regularMatches.length ? (regularComplete ? 'complete' : 'in progress') : 'no fixtures'} •
+        Play-offs: ${playoffMatches.length ? (playoffComplete ? 'complete' : 'in progress') : 'not started'}
+      </div>
+    </div>
+  `;
+
+  const playoffsCtaLabel = hasBracket ? 'Manage Play-offs' : 'Start Play-offs';
+  const playoffsNote = (!regularComplete && regularMatches.length)
+    ? `<div class="small" style="margin-top:0.6rem; color:#b00020;">${regularMatches.filter(m => m.status !== 'completed').length} regular-season match(es) are not completed.</div>`
+    : '';
+
+  const playoffsCard = `
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <h4 style="margin-top:0;">Play-offs</h4>
+      ${hasBracket ? `
+        <div class="small" style="color:#666; margin-bottom:0.5rem;">Bracket: ${playoffs.bracketSize} teams • ${playoffs.status || 'in_progress'}${prizesAwarded ? ' • prizes awarded' : ''}</div>
+      ` : `<div class="small" style="color:#666; margin-bottom:0.5rem;">No play-offs configured for this season.</div>`}
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+        <button class="${hasBracket ? 'secondary-btn' : 'primary-btn'}" onclick="window.openPlayoffsManager()">${playoffsCtaLabel}</button>
+      </div>
+      ${playoffsNote}
+    </div>
+  `;
+
+  const offseasonCard = `
+    <div class="panel-styled">
+      <h4 style="margin-top:0;">Off-season & Re-drafting</h4>
+      <div class="small" style="color:#666; margin-bottom:0.5rem;">
+        Use this after play-offs conclude to run Re-draft Budgets and prepare for Season ${season + 1}.
+      </div>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+        <button class="secondary-btn" onclick="window.beginOffseason()">Begin Off-season</button>
+        <button class="primary-btn" onclick="window.startNextSeason()">Start Season ${season + 1}</button>
+      </div>
+    </div>
+  `;
+
+  els.containers.standings.innerHTML = summary + playoffsCard + offseasonCard;
 }
 
 function renderStandingsTab(league) {
@@ -519,8 +1410,11 @@ export function renderMatchesList(league) {
     return;
   }
   
-  const active = league.matches.filter(m => m.status === 'in_progress');
-  const others = league.matches.filter(m => m.status !== 'in_progress').sort((a,b) => a.round - b.round);
+  const season = Number(league.season || 1);
+  const seasonMatches = league.matches.filter(m => (m.season ?? season) === season);
+
+  const active = seasonMatches.filter(m => m.status === 'in_progress');
+  const others = seasonMatches.filter(m => m.status !== 'in_progress').sort((a,b) => a.round - b.round);
 
   let inProgHtml = '';
   if (active.length > 0) {

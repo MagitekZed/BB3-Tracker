@@ -2,13 +2,16 @@ export function collectSeasonPlayerRows(teamFiles, season, opts = {}) {
   const options = {
     includeStars: false,
     includeJourneymen: false,
+    includePlayoffs: false,
     ...opts
   };
 
   const rows = [];
   for (const [teamId, team] of teamFiles.entries()) {
     const teamName = team?.name || 'Unknown Team';
-    const history = (team?.history || []).filter(h => !h.season || h.season === season);
+    const history = (team?.history || [])
+      .filter(h => !h.season || h.season === season)
+      .filter(h => options.includePlayoffs || String(h.matchType || 'regular') !== 'playoff');
     for (const h of history) {
       for (const pr of (h.playerRecords || [])) {
         if (!pr) continue;
@@ -77,4 +80,3 @@ export function aggregatePlayerStats(playerRows) {
   }
   return Array.from(map.values());
 }
-

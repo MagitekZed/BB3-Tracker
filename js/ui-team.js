@@ -61,7 +61,11 @@ export function renderTeamView() {
   const deadCount = roster.filter(p => !!p?.dead).length;
 
   const treasuryK = Math.floor((Number(t.treasury) || 0) / 1000);
-  const staffInfo = `RR: ${t.rerolls || 0} | DF: ${t.dedicatedFans || 0} | Apo: ${t.apothecary ? 'Yes' : 'No'} | AC: ${t.assistantCoaches || 0} | Cheer: ${t.cheerleaders || 0}`;
+  const trophyActive = Number(t.trophyRerollSeason || 0) === Number(state.currentLeague?.season || 0);
+  const rrLabel = trophyActive ? `${t.rerolls || 0} (+1 Trophy)` : `${t.rerolls || 0}`;
+  const staffInfo = `RR: ${rrLabel} | DF: ${t.dedicatedFans || 0} | Apo: ${t.apothecary ? 'Yes' : 'No'} | AC: ${t.assistantCoaches || 0} | Cheer: ${t.cheerleaders || 0}`;
+  const showRedraftTab = String(state.currentLeague?.status || '') === 'offseason';
+  if (!showRedraftTab && state.teamTab === 'redraft') state.teamTab = 'overview';
 
   const seasonStats = state.currentLeague ? computeSeasonStats(state.currentLeague).find(s => s.id === t.id) : null;
   const season = state.currentLeague?.season;
@@ -95,6 +99,7 @@ export function renderTeamView() {
         <button class="secondary-btn league-tab-btn ${state.teamTab === 'roster' ? 'active' : ''}" onclick="window.setTeamTab('roster')">Roster</button>
         <button class="secondary-btn league-tab-btn ${state.teamTab === 'development' ? 'active' : ''}" onclick="window.setTeamTab('development')">Development</button>
         <button class="secondary-btn league-tab-btn ${state.teamTab === 'staff' ? 'active' : ''}" onclick="window.setTeamTab('staff')">Staff &amp; Treasury</button>
+        ${showRedraftTab ? `<button class="secondary-btn league-tab-btn ${state.teamTab === 'redraft' ? 'active' : ''}" onclick="window.setTeamTab('redraft')">Re-draft</button>` : ''}
         <button class="secondary-btn league-tab-btn ${state.teamTab === 'history' ? 'active' : ''}" onclick="window.setTeamTab('history')">History</button>
       </div>
     </div>
@@ -308,6 +313,10 @@ function renderTeamTabContent({ team, season, seasonStats, history, matchLogRows
     `;
   }
 
+  if (tab === 'redraft') {
+    return renderRedraftTab({ team, season });
+  }
+
   if (tab === 'history') {
     const txs = Array.isArray(team.transactions) ? [...team.transactions] : [];
     txs.sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')));
@@ -390,6 +399,731 @@ function renderTeamTabContent({ team, season, seasonStats, history, matchLogRows
   return `<div class="panel-styled"><div class="small" style="color:#666;">Unknown tab.</div></div>`;
 }
 
+// ==============================
+// Phase 7: Off-season Re-drafting
+// ==============================
+
+function ensureTeamRedraftState({ team, fromSeason, toSeason }) {
+  const leagueId = state.currentLeague?.id || null;
+  const existing = state.teamRedraft;
+  if (
+    !existing ||
+    existing.leagueId !== leagueId ||
+    existing.teamId !== team.id ||
+    existing.fromSeason !== fromSeason ||
+    existing.toSeason !== toSeason
+  ) {
+    state.teamRedraft = {
+      leagueId,
+      teamId: team.id,
+      fromSeason,
+      toSeason,
+      step: 1,
+      capEnabled: true,
+      capGp: 1300000,
+      recoveryRolls: {},
+      recoveryApplied: false,
+      draftPlayers: JSON.parse(JSON.stringify(Array.isArray(team.players) ? team.players : [])),
+      rehire: {},
+      newHires: [],
+      staffDraft: {
+        rerolls: Number(team.rerolls || 0),
+        apothecary: !!team.apothecary,
+        assistantCoaches: Number(team.assistantCoaches || 0),
+        cheerleaders: Number(team.cheerleaders || 0)
+      }
+    };
+  }
+  return state.teamRedraft;
+}
+
+function computeTeamSeasonRecord(league, teamId, season) {
+  const s = Number(season || 1);
+  const matches = (league?.matches || [])
+    .filter(m => m.status === 'completed')
+    .filter(m => (m.season ?? s) === s);
+
+  let games = 0;
+  let wins = 0;
+  let draws = 0;
+
+  for (const m of matches) {
+    if (m.homeTeamId !== teamId && m.awayTeamId !== teamId) continue;
+    games += 1;
+
+    const hs = Number(m.score?.home ?? 0);
+    const as = Number(m.score?.away ?? 0);
+
+    if (hs > as) {
+      if (m.homeTeamId === teamId) wins += 1;
+      continue;
+    }
+    if (as > hs) {
+      if (m.awayTeamId === teamId) wins += 1;
+      continue;
+    }
+
+    // Tie: in play-offs a winner may be recorded via winnerTeamId
+    if (m.winnerTeamId) {
+      if (m.winnerTeamId === teamId) wins += 1;
+      continue;
+    }
+
+    draws += 1;
+  }
+
+  return { games, wins, draws };
+}
+
+function computeRedraftBudget({ league, team, fromSeason, capEnabled, capGp }) {
+  const treasuryGp = Number(team?.treasury || 0);
+  const baseGp = 1000000;
+  const record = computeTeamSeasonRecord(league, team?.id, fromSeason);
+  const bonusGamesGp = record.games * 20000;
+  const bonusWinsGp = record.wins * 20000;
+  const bonusDrawsGp = record.draws * 10000;
+  const totalGp = baseGp + treasuryGp + bonusGamesGp + bonusWinsGp + bonusDrawsGp;
+
+  const cap = Number(capGp || 0) || 1300000;
+  const cappedGp = capEnabled ? Math.min(totalGp, cap) : totalGp;
+  const capApplied = capEnabled && totalGp > cap;
+
+  return {
+    baseGp,
+    treasuryGp,
+    record,
+    bonusGamesGp,
+    bonusWinsGp,
+    bonusDrawsGp,
+    totalGp,
+    capGp: cap,
+    capEnabled: !!capEnabled,
+    capApplied,
+    finalGp: cappedGp
+  };
+}
+
+function getAgentFeeGp(player, fromSeason) {
+  const from = Number(fromSeason || 1);
+  const rookieSeason = Number(player?.rookieSeason || from);
+  const seasonsPlayed = Math.max(1, from - rookieSeason + 1);
+  return seasonsPlayed * 20000;
+}
+
+function getPositional(race, positionName) {
+  const name = String(positionName || '').trim();
+  if (!race || !name) return null;
+  return (race.positionals || []).find(p => p.name === name) || null;
+}
+
+function listInjuryReductions(player) {
+  const raw = String(player?.injuries || '');
+  const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+  return parts.filter(p => p.startsWith('-'));
+}
+
+function applyRedraftRecovery({ draft, team }) {
+  const roster = Array.isArray(draft.draftPlayers) ? draft.draftPlayers : [];
+  const mod = team?.apothecary ? 1 : 0;
+  const missing = [];
+
+  roster.forEach(p => {
+    if (!p?.tr) return;
+    const reductions = listInjuryReductions(p);
+    if (!reductions.length) return;
+
+    const newInjuries = String(p.injuries || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    reductions.forEach((code, idx) => {
+      const key = `${p.id}:${idx}:${code}`;
+      const rollRaw = draft.recoveryRolls?.[key];
+      const roll = (rollRaw == null || rollRaw === '') ? null : Number(rollRaw);
+      if (!roll || roll < 1 || roll > 6) {
+        missing.push(`${p.number ? `#${p.number} ` : ''}${p.name}: ${code}`);
+        return;
+      }
+
+      if (roll + mod >= 4) {
+        const stat = code.substring(1);
+        p[stat] = (Number(p[stat]) || 0) + 1;
+        const removeIdx = newInjuries.findIndex(x => x === code);
+        if (removeIdx >= 0) newInjuries.splice(removeIdx, 1);
+      }
+    });
+
+    p.injuries = newInjuries.length ? (newInjuries.join(',') + ',') : '';
+  });
+
+  draft.recoveryApplied = true;
+  return { missing };
+}
+
+function computeRedraftSpend({ draft, race, fromSeason }) {
+  const staffCosts = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
+  const rerollCost = Number(race?.rerollCost || 50000);
+
+  const staff = draft.staffDraft || {};
+  const staffSpentGp =
+    (Number(staff.assistantCoaches || 0) * Number(staffCosts.assistantCoach || 0))
+    + (Number(staff.cheerleaders || 0) * Number(staffCosts.cheerleader || 0))
+    + ((!!staff.apothecary) ? Number(staffCosts.apothecary || 0) : 0)
+    + (Number(staff.rerolls || 0) * rerollCost);
+
+  const roster = Array.isArray(draft.draftPlayers) ? draft.draftPlayers : [];
+  const rehireIds = Object.entries(draft.rehire || {}).filter(([, v]) => !!v).map(([id]) => id);
+  const rehired = roster.filter(p => rehireIds.includes(p.id));
+  const rehireSpentGp = rehired.reduce((sum, p) => sum + (Number(p.cost || 0) + getAgentFeeGp(p, fromSeason)), 0);
+
+  const newHires = Array.isArray(draft.newHires) ? draft.newHires : [];
+  const newHireSpentGp = newHires.reduce((sum, h) => {
+    const pos = getPositional(race, h.position);
+    return sum + (Number(pos?.cost || 0));
+  }, 0);
+
+  return {
+    staffSpentGp,
+    rehireSpentGp,
+    newHireSpentGp,
+    totalSpentGp: staffSpentGp + rehireSpentGp + newHireSpentGp,
+    rehiredCount: rehired.length,
+    newHireCount: newHires.length
+  };
+}
+
+function renderRedraftTab({ team, season }) {
+  const league = state.currentLeague;
+  if (!league) return `<div class="panel-styled"><div class="small" style="color:#666;">No league loaded.</div></div>`;
+
+  const fromSeason = Number(season || league.season || 1);
+  const toSeason = fromSeason + 1;
+
+  const race = state.gameData?.races?.find(r => r.name === team.race) || null;
+  if (!race) return `<div class="panel-styled"><div class="small" style="color:#b00020;">Race rules not found.</div></div>`;
+
+  const draft = ensureTeamRedraftState({ team, fromSeason, toSeason });
+  const budget = computeRedraftBudget({
+    league,
+    team,
+    fromSeason,
+    capEnabled: draft.capEnabled,
+    capGp: draft.capGp
+  });
+
+  const trophyNextSeason = Number(team.trophyRerollSeason || 0) === toSeason;
+
+  const step = Number(draft.step || 1);
+  const stepLabel = step === 1 ? 'Rest & Relaxation' : step === 2 ? 'Raise Funds' : 'Re-draft Team';
+  const stepTotal = 3;
+
+  const header = `
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <div class="league-subheading">Off-season Re-drafting</div>
+      <div class="small" style="color:#666; text-align:center;">Step ${step}/${stepTotal}: ${escapeHtml(stepLabel)} (Season ${fromSeason} → ${toSeason})</div>
+      ${trophyNextSeason ? `<div class="small" style="margin-top:0.5rem; color:#2e7d32; text-align:center;">League Trophy: +1 Team Re-roll for Season ${toSeason} (counts for TV, costs 0gp).</div>` : ''}
+    </div>
+  `;
+
+  if (step === 1) {
+    const roster = Array.isArray(draft.draftPlayers) ? draft.draftPlayers : [];
+    const mngCount = roster.filter(p => !!p?.mng).length;
+    const trPlayers = roster.filter(p => !!p?.tr);
+    const mod = team.apothecary ? 1 : 0;
+
+    const rows = trPlayers.flatMap(p => {
+      const reductions = listInjuryReductions(p);
+      return reductions.map((code, idx) => {
+        const key = `${p.id}:${idx}:${code}`;
+        const val = draft.recoveryRolls?.[key] ?? '';
+        return `
+          <tr>
+            <td data-label="Player">${escapeHtml(p.number ? `#${p.number} ` : '')}${escapeHtml(p.name || '-')}</td>
+            <td data-label="Injury">${escapeHtml(code)}</td>
+            <td data-label="Roll"><input type="number" min="1" max="6" value="${escapeHtml(val)}" onchange="window.teamRedraftSetRecoveryRoll(${JSON.stringify(key)}, this.value)" style="width:80px;"></td>
+            <td data-label="Target" class="small" style="color:#666;">4+${mod ? ` (with +${mod})` : ''}</td>
+          </tr>
+        `;
+      });
+    }).join('');
+
+    return header + `
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Recovery</h4>
+        <div class="small" style="color:#666; margin-bottom:0.5rem;">
+          Players marked as MNG recover before the next season. Temporarily Retired (TR) players may heal during the off-season.
+        </div>
+        <div class="season-stats-grid">
+          <div><strong>MNG players:</strong> ${mngCount}</div>
+          <div><strong>TR players:</strong> ${trPlayers.length}</div>
+          <div><strong>Apothecary:</strong> ${team.apothecary ? 'Yes (+1 to TR recovery rolls)' : 'No'}</div>
+        </div>
+      </div>
+
+      <div class="panel-styled">
+        <h4 style="margin-top:0;">TR Recovery Rolls</h4>
+        ${rows ? `
+          <div class="table-scroll">
+            <table class="responsive-table">
+              <thead><tr><th>Player</th><th>Injury</th><th>Roll</th><th>Target</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        ` : `<div class="small" style="color:#666;">No TR characteristic reductions to roll for.</div>`}
+        <div class="small" style="color:#666; margin-top:0.5rem;">Enter the D6 results; the app does not roll dice.</div>
+      </div>
+
+      <div class="modal-actions" style="margin-top:0.75rem; justify-content:space-between;">
+        <button class="secondary-btn" onclick="window.teamRedraftReset()">Reset</button>
+        <button class="primary-btn" onclick="window.teamRedraftNext()">Next</button>
+      </div>
+    `;
+  }
+
+  if (step === 2) {
+    const totalK = Math.round(budget.totalGp / 1000);
+    const finalK = Math.round(budget.finalGp / 1000);
+
+    return header + `
+      <div class="panel-styled" style="margin-bottom:0.75rem;">
+        <h4 style="margin-top:0;">Re-draft Budget</h4>
+        <div class="small" style="color:#666; margin-bottom:0.5rem;">Budget = 1,000,000 + Treasury + bonuses from last season.</div>
+        <div class="season-stats-grid">
+          <div><strong>Base:</strong> ${formatK(budget.baseGp)}</div>
+          <div><strong>Treasury:</strong> ${formatK(budget.treasuryGp)}</div>
+          <div><strong>Fixtures:</strong> ${budget.record.games} (${formatK(budget.bonusGamesGp)})</div>
+          <div><strong>Wins:</strong> ${budget.record.wins} (${formatK(budget.bonusWinsGp)})</div>
+          <div><strong>Draws:</strong> ${budget.record.draws} (${formatK(budget.bonusDrawsGp)})</div>
+          <div><strong>Total:</strong> ${totalK}k</div>
+          <div><strong>Final Budget:</strong> ${finalK}k</div>
+        </div>
+        <div style="margin-top:0.75rem;">
+          <label style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="checkbox" ${draft.capEnabled ? 'checked' : ''} onchange="window.teamRedraftSetCapEnabled(this.checked)">
+            Use recommended budget cap (${Math.round(budget.capGp / 1000)}k)
+          </label>
+          ${budget.capApplied ? `<div class="small" style="color:#b00020; margin-top:0.35rem;">Cap applied: ${totalK}k → ${finalK}k</div>` : ''}
+        </div>
+      </div>
+
+      <div class="modal-actions" style="justify-content:space-between;">
+        <button class="secondary-btn" onclick="window.teamRedraftBack()">Back</button>
+        <button class="primary-btn" onclick="window.teamRedraftNext()">Next</button>
+      </div>
+    `;
+  }
+
+  // Step 3: Team builder
+  const spend = computeRedraftSpend({ draft, race, fromSeason });
+  const remainingGp = budget.finalGp - spend.totalSpentGp;
+  const remainingK = Math.round(remainingGp / 1000);
+
+  const roster = Array.isArray(draft.draftPlayers) ? draft.draftPlayers : [];
+  const eligible = roster.filter(p => !p?.isStar && !p?.isJourneyman && !p?.dead);
+  const rehireRows = eligible.map(p => {
+    const checked = !!draft.rehire?.[p.id];
+    const feeGp = getAgentFeeGp(p, fromSeason);
+    const totalGp = Number(p.cost || 0) + feeGp;
+    const rookieSeason = Number(p.rookieSeason || fromSeason);
+    const seasonsPlayed = Math.max(1, fromSeason - rookieSeason + 1);
+    const status = [p.tr ? 'TR' : null, p.mng ? 'MNG' : null].filter(Boolean).join('/');
+
+    return `
+      <tr>
+        <td data-label="Rehire"><input type="checkbox" ${checked ? 'checked' : ''} onchange="window.teamRedraftToggleRehire(${JSON.stringify(p.id)}, this.checked)"></td>
+        <td data-label="#">${p.number ?? ''}</td>
+        <td data-label="Player">${escapeHtml(p.name || '-')}<div class="small" style="color:#666;">${escapeHtml(p.position || '')}${status ? ` • ${escapeHtml(status)}` : ''}</div></td>
+        <td data-label="Value">${formatK(p.cost)}</td>
+        <td data-label="Agent Fee">${formatK(feeGp)}<div class="small" style="color:#666;">(${seasonsPlayed} season${seasonsPlayed === 1 ? '' : 's'})</div></td>
+        <td data-label="Total">${formatK(totalGp)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const posOptions = (race.positionals || []).map(p => {
+    const costK = Math.floor((Number(p.cost) || 0) / 1000);
+    return `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)} (${costK}k)</option>`;
+  }).join('');
+
+  const selectedRehireCount = Object.values(draft.rehire || {}).filter(Boolean).length;
+  const totalPlayerCount = selectedRehireCount + (draft.newHires?.length || 0);
+
+  const warnings = [];
+  if (remainingGp < 0) warnings.push(`Over budget by ${Math.abs(remainingK)}k.`);
+  if (totalPlayerCount > 16) warnings.push(`Team Draft List max is 16 players; selected ${totalPlayerCount}.`);
+  if (totalPlayerCount && totalPlayerCount < 11) warnings.push(`Selected only ${totalPlayerCount} players; you may rely on Journeymen.`);
+
+  const pickedNumbers = [];
+  eligible.forEach(p => { if (draft.rehire?.[p.id]) pickedNumbers.push(Number(p.number)); });
+  (draft.newHires || []).forEach(h => pickedNumbers.push(Number(h.number)));
+  const dupNums = pickedNumbers.filter(n => Number.isFinite(n)).filter((n, i, arr) => arr.indexOf(n) !== i);
+  if (dupNums.length) warnings.push(`Duplicate jersey numbers selected: ${[...new Set(dupNums)].join(', ')}.`);
+
+  const already = Number(team.redraft?.toSeason || 0) === toSeason;
+
+  return header + `
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <h4 style="margin-top:0;">Budget</h4>
+      <div class="season-stats-grid">
+        <div><strong>Final Budget:</strong> ${formatK(budget.finalGp)}</div>
+        <div><strong>Spent:</strong> ${formatK(spend.totalSpentGp)}</div>
+        <div><strong>Remaining:</strong> <span style="color:${remainingGp < 0 ? '#b00020' : '#2e7d32'}; font-weight:900;">${remainingK}k</span></div>
+      </div>
+      <div class="small" style="color:#666; margin-top:0.35rem;">Staff and Team Re-rolls cost standard amounts during Re-draft (not double).</div>
+    </div>
+
+    ${warnings.length ? `
+      <div class="panel-styled" style="margin-bottom:0.75rem; border-left:4px solid #b00020;">
+        <h4 style="margin-top:0;">Warnings</h4>
+        <ul style="margin:0; padding-left:1.2rem;">${warnings.map(w => `<li>${escapeHtml(w)}</li>`).join('')}</ul>
+      </div>
+    ` : ''}
+
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <h4 style="margin-top:0;">Re-hire players</h4>
+      ${rehireRows ? `
+        <div class="table-scroll">
+          <table class="responsive-table">
+            <thead><tr><th></th><th>#</th><th>Player</th><th>Value</th><th>Agent Fee</th><th>Total</th></tr></thead>
+            <tbody>${rehireRows}</tbody>
+          </table>
+        </div>
+      ` : `<div class="small" style="color:#666;">No eligible players to re-hire.</div>`}
+    </div>
+
+    <div class="panel-styled" style="margin-bottom:0.75rem;">
+      <h4 style="margin-top:0;">Hire new players</h4>
+      <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+        <div class="form-field">
+          <label>Position</label>
+          <select id="redraftHirePos">${posOptions}</select>
+        </div>
+        <div class="form-field">
+          <label>Name (optional)</label>
+          <input id="redraftHireName" type="text" placeholder="Player name..." />
+        </div>
+        <div class="form-field">
+          <label>Number</label>
+          <input id="redraftHireNumber" type="number" min="1" max="99" value="${getNextPlayerNumber(team.players || [])}" />
+        </div>
+      </div>
+      <div style="margin-top:0.6rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+        <button class="primary-btn" onclick="window.teamRedraftAddNewHire()">Add Player</button>
+      </div>
+
+      ${(draft.newHires || []).length ? `
+        <div class="table-scroll" style="margin-top:0.75rem;">
+          <table class="responsive-table">
+            <thead><tr><th>#</th><th>Player</th><th>Cost</th><th></th></tr></thead>
+            <tbody>
+              ${(draft.newHires || []).map((h, i) => {
+                const pos = getPositional(race, h.position);
+                return `
+                  <tr>
+                    <td data-label="#">${h.number ?? ''}</td>
+                    <td data-label="Player">${escapeHtml(h.name || h.position)}<div class="small" style="color:#666;">${escapeHtml(h.position || '')}</div></td>
+                    <td data-label="Cost">${formatK(pos?.cost || 0)}</td>
+                    <td data-label=""><button class="danger-btn" onclick="window.teamRedraftRemoveNewHire(${i})">Remove</button></td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : `<div class="small" style="color:#666; margin-top:0.5rem;">No new hires added.</div>`}
+    </div>
+
+    <div class="panel-styled">
+      <h4 style="margin-top:0;">Staff &amp; Re-rolls</h4>
+      <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+        <div class="form-field">
+          <label>Team Re-rolls</label>
+          <input type="number" min="0" step="1" value="${escapeHtml(draft.staffDraft?.rerolls ?? 0)}" onchange="window.teamRedraftSetStaffField('rerolls', this.value)" />
+        </div>
+        <div class="form-field">
+          <label>Assistant Coaches</label>
+          <input type="number" min="0" step="1" value="${escapeHtml(draft.staffDraft?.assistantCoaches ?? 0)}" onchange="window.teamRedraftSetStaffField('assistantCoaches', this.value)" />
+        </div>
+        <div class="form-field">
+          <label>Cheerleaders</label>
+          <input type="number" min="0" step="1" value="${escapeHtml(draft.staffDraft?.cheerleaders ?? 0)}" onchange="window.teamRedraftSetStaffField('cheerleaders', this.value)" />
+        </div>
+        <div class="form-field">
+          <label>Apothecary</label>
+          <select onchange="window.teamRedraftSetStaffField('apothecary', this.value)">
+            <option value="true" ${draft.staffDraft?.apothecary ? 'selected' : ''}>Yes</option>
+            <option value="false" ${draft.staffDraft?.apothecary ? '' : 'selected'}>No</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:0.75rem; justify-content:space-between;">
+      <button class="secondary-btn" onclick="window.teamRedraftBack()">Back</button>
+      <button class="primary-btn" onclick="window.teamRedraftFinalize()" ${already ? 'disabled' : ''}>Finalize Re-draft</button>
+    </div>
+    ${already ? `<div class="small" style="margin-top:0.5rem; color:#2e7d32; text-align:right;">Already re-drafted for Season ${toSeason}.</div>` : ''}
+  `;
+}
+
+export function teamRedraftReset() {
+  state.teamRedraft = null;
+  renderTeamView();
+}
+
+export function teamRedraftBack() {
+  const draft = state.teamRedraft;
+  if (!draft) return;
+  draft.step = Math.max(1, Number(draft.step || 1) - 1);
+  renderTeamView();
+}
+
+export async function teamRedraftNext() {
+  const team = state.currentTeam;
+  const draft = state.teamRedraft;
+  if (!team || !draft) return;
+
+  const step = Number(draft.step || 1);
+  if (step === 1) {
+    const draftPlayersCopy = JSON.parse(JSON.stringify(Array.isArray(draft.draftPlayers) ? draft.draftPlayers : []));
+    const scratch = { ...draft, draftPlayers: draftPlayersCopy };
+    const { missing } = applyRedraftRecovery({ draft: scratch, team });
+    if (missing.length) {
+      const ok = await confirmProceedWithWarnings({
+        title: 'Proceed without some recovery rolls?',
+        intro: 'Some TR recovery rolls are missing or invalid; those injuries will remain.',
+        warnings: missing.map(x => `Missing D6 for ${x}`),
+        confirmLabel: 'Proceed Anyway'
+      });
+      if (!ok) return;
+    }
+    draft.draftPlayers = draftPlayersCopy;
+    draft.recoveryApplied = true;
+    draft.step = 2;
+    renderTeamView();
+    return;
+  }
+
+  if (step === 2) {
+    draft.step = 3;
+    renderTeamView();
+    return;
+  }
+}
+
+export function teamRedraftSetRecoveryRoll(key, value) {
+  const draft = state.teamRedraft;
+  if (!draft) return;
+  draft.recoveryRolls = draft.recoveryRolls || {};
+  draft.recoveryRolls[String(key)] = value;
+  renderTeamView();
+}
+
+export function teamRedraftSetCapEnabled(enabled) {
+  const draft = state.teamRedraft;
+  if (!draft) return;
+  draft.capEnabled = !!enabled;
+  renderTeamView();
+}
+
+export function teamRedraftToggleRehire(playerId, checked) {
+  const draft = state.teamRedraft;
+  if (!draft) return;
+  draft.rehire = draft.rehire || {};
+  draft.rehire[String(playerId)] = !!checked;
+  renderTeamView();
+}
+
+export function teamRedraftAddNewHire() {
+  const draft = state.teamRedraft;
+  const team = state.currentTeam;
+  if (!draft || !team) return;
+  const race = state.gameData?.races?.find(r => r.name === team.race);
+  if (!race) return setStatus('Race rules not found.', 'error');
+
+  const posName = document.getElementById('redraftHirePos')?.value;
+  const pos = getPositional(race, posName);
+  if (!pos) return setStatus('Select a valid position.', 'error');
+
+  const rawName = document.getElementById('redraftHireName')?.value;
+  const name = String(rawName || '').trim() || pos.name;
+
+  const rawNumber = document.getElementById('redraftHireNumber')?.value;
+  let number = parseInt(rawNumber, 10);
+  if (!Number.isFinite(number) || number < 1) number = getNextPlayerNumber(team.players || []);
+
+  draft.newHires = Array.isArray(draft.newHires) ? draft.newHires : [];
+  draft.newHires.push({ position: pos.name, name, number });
+  renderTeamView();
+}
+
+export function teamRedraftRemoveNewHire(index) {
+  const draft = state.teamRedraft;
+  if (!draft || !Array.isArray(draft.newHires)) return;
+  draft.newHires.splice(index, 1);
+  renderTeamView();
+}
+
+export function teamRedraftSetStaffField(field, value) {
+  const draft = state.teamRedraft;
+  if (!draft) return;
+  draft.staffDraft = draft.staffDraft || {};
+  const f = String(field || '');
+
+  if (f === 'apothecary') {
+    draft.staffDraft.apothecary = String(value) === 'true';
+  } else {
+    const num = Number(value);
+    draft.staffDraft[f] = Number.isFinite(num) ? num : 0;
+  }
+
+  renderTeamView();
+}
+
+export async function teamRedraftFinalize() {
+  const team = state.currentTeam;
+  const league = state.currentLeague;
+  const draft = state.teamRedraft;
+  if (!team || !league || !draft) return;
+
+  const key = els.inputs.editKey?.value;
+  if (!key) return setStatus('Edit key required', 'error');
+
+  const fromSeason = Number(draft.fromSeason || league.season || 1);
+  const toSeason = Number(draft.toSeason || (fromSeason + 1));
+
+  if (Number(team.redraft?.toSeason || 0) === toSeason) {
+    return setStatus(`Already re-drafted for Season ${toSeason}.`, 'ok');
+  }
+
+  const race = state.gameData?.races?.find(r => r.name === team.race);
+  if (!race) return setStatus('Race rules not found.', 'error');
+
+  const budget = computeRedraftBudget({
+    league,
+    team,
+    fromSeason,
+    capEnabled: draft.capEnabled,
+    capGp: draft.capGp
+  });
+
+  const spend = computeRedraftSpend({ draft, race, fromSeason });
+  const remainingGp = budget.finalGp - spend.totalSpentGp;
+
+  const roster = Array.isArray(draft.draftPlayers) ? draft.draftPlayers : [];
+  const selectedRehireIds = Object.entries(draft.rehire || {}).filter(([, v]) => !!v).map(([id]) => id);
+  const rehired = roster.filter(p => selectedRehireIds.includes(p.id));
+  const newHires = Array.isArray(draft.newHires) ? draft.newHires : [];
+
+  const warnings = [];
+  if (remainingGp < 0) warnings.push(`Over budget by ${formatK(Math.abs(remainingGp))}.`);
+
+  const totalPlayers = rehired.length + newHires.length;
+  if (totalPlayers > 16) warnings.push(`Team Draft List max is 16 players; selected ${totalPlayers}.`);
+  if (totalPlayers < 11) warnings.push(`Selected only ${totalPlayers} players; you may rely on Journeymen.`);
+
+  const usedNums = [];
+  rehired.forEach(p => usedNums.push(Number(p.number)));
+  newHires.forEach(h => usedNums.push(Number(h.number)));
+  const dupNums = usedNums.filter(n => Number.isFinite(n)).filter((n, i, arr) => arr.indexOf(n) !== i);
+  if (dupNums.length) warnings.push(`Duplicate jersey numbers: ${[...new Set(dupNums)].join(', ')}.`);
+
+  for (const h of newHires) {
+    const pos = getPositional(race, h.position);
+    if (!pos) warnings.push(`Unknown positional: ${h.position}`);
+  }
+
+  const ok = await confirmProceedWithWarnings({
+    title: 'Finalize re-draft with warnings?',
+    intro: `Finalize re-draft for Season ${toSeason}. Budget ${formatK(budget.finalGp)}, remaining ${formatK(remainingGp)}.`,
+    warnings,
+    confirmLabel: 'Finalize Anyway'
+  });
+  if (!ok) return;
+
+  const staff = draft.staffDraft || {};
+  const rr = Math.max(0, Number(staff.rerolls || 0));
+  const ac = Math.max(0, Number(staff.assistantCoaches || 0));
+  const ch = Math.max(0, Number(staff.cheerleaders || 0));
+  const apo = !!staff.apothecary;
+
+  const nextPlayers = [];
+
+  rehired.forEach(p => {
+    const out = JSON.parse(JSON.stringify(p));
+    out.mng = false;
+    out.tr = false;
+    out.dead = false;
+    if (!out.rookieSeason) out.rookieSeason = fromSeason;
+    nextPlayers.push(out);
+  });
+
+  newHires.forEach(h => {
+    const pos = getPositional(race, h.position);
+    if (!pos) return;
+    nextPlayers.push({
+      id: ulid(),
+      number: Number(h.number || 0),
+      name: String(h.name || pos.name),
+      position: pos.name,
+      cost: Number(pos.cost) || 0,
+      ma: pos.ma,
+      st: pos.st,
+      ag: pos.ag,
+      pa: pos.pa,
+      av: pos.av,
+      skills: Array.isArray(pos.skills) ? [...pos.skills] : [],
+      primary: Array.isArray(pos.primary) ? [...pos.primary] : (pos.primary ? [pos.primary] : []),
+      secondary: Array.isArray(pos.secondary) ? [...pos.secondary] : (pos.secondary ? [pos.secondary] : []),
+      spp: 0,
+      sppSpent: 0,
+      advancements: [],
+      injuries: '',
+      rookieSeason: toSeason
+    });
+  });
+
+  nextPlayers.sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0));
+
+  const undoBefore = createUndoSnapshot(team);
+  const treasuryBefore = Number(team.treasury || 0);
+
+  team.players = nextPlayers;
+  team.rerolls = rr;
+  team.assistantCoaches = ac;
+  team.cheerleaders = ch;
+  team.apothecary = apo;
+  team.treasury = Number(budget.finalGp) - Number(spend.totalSpentGp);
+  team.teamValue = calculateTeamValue(team);
+
+  team.redraft = {
+    fromSeason,
+    toSeason,
+    at: new Date().toISOString(),
+    budgetGp: budget.finalGp,
+    spentGp: spend.totalSpentGp,
+    capApplied: !!budget.capApplied
+  };
+
+  addTeamTransaction(team, {
+    type: 'redraft',
+    label: `Re-drafted for Season ${toSeason}`,
+    undoBefore,
+    delta: { treasuryGp: team.treasury - treasuryBefore, tvGp: null }
+  });
+
+  try {
+    await apiSave(PATHS.team(league.id, team.id), team, `Re-draft for Season ${toSeason}`, key);
+    state.teamRedraft = null;
+    state.teamTab = 'overview';
+    setStatus(`Re-draft complete for Season ${toSeason}.`, 'ok');
+    renderTeamView();
+  } catch (e) {
+    setStatus(e.message, 'error');
+  }
+}
+
 function escapeHtml(str) {
   return String(str ?? '')
     .replaceAll('&', '&amp;')
@@ -434,6 +1168,7 @@ function createUndoSnapshot(team) {
     assistantCoaches: Number(team?.assistantCoaches) || 0,
     cheerleaders: Number(team?.cheerleaders) || 0,
     dedicatedFans: Number(team?.dedicatedFans) || 0,
+    redraft: cloneJson(team?.redraft ?? null),
     players: cloneJson(Array.isArray(team?.players) ? team.players : [])
   };
 }
@@ -446,6 +1181,8 @@ function applyUndoSnapshot(team, snap) {
   team.assistantCoaches = Number(s.assistantCoaches) || 0;
   team.cheerleaders = Number(s.cheerleaders) || 0;
   team.dedicatedFans = Number(s.dedicatedFans) || 0;
+  if (s.redraft == null) delete team.redraft;
+  else team.redraft = cloneJson(s.redraft);
   team.players = cloneJson(Array.isArray(s.players) ? s.players : []);
 }
 
@@ -581,6 +1318,7 @@ export async function teamHirePlayer() {
     number,
     name,
     position: pos.name,
+    rookieSeason: state.currentLeague?.season ?? null,
     cost: Number(pos.cost) || 0,
     ma: pos.ma,
     st: pos.st,
@@ -1515,7 +2253,26 @@ export function addSmartPlayer() {
   const r = state.gameData.races.find(r=>r.name===t.race);
   const def = r?.positionals[0] || {name:'L',ma:6,st:3,ag:3,pa:4,av:8,cost:50000,skills:[]};
   const nextNum = (t.players.length > 0) ? Math.max(...t.players.map(p => p.number || 0)) + 1 : 1;
-  t.players.push({id: ulid(), number:nextNum, name:'Player', position:def.name, ...def, skills:[...def.skills], spp:0});
+  t.players.push({
+    id: ulid(),
+    number: nextNum,
+    name: 'Player',
+    position: def.name,
+    rookieSeason: state.dirtyLeague?.season ?? state.currentLeague?.season ?? 1,
+    cost: Number(def.cost) || 0,
+    ma: def.ma,
+    st: def.st,
+    ag: def.ag,
+    pa: def.pa,
+    av: def.av,
+    skills: Array.isArray(def.skills) ? [...def.skills] : [],
+    primary: Array.isArray(def.primary) ? [...def.primary] : (def.primary ? [def.primary] : []),
+    secondary: Array.isArray(def.secondary) ? [...def.secondary] : (def.secondary ? [def.secondary] : []),
+    spp: 0,
+    sppSpent: 0,
+    advancements: [],
+    injuries: ''
+  });
   renderTeamEditor();
 }
 

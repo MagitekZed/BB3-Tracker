@@ -8,7 +8,10 @@ export function calculateTeamValue(team) {
   
   // 2. Rerolls
   const race = state.gameData?.races.find(r => r.name === team.race);
-  const rerollCost = (team.rerolls || 0) * (race ? race.rerollCost : 50000);
+  const trophySeason = Number(team.trophyRerollSeason || 0);
+  const leagueSeason = Number(state.currentLeague?.season || 0);
+  const trophyRerolls = (trophySeason && leagueSeason && trophySeason === leagueSeason) ? 1 : 0;
+  const rerollCost = ((team.rerolls || 0) + trophyRerolls) * (race ? race.rerollCost : 50000);
   
   // 3. Sideline Staff
   const staffData = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
@@ -38,7 +41,10 @@ export function calculateCurrentTeamValue(team) {
   const playerCost = availablePlayers.reduce((sum, p) => sum + (parseInt(p.cost) || 0), 0);
 
   const race = state.gameData?.races.find(r => r.name === team.race);
-  const rerollCost = (team.rerolls || 0) * (race ? race.rerollCost : 50000);
+  const trophySeason = Number(team.trophyRerollSeason || 0);
+  const leagueSeason = Number(state.currentLeague?.season || 0);
+  const trophyRerolls = (trophySeason && leagueSeason && trophySeason === leagueSeason) ? 1 : 0;
+  const rerollCost = ((team.rerolls || 0) + trophyRerolls) * (race ? race.rerollCost : 50000);
 
   const staffData = state.gameData?.staffCosts || { assistantCoach: 10000, cheerleader: 10000, apothecary: 50000 };
   const coachesCost = (team.assistantCoaches || 0) * staffData.assistantCoach;
@@ -170,6 +176,7 @@ export function computeSeasonStats(league, season = league?.season) {
     .filter(m => m.status === 'completed')
     // future-friendly: allow match.season override, otherwise assume current season
     .filter(m => !m.season || m.season === season)
+    .filter(m => String(m.type || 'regular') !== 'playoff')
     .forEach(m => {
       const h = map.get(m.homeTeamId);
       const a = map.get(m.awayTeamId);

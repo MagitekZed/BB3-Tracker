@@ -20,10 +20,12 @@ export function openScheduleModal() {
     awaySel.innerHTML += opt;
   });
   
+  const season = Number(l.season || 1);
+  const seasonMatches = (l.matches || []).filter(m => (m.season ?? season) === season);
   let nextRound = 1;
-  if(l.matches && l.matches.length > 0) {
-      const maxR = Math.max(...l.matches.map(m => m.round));
-      nextRound = maxR + 1;
+  if (seasonMatches.length > 0) {
+    const maxR = Math.max(...seasonMatches.map(m => Number(m.round) || 0));
+    nextRound = maxR + 1;
   }
   els.scheduleModal.round.value = nextRound;
   els.scheduleModal.el.classList.remove('hidden');
@@ -2451,6 +2453,8 @@ export async function commitPostGame() {
     const league = await apiGet(PATHS.league(d.leagueId));
     if (!homeT || !awayT || !league) throw new Error('Could not load league/team files.');
     const currentSeason = league.season || 1;
+    const leagueMatch = (league.matches || []).find(x => x.id === d.matchId) || null;
+    const matchType = String(leagueMatch?.type || 'regular');
 
     const processTeamUpdates = (team, matchSide, opponentName, myScore, oppScore) => {
       const sideState = pg.teams[matchSide];
@@ -2584,6 +2588,7 @@ export async function commitPostGame() {
           number: Number(hire.number || matchP.number || 0),
           name: String(hire.name || matchP.name || 'Journeyman'),
           position: matchP.position,
+          rookieSeason: currentSeason,
           qty: 16,
           cost: baseCost,
           ma: matchP.ma,
@@ -2650,6 +2655,7 @@ export async function commitPostGame() {
         season: currentSeason,
         round: d.round,
         matchId: d.matchId,
+        matchType,
         opponentName,
         result: myScore > oppScore ? 'Win' : myScore < oppScore ? 'Loss' : 'Draw',
         score: `${myScore}-${oppScore}`,
