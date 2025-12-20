@@ -4,7 +4,7 @@
   "slug": "new_test_league",
   "name": "new test league",
   "season": 1,
-  "status": "active",
+  "status": "playoffs",
   "settings": {
     "pointsWin": 3,
     "pointsDraw": 1,
@@ -111,6 +111,69 @@
       },
       "hasReport": true,
       "reportId": "01KCGT7TAP6E4YMTGHW5DQ2RN6"
+    },
+    {
+      "id": "01KCX7TW3G6XGSAE0PJE69FJAK",
+      "season": 1,
+      "round": 4,
+      "homeTeamId": "01KCGPACYZY3NBCA4ZFNBXBPTK",
+      "awayTeamId": "01KCX7Q13ZRTN03209NG4YSK4B",
+      "status": "scheduled",
+      "date": "2025-12-20",
+      "type": "playoff",
+      "playoff": {
+        "stage": "semifinals",
+        "bracketSize": 4,
+        "seedHome": 1,
+        "seedAway": 4
+      }
+    },
+    {
+      "id": "01KCX7TW3GA601M8QJRTX245J4",
+      "season": 1,
+      "round": 4,
+      "homeTeamId": "01KCGPBJR94R81D2REP21EZ48N",
+      "awayTeamId": "01KCX7NVFQFM37NSQSS1YRAG4W",
+      "status": "scheduled",
+      "date": "2025-12-20",
+      "type": "playoff",
+      "playoff": {
+        "stage": "semifinals",
+        "bracketSize": 4,
+        "seedHome": 2,
+        "seedAway": 3
+      }
     }
-  ]
+  ],
+  "playoffs": {
+    "season": 1,
+    "bracketSize": 4,
+    "status": "in_progress",
+    "stageOrder": [
+      "semifinals",
+      "final",
+      "thirdPlace"
+    ],
+    "stageRounds": {
+      "semifinals": 4,
+      "final": 5,
+      "thirdPlace": 5
+    },
+    "rounds": {
+      "semifinals": [
+        "01KCX7TW3G6XGSAE0PJE69FJAK",
+        "01KCX7TW3GA601M8QJRTX245J4"
+      ],
+      "final": [],
+      "thirdPlace": []
+    },
+    "qualifiedTeamIds": [
+      "01KCGPACYZY3NBCA4ZFNBXBPTK",
+      "01KCGPBJR94R81D2REP21EZ48N",
+      "01KCX7NVFQFM37NSQSS1YRAG4W",
+      "01KCX7Q13ZRTN03209NG4YSK4B"
+    ],
+    "createdAt": "2025-12-20T06:40:57.968Z",
+    "prizesAwardedAt": null
+  }
 }
