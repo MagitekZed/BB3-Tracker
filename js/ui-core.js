@@ -130,10 +130,26 @@ export function handleMobileMatchNav() {
 // --- NEW: Generic Confirmation Modal ---
 export function confirmModal(title, message, confirmLabel = 'Confirm', isDanger = false, messageIsHtml = false) {
   return new Promise((resolve) => {
+    const hiddenModals = [];
+    document.querySelectorAll('.modal').forEach(existing => {
+      if (!existing?.isConnected) return;
+      if (existing.classList.contains('hidden')) return;
+      if (getComputedStyle(existing).display === 'none') return;
+      hiddenModals.push({ el: existing, prevDisplay: existing.style.display });
+      existing.style.display = 'none';
+    });
+
+    const restoreHidden = () => {
+      hiddenModals.forEach(({ el, prevDisplay }) => {
+        if (!el?.isConnected) return;
+        el.style.display = prevDisplay || '';
+      });
+    };
+
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.style.display = 'flex';
-    modal.style.zIndex = '10000';
+    modal.style.zIndex = '20000';
     
     const btnClass = isDanger ? 'danger-btn' : 'primary-btn';
 
@@ -156,6 +172,7 @@ export function confirmModal(title, message, confirmLabel = 'Confirm', isDanger 
     
     const close = (val) => {
         modal.remove();
+        restoreHidden();
         resolve(val);
     };
 
