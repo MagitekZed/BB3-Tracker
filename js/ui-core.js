@@ -89,18 +89,29 @@ export function goAdmin() {
 
 // Global Skill Modal
 export function showSkill(skillName) {
-  const cleanName = skillName.replace(/\(\+.*\)/, '').trim(); 
+  const rawName = String(skillName ?? '').trim();
+  const cleanName = rawName
+    .replace(/\*+$/g, '')
+    .replace(/\s*\([^)]*\)\s*$/g, '')
+    .trim();
+  const norm = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+  const cleanKey = norm(cleanName);
+  if (!cleanKey) {
+    showInfoModal(rawName || 'Skill', 'No description available.', false);
+    return;
+  }
   let desc = "No description available.";
   if (state.gameData?.skillCategories) {
     for (const cat in state.gameData.skillCategories) {
-      const found = state.gameData.skillCategories[cat].find(s => s.name.startsWith(cleanName));
-      if (found) { desc = found.description; break; }
+      const found = state.gameData.skillCategories[cat].find(s => {
+        const name = (typeof s === 'object' && s.name) ? s.name : String(s ?? '');
+        const key = norm(name);
+        return key === cleanKey || key.startsWith(cleanKey);
+      });
+      if (found && typeof found === 'object') { desc = found.description || desc; break; }
     }
-  } else if (state.gameData?.Traits) {
-      const found = state.gameData.Traits.find(s => s.name.startsWith(cleanName));
-      if (found) desc = found.description;
   }
-  showInfoModal(skillName, desc, false);
+  showInfoModal(rawName || cleanName, desc, false);
 }
 
 export function closeSkillModal() {
@@ -109,6 +120,7 @@ export function closeSkillModal() {
 
 export function showInfoModal(title, message, messageIsHtml = false) {
   els.modal.title.textContent = title;
+  els.modal.body.style.whiteSpace = messageIsHtml ? 'normal' : 'pre-wrap';
   if (messageIsHtml) els.modal.body.innerHTML = message;
   else els.modal.body.textContent = message;
   els.modal.el.classList.remove('hidden');

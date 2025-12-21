@@ -17,6 +17,7 @@
         <button id="navDeskAdmin" class="nav-link">Admin</button>
       </div>
       <div class="header-tools">
+        <button id="openGlossaryBtnDesktop" class="nav-link">Glossary</button>
         <details class="key-details">
           <summary class="key-summary">🔑 Edit Key</summary>
           <div class="key-dropdown">
@@ -33,7 +34,10 @@
 
   <header id="mobileHeader" class="mobile-only">
     <div class="brand">🏈 BB3 Tracker</div>
-    <button id="mobileKeyToggle" class="icon-btn">🔑</button>
+    <div class="mobile-header-actions">
+      <button id="openGlossaryBtnMobile" class="icon-btn">📖</button>
+      <button id="mobileKeyToggle" class="icon-btn">🔑</button>
+    </div>
   </header>
   
   <div id="mobileKeyModal" class="mobile-key-modal hidden">
@@ -294,6 +298,26 @@
 
   <div id="skillModal" class="modal hidden">
     <div class="modal-content"><div class="modal-header"><h3 id="skillModalTitle"></h3><button class="close-btn" onclick="closeSkillModal()">×</button></div><div id="skillModalBody"></div></div>
+  </div>
+
+  <div id="glossaryModal" class="modal hidden">
+    <div class="modal-content glossary-modal-content">
+      <div class="glossary-header">
+        <div class="modal-header glossary-header-row">
+          <h3>Glossary</h3>
+          <button id="glossaryCloseBtn" class="close-btn">×</button>
+        </div>
+        <input id="glossarySearchInput" class="large-input glossary-search" placeholder="Search glossary..." autocomplete="off" />
+        <div id="glossaryFilters" class="glossary-filters">
+          <button class="glossary-filter active" data-filter="all">All</button>
+          <button class="glossary-filter" data-filter="skill">Skills</button>
+          <button class="glossary-filter" data-filter="inducement">Inducements</button>
+          <button class="glossary-filter" data-filter="star">Star Players</button>
+        </div>
+        <div class="small glossary-hint">Type at least 2 characters to filter (50ms debounce).</div>
+      </div>
+      <div id="glossaryList" class="glossary-list"></div>
+    </div>
   </div>
   <datalist id="skillList"></datalist>
 

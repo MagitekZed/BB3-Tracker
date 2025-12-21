@@ -4,6 +4,7 @@ import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, h
 import { handleOpenTeam, handleManageTeamDirect, handleEditTeam, setTeamTab, teamHirePlayer, fireTeamPlayer, teamDevUpdate, resetTeamDevDraft, applyTeamAdvancement, teamAdjustStaff, teamAdjustRerolls, teamSetApothecary, teamApplyTreasuryAdjust, revertMostRecentTeamChange, teamRedraftReset, teamRedraftBack, teamRedraftNext, teamRedraftSetRecoveryRoll, teamRedraftSetCapEnabled, teamRedraftToggleRehire, teamRedraftAddNewHire, teamRedraftRemoveNewHire, teamRedraftSetStaffField, teamRedraftFinalize, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
 import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame, closePreMatchModal, changeInducement, setCustomInducement, confirmMatchStart, toggleStar, randomMvp, closePostGameModal, manualAdjustStat, postGameRerender, pgSetNoStalling, pgSetWinningsOverrideK, pgSetDedicatedFansRoll, pgSetDedicatedFansDeltaOverride, pgToggleMvpNominee, pgSetMvpRoll, pgAddAdvancement, pgRemoveAdvancement, pgUpdateAdvancement, pgSetInjuryOutcome, pgToggleTempRetire, pgSetStaffField, pgSetOtherTreasuryDeltaK, pgToggleHireJourneyman, pgSetHireJourneymanField, pgSetExpensiveField, openInGameShop, handleUseInducement, setJourneymanType, handlePreMatchPrimary, handlePreMatchBack, showInducementInfo, showStarInfo } from './ui-match.js';
 import { handleScanRepo, attachTeam, restoreLeague, deleteOrphanFile, deleteLeagueFolder } from './ui-admin.js';
+import { openGlossary, initGlossary } from './ui-glossary.js';
 import { setStatus } from './utils.js';
 
 // ============================================
@@ -102,6 +103,7 @@ window.pgSetExpensiveField = pgSetExpensiveField;
 window.setJourneymanType = setJourneymanType;
 window.showInducementInfo = showInducementInfo;
 window.showStarInfo = showStarInfo;
+window.openGlossary = openGlossary;
 
 // In-Match Inducement Manager
 window.openInGameShop = openInGameShop;
@@ -123,6 +125,11 @@ if(els.nav.mobLeagues) els.nav.mobLeagues.addEventListener('click', () => goHome
 if(els.nav.deskAdmin) els.nav.deskAdmin.addEventListener('click', () => goAdmin());
 if(els.nav.mobAdmin) els.nav.mobAdmin.addEventListener('click', () => goAdmin());
 if(els.nav.mobMatch) els.nav.mobMatch.addEventListener('click', () => handleMobileMatchNav());
+
+// Glossary
+initGlossary();
+if (els.buttons.openGlossaryDesktop) els.buttons.openGlossaryDesktop.addEventListener('click', openGlossary);
+if (els.buttons.openGlossaryMobile) els.buttons.openGlossaryMobile.addEventListener('click', openGlossary);
 
 // Key Management
 if(els.mobileKey.btn) els.mobileKey.btn.addEventListener('click', () => els.mobileKey.modal.classList.remove('hidden'));

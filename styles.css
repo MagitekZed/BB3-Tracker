@@ -75,6 +75,7 @@ body {
   height: 50px; border-bottom: 2px solid var(--gold-accent);
 }
 .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: white; }
+.mobile-header-actions { display: flex; align-items: center; gap: 0.5rem; }
 
 /* Mobile Bottom Nav */
 #mobileNavBar {
@@ -159,7 +160,7 @@ body {
 .large-input { padding: 0.8rem; font-size: 1.2rem; width: 100%; margin: 1rem 0; box-sizing: border-box; border: 1px solid #999; }
 .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem; flex-shrink: 0; }
 
-.header-tools { position: relative; }
+.header-tools { position: relative; display: flex; align-items: center; gap: 0.75rem; }
 .key-details { position: relative; list-style: none; }
 .key-summary { cursor: pointer; font-weight: bold; color: #ddd; padding: 0.5rem; }
 .key-dropdown {
@@ -632,7 +633,29 @@ body.mode-coach .coach-header {
 .skill-tag:hover { background: #fff; border-color: #555; }
 
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-#skillModal.modal { z-index: 5000; }
+#glossaryModal.modal { z-index: 15000; }
+#skillModal.modal { z-index: 16000; }
+
+.glossary-modal-content { width: min(1100px, 96vw); max-width: 1100px; max-height: 92vh; }
+.glossary-header { flex-shrink: 0; }
+.glossary-header-row { margin-bottom: 0.5rem; }
+.glossary-search { margin: 0.25rem 0 0.5rem; font-size: 1.05rem; }
+.glossary-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.glossary-filter { padding: 0.35rem 0.6rem; font-size: 0.75rem; border-bottom-width: 3px; }
+.glossary-filter.active { background: var(--pitch-green); border-color: #1a3818; color: #fff !important; }
+.glossary-hint { margin-top: 0.5rem; color: #666; }
+.glossary-list { overflow-y: auto; flex: 1; border-top: 1px solid #ccc; padding-top: 0.75rem; margin-top: 0.75rem; }
+.glossary-item { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid #e5e5e5; cursor: pointer; }
+.glossary-item:hover { background: rgba(0,0,0,0.03); }
+.glossary-item-title { font-weight: 900; min-width: 0; }
+.glossary-item-meta { color: #666; font-size: 0.85rem; white-space: nowrap; }
+.glossary-item-sub { color: #666; font-size: 0.8rem; margin-top: 0.15rem; }
+
+@media (max-width: 768px) {
+  .glossary-modal-content { width: 100%; max-width: none; height: 100%; max-height: 100vh; border-radius: 0; }
+  .glossary-search { font-size: 1rem; }
+  .glossary-item-meta { white-space: normal; text-align: right; }
+}
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 2px solid var(--gold-accent); padding-bottom: 0.5rem; }
 .close-btn { font-size: 1.5rem; background: none; border: none; cursor: pointer; padding: 0 0.5rem; font-family: system-ui, -apple-system, Segoe UI, Arial, sans-serif; font-weight: 900; text-transform: none; line-height: 1; }
 

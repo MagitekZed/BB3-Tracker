@@ -159,7 +159,8 @@ export async function handlePreMatchPrimary() {
 
 function renderPreMatchSetup() {
   const s = state.setupMatch;
-  const list = state.gameData?.inducements || [];
+  const listAll = state.gameData?.inducements || [];
+  const list = listAll.filter(i => i?.purchaseEnabled !== false);
   const stars = state.gameData?.starPlayers || [];
   s.wizard = s.wizard || { step: 0, lock: null };
   const w = s.wizard;
@@ -503,11 +504,12 @@ export function showInducementInfo(itemName) {
   if (!item) return;
   const title = item.name;
   const costText = item.priceText || `${Math.round((item.cost || 0) / 1000)}k`;
+  const rulesText = String(item.rulesText || '').trim();
   const html = `
     <div style="text-align:left">
       <div style="font-weight:bold; margin-bottom:0.25rem;">${escapeHtml(costText)}</div>
       ${item.max != null ? `<div class="small" style="color:#555; margin-bottom:0.5rem;">Max per match: <strong>${item.max}</strong></div>` : ''}
-      <div class="small" style="color:#666;">Click skills in player cards to view their rules.</div>
+      ${rulesText ? `<div class="small" style="white-space:pre-wrap; color:#444; margin-top:0.75rem;">${escapeHtml(rulesText)}</div>` : `<div class="small" style="color:#666;">No rules text available.</div>`}
     </div>
   `;
   showInfoModal(title, html, true);
@@ -820,7 +822,7 @@ export function renderJumbotron() {
 function renderJumbotronInducements(team) {
     if (!team.inducements && !team.apothecary) return '';
     const mapping = { 
-        "Bloodweiser Keg": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", 
+        "Blitzer's Best Kegs": "🍺", "Bribes": "💰", "Extra Team Training": "🏋️", 
         "Halfling Master Chef": "👨‍🍳", "Mortuary Assistant": "⚰️", "Plague Doctor": "🧪",
         "Riotous Rookies": "😡", "Wandering Apothecary": "💊", "Wizard": "⚡", "Biased Referee": "🃏"
     };
@@ -873,7 +875,7 @@ export function renderCoachView() {
   }
   
   if (team.inducements) {
-      const mapping = { "Bloodweiser Keg": "🍺", "Bribes": "💰", "Wizard": "⚡", "Halfling Master Chef": "👨‍🍳", "Wandering Apothecary": "💊" };
+      const mapping = { "Blitzer's Best Kegs": "🍺", "Bribes": "💰", "Wizard": "⚡", "Halfling Master Chef": "👨‍🍳", "Wandering Apothecary": "💊" };
       Object.entries(team.inducements).forEach(([k, v]) => {
           if (v > 0 && !k.startsWith('Star:')) {
               const icon = mapping[k] || "📦";
@@ -936,7 +938,7 @@ export function openInGameShop(side) {
     const localInducements = JSON.parse(JSON.stringify(state.activeMatchData[side].inducements || {}));
 
     const renderList = () => {
-        const list = state.gameData?.inducements || [];
+        const list = (state.gameData?.inducements || []).filter(i => i?.purchaseEnabled !== false);
         let html = '';
         list.forEach(item => {
             const count = localInducements[item.name] || 0;

@@ -200,7 +200,9 @@ export const els = {
     saveBtn: document.getElementById('saveBtn'),
     deskSchedBtn: document.getElementById('desktopSchedBtn'),
     mobSchedBtn: document.getElementById('mobileAddMatchBtn'),
-    cancelGame: document.getElementById('cancelGameBtn')
+    cancelGame: document.getElementById('cancelGameBtn'),
+    openGlossaryDesktop: document.getElementById('openGlossaryBtnDesktop'),
+    openGlossaryMobile: document.getElementById('openGlossaryBtnMobile')
   },
   inputs: {
     editKey: document.getElementById('editKeyInput'),
@@ -224,6 +226,13 @@ export const els = {
     el: document.getElementById('skillModal'),
     title: document.getElementById('skillModalTitle'),
     body: document.getElementById('skillModalBody')
+  },
+  glossary: {
+    el: document.getElementById('glossaryModal'),
+    closeBtn: document.getElementById('glossaryCloseBtn'),
+    search: document.getElementById('glossarySearchInput'),
+    list: document.getElementById('glossaryList'),
+    filters: document.getElementById('glossaryFilters')
   },
   datalist: document.getElementById('skillList')
 };
