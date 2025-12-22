@@ -1,0 +1,48 @@
+PRE-GAME SEQUENCE
+With the game set up, the first thing that is required is to run through the Pre-game Sequence. There are five simple steps to the Pre-game Sequence, however, some of these are only relevant to League Play, which we will cover fully later on page 94, so you don't need to worry about these right now.
+
+The Pre-game Sequence is as follows:
+
+THE FANS: Coaches determine how many of their team's fans have come to raucously cheer on their favourite team.
+THE WEATHER: Blood Bowl is played come rain or shine, and coaches will need to determine what the weather is like when the game kicks off.
+TAKE ON JOURNEYMEN: This step is only used in League Play, and so will be covered fully on page 94.
+INDUCEMENTS: This step is only used in League Play, and so will be covered fully on page 94
+DETERMINE KICKING TEAM: Coaches will roll off to determine who is the kicking team (defence) and who is the receiving team (offence).
+THE FANS
+Blood Bowl is incredibly popular in the Old World, and for any given game, scores of fans will flock to the various stadia to witness the grand spectacle. Some of these will be dedicated fans who have travelled far and wide to watch their favourite team play, whilst others are simply fair-weather fans who just go to watch whichever two teams happen to be playing in their local area and then pick one to cheer for on the day.
+
+FAN FACTOR
+The combination of Dedicated Fans and Fair-weather Fans that are cheering for a team make up the team's Fan Factor for the game.
+
+To work out your Fan Factor, you must first see how many Fair-weather Fans are cheering for your team by rolling a D3. Next, add the number of Fair-weather Fans to your Dedicated Fans Characteristic as found on your Team Roster (more on these later).
+
+The total number is your Fan Factor and represents the number of thousands of fans that are in attendance and cheering for your team. You can record your Fan Factor on your Team Record Sheet if you wish.
+
+For example: The Brionne Barons are determining their Fan Factor for a game. Their Coach rolls a D3 for their Fair-weather Fans and scores a 2. This is added to the team's Dedicated Fans Characteristic of 4, giving a total Fan Factor of 6.
+
+THE WEATHER
+Blood Bowl is played in all types of weather. Those that take to the gridiron are tough, hardy individuals who won't let a little rain stop them from pummelling their opposition into the damp turf! This doesn't mean that the weather won't have an impact on the game - far from it! The course of many games has been drastically altered by strong winds, blinding sun, sudden snowstorms, or all manner of other unconventional weather conditions!
+
+To determine what the weather is like at the start of the game, each Coach rolls a D6 and adds the two rolls together. Consult the Weather Table below to see what impact the weather has.
+
+WEATHER TABLE
+2D6	WEATHER CONDITION
+2	SWELTERING HEAT: The intense heat causes some players to faint! At the end of each Drive whilst this weather condition is in effect, one Coach rolls a D3 and each Coach randomly selects that many of their players that were on the pitch when the Drive ended. The selected players are placed in the Reserves Box and cannot be set up on the pitch for the next Drive.
+3	VERY SUNNY: The glorious sunshine makes for a beautiful day, but plays havoc with the passing game! Whenever a player makes a Passing Ability Test, apply a -1 modifier to the roll.
+4‑10	PERFECT CONDITIONS: Not too hot, nor too cold. It's perfect weather for Blood Bowl! There is no additional effect.
+11	POURING RAIN: The heavens have opened and the sudden downpour has left the players soaked and the ball rather slippery! Whenever a player attempts to pick up or Catch the ball, or Intercept a Pass Action, they suffer a -1 modifier to the roll.
+12	BLIZZARD: The freezing conditions and swirling snow makes the footing treacherous and drastically impedes a player's vision. Whenever a player attempts to Rush, apply an additional -1 modifier to the roll. Additionally, when a player makes a Pass Action, they may only attempt to make a Quick Pass or a Short Pass.
+DETERMINE KICKING TEAM
+The final thing to do before starting a game is to determine which team is kicking (the defence) and which team is receiving the ball (the offence). In a real game of Blood Bowl, this is done with a simple coin toss, which many fans, players and even the officials, see as a cue to start the violence!
+
+On the tabletop, this is represented through a simple roll-off (see page 33). The Coach who rolls highest decides which team is kicking and which team is receiving. Once this has been decided, you are ready to play a game of Blood Bowl!
+
+START OF A DRIVE!
+Once it has been decided who is kicking and who is receiving, it is time to start the first Drive of the game. Whenever a Drive starts, either at the start of a half or after one team has scored, Coaches will need to follow the Start of Drive Sequence below:
+
+START OF DRIVE SEQUENCE
+At the start of any Drive, Coaches run through the following steps in this order:
+
+SET-UP: Starting with the kicking team, Coaches will set up their players on the pitch ready for the Drive.
+THE KICK-OFF: The kicking team will kick the ball to the receiving team.
+THE KICK-OFF EVENT: As the ball is in the air, the Kick-off Event will happen.
