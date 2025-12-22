@@ -9,7 +9,7 @@
     {
       "id": "01KD1VHB57Q0FJNPCQH9HBCAP5",
       "number": 1,
-      "name": "Player",
+      "name": "Player 1",
       "position": "Black Orc (Blocker, Orc)",
       "rookieSeason": 1,
       "cost": 90000,
@@ -39,7 +39,7 @@
     {
       "id": "01KD1VHBJGNNPJE6HHFREPA7RS",
       "number": 2,
-      "name": "Player",
+      "name": "Player 2",
       "position": "Black Orc (Blocker, Orc)",
       "rookieSeason": 1,
       "cost": 90000,
@@ -69,7 +69,7 @@
     {
       "id": "01KD1VHBY70HRK49ZT9GH9MYZW",
       "number": 3,
-      "name": "Player",
+      "name": "Player 3",
       "position": "Black Orc (Blocker, Orc)",
       "rookieSeason": 1,
       "cost": 90000,
@@ -99,7 +99,7 @@
     {
       "id": "01KD1VHC9JTWECT3DA5Q5FCCQR",
       "number": 4,
-      "name": "Player",
+      "name": "Player 4",
       "position": "Black Orc (Blocker, Orc)",
       "rookieSeason": 1,
       "cost": 90000,
@@ -129,7 +129,7 @@
     {
       "id": "01KD1VHCP03B262758RY8TZ2EQ",
       "number": 5,
-      "name": "Player",
+      "name": "Player 5",
       "position": "Trained Troll (Big Guy, Troll)",
       "rookieSeason": 1,
       "cost": 115000,
@@ -163,7 +163,7 @@
     {
       "id": "01KD1VHD17CMMQJA4X185JM5VD",
       "number": 6,
-      "name": "Player",
+      "name": "Player 6",
       "position": "Black Orc (Blocker, Orc)",
       "rookieSeason": 1,
       "cost": 90000,
@@ -193,7 +193,7 @@
     {
       "id": "01KD1VHDCZV235XSM68TTEC3H9",
       "number": 7,
-      "name": "Player",
+      "name": "Player 7",
       "position": "Goblin Bruiser (Goblin, Lineman)",
       "rookieSeason": 1,
       "cost": 45000,
@@ -225,7 +225,7 @@
     {
       "id": "01KD1VHDZXJRSKZNA607SWHMAN",
       "number": 8,
-      "name": "Player",
+      "name": "Player 8",
       "position": "Goblin Bruiser (Goblin, Lineman)",
       "rookieSeason": 1,
       "cost": 45000,
@@ -257,7 +257,7 @@
     {
       "id": "01KD1VHEG5G54DP01PK6ZJGD8J",
       "number": 9,
-      "name": "Player",
+      "name": "Player 9",
       "position": "Goblin Bruiser (Goblin, Lineman)",
       "rookieSeason": 1,
       "cost": 45000,
@@ -289,7 +289,7 @@
     {
       "id": "01KD1VHEZFEDSVQ6W2JZ7KZSAZ",
       "number": 10,
-      "name": "Player",
+      "name": "Player 10",
       "position": "Goblin Bruiser (Goblin, Lineman)",
       "rookieSeason": 1,
       "cost": 45000,
@@ -321,7 +321,7 @@
     {
       "id": "01KD1VHFJGA2BKQGH6998AYHEA",
       "number": 11,
-      "name": "Player",
+      "name": "Player 11",
       "position": "Goblin Bruiser (Goblin, Lineman)",
       "rookieSeason": 1,
       "cost": 45000,
