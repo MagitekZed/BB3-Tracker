@@ -1514,7 +1514,7 @@
     "primary": "#00b81f",
     "secondary": "#c5a059"
   },
-  "treasury": 75000,
+  "treasury": 45000,
   "rerolls": 3,
   "apothecary": true,
   "assistantCoaches": 1,
