@@ -3,7 +3,7 @@ import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, normalizeName, getContrastColor, applyTeamTheme, ulid } from './utils.js';
 import { calculateTeamValue, calculateCurrentTeamValue, computeSeasonStats, isPlayerAvailableForMatch, validateTeam, getBb2025AdvancementCost, applyBb2025SkillAdvancement, applyBb2025CharacteristicIncrease } from './rules.js';
-import { showSection, updateBreadcrumbs, goHome, showSkill, confirmModal } from './ui-core.js';
+import { showSection, updateBreadcrumbs, goHome, showSkill, showInfoModal, confirmModal } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, renderManageForm } from './ui-league.js';
 
 export async function handleOpenTeam(leagueId, teamId) {
@@ -54,6 +54,12 @@ export function renderTeamView() {
   const tv = calculateTeamValue(t);
   const ctv = calculateCurrentTeamValue(t);
 
+  const complianceViolations = validateTeam(t, state.currentLeague, { context: 'inLeague' })
+    .filter(v => !['TEAM_ID_MISSING', 'PLAYER_ID_MISSING'].includes(v.code));
+  const complianceBanner = complianceViolations.length
+    ? `<div class="team-violations-banner" onclick="window.showTeamViolations()"><strong>Rule violations:</strong> ${complianceViolations.length} &mdash; tap to view</div>`
+    : '';
+
   const roster = Array.isArray(t.players) ? t.players : [];
   const availableCount = roster.filter(isPlayerAvailableForMatch).length;
   const mngCount = roster.filter(p => !!p?.mng).length;
@@ -90,6 +96,7 @@ export function renderTeamView() {
         <div><strong>Players:</strong> ${roster.length} (Avail ${availableCount}${mngCount ? ` &bull; MNG ${mngCount}` : ''}${trCount ? ` &bull; TR ${trCount}` : ''}${deadCount ? ` &bull; Dead ${deadCount}` : ''})</div>
       </div>
       <div class="small" style="color:#666;">${staffInfo}</div>
+      ${complianceBanner}
     </div>
 
     <div class="league-tabs-header" style="margin-bottom:0.75rem;">
@@ -106,6 +113,27 @@ export function renderTeamView() {
   `;
 
   els.containers.teamRoster.innerHTML = renderTeamTabContent({ team: t, season, seasonStats, history, matchLogRows });
+}
+
+export function showTeamViolations() {
+  const t = state.currentTeam;
+  const l = state.currentLeague;
+  if (!t || !l) return;
+
+  const violations = validateTeam(t, l, { context: 'inLeague' })
+    .filter(v => !['TEAM_ID_MISSING', 'PLAYER_ID_MISSING'].includes(v.code));
+
+  if (!violations.length) {
+    showInfoModal('Rule violations', 'No rule violations detected.', false);
+    return;
+  }
+
+  const items = violations.map(v => `<li>${escapeHtml(v.message)}</li>`).join('');
+  const html = `
+    <div class="small" style="color:#666; margin-bottom:0.5rem;">${escapeHtml(t.name)} &mdash; ${escapeHtml(l.name)} (Season ${escapeHtml(String(l.season || 1))})</div>
+    <ul style="margin:0; padding-left:1.2rem;">${items}</ul>
+  `;
+  showInfoModal('Rule violations', html, true);
 }
 
 export function setTeamTab(tab) {

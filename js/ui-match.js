@@ -58,6 +58,238 @@ export async function handleScheduleMatch() {
   } catch(e) { setStatus(e.message, 'error'); }
 }
 
+function shuffleArray(arr) {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+function buildRoundRobinRounds(teamIds, { shuffle = false } = {}) {
+  const original = Array.isArray(teamIds) ? teamIds.filter(Boolean) : [];
+  let teams = shuffle ? shuffleArray(original) : [...original];
+  if (teams.length < 2) return [];
+
+  if (teams.length % 2 === 1) teams = [...teams, null];
+
+  const n = teams.length;
+  const rounds = [];
+  let arr = [...teams];
+
+  for (let r = 0; r < n - 1; r += 1) {
+    const pairs = [];
+    for (let i = 0; i < n / 2; i += 1) {
+      const a = arr[i];
+      const b = arr[n - 1 - i];
+      if (!a || !b) continue;
+      const swap = (r % 2 === 1);
+      pairs.push(swap ? [b, a] : [a, b]);
+    }
+    rounds.push(pairs);
+
+    const fixed = arr[0];
+    const rest = arr.slice(1);
+    rest.unshift(rest.pop());
+    arr = [fixed, ...rest];
+  }
+
+  return rounds;
+}
+
+function pairKey(a, b) {
+  return [String(a), String(b)].sort().join('|');
+}
+
+export async function openGenerateScheduleModal() {
+  const l = state.currentLeague;
+  if (!l) return;
+
+  const season = Number(l.season || 1);
+  const seasonMatches = (l.matches || []).filter(m => (m.season ?? 1) === season);
+  const completed = seasonMatches.filter(m => m.status === 'completed').length;
+  const live = seasonMatches.filter(m => m.status === 'in_progress').length;
+  const scheduled = seasonMatches.filter(m => m.status === 'scheduled').length;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'flex';
+  modal.style.zIndex = '12000';
+
+  const existingSummary = seasonMatches.length
+    ? `<div class="small" style="color:#666; margin-top:0.35rem;">Existing Season ${season} matches: ${seasonMatches.length} total (${completed} completed, ${live} live, ${scheduled} scheduled).</div>`
+    : `<div class="small" style="color:#666; margin-top:0.35rem;">No existing matches for Season ${season}.</div>`;
+
+  const modeControls = seasonMatches.length
+    ? `
+      <div class="panel-styled" style="margin-top:0.75rem;">
+        <div style="font-weight:800; margin-bottom:0.35rem;">If matches already exist</div>
+        <label style="display:flex; gap:0.5rem; align-items:flex-start; margin-bottom:0.35rem;">
+          <input type="radio" name="genSchedMode" value="append" checked>
+          <span><strong>Append</strong> missing matchups (keeps all existing fixtures).</span>
+        </label>
+        <label style="display:flex; gap:0.5rem; align-items:flex-start;">
+          <input type="radio" name="genSchedMode" value="overwrite">
+          <span><strong>Overwrite scheduled</strong> matches only (keeps completed &amp; live matches).</span>
+        </label>
+      </div>
+    `
+    : `<input type="hidden" name="genSchedMode" value="append">`;
+
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width:650px; width:95%;">
+      <div class="modal-header">
+        <h3>Generate Schedule</h3>
+        <button class="close-btn" type="button">x</button>
+      </div>
+
+      <div class="small" style="color:#444;">Season ${season} &mdash; generate a round-robin schedule for all teams.</div>
+      ${existingSummary}
+
+      <div class="form-grid" style="margin-top:1rem;">
+        <div class="form-field">
+          <label>Games per opponent</label>
+          <input id="genSchedGamesPerOpp" type="number" min="1" step="1" value="1">
+        </div>
+        <div class="form-field">
+          <label>Shuffle order</label>
+          <label style="display:flex; gap:0.5rem; align-items:center; margin-top:0.25rem;">
+            <input id="genSchedShuffle" type="checkbox">
+            <span class="small" style="color:#666;">Randomize the round-robin order</span>
+          </label>
+        </div>
+      </div>
+
+      ${modeControls}
+
+      <div class="modal-actions" style="margin-top:1.25rem;">
+        <button id="genSchedCancelBtn" class="secondary-btn">Cancel</button>
+        <button id="genSchedGoBtn" class="primary-btn">Generate</button>
+      </div>
+    </div>
+  `;
+
+  const close = () => modal.remove();
+  modal.querySelector('.close-btn').onclick = close;
+  modal.querySelector('#genSchedCancelBtn').onclick = close;
+
+  modal.querySelector('#genSchedGoBtn').onclick = async () => {
+    const key = els.inputs.editKey.value;
+    if (!key) return setStatus('Edit key required', 'error');
+
+    const gamesPerOpponent = Math.max(1, parseInt(modal.querySelector('#genSchedGamesPerOpp')?.value, 10) || 1);
+    const doShuffle = !!modal.querySelector('#genSchedShuffle')?.checked;
+    const mode = modal.querySelector('input[name="genSchedMode"]:checked')?.value || 'append';
+
+    const teamIds = (l.teams || []).map(t => t.id).filter(Boolean);
+    if (teamIds.length < 2) {
+      setStatus('Need at least 2 teams to generate a schedule.', 'error');
+      return;
+    }
+
+    const originalMatches = JSON.parse(JSON.stringify(Array.isArray(l.matches) ? l.matches : []));
+    const seasonMatchesAll = originalMatches.filter(m => (m.season ?? 1) === season);
+
+    let workingMatches = originalMatches;
+    const keptSeasonMatches = mode === 'overwrite'
+      ? seasonMatchesAll.filter(m => m.status === 'completed' || m.status === 'in_progress')
+      : seasonMatchesAll;
+
+    if (mode === 'overwrite') {
+      workingMatches = originalMatches.filter(m => (m.season ?? 1) !== season || m.status === 'completed' || m.status === 'in_progress');
+    }
+
+    const maxRound = keptSeasonMatches.length
+      ? Math.max(...keptSeasonMatches.map(m => Number(m.round) || 0))
+      : 0;
+    let nextRound = maxRound + 1;
+
+    // Initialize per-pair remaining counts.
+    const remaining = new Map();
+    for (let i = 0; i < teamIds.length; i += 1) {
+      for (let j = i + 1; j < teamIds.length; j += 1) {
+        remaining.set(pairKey(teamIds[i], teamIds[j]), gamesPerOpponent);
+      }
+    }
+
+    const countExisting = (matches) => {
+      for (const m of matches) {
+        if (!m?.homeTeamId || !m?.awayTeamId) continue;
+        if ((m.season ?? 1) !== season) continue;
+        if (m.status === 'cancelled') continue;
+        const key2 = pairKey(m.homeTeamId, m.awayTeamId);
+        if (!remaining.has(key2)) continue;
+        remaining.set(key2, Math.max(0, (remaining.get(key2) || 0) - 1));
+      }
+    };
+
+    // In append mode, scheduled matches count towards the target. In overwrite mode, only kept matches do.
+    countExisting(mode === 'overwrite' ? keptSeasonMatches : seasonMatchesAll);
+
+    const baseRounds = buildRoundRobinRounds(teamIds, { shuffle: doShuffle });
+
+    let addedCount = 0;
+    for (let leg = 0; leg < gamesPerOpponent; leg += 1) {
+      for (const roundPairs of baseRounds) {
+        const matchesToAdd = [];
+        for (const [h0, a0] of roundPairs) {
+          const key2 = pairKey(h0, a0);
+          const need = remaining.get(key2) || 0;
+          if (need <= 0) continue;
+
+          const home = (leg % 2 === 1) ? a0 : h0;
+          const away = (leg % 2 === 1) ? h0 : a0;
+
+          matchesToAdd.push({ homeTeamId: home, awayTeamId: away });
+          remaining.set(key2, need - 1);
+        }
+
+        if (!matchesToAdd.length) continue;
+
+        for (const x of matchesToAdd) {
+          workingMatches.push({
+            id: ulid(),
+            season,
+            round: nextRound,
+            homeTeamId: x.homeTeamId,
+            awayTeamId: x.awayTeamId,
+            status: 'scheduled',
+            date: new Date().toISOString().split('T')[0]
+          });
+          addedCount += 1;
+        }
+
+        nextRound += 1;
+      }
+    }
+
+    const remainingPairs = [...remaining.values()].reduce((sum, v) => sum + (v > 0 ? 1 : 0), 0);
+    if (remainingPairs > 0) {
+      const ok = await confirmModal(
+        'Some matchups could not be fully scheduled',
+        `Generated ${addedCount} matches, but ${remainingPairs} matchups still need more games. Keep what was generated?`,
+        'Keep',
+        true
+      );
+      if (!ok) return;
+    }
+
+    try {
+      l.matches = workingMatches;
+      await apiSave(PATHS.league(l.id), l, `Generate schedule (Season ${season})`, key);
+      close();
+      handleOpenLeague(l.id);
+      setStatus(`Schedule generated: ${addedCount} matches added.`, 'ok');
+    } catch (e) {
+      l.matches = originalMatches;
+      setStatus(e.message, 'error');
+    }
+  };
+
+  document.body.appendChild(modal);
+}
+
 // --- Pre-Match Setup (Chunk 2) ---
 
 export async function handleStartMatch(matchId) {

@@ -200,6 +200,7 @@ export const els = {
     loadBtn: document.getElementById('loadBtn'),
     saveBtn: document.getElementById('saveBtn'),
     deskSchedBtn: document.getElementById('desktopSchedBtn'),
+    genSchedBtn: document.getElementById('generateScheduleBtn'),
     mobSchedBtn: document.getElementById('mobileAddMatchBtn'),
     cancelGame: document.getElementById('cancelGameBtn'),
     openGlossaryDesktop: document.getElementById('openGlossaryBtnDesktop'),

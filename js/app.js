@@ -1,8 +1,8 @@
 import { state, els } from './state.js';
 import { init, goHome, goAdmin, handleMobileMatchNav, showSkill, closeSkillModal, showSection } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, handleDeleteLeague, saveLeague, handleDeleteMatch, renderManageForm, handleViewMatchReport, setLeagueTab, setLeaguePlayerSearch, setLeaguePlayerSort, openPlayoffsManager, beginOffseason, startNextSeason } from './ui-league.js';
-import { handleOpenTeam, handleManageTeamDirect, handleEditTeam, setTeamTab, teamHirePlayer, fireTeamPlayer, teamDevUpdate, resetTeamDevDraft, applyTeamAdvancement, teamAdjustStaff, teamAdjustRerolls, teamSetApothecary, teamApplyTreasuryAdjust, revertMostRecentTeamChange, teamRedraftReset, teamRedraftBack, teamRedraftNext, teamRedraftSetRecoveryRoll, teamRedraftSetCapEnabled, teamRedraftToggleRehire, teamRedraftAddNewHire, teamRedraftRemoveNewHire, teamRedraftSetStaffField, teamRedraftFinalize, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
-import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame, closePreMatchModal, changeInducement, setCustomInducement, confirmMatchStart, toggleStar, randomMvp, closePostGameModal, manualAdjustStat, postGameRerender, pgSetNoStalling, pgSetWinningsOverrideK, pgSetDedicatedFansRoll, pgSetDedicatedFansDeltaOverride, pgToggleMvpNominee, pgSetMvpRoll, pgAddAdvancement, pgRemoveAdvancement, pgUpdateAdvancement, pgSetInjuryOutcome, pgToggleTempRetire, pgSetStaffField, pgSetOtherTreasuryDeltaK, pgToggleHireJourneyman, pgSetHireJourneymanField, pgSetExpensiveField, openInGameShop, handleUseInducement, setJourneymanType, handlePreMatchPrimary, handlePreMatchBack, showInducementInfo, showStarInfo } from './ui-match.js';
+import { handleOpenTeam, handleManageTeamDirect, handleEditTeam, setTeamTab, showTeamViolations, teamHirePlayer, fireTeamPlayer, teamDevUpdate, resetTeamDevDraft, applyTeamAdvancement, teamAdjustStaff, teamAdjustRerolls, teamSetApothecary, teamApplyTreasuryAdjust, revertMostRecentTeamChange, teamRedraftReset, teamRedraftBack, teamRedraftNext, teamRedraftSetRecoveryRoll, teamRedraftSetCapEnabled, teamRedraftToggleRehire, teamRedraftAddNewHire, teamRedraftRemoveNewHire, teamRedraftSetStaffField, teamRedraftFinalize, changeTeamRace, updatePlayer, updatePlayerPos, addSmartPlayer, removePlayer, addPlayerSkill, removePlayerSkill, handleDeleteTeam, saveTeam, updateLiveTV } from './ui-team.js';
+import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, openPlayerActionSheet, closeActionSheet, handleSheetAction, toggleReroll, openScheduleModal, openGenerateScheduleModal, closeScheduleModal, handleScheduleMatch, handleCoachEndTurn, handleCancelGame, handleEndGame, closePreMatchModal, changeInducement, setCustomInducement, confirmMatchStart, toggleStar, randomMvp, closePostGameModal, manualAdjustStat, postGameRerender, pgSetNoStalling, pgSetWinningsOverrideK, pgSetDedicatedFansRoll, pgSetDedicatedFansDeltaOverride, pgToggleMvpNominee, pgSetMvpRoll, pgAddAdvancement, pgRemoveAdvancement, pgUpdateAdvancement, pgSetInjuryOutcome, pgToggleTempRetire, pgSetStaffField, pgSetOtherTreasuryDeltaK, pgToggleHireJourneyman, pgSetHireJourneymanField, pgSetExpensiveField, openInGameShop, handleUseInducement, setJourneymanType, handlePreMatchPrimary, handlePreMatchBack, showInducementInfo, showStarInfo } from './ui-match.js';
 import { handleScanRepo, attachTeam, restoreLeague, deleteOrphanFile, deleteLeagueFolder } from './ui-admin.js';
 import { openGlossary, initGlossary } from './ui-glossary.js';
 import { setStatus } from './utils.js';
@@ -30,6 +30,7 @@ window.handleOpenTeam = handleOpenTeam;
 window.handleManageTeamDirect = handleManageTeamDirect;
 window.handleEditTeam = handleEditTeam;
 window.handleDeleteTeam = handleDeleteTeam;
+window.showTeamViolations = showTeamViolations;
 window.setTeamTab = setTeamTab;
 window.teamHirePlayer = teamHirePlayer;
 window.fireTeamPlayer = fireTeamPlayer;
@@ -147,6 +148,7 @@ if(els.buttons.rememberKey) {
 // Scheduling
 if(els.buttons.deskSchedBtn) els.buttons.deskSchedBtn.addEventListener('click', openScheduleModal);
 if(els.buttons.mobSchedBtn) els.buttons.mobSchedBtn.addEventListener('click', openScheduleModal);
+if(els.buttons.genSchedBtn) els.buttons.genSchedBtn.addEventListener('click', openGenerateScheduleModal);
 if(els.scheduleModal.addBtn) els.scheduleModal.addBtn.addEventListener('click', handleScheduleMatch);
 
 // Scoreboard / Match Buttons

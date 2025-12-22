@@ -841,6 +841,21 @@ body.mode-coach .coach-header {
   border: 4px solid #fff;
 }
 .coin-face.front { background: var(--primary-red); }
+
+.team-violations-banner {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: #fff0f0;
+  border-left: 6px solid var(--primary-red);
+  border-radius: 4px;
+  color: var(--primary-red);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+.team-violations-banner:hover {
+  filter: brightness(0.98);
+}
 .coin-face.back { background: var(--team-secondary); transform: rotateY(180deg); }
 
 @keyframes flipCoin {
