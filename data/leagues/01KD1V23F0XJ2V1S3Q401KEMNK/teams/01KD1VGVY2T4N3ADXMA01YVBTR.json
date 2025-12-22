@@ -130,7 +130,7 @@
       "name": "Player 4",
       "position": "Black Orc (Blocker, Orc)",
       "rookieSeason": 1,
-      "cost": 90000,
+      "cost": 110000,
       "ma": 4,
       "st": 4,
       "ag": 4,
@@ -138,7 +138,8 @@
       "av": 10,
       "skills": [
         "Brawler",
-        "Grab"
+        "Grab",
+        "Lone Fouler"
       ],
       "primary": [
         "A",
@@ -149,9 +150,22 @@
         "P",
         "S"
       ],
-      "spp": 4,
-      "sppSpent": 0,
-      "advancements": [],
+      "spp": 1,
+      "sppSpent": 3,
+      "advancements": [
+        {
+          "id": "01KD1XGEF4BGA9GH8NZJCKGHMF",
+          "at": "2025-12-22T02:16:42.724Z",
+          "sppCost": 3,
+          "valueIncreaseGp": 20000,
+          "kind": "randomPrimary",
+          "outcomeType": "skill",
+          "skillName": "Lone Fouler",
+          "categoryCode": "D",
+          "skillFrom": "primary",
+          "isElite": false
+        }
+      ],
       "injuries": ""
     },
     {
@@ -937,6 +951,18 @@
       "type": "advancement",
       "label": "Advancement: Player 3 +Diving Tackle",
       "playerId": "01KD1VHBY70HRK49ZT9GH9MYZW",
+      "delta": {
+        "tvGp": 20000,
+        "sppCost": 3
+      }
+    },
+    {
+      "id": "01KD1XGEF4R7X54M4NS8MDDPT6",
+      "at": "2025-12-22T02:16:42.724Z",
+      "season": 1,
+      "type": "advancement",
+      "label": "Advancement: Player 4 +Lone Fouler",
+      "playerId": "01KD1VHC9JTWECT3DA5Q5FCCQR",
       "undoBefore": {
         "treasury": 15000,
         "rerolls": 3,
@@ -1026,7 +1052,7 @@
             "name": "Player 3",
             "position": "Black Orc (Blocker, Orc)",
             "rookieSeason": 1,
-            "cost": 90000,
+            "cost": 110000,
             "ma": 4,
             "st": 4,
             "ag": 4,
@@ -1034,7 +1060,8 @@
             "av": 10,
             "skills": [
               "Brawler",
-              "Grab"
+              "Grab",
+              "Diving Tackle"
             ],
             "primary": [
               "A",
@@ -1045,9 +1072,22 @@
               "P",
               "S"
             ],
-            "spp": 3,
-            "sppSpent": 0,
-            "advancements": [],
+            "spp": 0,
+            "sppSpent": 3,
+            "advancements": [
+              {
+                "id": "01KD1XFXR9VMDYQZDDZEN47VVF",
+                "at": "2025-12-22T02:16:25.609Z",
+                "sppCost": 3,
+                "valueIncreaseGp": 20000,
+                "kind": "randomPrimary",
+                "outcomeType": "skill",
+                "skillName": "Diving Tackle",
+                "categoryCode": "A",
+                "skillFrom": "primary",
+                "isElite": false
+              }
+            ],
             "injuries": ""
           },
           {
@@ -1322,5 +1362,5 @@
   "assistantCoaches": 2,
   "cheerleaders": 1,
   "dedicatedFans": 2,
-  "teamValue": 1090000
+  "teamValue": 1110000
 }
