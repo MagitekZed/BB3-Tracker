@@ -45,6 +45,16 @@
         "primary": "#222222",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "01KD3ZM94X4T9K0051JDPD97PX",
+      "name": "New Team 4",
+      "race": "Human",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
     }
   ],
   "matches": []
