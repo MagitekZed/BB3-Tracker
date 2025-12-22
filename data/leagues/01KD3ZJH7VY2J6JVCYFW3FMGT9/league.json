@@ -35,6 +35,16 @@
         "primary": "#222222",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "01KD3ZKW1BVT8BHZVT97A8HPRX",
+      "name": "New Team 3",
+      "race": "Lizard Man",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
     }
   ],
   "matches": []
