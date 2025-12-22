@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD3ZJH7VY2J6JVCYFW3FMGT9",
+  "slug": "test_league_2",
+  "name": "Test League 2",
+  "season": 1,
+  "status": "upcoming",
+  "settings": {
+    "pointsWin": 3,
+    "pointsDraw": 1,
+    "pointsLoss": 0,
+    "maxTeams": 16,
+    "lockTeams": false
+  },
+  "rules": {
+    "startingBudget": 1000000
+  },
+  "teams": [
+    {
+      "id": "01KD3ZJX659D3H0XGRGZBNAQWW",
+      "name": "New Team",
+      "race": "Black Orc",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
+    }
+  ],
+  "matches": []
+}
