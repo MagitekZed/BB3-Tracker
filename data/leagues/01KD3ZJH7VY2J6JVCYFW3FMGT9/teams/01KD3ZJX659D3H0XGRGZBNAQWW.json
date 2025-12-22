@@ -197,19 +197,267 @@
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
+    },
+    {
+      "id": "01KD3ZP06G8W671FGE4AC2KHE5",
+      "number": 7,
+      "name": "Trained Troll (Big Guy, Troll)",
+      "position": "Trained Troll (Big Guy, Troll)",
+      "rookieSeason": 1,
+      "cost": 115000,
+      "ma": 4,
+      "st": 5,
+      "ag": 5,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Always Hungry",
+        "Mighty Blow",
+        "Projectile Vomit",
+        "Really Stupid",
+        "Regeneration",
+        "Throw Team-Mate"
+      ],
+      "primary": [
+        "S"
+      ],
+      "secondary": [
+        "A",
+        "G",
+        "P"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": []
     }
   ],
   "history": [],
-  "transactions": [],
+  "transactions": [
+    {
+      "id": "01KD3ZP06GFWCJR1ZSXCE9JBHK",
+      "at": "2025-12-22T21:33:10.736Z",
+      "season": 1,
+      "type": "hire_player",
+      "label": "Hired Trained Troll (Big Guy, Troll) (Trained Troll (Big Guy, Troll))",
+      "playerId": "01KD3ZP06G8W671FGE4AC2KHE5",
+      "undoBefore": {
+        "treasury": 730000,
+        "rerolls": 0,
+        "apothecary": false,
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "dedicatedFans": 1,
+        "redraft": null,
+        "players": [
+          {
+            "id": "01KD3ZK41AQS1GZ5ZN65BGQZPX",
+            "number": 1,
+            "name": "Player",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD3ZK4E2KPJSACZQ1V1PQP9N",
+            "number": 2,
+            "name": "Player",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD3ZK4VPCBKNAJ1QQTSMNBZZ",
+            "number": 3,
+            "name": "Player",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD3ZK579Z6BVN7FMXM7ZQKKY",
+            "number": 4,
+            "name": "Player",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD3ZK5M5ZSRZ6W5D4SDR9HRS",
+            "number": 5,
+            "name": "Player",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD3ZK6245R91JMAVTV61BR79",
+            "number": 6,
+            "name": "Player",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          }
+        ]
+      },
+      "delta": {
+        "treasuryGp": -115000,
+        "tvGp": 115000
+      }
+    }
+  ],
   "colors": {
     "primary": "#222222",
     "secondary": "#c5a059"
   },
-  "treasury": 730000,
+  "treasury": 615000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 270000
+  "teamValue": 385000
 }
