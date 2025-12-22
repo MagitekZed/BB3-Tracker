@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD3ZKW1BVT8BHZVT97A8HPRX",
+  "slug": "new_team_3",
+  "name": "New Team 3",
+  "race": "Lizard Man",
+  "coachName": "",
+  "players": [
+    {
+      "id": "01KD3ZM1Z46YMCSHXBZ0DZF7GV",
+      "number": 1,
+      "name": "Player",
+      "position": "Skink Lineman (Lineman, Lizardman)",
+      "rookieSeason": 1,
+      "cost": 60000,
+      "ma": 8,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Stunty"
+      ],
+      "primary": [
+        "A"
+      ],
+      "secondary": [
+        "G",
+        "D",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZM27TKRZPZEXYR5YP18Y2",
+      "number": 2,
+      "name": "Player",
+      "position": "Skink Lineman (Lineman, Lizardman)",
+      "rookieSeason": 1,
+      "cost": 60000,
+      "ma": 8,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Stunty"
+      ],
+      "primary": [
+        "A"
+      ],
+      "secondary": [
+        "G",
+        "D",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZM2CWYKF543D53YMBFSYZ",
+      "number": 3,
+      "name": "Player",
+      "position": "Skink Lineman (Lineman, Lizardman)",
+      "rookieSeason": 1,
+      "cost": 60000,
+      "ma": 8,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Stunty"
+      ],
+      "primary": [
+        "A"
+      ],
+      "secondary": [
+        "G",
+        "D",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZM2HSD7GQ4FH3QWYJ65BR",
+      "number": 4,
+      "name": "Player",
+      "position": "Skink Lineman (Lineman, Lizardman)",
+      "rookieSeason": 1,
+      "cost": 60000,
+      "ma": 8,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Stunty"
+      ],
+      "primary": [
+        "A"
+      ],
+      "secondary": [
+        "G",
+        "D",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZM2PPPAX9S94JKJSQYEN4",
+      "number": 5,
+      "name": "Player",
+      "position": "Skink Lineman (Lineman, Lizardman)",
+      "rookieSeason": 1,
+      "cost": 60000,
+      "ma": 8,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Stunty"
+      ],
+      "primary": [
+        "A"
+      ],
+      "secondary": [
+        "G",
+        "D",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZM2VTB05536HYWRYMP0AT",
+      "number": 6,
+      "name": "Player",
+      "position": "Skink Lineman (Lineman, Lizardman)",
+      "rookieSeason": 1,
+      "cost": 60000,
+      "ma": 8,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Stunty"
+      ],
+      "primary": [
+        "A"
+      ],
+      "secondary": [
+        "G",
+        "D",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZM30JA2PV47D1CNWRVEQ5",
+      "number": 7,
+      "name": "Player",
+      "position": "Skink Lineman (Lineman, Lizardman)",
+      "rookieSeason": 1,
+      "cost": 60000,
+      "ma": 8,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Stunty"
+      ],
+      "primary": [
+        "A"
+      ],
+      "secondary": [
+        "G",
+        "D",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  },
+  "treasury": 580000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 420000
+}
