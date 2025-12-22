@@ -42,7 +42,7 @@
       "name": "Player 2",
       "position": "Black Orc (Blocker, Orc)",
       "rookieSeason": 1,
-      "cost": 90000,
+      "cost": 110000,
       "ma": 4,
       "st": 4,
       "ag": 4,
@@ -50,7 +50,8 @@
       "av": 10,
       "skills": [
         "Brawler",
-        "Grab"
+        "Grab",
+        "Sneaky Git"
       ],
       "primary": [
         "A",
@@ -61,9 +62,22 @@
         "P",
         "S"
       ],
-      "spp": 4,
-      "sppSpent": 0,
-      "advancements": [],
+      "spp": 1,
+      "sppSpent": 3,
+      "advancements": [
+        {
+          "id": "01KD1XFB4PBN3R88RH2XRWN77T",
+          "at": "2025-12-22T02:16:06.550Z",
+          "sppCost": 3,
+          "valueIncreaseGp": 20000,
+          "kind": "randomPrimary",
+          "outcomeType": "skill",
+          "skillName": "Sneaky Git",
+          "categoryCode": "D",
+          "skillFrom": "primary",
+          "isElite": false
+        }
+      ],
       "injuries": ""
     },
     {
@@ -889,7 +903,375 @@
       }
     }
   ],
-  "transactions": [],
+  "transactions": [
+    {
+      "id": "01KD1XFB4P6B5981SDZWZXAATY",
+      "at": "2025-12-22T02:16:06.550Z",
+      "season": 1,
+      "type": "advancement",
+      "label": "Advancement: Player 2 +Sneaky Git",
+      "playerId": "01KD1VHBJGNNPJE6HHFREPA7RS",
+      "undoBefore": {
+        "treasury": 15000,
+        "rerolls": 3,
+        "apothecary": true,
+        "assistantCoaches": 2,
+        "cheerleaders": 1,
+        "dedicatedFans": 2,
+        "redraft": null,
+        "players": [
+          {
+            "id": "01KD1VHB57Q0FJNPCQH9HBCAP5",
+            "number": 1,
+            "name": "Player 1",
+            "position": "Black Orc (Blocker, Orc)",
+            "rookieSeason": 1,
+            "cost": 90000,
+            "ma": 4,
+            "st": 4,
+            "ag": 4,
+            "pa": 5,
+            "av": 10,
+            "skills": [
+              "Brawler",
+              "Grab"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 2,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHBJGNNPJE6HHFREPA7RS",
+            "number": 2,
+            "name": "Player 2",
+            "position": "Black Orc (Blocker, Orc)",
+            "rookieSeason": 1,
+            "cost": 90000,
+            "ma": 4,
+            "st": 4,
+            "ag": 4,
+            "pa": 5,
+            "av": 10,
+            "skills": [
+              "Brawler",
+              "Grab"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 4,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHBY70HRK49ZT9GH9MYZW",
+            "number": 3,
+            "name": "Player 3",
+            "position": "Black Orc (Blocker, Orc)",
+            "rookieSeason": 1,
+            "cost": 90000,
+            "ma": 4,
+            "st": 4,
+            "ag": 4,
+            "pa": 5,
+            "av": 10,
+            "skills": [
+              "Brawler",
+              "Grab"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 3,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHC9JTWECT3DA5Q5FCCQR",
+            "number": 4,
+            "name": "Player 4",
+            "position": "Black Orc (Blocker, Orc)",
+            "rookieSeason": 1,
+            "cost": 90000,
+            "ma": 4,
+            "st": 4,
+            "ag": 4,
+            "pa": 5,
+            "av": 10,
+            "skills": [
+              "Brawler",
+              "Grab"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 4,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHCP03B262758RY8TZ2EQ",
+            "number": 5,
+            "name": "Player 5",
+            "position": "Trained Troll (Big Guy, Troll)",
+            "rookieSeason": 1,
+            "cost": 115000,
+            "ma": 4,
+            "st": 5,
+            "ag": 5,
+            "pa": 5,
+            "av": 10,
+            "skills": [
+              "Always Hungry",
+              "Mighty Blow",
+              "Projectile Vomit",
+              "Really Stupid",
+              "Regeneration",
+              "Throw Team-Mate"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 2,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHD17CMMQJA4X185JM5VD",
+            "number": 6,
+            "name": "Player 6",
+            "position": "Black Orc (Blocker, Orc)",
+            "rookieSeason": 1,
+            "cost": 90000,
+            "ma": 4,
+            "st": 4,
+            "ag": 4,
+            "pa": 5,
+            "av": 10,
+            "skills": [
+              "Brawler",
+              "Grab"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 3,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHDCZV235XSM68TTEC3H9",
+            "number": 7,
+            "name": "Player 7",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 1,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHDZXJRSKZNA607SWHMAN",
+            "number": 8,
+            "name": "Player 8",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 2,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHEG5G54DP01PK6ZJGD8J",
+            "number": 9,
+            "name": "Player 9",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 2,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHEZFEDSVQ6W2JZ7KZSAZ",
+            "number": 10,
+            "name": "Player 10",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1VHFJGA2BKQGH6998AYHEA",
+            "number": 11,
+            "name": "Player 11",
+            "position": "Goblin Bruiser (Goblin, Lineman)",
+            "rookieSeason": 1,
+            "cost": 45000,
+            "ma": 6,
+            "st": 2,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Right Stuff",
+              "Stunty",
+              "Thick Skull"
+            ],
+            "primary": [
+              "A",
+              "D"
+            ],
+            "secondary": [
+              "G",
+              "P",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          }
+        ]
+      },
+      "delta": {
+        "tvGp": 20000,
+        "sppCost": 3
+      }
+    }
+  ],
   "colors": {
     "primary": "#222222",
     "secondary": "#c20000"
@@ -900,5 +1282,5 @@
   "assistantCoaches": 2,
   "cheerleaders": 1,
   "dedicatedFans": 2,
-  "teamValue": 1050000
+  "teamValue": 1070000
 }
