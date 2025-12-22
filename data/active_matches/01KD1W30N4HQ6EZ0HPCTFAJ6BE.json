@@ -314,7 +314,7 @@
         "cost": 40000,
         "live": {
           "used": false,
-          "injured": false,
+          "injured": true,
           "sentOff": false,
           "td": 0,
           "cas": 0,
