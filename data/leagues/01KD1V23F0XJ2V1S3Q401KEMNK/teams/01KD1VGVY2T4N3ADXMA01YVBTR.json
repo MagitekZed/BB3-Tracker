@@ -31,7 +31,7 @@
         "P",
         "S"
       ],
-      "spp": 0,
+      "spp": 2,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -121,7 +121,7 @@
         "P",
         "S"
       ],
-      "spp": 0,
+      "spp": 4,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -217,7 +217,7 @@
         "P",
         "S"
       ],
-      "spp": 0,
+      "spp": 1,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -351,13 +351,282 @@
       "injuries": ""
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "01KD1W003YBWVTN433S28Q5ZVR",
+      "matchType": "regular",
+      "opponentName": "Amazons",
+      "result": "Loss",
+      "score": "0-1",
+      "winningsK": 20,
+      "winningsGp": 20000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": 3,
+      "dedicatedFansDelta": 0,
+      "tv": 1000000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KD1VHB57Q0FJNPCQH9HBCAP5",
+          "name": "Player 1",
+          "number": 1,
+          "position": "Black Orc (Blocker, Orc)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 1,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHBJGNNPJE6HHFREPA7RS",
+          "name": "Player 2",
+          "number": 2,
+          "position": "Black Orc (Blocker, Orc)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHBY70HRK49ZT9GH9MYZW",
+          "name": "Player 3",
+          "number": 3,
+          "position": "Black Orc (Blocker, Orc)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHC9JTWECT3DA5Q5FCCQR",
+          "name": "Player 4",
+          "number": 4,
+          "position": "Black Orc (Blocker, Orc)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KD1VHCP03B262758RY8TZ2EQ",
+          "name": "Player 5",
+          "number": 5,
+          "position": "Trained Troll (Big Guy, Troll)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHD17CMMQJA4X185JM5VD",
+          "name": "Player 6",
+          "number": 6,
+          "position": "Black Orc (Blocker, Orc)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHDCZV235XSM68TTEC3H9",
+          "name": "Player 7",
+          "number": 7,
+          "position": "Goblin Bruiser (Goblin, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 1,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 1,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHDZXJRSKZNA607SWHMAN",
+          "name": "Player 8",
+          "number": 8,
+          "position": "Goblin Bruiser (Goblin, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHEG5G54DP01PK6ZJGD8J",
+          "name": "Player 9",
+          "number": 9,
+          "position": "Goblin Bruiser (Goblin, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHEZFEDSVQ6W2JZ7KZSAZ",
+          "name": "Player 10",
+          "number": 10,
+          "position": "Goblin Bruiser (Goblin, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VHFJGA2BKQGH6998AYHEA",
+          "name": "Player 11",
+          "number": 11,
+          "position": "Goblin Bruiser (Goblin, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 20000,
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": null,
+        "deltaGp": 0
+      }
+    }
+  ],
   "transactions": [],
   "colors": {
     "primary": "#222222",
     "secondary": "#c20000"
   },
-  "treasury": 0,
+  "treasury": 20000,
   "rerolls": 3,
   "apothecary": false,
   "assistantCoaches": 2,
