@@ -4,7 +4,7 @@
   "slug": "new_test_league",
   "name": "New Test League",
   "season": 1,
-  "status": "playoffs",
+  "status": "offseason",
   "settings": {
     "pointsWin": 3,
     "pointsDraw": 1,
@@ -235,7 +235,7 @@
   "playoffs": {
     "season": 1,
     "bracketSize": 4,
-    "status": "in_progress",
+    "status": "completed",
     "stageOrder": [
       "semifinals",
       "final",
@@ -265,6 +265,11 @@
       "01KD1VW0RZDNWP87DPKZZP4MDZ"
     ],
     "createdAt": "2025-12-22T02:10:56.133Z",
-    "prizesAwardedAt": null
+    "prizesAwardedAt": "2025-12-22T02:49:13.088Z",
+    "placements": {
+      "firstTeamId": "01KD1V6FTXW8G8CMK9AJ1S08W5",
+      "secondTeamId": "01KD1VGVY2T4N3ADXMA01YVBTR",
+      "thirdTeamId": "01KD1VW0RZDNWP87DPKZZP4MDZ"
+    }
   }
 }
