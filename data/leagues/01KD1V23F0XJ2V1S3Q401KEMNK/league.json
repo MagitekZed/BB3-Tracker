@@ -182,6 +182,34 @@
       },
       "hasReport": true,
       "reportId": "01KD1X5W05B901G9Q8XJECVF7B"
+    },
+    {
+      "id": "01KD1Y0BTQZQ8X3P2W87BTFRWH",
+      "season": 1,
+      "round": 6,
+      "homeTeamId": "01KD1V6FTXW8G8CMK9AJ1S08W5",
+      "awayTeamId": "01KD1VGVY2T4N3ADXMA01YVBTR",
+      "status": "scheduled",
+      "date": "2025-12-22",
+      "type": "playoff",
+      "playoff": {
+        "stage": "final",
+        "bracketSize": 4
+      }
+    },
+    {
+      "id": "01KD1Y0BTQQMBD88EEHRS98M9M",
+      "season": 1,
+      "round": 6,
+      "homeTeamId": "01KD1VW0RZDNWP87DPKZZP4MDZ",
+      "awayTeamId": "01KD1VQ3GZEYM1M97ESPGPYT4G",
+      "status": "scheduled",
+      "date": "2025-12-22",
+      "type": "playoff",
+      "playoff": {
+        "stage": "thirdPlace",
+        "bracketSize": 4
+      }
     }
   ],
   "playoffs": {
@@ -203,8 +231,12 @@
         "01KD1X5W02G57AG228VJY2V648",
         "01KD1X5W05B901G9Q8XJECVF7B"
       ],
-      "final": [],
-      "thirdPlace": []
+      "final": [
+        "01KD1Y0BTQZQ8X3P2W87BTFRWH"
+      ],
+      "thirdPlace": [
+        "01KD1Y0BTQQMBD88EEHRS98M9M"
+      ]
     },
     "qualifiedTeamIds": [
       "01KD1V6FTXW8G8CMK9AJ1S08W5",
