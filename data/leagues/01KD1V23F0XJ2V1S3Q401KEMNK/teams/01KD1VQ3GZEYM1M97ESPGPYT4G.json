@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD1VQ3GZEYM1M97ESPGPYT4G",
+  "slug": "elven_union",
+  "name": "Elven Union",
+  "race": "Elven Union",
+  "coachName": "Coach Three",
+  "players": [
+    {
+      "id": "01KD1VQQPMCF3C80KNT8EAKEGR",
+      "number": 1,
+      "name": "Player 1",
+      "position": "Thrower",
+      "rookieSeason": 1,
+      "cost": 75000,
+      "ma": 6,
+      "st": 3,
+      "ag": 2,
+      "pa": 2,
+      "av": 8,
+      "skills": [
+        "Hail Mary Pass",
+        "Pass"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQR1G1715CE7ZW6WQ7SN4",
+      "number": 2,
+      "name": "Player 2",
+      "position": "Thrower",
+      "rookieSeason": 1,
+      "cost": 75000,
+      "ma": 6,
+      "st": 3,
+      "ag": 2,
+      "pa": 2,
+      "av": 8,
+      "skills": [
+        "Hail Mary Pass",
+        "Pass"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQRBSF3KMB4D4BFWJ7TFQ",
+      "number": 3,
+      "name": "Player 3",
+      "position": "Catcher",
+      "rookieSeason": 1,
+      "cost": 100000,
+      "ma": 8,
+      "st": 3,
+      "ag": 2,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Catch",
+        "Diving Catch",
+        "Nerves of Steel"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQRP7C9NH6V6712N1MADT",
+      "number": 4,
+      "name": "Player 4",
+      "position": "Catcher",
+      "rookieSeason": 1,
+      "cost": 100000,
+      "ma": 8,
+      "st": 3,
+      "ag": 2,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Catch",
+        "Diving Catch",
+        "Nerves of Steel"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQS16EMCNY1VE5ZVP1K8W",
+      "number": 5,
+      "name": "Player 5",
+      "position": "Blitzers",
+      "rookieSeason": 1,
+      "cost": 115000,
+      "ma": 7,
+      "st": 3,
+      "ag": 2,
+      "pa": 3,
+      "av": 9,
+      "skills": [
+        "Block",
+        "Sidestep"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQSBZWRSTED3DCA63XNWY",
+      "number": 6,
+      "name": "Player 6",
+      "position": "Blitzers",
+      "rookieSeason": 1,
+      "cost": 115000,
+      "ma": 7,
+      "st": 3,
+      "ag": 2,
+      "pa": 3,
+      "av": 9,
+      "skills": [
+        "Block",
+        "Sidestep"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQSP6TNA5BX8CCY6PBH4P",
+      "number": 7,
+      "name": "Player 7",
+      "position": "Linemen",
+      "rookieSeason": 1,
+      "cost": 65000,
+      "ma": 6,
+      "st": 3,
+      "ag": 2,
+      "pa": 3,
+      "av": 8,
+      "skills": [
+        "Fumblerooski"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQT017M3DVS2B8GBMC98X",
+      "number": 8,
+      "name": "Player 8",
+      "position": "Linemen",
+      "rookieSeason": 1,
+      "cost": 65000,
+      "ma": 6,
+      "st": 3,
+      "ag": 2,
+      "pa": 3,
+      "av": 8,
+      "skills": [
+        "Fumblerooski"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQTB7VEJG74DKWX1G14Y3",
+      "number": 9,
+      "name": "Player 9",
+      "position": "Linemen",
+      "rookieSeason": 1,
+      "cost": 65000,
+      "ma": 6,
+      "st": 3,
+      "ag": 2,
+      "pa": 3,
+      "av": 8,
+      "skills": [
+        "Fumblerooski"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VQTPG2FBGQZQPWM628DWW",
+      "number": 10,
+      "name": "Player 10",
+      "position": "Linemen",
+      "rookieSeason": 1,
+      "cost": 65000,
+      "ma": 6,
+      "st": 3,
+      "ag": 2,
+      "pa": 3,
+      "av": 8,
+      "skills": [
+        "Fumblerooski"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VR96VMW0AJ1NXWH7ERTJ6",
+      "number": 11,
+      "name": "Player 11",
+      "position": "Linemen",
+      "rookieSeason": 1,
+      "cost": 65000,
+      "ma": 6,
+      "st": 3,
+      "ag": 2,
+      "pa": 3,
+      "av": 8,
+      "skills": [
+        "Fumblerooski"
+      ],
+      "primary": [
+        "A",
+        "G"
+      ],
+      "secondary": [
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#00adab",
+    "secondary": "#707070"
+  },
+  "treasury": 5000,
+  "rerolls": 1,
+  "apothecary": false,
+  "assistantCoaches": 2,
+  "cheerleaders": 2,
+  "dedicatedFans": 1,
+  "teamValue": 995000
+}
