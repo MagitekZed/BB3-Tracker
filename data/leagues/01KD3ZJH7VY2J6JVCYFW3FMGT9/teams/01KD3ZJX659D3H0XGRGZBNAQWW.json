@@ -229,38 +229,6 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": []
-    },
-    {
-      "id": "01KD3ZP4X6CN7E7PD2ZHJEBQ1M",
-      "number": 8,
-      "name": "Trained Troll (Big Guy, Troll)",
-      "position": "Trained Troll (Big Guy, Troll)",
-      "rookieSeason": 1,
-      "cost": 115000,
-      "ma": 4,
-      "st": 5,
-      "ag": 5,
-      "pa": 5,
-      "av": 10,
-      "skills": [
-        "Always Hungry",
-        "Mighty Blow",
-        "Projectile Vomit",
-        "Really Stupid",
-        "Regeneration",
-        "Throw Team-Mate"
-      ],
-      "primary": [
-        "S"
-      ],
-      "secondary": [
-        "A",
-        "G",
-        "P"
-      ],
-      "spp": 0,
-      "sppSpent": 0,
-      "advancements": []
     }
   ],
   "history": [],
@@ -284,8 +252,20 @@
       "type": "hire_player",
       "label": "Hired Trained Troll (Big Guy, Troll) (Trained Troll (Big Guy, Troll))",
       "playerId": "01KD3ZP4X6CN7E7PD2ZHJEBQ1M",
+      "delta": {
+        "treasuryGp": -115000,
+        "tvGp": 115000
+      }
+    },
+    {
+      "id": "01KD3ZQWZ4577K5AMKBMM460MD",
+      "at": "2025-12-22T21:34:12.964Z",
+      "season": 1,
+      "type": "fire_player",
+      "label": "Fired Trained Troll (Big Guy, Troll) (Trained Troll (Big Guy, Troll))",
+      "playerId": "01KD3ZP4X6CN7E7PD2ZHJEBQ1M",
       "undoBefore": {
-        "treasury": 615000,
+        "treasury": 500000,
         "rerolls": 0,
         "apothecary": false,
         "assistantCoaches": 0,
@@ -516,12 +496,44 @@
             "spp": 0,
             "sppSpent": 0,
             "advancements": []
+          },
+          {
+            "id": "01KD3ZP4X6CN7E7PD2ZHJEBQ1M",
+            "number": 8,
+            "name": "Trained Troll (Big Guy, Troll)",
+            "position": "Trained Troll (Big Guy, Troll)",
+            "rookieSeason": 1,
+            "cost": 115000,
+            "ma": 4,
+            "st": 5,
+            "ag": 5,
+            "pa": 5,
+            "av": 10,
+            "skills": [
+              "Always Hungry",
+              "Mighty Blow",
+              "Projectile Vomit",
+              "Really Stupid",
+              "Regeneration",
+              "Throw Team-Mate"
+            ],
+            "primary": [
+              "S"
+            ],
+            "secondary": [
+              "A",
+              "G",
+              "P"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": []
           }
         ]
       },
       "delta": {
-        "treasuryGp": -115000,
-        "tvGp": 115000
+        "treasuryGp": 0,
+        "tvGp": -115000
       }
     }
   ],
@@ -535,5 +547,5 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 500000
+  "teamValue": 385000
 }
