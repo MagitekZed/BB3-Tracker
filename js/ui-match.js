@@ -2,7 +2,7 @@ import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, getContrastColor, applyTeamTheme, ulid } from './utils.js';
-import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill, confirmModal, showInfoModal } from './ui-core.js';
+import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill, confirmModal, showInfoModal, scrollModalBodyTop } from './ui-core.js';
 import { handleOpenLeague } from './ui-league.js';
 import { calculateTeamValue, calculateCurrentTeamValue, isPlayerAvailableForMatch, computeBb2025WinningsGp, computeBb2025DedicatedFansDelta, computeBb2025SppGain, getBb2025AdvancementCost, applyBb2025SkillAdvancement, applyBb2025CharacteristicIncrease, getBb2025ValueIncreaseGp, getAdvancementCount } from './rules.js';
 
@@ -364,6 +364,7 @@ export function handlePreMatchBack() {
   s.wizard.step = 0;
   s.wizard.lock = null;
   renderPreMatchSetup();
+  scrollModalBodyTop(els.preMatch.el);
 }
 
 export async function handlePreMatchPrimary() {
@@ -383,6 +384,7 @@ export async function handlePreMatchPrimary() {
     }
     s.wizard.step = 1;
     renderPreMatchSetup();
+    scrollModalBodyTop(els.preMatch.el);
     return;
   }
 
@@ -2611,11 +2613,11 @@ function renderPostGameStepLegacy() {
     els.postGame.backBtn = newBack;
     
     els.postGame.nextBtn.onclick = () => {
-        if (pg.step < 5) { state.postGame.step++; renderPostGameStep(); }
+        if (pg.step < 5) { state.postGame.step++; renderPostGameStep(); scrollModalBodyTop(els.postGame.el); }
         else { commitPostGame(); }
     };
     els.postGame.backBtn.onclick = () => {
-        if (pg.step > 1) { state.postGame.step--; renderPostGameStep(); }
+        if (pg.step > 1) { state.postGame.step--; renderPostGameStep(); scrollModalBodyTop(els.postGame.el); }
     };
 }
 
@@ -2644,11 +2646,11 @@ export function renderPostGameStep() {
   els.postGame.backBtn = newBack;
 
   els.postGame.nextBtn.onclick = () => {
-    if (step < totalSteps) { state.postGame.step++; renderPostGameStep(); }
+    if (step < totalSteps) { state.postGame.step++; renderPostGameStep(); scrollModalBodyTop(els.postGame.el); }
     else { commitPostGame(); }
   };
   els.postGame.backBtn.onclick = () => {
-    if (step > 1) { state.postGame.step--; renderPostGameStep(); }
+    if (step > 1) { state.postGame.step--; renderPostGameStep(); scrollModalBodyTop(els.postGame.el); }
   };
 }
 

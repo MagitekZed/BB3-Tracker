@@ -673,7 +673,7 @@ function renderRedraftTab({ team, season }) {
           <tr>
             <td data-label="Player">${escapeHtml(p.number ? `#${p.number} ` : '')}${escapeHtml(p.name || '-')}</td>
             <td data-label="Injury">${escapeHtml(code)}</td>
-            <td data-label="Roll"><input type="number" min="1" max="6" value="${escapeHtml(val)}" onchange="window.teamRedraftSetRecoveryRoll(${JSON.stringify(key)}, this.value)" style="width:80px;"></td>
+            <td data-label="Roll"><input type="number" min="1" max="6" value="${escapeHtml(val)}" onchange='window.teamRedraftSetRecoveryRoll(${JSON.stringify(key)}, this.value)' style="width:80px;"></td>
             <td data-label="Target" class="small" style="color:#666;">4+${mod ? ` (with +${mod})` : ''}</td>
           </tr>
         `;
@@ -763,7 +763,7 @@ function renderRedraftTab({ team, season }) {
 
     return `
       <tr>
-        <td data-label="Rehire"><input type="checkbox" ${checked ? 'checked' : ''} onchange="window.teamRedraftToggleRehire(${JSON.stringify(p.id)}, this.checked)"></td>
+        <td data-label="Rehire"><input type="checkbox" ${checked ? 'checked' : ''} onchange='window.teamRedraftToggleRehire(${JSON.stringify(p.id)}, this.checked)'></td>
         <td data-label="#">${p.number ?? ''}</td>
         <td data-label="Player">${escapeHtml(p.name || '-')}<div class="small" style="color:#666;">${escapeHtml(p.position || '')}${status ? ` • ${escapeHtml(status)}` : ''}</div></td>
         <td data-label="Value">${formatK(p.cost)}</td>

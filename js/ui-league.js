@@ -721,9 +721,9 @@ export async function openPlayoffsManager() {
         const matchId = btn.getAttribute('data-match');
         if (!action || !matchId) return;
 
-        if (action === 'start') return window.handleStartMatch(matchId);
-        if (action === 'view') return window.handleOpenScoreboard(matchId);
-        if (action === 'report') return window.handleViewMatchReport(matchId);
+        if (action === 'start') { close(); return window.handleStartMatch(matchId); }
+        if (action === 'view') { close(); return window.handleOpenScoreboard(matchId); }
+        if (action === 'report') { close(); return window.handleViewMatchReport(matchId); }
 
         if (action === 'winner') {
           const editKey = getEditKey();

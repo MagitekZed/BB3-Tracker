@@ -126,6 +126,33 @@ export function showInfoModal(title, message, messageIsHtml = false) {
   els.modal.el.classList.remove('hidden');
 }
 
+const STATIC_MODAL_IDS = new Set(['scheduleModal', 'preMatchModal', 'postGameModal', 'skillModal', 'glossaryModal']);
+
+export function closeModalElement(modalEl) {
+  const el = modalEl || null;
+  if (!el) return;
+  const id = String(el.getAttribute('id') || '');
+  if (id && STATIC_MODAL_IDS.has(id)) el.classList.add('hidden');
+  else el.remove();
+}
+
+export function closeNearestModal(fromEl) {
+  const modalEl = fromEl?.closest?.('.modal') || null;
+  closeModalElement(modalEl);
+}
+
+export function replaceNearestModal(fromEl, openNext) {
+  closeNearestModal(fromEl);
+  if (typeof openNext === 'function') openNext();
+}
+
+export function scrollModalBodyTop(modalEl) {
+  const el = modalEl || null;
+  if (!el) return;
+  const scroller = el.querySelector('.modal-body-scroll');
+  if (scroller) scroller.scrollTop = 0;
+}
+
 // Mobile Match Nav Button Logic
 export function handleMobileMatchNav() {
   if (state.activeMatchData) {
