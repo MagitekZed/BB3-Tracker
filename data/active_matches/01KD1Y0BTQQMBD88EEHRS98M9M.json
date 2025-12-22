@@ -1,0 +1,700 @@
+{
+  "matchId": "01KD1Y0BTQQMBD88EEHRS98M9M",
+  "leagueId": "01KD1V23F0XJ2V1S3Q401KEMNK",
+  "round": 6,
+  "status": "in_progress",
+  "activeTeam": "away",
+  "pregame": {
+    "ctv": {
+      "home": 960000,
+      "away": 1005000
+    },
+    "higherSide": "away",
+    "pettyCash": {
+      "home": 45000,
+      "away": 0
+    },
+    "treasurySpent": {
+      "home": 0,
+      "away": 0
+    },
+    "journeymen": {
+      "home": {
+        "needed": 0,
+        "type": "Skeleton Lineman (Human, Lineman, Skeleton, Undead)"
+      },
+      "away": {
+        "needed": 1,
+        "type": "Linemen"
+      }
+    }
+  },
+  "home": {
+    "id": "01KD1VW0RZDNWP87DPKZZP4MDZ",
+    "name": "Shambling Undead",
+    "colors": {
+      "primary": "#ba00c7",
+      "secondary": "#aabf40"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KD1VWRPY7KWQVS4D89E2TPBQ",
+        "number": 1,
+        "name": "Player 1",
+        "position": "Mummy (Big Guy, Blocker, Human, Undead)",
+        "ma": 3,
+        "st": 5,
+        "ag": 5,
+        "pa": 6,
+        "av": 10,
+        "skills": [
+          "Mighty Blow",
+          "Regeneration"
+        ],
+        "cost": 125000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VWS38W71GBRXE2BWDCMPW",
+        "number": 2,
+        "name": "Player 2",
+        "position": "Wight Blitzer (Blitzer, Human, Skeleton, Undead)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 5,
+        "av": 9,
+        "skills": [
+          "Block",
+          "Regeneration",
+          "Tackle",
+          "Thick Skull"
+        ],
+        "cost": 90000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VWSFF0W2ZZP85AWY5VGBG",
+        "number": 3,
+        "name": "Player 3",
+        "position": "Wight Blitzer (Blitzer, Human, Skeleton, Undead)",
+        "ma": 6,
+        "st": 3,
+        "ag": 3,
+        "pa": 5,
+        "av": 9,
+        "skills": [
+          "Block",
+          "Regeneration",
+          "Tackle",
+          "Thick Skull"
+        ],
+        "cost": 90000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VWSTAH7J44RRE3HRD50GJ",
+        "number": 4,
+        "name": "Player 4",
+        "position": "Ghoul Runner (Ghoul, Runner, Undead)",
+        "ma": 7,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Regeneration"
+        ],
+        "cost": 75000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VWT7WDBK979MGT43TAZR8",
+        "number": 5,
+        "name": "Player 5",
+        "position": "Ghoul Runner (Ghoul, Runner, Undead)",
+        "ma": 7,
+        "st": 3,
+        "ag": 3,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Dodge",
+          "Regeneration"
+        ],
+        "cost": 75000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VWTKEN5ZTTRNP8X6QNKEQ",
+        "number": 6,
+        "name": "Player 6",
+        "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+        "ma": 4,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Eye Gouge",
+          "Regeneration",
+          "Unsteady"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VWTZFV5ZG4JA7N8D07KZB",
+        "number": 7,
+        "name": "Player 7",
+        "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+        "ma": 4,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Eye Gouge",
+          "Regeneration",
+          "Unsteady"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VWVB70FVZ22RXY2ECESN6",
+        "number": 8,
+        "name": "Player 8",
+        "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+        "ma": 4,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 9,
+        "skills": [
+          "Eye Gouge",
+          "Regeneration",
+          "Unsteady"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VWVQ9BFBJHW63HSTCDCRJ",
+        "number": 9,
+        "name": "Player 9",
+        "position": "Skeleton Lineman (Human, Lineman, Skeleton, Undead)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 8,
+        "skills": [
+          "Regeneration",
+          "Thick Skull"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VXMRHBYAJGHRDRG9H875A",
+        "number": 11,
+        "name": "Player 11",
+        "position": "Mummy (Big Guy, Blocker, Human, Undead)",
+        "ma": 3,
+        "st": 5,
+        "ag": 5,
+        "pa": 6,
+        "av": 10,
+        "skills": [
+          "Mighty Blow",
+          "Regeneration"
+        ],
+        "cost": 125000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VYQRNHSPEJDX0S6S3TD80",
+        "number": 12,
+        "name": "Player",
+        "position": "Skeleton Lineman (Human, Lineman, Skeleton, Undead)",
+        "ma": 5,
+        "st": 3,
+        "ag": 4,
+        "pa": 6,
+        "av": 8,
+        "skills": [
+          "Regeneration",
+          "Thick Skull"
+        ],
+        "cost": 40000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 2,
+    "apothecary": false,
+    "inducements": {
+      "Team Mascot": 1,
+      "Prayers to Nuffle": 1,
+      "Temp Agency Cheerleaders": 2
+    },
+    "ctv": 960000,
+    "tv": 960000
+  },
+  "away": {
+    "id": "01KD1VQ3GZEYM1M97ESPGPYT4G",
+    "name": "Elven Union",
+    "colors": {
+      "primary": "#00adab",
+      "secondary": "#707070"
+    },
+    "score": 0,
+    "roster": [
+      {
+        "playerId": "01KD1VQQPMCF3C80KNT8EAKEGR",
+        "number": 1,
+        "name": "Player 1",
+        "position": "Thrower",
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 2,
+        "av": 8,
+        "skills": [
+          "Hail Mary Pass",
+          "Pass"
+        ],
+        "cost": 75000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VQRBSF3KMB4D4BFWJ7TFQ",
+        "number": 3,
+        "name": "Player 3",
+        "position": "Catcher",
+        "ma": 8,
+        "st": 3,
+        "ag": 2,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Catch",
+          "Diving Catch",
+          "Nerves of Steel",
+          "Dodge"
+        ],
+        "cost": 120000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VQRP7C9NH6V6712N1MADT",
+        "number": 4,
+        "name": "Player 4",
+        "position": "Catcher",
+        "ma": 8,
+        "st": 3,
+        "ag": 2,
+        "pa": 4,
+        "av": 8,
+        "skills": [
+          "Catch",
+          "Diving Catch",
+          "Nerves of Steel"
+        ],
+        "cost": 100000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VQS16EMCNY1VE5ZVP1K8W",
+        "number": 5,
+        "name": "Player 5",
+        "position": "Blitzers",
+        "ma": 7,
+        "st": 3,
+        "ag": 2,
+        "pa": 3,
+        "av": 9,
+        "skills": [
+          "Block",
+          "Sidestep"
+        ],
+        "cost": 115000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VQSBZWRSTED3DCA63XNWY",
+        "number": 6,
+        "name": "Player 6",
+        "position": "Blitzers",
+        "ma": 7,
+        "st": 3,
+        "ag": 2,
+        "pa": 3,
+        "av": 9,
+        "skills": [
+          "Block",
+          "Sidestep"
+        ],
+        "cost": 115000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VQSP6TNA5BX8CCY6PBH4P",
+        "number": 7,
+        "name": "Player 7",
+        "position": "Linemen",
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 3,
+        "av": 8,
+        "skills": [
+          "Fumblerooski"
+        ],
+        "cost": 65000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VQT017M3DVS2B8GBMC98X",
+        "number": 8,
+        "name": "Player 8",
+        "position": "Linemen",
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 3,
+        "av": 8,
+        "skills": [
+          "Fumblerooski"
+        ],
+        "cost": 65000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VQTB7VEJG74DKWX1G14Y3",
+        "number": 9,
+        "name": "Player 9",
+        "position": "Linemen",
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 3,
+        "av": 7,
+        "skills": [
+          "Fumblerooski"
+        ],
+        "cost": 65000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VQTPG2FBGQZQPWM628DWW",
+        "number": 10,
+        "name": "Player 10",
+        "position": "Linemen",
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 3,
+        "av": 8,
+        "skills": [
+          "Fumblerooski"
+        ],
+        "cost": 65000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1VR96VMW0AJ1NXWH7ERTJ6",
+        "number": 11,
+        "name": "Player 11",
+        "position": "Linemen",
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 3,
+        "av": 8,
+        "skills": [
+          "Fumblerooski"
+        ],
+        "cost": 65000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "playerId": "01KD1Z380ZMH5KB5Z5BXSQV36P",
+        "isJourneyman": true,
+        "number": 102,
+        "name": "Journeyman 1",
+        "position": "Linemen",
+        "ma": 6,
+        "st": 3,
+        "ag": 2,
+        "pa": 3,
+        "av": 8,
+        "primary": [
+          "A",
+          "G"
+        ],
+        "secondary": "S",
+        "skills": [
+          "Fumblerooski",
+          "Loner (4+)"
+        ],
+        "cost": 65000,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "rerolls": 1,
+    "apothecary": false,
+    "inducements": {},
+    "ctv": 1005000,
+    "tv": 1005000
+  },
+  "turn": {
+    "home": 0,
+    "away": 0
+  },
+  "log": []
+}
