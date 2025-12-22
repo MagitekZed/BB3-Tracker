@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD1VW0RZDNWP87DPKZZP4MDZ",
+  "slug": "shambling_undead",
+  "name": "Shambling Undead",
+  "race": "Shambling Undead",
+  "coachName": "",
+  "players": [
+    {
+      "id": "01KD1VWRPY7KWQVS4D89E2TPBQ",
+      "number": 1,
+      "name": "Player 1",
+      "position": "Mummy (Big Guy, Blocker, Human, Undead)",
+      "rookieSeason": 1,
+      "cost": 125000,
+      "ma": 3,
+      "st": 5,
+      "ag": 5,
+      "pa": 6,
+      "av": 10,
+      "skills": [
+        "Mighty Blow",
+        "Regeneration"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWS38W71GBRXE2BWDCMPW",
+      "number": 2,
+      "name": "Player 2",
+      "position": "Wight Blitzer (Blitzer, Human, Skeleton, Undead)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 5,
+      "av": 9,
+      "skills": [
+        "Block",
+        "Regeneration",
+        "Tackle",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWSFF0W2ZZP85AWY5VGBG",
+      "number": 3,
+      "name": "Player 3",
+      "position": "Wight Blitzer (Blitzer, Human, Skeleton, Undead)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 5,
+      "av": 9,
+      "skills": [
+        "Block",
+        "Regeneration",
+        "Tackle",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWSTAH7J44RRE3HRD50GJ",
+      "number": 4,
+      "name": "Player 4",
+      "position": "Ghoul Runner (Ghoul, Runner, Undead)",
+      "rookieSeason": 1,
+      "cost": 75000,
+      "ma": 7,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Regeneration"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWT7WDBK979MGT43TAZR8",
+      "number": 5,
+      "name": "Player 5",
+      "position": "Ghoul Runner (Ghoul, Runner, Undead)",
+      "rookieSeason": 1,
+      "cost": 75000,
+      "ma": 7,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Regeneration"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWTKEN5ZTTRNP8X6QNKEQ",
+      "number": 6,
+      "name": "Player 6",
+      "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+      "rookieSeason": 1,
+      "cost": 40000,
+      "ma": 4,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Eye Gouge",
+        "Regeneration",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWTZFV5ZG4JA7N8D07KZB",
+      "number": 7,
+      "name": "Player 7",
+      "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+      "rookieSeason": 1,
+      "cost": 40000,
+      "ma": 4,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Eye Gouge",
+        "Regeneration",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWVB70FVZ22RXY2ECESN6",
+      "number": 8,
+      "name": "Player 8",
+      "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+      "rookieSeason": 1,
+      "cost": 40000,
+      "ma": 4,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 9,
+      "skills": [
+        "Eye Gouge",
+        "Regeneration",
+        "Unsteady"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWVQ9BFBJHW63HSTCDCRJ",
+      "number": 9,
+      "name": "Player 9",
+      "position": "Skeleton Lineman (Human, Lineman, Skeleton, Undead)",
+      "rookieSeason": 1,
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 8,
+      "skills": [
+        "Regeneration",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VWW4BQH476EV0K3W40JQN",
+      "number": 10,
+      "name": "Player 10",
+      "position": "Skeleton Lineman (Human, Lineman, Skeleton, Undead)",
+      "rookieSeason": 1,
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 8,
+      "skills": [
+        "Regeneration",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VXMRHBYAJGHRDRG9H875A",
+      "number": 11,
+      "name": "Player 11",
+      "position": "Mummy (Big Guy, Blocker, Human, Undead)",
+      "rookieSeason": 1,
+      "cost": 125000,
+      "ma": 3,
+      "st": 5,
+      "ag": 5,
+      "pa": 6,
+      "av": 10,
+      "skills": [
+        "Mighty Blow",
+        "Regeneration"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VYQRNHSPEJDX0S6S3TD80",
+      "number": 12,
+      "name": "Player",
+      "position": "Skeleton Lineman (Human, Lineman, Skeleton, Undead)",
+      "rookieSeason": 1,
+      "cost": 40000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 6,
+      "av": 8,
+      "skills": [
+        "Regeneration",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "D",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#ba00c7",
+    "secondary": "#aabf40"
+  },
+  "treasury": 0,
+  "rerolls": 2,
+  "apothecary": false,
+  "assistantCoaches": 2,
+  "cheerleaders": 2,
+  "dedicatedFans": 1,
+  "teamValue": 1000000
+}
