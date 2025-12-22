@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KD1W2R67R6RWPK288143T3F1",
+  "leagueId": "01KD1V23F0XJ2V1S3Q401KEMNK",
+  "round": 3,
+  "home": {
+    "name": "Black Orcs",
+    "score": 2,
+    "tv": 1000000,
+    "inducements": {},
+    "winnings": 45,
+    "winningsGp": 45000,
+    "fanFactorChange": 1,
+    "dedicatedFansDelta": 1,
+    "mvp": "Player 2",
+    "stats": [
+      {
+        "name": "Player 3",
+        "number": 3,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 5",
+        "number": 5,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 6",
+        "number": 6,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 8",
+        "number": 8,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 1,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 9",
+        "number": 9,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KD1VGVY2T4N3ADXMA01YVBTR",
+      "name": "Black Orcs",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c20000"
+      },
+      "race": "Black Orc",
+      "result": "win",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 20000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 45000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 2,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2,
+          4,
+          3,
+          5
+        ],
+        "rollD6": 2
+      },
+      "staffBase": {
+        "assistantCoaches": 2,
+        "cheerleaders": 1,
+        "apothecary": false,
+        "rerolls": 3,
+        "race": "Black Orc"
+      },
+      "staffDesired": {
+        "assistantCoaches": 2,
+        "cheerleaders": 1,
+        "apothecary": true,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "Elven Union",
+    "score": 0,
+    "tv": 995000,
+    "inducements": {},
+    "winnings": 25,
+    "winningsGp": 25000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Player 3",
+    "stats": [
+      {
+        "name": "Player 2",
+        "number": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 5",
+        "number": 5,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 1,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 6",
+        "number": 6,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 1,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 8",
+        "number": 8,
+        "live": {
+          "used": true,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 1
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KD1VQ3GZEYM1M97ESPGPYT4G",
+      "name": "Elven Union",
+      "colors": {
+        "primary": "#00adab",
+        "secondary": "#707070"
+      },
+      "race": "Elven Union",
+      "result": "loss",
+      "dedicatedFansBefore": 2,
+      "treasuryBeforeGp": 30000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 25000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 3,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "rollD6": 3
+      },
+      "staffBase": {
+        "assistantCoaches": 2,
+        "cheerleaders": 2,
+        "apothecary": false,
+        "rerolls": 1,
+        "race": "Elven Union"
+      },
+      "staffDesired": {
+        "assistantCoaches": 2,
+        "cheerleaders": 2,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  }
+}
