@@ -163,7 +163,7 @@
       "round": 5,
       "homeTeamId": "01KD1VGVY2T4N3ADXMA01YVBTR",
       "awayTeamId": "01KD1VQ3GZEYM1M97ESPGPYT4G",
-      "status": "in_progress",
+      "status": "completed",
       "date": "2025-12-22",
       "type": "playoff",
       "playoff": {
@@ -171,7 +171,17 @@
         "bracketSize": 4,
         "seedHome": 2,
         "seedAway": 3
-      }
+      },
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "casualties": {
+        "homeInflicted": 0,
+        "awayInflicted": 0
+      },
+      "hasReport": true,
+      "reportId": "01KD1X5W05B901G9Q8XJECVF7B"
     }
   ],
   "playoffs": {
