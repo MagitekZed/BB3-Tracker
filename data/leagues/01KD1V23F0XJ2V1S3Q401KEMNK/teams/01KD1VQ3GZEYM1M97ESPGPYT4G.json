@@ -1200,7 +1200,7 @@
     "primary": "#00adab",
     "secondary": "#707070"
   },
-  "treasury": 55000,
+  "treasury": 50000,
   "rerolls": 1,
   "apothecary": false,
   "assistantCoaches": 2,
