@@ -1888,13 +1888,22 @@
         "tvGp": 20000,
         "sppCost": 3
       }
+    },
+    {
+      "id": "01KD1ZBZ42BFNNJVZ2MPANKJFM",
+      "at": "2025-12-22T02:49:13.088Z",
+      "type": "league",
+      "label": "Glittering Prize: 2nd place (+60k)",
+      "delta": {
+        "treasuryGp": 60000
+      }
     }
   ],
   "colors": {
     "primary": "#222222",
     "secondary": "#c20000"
   },
-  "treasury": 65000,
+  "treasury": 125000,
   "rerolls": 3,
   "apothecary": true,
   "assistantCoaches": 2,
