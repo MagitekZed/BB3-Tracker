@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KD1X5W05B901G9Q8XJECVF7B",
+  "leagueId": "01KD1V23F0XJ2V1S3Q401KEMNK",
+  "round": 5,
+  "home": {
+    "name": "Black Orcs",
+    "score": 2,
+    "tv": 1110000,
+    "inducements": {},
+    "winnings": 50,
+    "winningsGp": 50000,
+    "fanFactorChange": 1,
+    "dedicatedFansDelta": 1,
+    "mvp": "Player 1",
+    "stats": [
+      {
+        "name": "Player 1",
+        "number": 1,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 7",
+        "number": 7,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KD1VGVY2T4N3ADXMA01YVBTR",
+      "name": "Black Orcs",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c20000"
+      },
+      "race": "Black Orc",
+      "result": "win",
+      "dedicatedFansBefore": 2,
+      "treasuryBeforeGp": 15000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 50000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 4,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 2,
+        "cheerleaders": 1,
+        "apothecary": true,
+        "rerolls": 3,
+        "race": "Black Orc"
+      },
+      "staffDesired": {
+        "assistantCoaches": 2,
+        "cheerleaders": 1,
+        "apothecary": true,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "Elven Union",
+    "score": 1,
+    "tv": 1015000,
+    "inducements": {
+      "Bribes": 1
+    },
+    "winnings": 40,
+    "winningsGp": 40000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Player 2",
+    "stats": [
+      {
+        "name": "Player 5",
+        "number": 5,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 10",
+        "number": 10,
+        "live": {
+          "used": true,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 1
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KD1VQ3GZEYM1M97ESPGPYT4G",
+      "name": "Elven Union",
+      "colors": {
+        "primary": "#00adab",
+        "secondary": "#707070"
+      },
+      "race": "Elven Union",
+      "result": "loss",
+      "dedicatedFansBefore": 2,
+      "treasuryBeforeGp": 50000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 40000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 3,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          1,
+          0,
+          2,
+          3,
+          4,
+          5
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 2,
+        "cheerleaders": 2,
+        "apothecary": false,
+        "rerolls": 1,
+        "race": "Elven Union"
+      },
+      "staffDesired": {
+        "assistantCoaches": 2,
+        "cheerleaders": 2,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  }
+}
