@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KD1X5W02G57AG228VJY2V648",
+  "leagueId": "01KD1V23F0XJ2V1S3Q401KEMNK",
+  "round": 5,
+  "home": {
+    "name": "Amazons",
+    "score": 1,
+    "tv": 1040000,
+    "inducements": {},
+    "winnings": 40,
+    "winningsGp": 40000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Player 1",
+    "stats": [
+      {
+        "name": "Player 1",
+        "number": 1,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KD1V6FTXW8G8CMK9AJ1S08W5",
+      "name": "Amazons",
+      "colors": {
+        "primary": "#00b81f",
+        "secondary": "#c5a059"
+      },
+      "race": "Amazon",
+      "result": "win",
+      "dedicatedFansBefore": 3,
+      "treasuryBeforeGp": 85000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 40000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 2,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 1,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 3,
+        "race": "Amazon"
+      },
+      "staffDesired": {
+        "assistantCoaches": 1,
+        "cheerleaders": 0,
+        "apothecary": true,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "Shambling Undead",
+    "score": 0,
+    "tv": 960000,
+    "inducements": {
+      "Star: Skrull Halfheight": 0,
+      "Blitzer's Best Kegs": 1,
+      "Team Mascot": 1
+    },
+    "winnings": 30,
+    "winningsGp": 30000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Player 11",
+    "stats": [],
+    "postGame": {
+      "teamId": "01KD1VW0RZDNWP87DPKZZP4MDZ",
+      "name": "Shambling Undead",
+      "colors": {
+        "primary": "#ba00c7",
+        "secondary": "#aabf40"
+      },
+      "race": "Shambling Undead",
+      "result": "loss",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 65000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 30000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 4,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          1,
+          4,
+          5,
+          2,
+          7,
+          9
+        ],
+        "rollD6": 6
+      },
+      "staffBase": {
+        "assistantCoaches": 2,
+        "cheerleaders": 2,
+        "apothecary": false,
+        "rerolls": 2,
+        "race": "Shambling Undead"
+      },
+      "staffDesired": {
+        "assistantCoaches": 2,
+        "cheerleaders": 2,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  }
+}
