@@ -353,7 +353,7 @@
     "rerolls": 3,
     "apothecary": true,
     "inducements": {
-      "Wandering Apothecary": 1
+      "Wandering Apothecary": 0
     },
     "ctv": 1090000,
     "tv": 1090000
