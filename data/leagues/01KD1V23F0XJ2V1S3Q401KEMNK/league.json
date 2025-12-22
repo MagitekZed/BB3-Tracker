@@ -61,8 +61,18 @@
       "round": 1,
       "homeTeamId": "01KD1V6FTXW8G8CMK9AJ1S08W5",
       "awayTeamId": "01KD1VGVY2T4N3ADXMA01YVBTR",
-      "status": "in_progress",
-      "date": "2025-12-22"
+      "status": "completed",
+      "date": "2025-12-22",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "casualties": {
+        "homeInflicted": 0,
+        "awayInflicted": 1
+      },
+      "hasReport": true,
+      "reportId": "01KD1W003YBWVTN433S28Q5ZVR"
     },
     {
       "id": "01KD1W059WZCNNJXF3SPHC9F4W",
