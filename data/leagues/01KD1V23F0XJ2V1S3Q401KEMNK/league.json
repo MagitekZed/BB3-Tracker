@@ -72,6 +72,15 @@
       "awayTeamId": "01KD1VW0RZDNWP87DPKZZP4MDZ",
       "status": "scheduled",
       "date": "2025-12-22"
+    },
+    {
+      "id": "01KD1W2R67R6RWPK288143T3F1",
+      "season": 1,
+      "round": 3,
+      "homeTeamId": "01KD1VGVY2T4N3ADXMA01YVBTR",
+      "awayTeamId": "01KD1VQ3GZEYM1M97ESPGPYT4G",
+      "status": "scheduled",
+      "date": "2025-12-22"
     }
   ]
 }
