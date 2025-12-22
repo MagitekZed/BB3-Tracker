@@ -2142,7 +2142,6 @@ export function renderTeamEditor() {
       <div class="form-field"><label>Name</label><input type="text" value="${t.name}" id="teamEditNameInput"></div>
       <div class="form-field"><label>Coach</label><input type="text" value="${t.coachName}" onchange="state.dirtyTeam.coachName = this.value"></div>
       <div class="form-field"><label>Race</label><select onchange="window.changeTeamRace(this.value)">${raceOpts}</select></div>
-      <div class="form-field"><label>File ID</label><input type="text" value="${t.id}" readonly class="faded" placeholder="Auto-generated"></div>
     </div>
     
     <div class="form-grid" style="margin-top:1rem; padding:1rem; background:#f4f4f4; border-radius:4px;">

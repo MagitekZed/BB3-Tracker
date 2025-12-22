@@ -58,6 +58,60 @@ export function computeStandings(league) {
   return computeSeasonStats(league);
 }
 
+export function validateTeam(team, league, { context = 'inLeague', gameData = state.gameData } = {}) {
+  const t = team || null;
+  const gd = gameData || null;
+  const violations = [];
+
+  const add = (code, message, severity = 'warning', meta = null) => {
+    violations.push({ code, message, severity, ...(meta || {}) });
+  };
+
+  if (!t) {
+    add('TEAM_MISSING', 'Team data is missing.', 'error');
+    return violations;
+  }
+
+  const teamName = String(t.name || '').trim();
+  if (!t.id) add('TEAM_ID_MISSING', 'Team is missing an internal ID.', 'error');
+  if (!teamName) add('TEAM_NAME_MISSING', 'Team name is required.', 'warning');
+
+  const raceName = String(t.race || '').trim();
+  const raceDef = gd?.races?.find(r => r.name === raceName) || null;
+  if (!raceName) add('TEAM_RACE_MISSING', 'Team race is required.', 'warning');
+  else if (!raceDef) add('TEAM_RACE_UNKNOWN', `Unknown race "${raceName}".`, 'warning');
+
+  if (!Array.isArray(t.players)) {
+    add('TEAM_PLAYERS_INVALID', 'Team players list is missing or invalid.', 'error');
+    return violations;
+  }
+
+  const allowedPositions = new Set((raceDef?.positionals || []).map(p => p.name));
+
+  const seenNumbers = new Set();
+  const dupNumbers = new Set();
+
+  for (const p of t.players) {
+    if (!p?.id) add('PLAYER_ID_MISSING', 'A player is missing an internal ID.', 'error', { playerNumber: p?.number ?? null, playerName: p?.name ?? null });
+
+    const num = Number(p?.number);
+    if (Number.isFinite(num) && num > 0) {
+      if (seenNumbers.has(num)) dupNumbers.add(num);
+      else seenNumbers.add(num);
+    }
+
+    if (raceDef && p?.position && !allowedPositions.has(p.position)) {
+      add('PLAYER_POSITION_UNKNOWN', `Unknown position "${p.position}" for race "${raceName}".`, 'warning', { playerNumber: p?.number ?? null, playerName: p?.name ?? null });
+    }
+  }
+
+  if (dupNumbers.size > 0) {
+    add('DUPLICATE_PLAYER_NUMBERS', `Duplicate player numbers: ${[...dupNumbers].sort((a, b) => a - b).join(', ')}`, 'warning');
+  }
+
+  return violations;
+}
+
 // ==============================
 // BB2025 League Play Helpers
 // ==============================
