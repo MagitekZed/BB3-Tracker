@@ -1778,17 +1778,37 @@
         "tvGp": 20000,
         "sppCost": 3
       }
+    },
+    {
+      "id": "01KD1ZBZ411A2BW34W7EF48KP4",
+      "at": "2025-12-22T02:49:13.088Z",
+      "type": "league",
+      "label": "Glittering Prize: 1st place (+100k)",
+      "delta": {
+        "treasuryGp": 100000
+      }
+    },
+    {
+      "id": "01KD1ZBZ43PVME959443F47ERG",
+      "at": "2025-12-22T02:49:13.088Z",
+      "type": "league",
+      "label": "League Trophy: +1 Team Re-roll for Season 2",
+      "delta": {
+        "treasuryGp": 0,
+        "tvGp": 60000
+      }
     }
   ],
   "colors": {
     "primary": "#00b81f",
     "secondary": "#c5a059"
   },
-  "treasury": 95000,
+  "treasury": 195000,
   "rerolls": 3,
   "apothecary": true,
   "assistantCoaches": 1,
   "cheerleaders": 1,
   "dedicatedFans": 4,
-  "teamValue": 1100000
+  "teamValue": 1100000,
+  "trophyRerollSeason": 2
 }
