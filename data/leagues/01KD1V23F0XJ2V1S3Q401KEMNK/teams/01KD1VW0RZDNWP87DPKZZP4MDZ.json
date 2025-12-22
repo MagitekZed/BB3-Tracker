@@ -1459,12 +1459,22 @@
       }
     }
   ],
-  "transactions": [],
+  "transactions": [
+    {
+      "id": "01KD1ZBZ439H988Q63J81G00KY",
+      "at": "2025-12-22T02:49:13.088Z",
+      "type": "league",
+      "label": "Glittering Prize: 3rd place (+30k)",
+      "delta": {
+        "treasuryGp": 30000
+      }
+    }
+  ],
   "colors": {
     "primary": "#ba00c7",
     "secondary": "#aabf40"
   },
-  "treasury": 140000,
+  "treasury": 170000,
   "rerolls": 2,
   "apothecary": false,
   "assistantCoaches": 2,
