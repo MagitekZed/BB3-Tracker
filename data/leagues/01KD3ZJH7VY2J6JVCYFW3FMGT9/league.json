@@ -25,6 +25,16 @@
         "primary": "#222222",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "01KD3ZKF2SR4DJ6FP5DPPVTNZX",
+      "name": "New Team 2",
+      "race": "Imperial Nobility",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
     }
   ],
   "matches": []
