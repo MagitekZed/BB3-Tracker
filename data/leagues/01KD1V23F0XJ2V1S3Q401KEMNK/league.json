@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD1V23F0XJ2V1S3Q401KEMNK",
+  "slug": "new_test_league",
+  "name": "New Test League",
+  "season": 1,
+  "status": "upcoming",
+  "settings": {
+    "pointsWin": 3,
+    "pointsDraw": 1,
+    "pointsLoss": 0,
+    "maxTeams": 16,
+    "lockTeams": false
+  },
+  "teams": [
+    {
+      "id": "01KD1V6FTXW8G8CMK9AJ1S08W5",
+      "name": "Amazons",
+      "race": "Amazon",
+      "coachName": "Coach One",
+      "colors": {
+        "primary": "#00b81f",
+        "secondary": "#c5a059"
+      }
+    }
+  ],
+  "matches": []
+}
