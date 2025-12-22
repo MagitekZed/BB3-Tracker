@@ -61,7 +61,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 7,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -316,17 +316,286 @@
       "injuries": ""
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "01KD1W003YBWVTN433S28Q5ZVR",
+      "matchType": "regular",
+      "opponentName": "Black Orcs",
+      "result": "Win",
+      "score": "1-0",
+      "winningsK": 30,
+      "winningsGp": 30000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": 4,
+      "dedicatedFansDelta": 1,
+      "tv": 1000000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KD1V6XCQMH4EQ1X2EAZBY84R",
+          "name": "Player 1",
+          "number": 1,
+          "position": "Python Warrior (Human, Thrower)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V6YRV12PK2DHHS4WW7Z9N",
+          "name": "Player 2",
+          "number": 2,
+          "position": "Python Warrior (Human, Thrower)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 7,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KD1V77DXQJ3MFV4AWC29AVQF",
+          "name": "Player 3",
+          "number": 3,
+          "position": "Piranha Warrior (Blitzer, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V77SJHRY84WT58WSJ1WBX",
+          "name": "Player 4",
+          "number": 4,
+          "position": "Piranha Warrior (Blitzer, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V7839ZQ2B572GN2DKJ2E4",
+          "name": "Player 5",
+          "number": 5,
+          "position": "Jaguar Warrior (Blocker, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V78CGCGN2Q1QV6DQGZ9M2",
+          "name": "Player 6",
+          "number": 6,
+          "position": "Jaguar Warrior (Blocker, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V78MZK6TJQNJBA1SM0C1Q",
+          "name": "Player 7",
+          "number": 7,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V78WG2897BSXAGVB6AR3A",
+          "name": "Player 8",
+          "number": 8,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V794R4PZS7S4DFHYH1GPA",
+          "name": "Player 9",
+          "number": 9,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V79CPY6D3062T6P6X07FA",
+          "name": "Player 20",
+          "number": 10,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1V7BPF27AHY926KZFAB98S",
+          "name": "Player 11",
+          "number": 11,
+          "position": "Eagle Warrior (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 30000,
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": null,
+        "deltaGp": 0
+      }
+    }
+  ],
   "transactions": [],
   "colors": {
     "primary": "#00b81f",
     "secondary": "#c5a059"
   },
-  "treasury": 0,
+  "treasury": 30000,
   "rerolls": 3,
   "apothecary": false,
   "assistantCoaches": 1,
   "cheerleaders": 0,
-  "dedicatedFans": 1,
+  "dedicatedFans": 2,
   "teamValue": 1000000
 }
