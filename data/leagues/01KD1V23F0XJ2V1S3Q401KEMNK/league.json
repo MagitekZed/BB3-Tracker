@@ -32,6 +32,16 @@
         "primary": "#222222",
         "secondary": "#c20000"
       }
+    },
+    {
+      "id": "01KD1VQ3GZEYM1M97ESPGPYT4G",
+      "name": "Elven Union",
+      "race": "Elven Union",
+      "coachName": "Coach Three",
+      "colors": {
+        "primary": "#00adab",
+        "secondary": "#707070"
+      }
     }
   ],
   "matches": []
