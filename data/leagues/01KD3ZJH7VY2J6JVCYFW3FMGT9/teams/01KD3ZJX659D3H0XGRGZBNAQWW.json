@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD3ZJX659D3H0XGRGZBNAQWW",
+  "slug": "new_team",
+  "name": "New Team",
+  "race": "Black Orc",
+  "coachName": "",
+  "players": [
+    {
+      "id": "01KD3ZK41AQS1GZ5ZN65BGQZPX",
+      "number": 1,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZK4E2KPJSACZQ1V1PQP9N",
+      "number": 2,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZK4VPCBKNAJ1QQTSMNBZZ",
+      "number": 3,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZK579Z6BVN7FMXM7ZQKKY",
+      "number": 4,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZK5M5ZSRZ6W5D4SDR9HRS",
+      "number": 5,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZK6245R91JMAVTV61BR79",
+      "number": 6,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  },
+  "treasury": 730000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 270000
+}
