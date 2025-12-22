@@ -29,7 +29,7 @@
       "secondary": [
         "S"
       ],
-      "spp": 0,
+      "spp": 7,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -61,7 +61,7 @@
       "sppSpent": 0,
       "advancements": [],
       "injuries": "",
-      "mng": true
+      "mng": false
     },
     {
       "id": "01KD1VQRBSF3KMB4D4BFWJ7TFQ",
@@ -1135,6 +1135,274 @@
         "result": null,
         "deltaGp": 0
       }
+    },
+    {
+      "season": 1,
+      "round": 6,
+      "matchId": "01KD1Y0BTQQMBD88EEHRS98M9M",
+      "matchType": "playoff",
+      "opponentName": "Shambling Undead",
+      "result": "Loss",
+      "score": "1-2",
+      "winningsK": 35,
+      "winningsGp": 35000,
+      "dedicatedFansBefore": 2,
+      "dedicatedFansRollD6": 3,
+      "dedicatedFansDelta": 0,
+      "tv": 1005000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KD1VQQPMCF3C80KNT8EAKEGR",
+          "name": "Player 1",
+          "number": 1,
+          "position": "Thrower",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 7,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KD1VQRBSF3KMB4D4BFWJ7TFQ",
+          "name": "Player 3",
+          "number": 3,
+          "position": "Catcher",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VQRP7C9NH6V6712N1MADT",
+          "name": "Player 4",
+          "number": 4,
+          "position": "Catcher",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VQS16EMCNY1VE5ZVP1K8W",
+          "name": "Player 5",
+          "number": 5,
+          "position": "Blitzers",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VQSBZWRSTED3DCA63XNWY",
+          "name": "Player 6",
+          "number": 6,
+          "position": "Blitzers",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VQSP6TNA5BX8CCY6PBH4P",
+          "name": "Player 7",
+          "number": 7,
+          "position": "Linemen",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VQT017M3DVS2B8GBMC98X",
+          "name": "Player 8",
+          "number": 8,
+          "position": "Linemen",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": true,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VQTB7VEJG74DKWX1G14Y3",
+          "name": "Player 9",
+          "number": 9,
+          "position": "Linemen",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VQTPG2FBGQZQPWM628DWW",
+          "name": "Player 10",
+          "number": 10,
+          "position": "Linemen",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VR96VMW0AJ1NXWH7ERTJ6",
+          "name": "Player 11",
+          "number": 11,
+          "position": "Linemen",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1Z380ZMH5KB5Z5BXSQV36P",
+          "name": "Journeyman 1",
+          "number": 102,
+          "position": "Linemen",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 125000,
+        "rollD6": 3,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": "Crisis Averted",
+        "deltaGp": 0
+      }
     }
   ],
   "transactions": [
@@ -1471,7 +1739,7 @@
     "primary": "#00adab",
     "secondary": "#707070"
   },
-  "treasury": 90000,
+  "treasury": 125000,
   "rerolls": 1,
   "apothecary": false,
   "assistantCoaches": 2,
