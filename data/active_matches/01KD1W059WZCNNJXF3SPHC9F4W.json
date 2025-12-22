@@ -3,7 +3,7 @@
   "leagueId": "01KD1V23F0XJ2V1S3Q401KEMNK",
   "round": 2,
   "status": "in_progress",
-  "activeTeam": "home",
+  "activeTeam": "away",
   "pregame": {
     "ctv": {
       "home": 995000,
@@ -36,7 +36,7 @@
       "primary": "#00adab",
       "secondary": "#707070"
     },
-    "score": 0,
+    "score": 1,
     "roster": [
       {
         "playerId": "01KD1VQQPMCF3C80KNT8EAKEGR",
@@ -114,7 +114,7 @@
           "used": false,
           "injured": false,
           "sentOff": false,
-          "td": 0,
+          "td": 1,
           "cas": 0,
           "int": 0,
           "comp": 0,
@@ -713,7 +713,7 @@
   },
   "turn": {
     "home": 1,
-    "away": 1
+    "away": 0
   },
   "log": []
 }
