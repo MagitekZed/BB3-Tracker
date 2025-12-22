@@ -22,6 +22,16 @@
         "primary": "#00b81f",
         "secondary": "#c5a059"
       }
+    },
+    {
+      "id": "01KD1VGVY2T4N3ADXMA01YVBTR",
+      "name": "Black Orcs",
+      "race": "Black Orc",
+      "coachName": "Coach Two",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c20000"
+      }
     }
   ],
   "matches": []
