@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD3ZKF2SR4DJ6FP5DPPVTNZX",
+  "slug": "new_team_2",
+  "name": "New Team 2",
+  "race": "Imperial Nobility",
+  "coachName": "",
+  "players": [
+    {
+      "id": "01KD3ZKMJNP1YPVWFW8HM4ECE3",
+      "number": 1,
+      "name": "Player",
+      "position": "Imperial Retainer (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZKMXJNWRJZ1S0NNE2KCK8",
+      "number": 2,
+      "name": "Player",
+      "position": "Imperial Retainer (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZKN7V07JF2TS71GR2CHYK",
+      "number": 3,
+      "name": "Player",
+      "position": "Imperial Retainer (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZKNKK4ACE4VAZC9534W81",
+      "number": 4,
+      "name": "Player",
+      "position": "Imperial Retainer (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZKNY1638NS7PDWSE13HR7",
+      "number": 5,
+      "name": "Player",
+      "position": "Imperial Retainer (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZKQKGP9RPKHNJ32TY7J1R",
+      "number": 6,
+      "name": "Player",
+      "position": "Imperial Retainer (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Fend"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  },
+  "treasury": 730000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 270000
+}

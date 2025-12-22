@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD3ZM94X4T9K0051JDPD97PX",
+  "slug": "new_team_4",
+  "name": "New Team 4",
+  "race": "Human",
+  "coachName": "",
+  "players": [
+    {
+      "id": "01KD3ZMDV26QCCTVZ2WT6P6FC5",
+      "number": 1,
+      "name": "Player",
+      "position": "Human Lineman (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZME0M8F5M5CZTQRFAGVWD",
+      "number": 2,
+      "name": "Player",
+      "position": "Human Lineman (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZME4Q2BPZ0JR9Y30Z31ZC",
+      "number": 3,
+      "name": "Player",
+      "position": "Human Lineman (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZME9C6RSTG10PZPDYHTCX",
+      "number": 4,
+      "name": "Player",
+      "position": "Human Lineman (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZMEFC92BAD4R86GQXCDSC",
+      "number": 5,
+      "name": "Player",
+      "position": "Human Lineman (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD3ZMF08V1NY6HYH6TMWT6SD",
+      "number": 6,
+      "name": "Player",
+      "position": "Human Lineman (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  },
+  "treasury": 700000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 300000
+}
