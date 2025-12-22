@@ -298,7 +298,7 @@
         "D",
         "S"
       ],
-      "spp": 0,
+      "spp": 4,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -913,6 +913,278 @@
         "result": null,
         "deltaGp": 0
       }
+    },
+    {
+      "season": 1,
+      "round": 5,
+      "matchId": "01KD1X5W02G57AG228VJY2V648",
+      "matchType": "playoff",
+      "opponentName": "Amazons",
+      "result": "Loss",
+      "score": "0-1",
+      "winningsK": 30,
+      "winningsGp": 30000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": 4,
+      "dedicatedFansDelta": 0,
+      "tv": 960000,
+      "inducements": {
+        "Star: Skrull Halfheight": 0,
+        "Blitzer's Best Kegs": 1,
+        "Team Mascot": 1
+      },
+      "playerRecords": [
+        {
+          "playerId": "01KD1VWRPY7KWQVS4D89E2TPBQ",
+          "name": "Player 1",
+          "number": 1,
+          "position": "Mummy (Big Guy, Blocker, Human, Undead)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VWS38W71GBRXE2BWDCMPW",
+          "name": "Player 2",
+          "number": 2,
+          "position": "Wight Blitzer (Blitzer, Human, Skeleton, Undead)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VWSFF0W2ZZP85AWY5VGBG",
+          "name": "Player 3",
+          "number": 3,
+          "position": "Wight Blitzer (Blitzer, Human, Skeleton, Undead)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VWSTAH7J44RRE3HRD50GJ",
+          "name": "Player 4",
+          "number": 4,
+          "position": "Ghoul Runner (Ghoul, Runner, Undead)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VWT7WDBK979MGT43TAZR8",
+          "name": "Player 5",
+          "number": 5,
+          "position": "Ghoul Runner (Ghoul, Runner, Undead)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VWTKEN5ZTTRNP8X6QNKEQ",
+          "name": "Player 6",
+          "number": 6,
+          "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VWTZFV5ZG4JA7N8D07KZB",
+          "name": "Player 7",
+          "number": 7,
+          "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VWVB70FVZ22RXY2ECESN6",
+          "name": "Player 8",
+          "number": 8,
+          "position": "Zombie Lineman (Human, Lineman, Undead, Zombie)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VWVQ9BFBJHW63HSTCDCRJ",
+          "name": "Player 9",
+          "number": 9,
+          "position": "Skeleton Lineman (Human, Lineman, Skeleton, Undead)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD1VXMRHBYAJGHRDRG9H875A",
+          "name": "Player 11",
+          "number": 11,
+          "position": "Mummy (Big Guy, Blocker, Human, Undead)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KD1VYQRNHSPEJDX0S6S3TD80",
+          "name": "Player",
+          "number": 12,
+          "position": "Skeleton Lineman (Human, Lineman, Skeleton, Undead)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 95000,
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": null,
+        "deltaGp": 0
+      }
     }
   ],
   "transactions": [],
@@ -920,7 +1192,7 @@
     "primary": "#ba00c7",
     "secondary": "#aabf40"
   },
-  "treasury": 65000,
+  "treasury": 95000,
   "rerolls": 2,
   "apothecary": false,
   "assistantCoaches": 2,
