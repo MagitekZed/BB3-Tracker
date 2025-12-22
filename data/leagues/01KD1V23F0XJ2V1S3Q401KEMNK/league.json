@@ -42,6 +42,16 @@
         "primary": "#00adab",
         "secondary": "#707070"
       }
+    },
+    {
+      "id": "01KD1VW0RZDNWP87DPKZZP4MDZ",
+      "name": "Shambling Undead",
+      "race": "Shambling Undead",
+      "coachName": "",
+      "colors": {
+        "primary": "#ba00c7",
+        "secondary": "#aabf40"
+      }
     }
   ],
   "matches": []
