@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD1V6FTXW8G8CMK9AJ1S08W5",
+  "slug": "amazons",
+  "name": "Amazons",
+  "race": "Amazon",
+  "coachName": "Coach One",
+  "players": [
+    {
+      "id": "01KD1V6XCQMH4EQ1X2EAZBY84R",
+      "number": 1,
+      "name": "Player 1",
+      "position": "Python Warrior (Human, Thrower)",
+      "rookieSeason": 1,
+      "cost": 80000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 3,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "On the Ball",
+        "Pass",
+        "Safe Pass"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V6YRV12PK2DHHS4WW7Z9N",
+      "number": 2,
+      "name": "Player 2",
+      "position": "Python Warrior (Human, Thrower)",
+      "rookieSeason": 1,
+      "cost": 80000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 3,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "On the Ball",
+        "Pass",
+        "Safe Pass"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V77DXQJ3MFV4AWC29AVQF",
+      "number": 3,
+      "name": "Player 3",
+      "position": "Piranha Warrior (Blitzer, Human)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 7,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Hit & Run",
+        "Jump Up"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V77SJHRY84WT58WSJ1WBX",
+      "number": 4,
+      "name": "Player 4",
+      "position": "Piranha Warrior (Blitzer, Human)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 7,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Hit & Run",
+        "Jump Up"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V7839ZQ2B572GN2DKJ2E4",
+      "number": 5,
+      "name": "Player 5",
+      "position": "Jaguar Warrior (Blocker, Human)",
+      "rookieSeason": 1,
+      "cost": 110000,
+      "ma": 6,
+      "st": 4,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [
+        "Defensive",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V78CGCGN2Q1QV6DQGZ9M2",
+      "number": 6,
+      "name": "Player 6",
+      "position": "Jaguar Warrior (Blocker, Human)",
+      "rookieSeason": 1,
+      "cost": 110000,
+      "ma": 6,
+      "st": 4,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [
+        "Defensive",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V78MZK6TJQNJBA1SM0C1Q",
+      "number": 7,
+      "name": "Player 7",
+      "position": "Eagle Warrior (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V78WG2897BSXAGVB6AR3A",
+      "number": 8,
+      "name": "Player 8",
+      "position": "Eagle Warrior (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V794R4PZS7S4DFHYH1GPA",
+      "number": 9,
+      "name": "Player 9",
+      "position": "Eagle Warrior (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V79CPY6D3062T6P6X07FA",
+      "number": 10,
+      "name": "Player 20",
+      "position": "Eagle Warrior (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1V7BPF27AHY926KZFAB98S",
+      "number": 11,
+      "name": "Player 11",
+      "position": "Eagle Warrior (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#00b81f",
+    "secondary": "#c5a059"
+  },
+  "treasury": 0,
+  "rerolls": 3,
+  "apothecary": false,
+  "assistantCoaches": 1,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 1000000
+}
