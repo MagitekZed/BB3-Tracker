@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KD1Y0BTQZQ8X3P2W87BTFRWH",
+  "leagueId": "01KD1V23F0XJ2V1S3Q401KEMNK",
+  "round": 6,
+  "home": {
+    "name": "Amazons",
+    "score": 2,
+    "tv": 1090000,
+    "inducements": {
+      "Wandering Apothecary": 0
+    },
+    "winnings": 60,
+    "winningsGp": 60000,
+    "fanFactorChange": 1,
+    "dedicatedFansDelta": 1,
+    "mvp": "Player 1",
+    "stats": [
+      {
+        "name": "Player 1",
+        "number": 1,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 2",
+        "number": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 5",
+        "number": 5,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 1,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 7",
+        "number": 7,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 1,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KD1V6FTXW8G8CMK9AJ1S08W5",
+      "name": "Amazons",
+      "colors": {
+        "primary": "#00b81f",
+        "secondary": "#c5a059"
+      },
+      "race": "Amazon",
+      "result": "win",
+      "dedicatedFansBefore": 3,
+      "treasuryBeforeGp": 45000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 60000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 4,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 1,
+        "cheerleaders": 0,
+        "apothecary": true,
+        "rerolls": 3,
+        "race": "Amazon"
+      },
+      "staffDesired": {
+        "assistantCoaches": 1,
+        "cheerleaders": 1,
+        "apothecary": true,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "Black Orcs",
+    "score": 1,
+    "tv": 1110000,
+    "inducements": {
+      "Bribes": 1
+    },
+    "winnings": 50,
+    "winningsGp": 50000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Player 2",
+    "stats": [
+      {
+        "name": "Player 1",
+        "number": 1,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 2",
+        "number": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player 7",
+        "number": 7,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KD1VGVY2T4N3ADXMA01YVBTR",
+      "name": "Black Orcs",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c20000"
+      },
+      "race": "Black Orc",
+      "result": "loss",
+      "dedicatedFansBefore": 3,
+      "treasuryBeforeGp": 15000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 50000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 6,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "rollD6": 2
+      },
+      "staffBase": {
+        "assistantCoaches": 2,
+        "cheerleaders": 1,
+        "apothecary": true,
+        "rerolls": 3,
+        "race": "Black Orc"
+      },
+      "staffDesired": {
+        "assistantCoaches": 2,
+        "cheerleaders": 1,
+        "apothecary": true,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  }
+}
