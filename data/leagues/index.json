@@ -4,5 +4,11 @@
     "name": "New Test League",
     "season": 1,
     "status": "offseason"
+  },
+  {
+    "id": "01KD3ZJH7VY2J6JVCYFW3FMGT9",
+    "name": "Test League 2",
+    "season": 1,
+    "status": "upcoming"
   }
 ]
