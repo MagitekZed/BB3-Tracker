@@ -424,7 +424,7 @@
           "injured": false,
           "sentOff": false,
           "td": 0,
-          "cas": 0,
+          "cas": 1,
           "int": 0,
           "comp": 0,
           "ttmThrow": 0,
