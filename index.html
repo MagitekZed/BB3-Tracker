@@ -105,12 +105,19 @@
             <div class="form-field"><label>Draw Pts</label><input id="leagueManagePointsDrawInput" type="number"></div>
             <div class="form-field"><label>Loss Pts</label><input id="leagueManagePointsLossInput" type="number"></div>
             <div class="form-field"><label>Max Teams</label><input id="leagueManageMaxTeamsInput" type="number"></div>
+            <div class="form-field"><label>Starting Budget</label><input id="leagueManageStartingBudgetInput" type="number" placeholder="1000000"></div>
          </div>
          <div style="margin-top:1rem"><label><input id="leagueManageLockTeamsInput" type="checkbox"> Lock Teams</label></div>
        </div>
        <div id="leagueTeamsCard" class="card"><div id="leagueManageTeamsList"></div><button id="leagueManageAddNewTeamBtn">+ Team</button></div>
        <div id="teamEditorCard" class="card"><div id="leagueManageTeamEditor"></div></div>
-       <div class="card"><button id="leagueManageSaveBtn" class="primary-btn">Save Changes</button><div id="deleteLeagueContainer"></div></div>
+       <div class="card">
+         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+           <button id="leagueManageSaveBtn" class="primary-btn">Save Changes</button>
+           <button id="leagueManageSaveReturnBtn" class="primary-btn hidden">Save &amp; Return</button>
+         </div>
+         <div id="deleteLeagueContainer"></div>
+       </div>
     </section>
 
     <section id="teamViewSection" class="hidden">

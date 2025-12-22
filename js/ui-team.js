@@ -2,7 +2,7 @@ import { state, els } from './state.js';
 import { PATHS } from './config.js';
 import { apiGet, apiSave, apiDelete } from './api.js';
 import { setStatus, normalizeName, getContrastColor, applyTeamTheme, ulid } from './utils.js';
-import { calculateTeamValue, calculateCurrentTeamValue, computeSeasonStats, isPlayerAvailableForMatch, getBb2025AdvancementCost, applyBb2025SkillAdvancement, applyBb2025CharacteristicIncrease } from './rules.js';
+import { calculateTeamValue, calculateCurrentTeamValue, computeSeasonStats, isPlayerAvailableForMatch, validateTeam, getBb2025AdvancementCost, applyBb2025SkillAdvancement, applyBb2025CharacteristicIncrease } from './rules.js';
 import { showSection, updateBreadcrumbs, goHome, showSkill, confirmModal } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, renderManageForm } from './ui-league.js';
 
@@ -2103,6 +2103,7 @@ export async function handleEditTeam(teamId) {
 
 function createEmptyTeam(id) {
   const defaultRace = state.gameData?.races?.[0]?.name || 'Human';
+  const startingBudgetGp = Number(state.dirtyLeague?.rules?.startingBudget ?? 1000000);
   return { 
     schemaVersion: 1,
     id,
@@ -2114,7 +2115,7 @@ function createEmptyTeam(id) {
     history: [],
     transactions: [],
     colors: { primary: '#222222', secondary: '#c5a059' },
-    treasury: 1000000, rerolls: 0, apothecary: false, assistantCoaches: 0, cheerleaders: 0, dedicatedFans: 1
+    treasury: Number.isFinite(startingBudgetGp) ? startingBudgetGp : 1000000, rerolls: 0, apothecary: false, assistantCoaches: 0, cheerleaders: 0, dedicatedFans: 1
   };
 }
 
@@ -2123,6 +2124,28 @@ export function updateLiveTV() {
   if(tvDisplay && state.dirtyTeam) {
     const val = calculateTeamValue(state.dirtyTeam);
     tvDisplay.textContent = `Calculated TV: ${(val/1000)}k`;
+
+    const l = state.dirtyLeague;
+    const isTeamCreation = state.editorReturnPath === 'leagueManage' && (l?.status === 'upcoming');
+    if (isTeamCreation) {
+      const startingBudgetGp = Number(l?.rules?.startingBudget ?? 1000000);
+      if (Number.isFinite(startingBudgetGp) && startingBudgetGp > 0) {
+        const remainingGp = startingBudgetGp - val;
+        const startingTreasuryGp = Math.max(0, remainingGp);
+        state.dirtyTeam.treasury = startingTreasuryGp;
+
+        const treasuryInput = document.getElementById('teamEditTreasuryInput');
+        if (treasuryInput) treasuryInput.value = String(startingTreasuryGp);
+
+        const budgetInfo = document.getElementById('teamEditBudgetInfo');
+        if (budgetInfo) {
+          budgetInfo.textContent = remainingGp >= 0
+            ? `Starting budget: ${(startingBudgetGp/1000).toFixed(0)}k • Remaining: ${(remainingGp/1000).toFixed(0)}k`
+            : `Over budget by ${(Math.abs(remainingGp)/1000).toFixed(0)}k (budget ${(startingBudgetGp/1000).toFixed(0)}k)`;
+          budgetInfo.style.color = remainingGp >= 0 ? 'green' : 'var(--primary-red)';
+        }
+      }
+    }
   }
 }
 
@@ -2132,8 +2155,49 @@ export function renderTeamEditor() {
   const raceOpts = (state.gameData?.races || []).map(r => `<option value="${r.name}" ${t.race === r.name ? 'selected' : ''}>${r.name}</option>`).join('');
   const race = state.gameData?.races.find(r => r.name === t.race);
   const rrCost = race ? race.rerollCost : 50000;
+  const esc = (s) => String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  const l = state.dirtyLeague;
+  const isTeamCreation = state.editorReturnPath === 'leagueManage' && (l?.status === 'upcoming');
+  const startingBudgetGp = Number(l?.rules?.startingBudget ?? 1000000);
+  const tvGp = calculateTeamValue(t);
+
+  let budgetInfoText = '';
+  let budgetInfoColor = '';
+  if (isTeamCreation && Number.isFinite(startingBudgetGp) && startingBudgetGp > 0) {
+    const remainingGp = startingBudgetGp - tvGp;
+    const startingTreasuryGp = Math.max(0, remainingGp);
+    t.treasury = startingTreasuryGp;
+
+    budgetInfoText = remainingGp >= 0
+      ? `Starting budget: ${(startingBudgetGp/1000).toFixed(0)}k • Remaining: ${(remainingGp/1000).toFixed(0)}k`
+      : `Over budget by ${(Math.abs(remainingGp)/1000).toFixed(0)}k (budget ${(startingBudgetGp/1000).toFixed(0)}k)`;
+    budgetInfoColor = remainingGp >= 0 ? 'green' : 'var(--primary-red)';
+  }
+
+  const teamViolations = validateTeam(t, l, { context: isTeamCreation ? 'teamCreation' : 'inLeague' })
+    .filter(v => ['POSITIONAL_MAX_EXCEEDED', 'TEAM_OVER_STARTING_BUDGET'].includes(v.code));
+  const warningsHtml = teamViolations.length
+    ? `
+      <div style="margin-top:0.75rem; padding:0.75rem; background:#fff0f0; border-left:6px solid var(--primary-red); border-radius:4px;">
+        <div style="font-weight:800; margin-bottom:0.25rem; text-transform:uppercase; letter-spacing:0.03em;">Rule warnings</div>
+        <ul style="margin:0 0 0 1.2rem; padding:0;">
+          ${teamViolations.map(v => `<li>${esc(v.message)}</li>`).join('')}
+        </ul>
+      </div>
+    `
+    : '';
   
   if (!t.colors) t.colors = { primary: '#222222', secondary: '#c5a059' };
+
+  const treasuryField = isTeamCreation
+    ? `<input id="teamEditTreasuryInput" type="number" value="${t.treasury || 0}" readonly class="faded">`
+    : `<input id="teamEditTreasuryInput" type="number" value="${t.treasury || 0}" onchange="state.dirtyTeam.treasury=parseInt(this.value)">`;
 
   els.containers.manageTeamEditor.innerHTML = `
     <h3>${state.editTeamId ? 'Edit Team' : 'Add New Team'}</h3>
@@ -2162,15 +2226,17 @@ export function renderTeamEditor() {
     <div class="card" style="margin-top:1rem;">
       <h4>Team Resources</h4>
       <div class="form-grid">
-        <div class="form-field"><label>Treasury</label><input type="number" value="${t.treasury||0}" onchange="state.dirtyTeam.treasury=parseInt(this.value)"></div>
+        <div class="form-field"><label>Treasury</label>${treasuryField}</div>
         <div class="form-field"><label>Rerolls (${Math.floor(rrCost/1000)}k)</label><input type="number" value="${t.rerolls||0}" oninput="state.dirtyTeam.rerolls=parseInt(this.value); window.updateLiveTV()"></div>
         <div class="form-field"><label>Fans</label><input type="number" value="${t.dedicatedFans||1}" onchange="state.dirtyTeam.dedicatedFans=parseInt(this.value)"></div>
         <div class="form-field"><label>Asst. Coaches (10k)</label><input type="number" value="${t.assistantCoaches||0}" oninput="state.dirtyTeam.assistantCoaches=parseInt(this.value); window.updateLiveTV()"></div>
         <div class="form-field"><label>Cheerleaders (10k)</label><input type="number" value="${t.cheerleaders||0}" oninput="state.dirtyTeam.cheerleaders=parseInt(this.value); window.updateLiveTV()"></div>
         <div class="form-field"><label>Apothecary (50k)</label><select oninput="state.dirtyTeam.apothecary=(this.value==='true'); window.updateLiveTV()"><option value="false" ${!t.apothecary?'selected':''}>No</option><option value="true" ${t.apothecary?'selected':''}>Yes</option></select></div>
       </div>
-      <div id="editorTvDisplay" style="margin-top:0.5rem; font-weight:bold; color:var(--primary-red); font-size:1.1rem;">Calculated TV: ${calculateTeamValue(t)/1000}k</div>
+      <div id="editorTvDisplay" style="margin-top:0.5rem; font-weight:bold; color:var(--primary-red); font-size:1.1rem;">Calculated TV: ${tvGp/1000}k</div>
+      <div id="teamEditBudgetInfo" style="margin-top:0.25rem; font-weight:700; ${budgetInfoColor ? `color:${budgetInfoColor};` : ''}">${budgetInfoText || ''}</div>
     </div>
+    ${warningsHtml}
     
     <h4>Roster</h4>
     <div class="manager-toolbar">
@@ -2317,7 +2383,7 @@ export async function handleDeleteTeam(teamId) {
   } catch(e) { setStatus(`Delete failed: ${e.message}`, 'error'); }
 }
 
-export async function saveTeam(key) {
+export async function saveTeam(key, { returnAfterSave = false } = {}) {
   const t = state.dirtyTeam;
   const l = state.dirtyLeague;
   
@@ -2352,7 +2418,7 @@ export async function saveTeam(key) {
               if(realInput) realInput.value = l.name;
               if(realId) realId.value = l.id;
               modal.remove();
-              saveTeam(key);
+              saveTeam(key, { returnAfterSave });
           }
       };
       return; 
@@ -2365,7 +2431,35 @@ export async function saveTeam(key) {
   }
   
   t.slug = t.slug || normalizeName(t.name);
-  t.teamValue = calculateTeamValue(t); 
+  const isTeamCreation = state.editorReturnPath === 'leagueManage' && (l?.status === 'upcoming');
+  t.teamValue = calculateTeamValue(t);
+
+  if (isTeamCreation) {
+    const startingBudgetGp = Number(l?.rules?.startingBudget ?? 1000000);
+    if (Number.isFinite(startingBudgetGp) && startingBudgetGp > 0) {
+      t.treasury = Math.max(0, startingBudgetGp - t.teamValue);
+    }
+  }
+
+  const violations = validateTeam(t, l, { context: isTeamCreation ? 'teamCreation' : 'inLeague' })
+    .filter(v => ['POSITIONAL_MAX_EXCEEDED', 'TEAM_OVER_STARTING_BUDGET'].includes(v.code));
+  if (violations.length) {
+    const esc = (s) => String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+    const html = `
+      <div style="margin-bottom:0.5rem;">The following items may violate league rules:</div>
+      <ul style="margin:0 0 0 1.2rem; padding:0;">
+        ${violations.map(v => `<li>${esc(v.message)}</li>`).join('')}
+      </ul>
+    `;
+    const ok = await confirmModal('Proceed with warnings?', html, 'Save Anyway', true, true);
+    if (!ok) return;
+  }
   await apiSave(PATHS.team(l.id, t.id), t, `Save team ${t.name}`, key);
   
   const existingIdx = l.teams.findIndex(x => x.id === t.id);
@@ -2384,4 +2478,10 @@ export async function saveTeam(key) {
   await apiSave(PATHS.league(l.id), l, `Update team list for ${t.name}`, key);
   
   setStatus('Team saved & League updated!', 'ok');
+
+  if (returnAfterSave && state.editorReturnPath === 'leagueManage') {
+    state.editMode = 'league';
+    state.editTeamId = null;
+    renderManageForm();
+  }
 }

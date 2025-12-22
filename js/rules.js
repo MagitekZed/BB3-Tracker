@@ -109,6 +109,45 @@ export function validateTeam(team, league, { context = 'inLeague', gameData = st
     add('DUPLICATE_PLAYER_NUMBERS', `Duplicate player numbers: ${[...dupNumbers].sort((a, b) => a - b).join(', ')}`, 'warning');
   }
 
+  if (raceDef) {
+    const positionCounts = new Map();
+    for (const p of t.players) {
+      const posName = String(p?.position || '').trim();
+      if (!posName) continue;
+      positionCounts.set(posName, (positionCounts.get(posName) || 0) + 1);
+    }
+
+    for (const pos of (raceDef.positionals || [])) {
+      const max = Number(pos?.qtyMax ?? pos?.max);
+      if (!Number.isFinite(max)) continue;
+      const count = positionCounts.get(pos.name) || 0;
+      if (count > max) {
+        add(
+          'POSITIONAL_MAX_EXCEEDED',
+          `Too many ${pos.name}: ${count} selected (max ${max}).`,
+          'warning',
+          { position: pos.name, count, max }
+        );
+      }
+    }
+  }
+
+  if (context === 'teamCreation') {
+    const startingBudgetGp = Number(league?.rules?.startingBudget ?? 1000000);
+    if (Number.isFinite(startingBudgetGp) && startingBudgetGp > 0) {
+      const tvGp = calculateTeamValue(t);
+      if (tvGp > startingBudgetGp) {
+        const overBy = tvGp - startingBudgetGp;
+        add(
+          'TEAM_OVER_STARTING_BUDGET',
+          `Team value ${(tvGp / 1000).toFixed(0)}k is over the starting budget ${(startingBudgetGp / 1000).toFixed(0)}k by ${(overBy / 1000).toFixed(0)}k.`,
+          'warning',
+          { teamValueGp: tvGp, startingBudgetGp, overByGp: overBy }
+        );
+      }
+    }
+  }
+
   return violations;
 }
 

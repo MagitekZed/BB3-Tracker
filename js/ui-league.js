@@ -1751,10 +1751,14 @@ export async function handleManageLeague(id) {
       season: 1,
       status: 'upcoming', 
       settings: { pointsWin: 3, pointsDraw: 1, pointsLoss: 0, maxTeams: 16, lockTeams: false }, 
+      rules: { startingBudget: 1000000 },
       teams: [], matches: [] 
     };
   }
   
+  if (!state.dirtyLeague.rules) state.dirtyLeague.rules = { startingBudget: 1000000 };
+  if (!Number.isFinite(Number(state.dirtyLeague.rules.startingBudget))) state.dirtyLeague.rules.startingBudget = 1000000;
+
   renderManageForm();
   showSection('manage');
   updateBreadcrumbs([
@@ -1768,6 +1772,24 @@ export function renderManageForm() {
   const l = state.dirtyLeague;
   const isNewLeague = !state.editLeagueId;
   
+  const saveBtn = els.buttons.manageSave;
+  const saveReturnBtn = els.buttons.manageSaveReturn;
+  if (saveBtn) saveBtn.textContent = (state.editMode === 'team') ? 'Save' : 'Save Changes';
+  if (saveReturnBtn) {
+    const showReturn = state.editMode === 'team' && state.editorReturnPath === 'leagueManage';
+    saveReturnBtn.classList.toggle('hidden', !showReturn);
+
+    if (showReturn) {
+      saveReturnBtn.textContent = 'Save & Return';
+      saveReturnBtn.classList.add('primary-btn');
+      saveBtn?.classList.remove('primary-btn');
+      saveBtn?.classList.add('secondary-btn');
+    } else {
+      saveBtn?.classList.add('primary-btn');
+      saveBtn?.classList.remove('secondary-btn');
+    }
+  }
+
   els.inputs.leagueId.value = l.id;
   if (isNewLeague) {
     els.inputs.leagueId.readOnly = true;
@@ -1789,6 +1811,13 @@ export function renderManageForm() {
   els.inputs.ptsDraw.value = l.settings.pointsDraw;
   els.inputs.ptsLoss.value = l.settings.pointsLoss;
   els.inputs.maxTeams.value = l.settings.maxTeams || 16;
+  if (els.inputs.startingBudget) {
+    els.inputs.startingBudget.value = l.rules?.startingBudget ?? 1000000;
+    els.inputs.startingBudget.oninput = function () {
+      l.rules = l.rules || { startingBudget: 1000000 };
+      l.rules.startingBudget = parseInt(this.value) || 1000000;
+    };
+  }
   if(els.inputs.lockTeams) els.inputs.lockTeams.checked = l.settings.lockTeams;
 
   if (state.editMode === 'team') {
@@ -1861,6 +1890,8 @@ export async function saveLeague(key) {
   l.settings.pointsLoss = parseInt(els.inputs.ptsLoss.value);
   l.settings.maxTeams = parseInt(els.inputs.maxTeams.value) || 16;
   l.settings.lockTeams = els.inputs.lockTeams.checked;
+  l.rules = l.rules || { startingBudget: 1000000 };
+  l.rules.startingBudget = parseInt(els.inputs.startingBudget?.value) || 1000000;
   
   await apiSave(PATHS.league(l.id), l, `Save league ${l.id}`, key);
   

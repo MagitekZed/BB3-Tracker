@@ -185,6 +185,7 @@ export const els = {
   buttons: {
     createLeague: document.getElementById('leagueCreateBtn'),
     manageSave: document.getElementById('leagueManageSaveBtn'),
+    manageSaveReturn: document.getElementById('leagueManageSaveReturnBtn'),
     manageAddTeam: document.getElementById('leagueManageAddNewTeamBtn'),
     manageBack: document.getElementById('leagueManageBackBtn'),
     teamManage: document.getElementById('teamManageBtn'),
@@ -214,6 +215,7 @@ export const els = {
     ptsDraw: document.getElementById('leagueManagePointsDrawInput'),
     ptsLoss: document.getElementById('leagueManagePointsLossInput'),
     maxTeams: document.getElementById('leagueManageMaxTeamsInput'),
+    startingBudget: document.getElementById('leagueManageStartingBudgetInput'),
     lockTeams: document.getElementById('leagueManageLockTeamsInput'),
     adminText: document.getElementById('leagueTextarea')
   },

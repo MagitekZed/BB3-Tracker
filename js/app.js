@@ -177,9 +177,17 @@ if(els.buttons.manageSave) els.buttons.manageSave.addEventListener('click', () =
     if (!key) return setStatus('Edit key required', 'error');
     
     if (state.editMode === 'team') {
-        saveTeam(key);
+        saveTeam(key, { returnAfterSave: false });
     } else {
         saveLeague(key);
+    }
+});
+if (els.buttons.manageSaveReturn) els.buttons.manageSaveReturn.addEventListener('click', () => {
+    const key = els.inputs.editKey.value;
+    if (!key) return setStatus('Edit key required', 'error');
+
+    if (state.editMode === 'team') {
+        saveTeam(key, { returnAfterSave: true });
     }
 });
 
