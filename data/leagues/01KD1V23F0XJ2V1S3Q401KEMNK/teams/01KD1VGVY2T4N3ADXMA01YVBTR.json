@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "id": "01KD1VGVY2T4N3ADXMA01YVBTR",
+  "slug": "black_orcs",
+  "name": "Black Orcs",
+  "race": "Black Orc",
+  "coachName": "Coach Two",
+  "players": [
+    {
+      "id": "01KD1VHB57Q0FJNPCQH9HBCAP5",
+      "number": 1,
+      "name": "Player",
+      "position": "Black Orc (Blocker, Orc)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 4,
+      "st": 4,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Brawler",
+        "Grab"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHBJGNNPJE6HHFREPA7RS",
+      "number": 2,
+      "name": "Player",
+      "position": "Black Orc (Blocker, Orc)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 4,
+      "st": 4,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Brawler",
+        "Grab"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHBY70HRK49ZT9GH9MYZW",
+      "number": 3,
+      "name": "Player",
+      "position": "Black Orc (Blocker, Orc)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 4,
+      "st": 4,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Brawler",
+        "Grab"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHC9JTWECT3DA5Q5FCCQR",
+      "number": 4,
+      "name": "Player",
+      "position": "Black Orc (Blocker, Orc)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 4,
+      "st": 4,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Brawler",
+        "Grab"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHCP03B262758RY8TZ2EQ",
+      "number": 5,
+      "name": "Player",
+      "position": "Trained Troll (Big Guy, Troll)",
+      "rookieSeason": 1,
+      "cost": 115000,
+      "ma": 4,
+      "st": 5,
+      "ag": 5,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Always Hungry",
+        "Mighty Blow",
+        "Projectile Vomit",
+        "Really Stupid",
+        "Regeneration",
+        "Throw Team-Mate"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHD17CMMQJA4X185JM5VD",
+      "number": 6,
+      "name": "Player",
+      "position": "Black Orc (Blocker, Orc)",
+      "rookieSeason": 1,
+      "cost": 90000,
+      "ma": 4,
+      "st": 4,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Brawler",
+        "Grab"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHDCZV235XSM68TTEC3H9",
+      "number": 7,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHDZXJRSKZNA607SWHMAN",
+      "number": 8,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHEG5G54DP01PK6ZJGD8J",
+      "number": 9,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHEZFEDSVQ6W2JZ7KZSAZ",
+      "number": 10,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KD1VHFJGA2BKQGH6998AYHEA",
+      "number": 11,
+      "name": "Player",
+      "position": "Goblin Bruiser (Goblin, Lineman)",
+      "rookieSeason": 1,
+      "cost": 45000,
+      "ma": 6,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty",
+        "Thick Skull"
+      ],
+      "primary": [
+        "A",
+        "D"
+      ],
+      "secondary": [
+        "G",
+        "P",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c20000"
+  },
+  "treasury": 0,
+  "rerolls": 3,
+  "apothecary": false,
+  "assistantCoaches": 2,
+  "cheerleaders": 1,
+  "dedicatedFans": 1,
+  "teamValue": 1000000
+}
