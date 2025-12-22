@@ -86,7 +86,7 @@
       "name": "Player 3",
       "position": "Black Orc (Blocker, Orc)",
       "rookieSeason": 1,
-      "cost": 90000,
+      "cost": 110000,
       "ma": 4,
       "st": 4,
       "ag": 4,
@@ -94,7 +94,8 @@
       "av": 10,
       "skills": [
         "Brawler",
-        "Grab"
+        "Grab",
+        "Diving Tackle"
       ],
       "primary": [
         "A",
@@ -105,9 +106,22 @@
         "P",
         "S"
       ],
-      "spp": 3,
-      "sppSpent": 0,
-      "advancements": [],
+      "spp": 0,
+      "sppSpent": 3,
+      "advancements": [
+        {
+          "id": "01KD1XFXR9VMDYQZDDZEN47VVF",
+          "at": "2025-12-22T02:16:25.609Z",
+          "sppCost": 3,
+          "valueIncreaseGp": 20000,
+          "kind": "randomPrimary",
+          "outcomeType": "skill",
+          "skillName": "Diving Tackle",
+          "categoryCode": "A",
+          "skillFrom": "primary",
+          "isElite": false
+        }
+      ],
       "injuries": ""
     },
     {
@@ -911,6 +925,18 @@
       "type": "advancement",
       "label": "Advancement: Player 2 +Sneaky Git",
       "playerId": "01KD1VHBJGNNPJE6HHFREPA7RS",
+      "delta": {
+        "tvGp": 20000,
+        "sppCost": 3
+      }
+    },
+    {
+      "id": "01KD1XFXR9X97PE4AHGMP2XJR4",
+      "at": "2025-12-22T02:16:25.609Z",
+      "season": 1,
+      "type": "advancement",
+      "label": "Advancement: Player 3 +Diving Tackle",
+      "playerId": "01KD1VHBY70HRK49ZT9GH9MYZW",
       "undoBefore": {
         "treasury": 15000,
         "rerolls": 3,
@@ -956,7 +982,7 @@
             "name": "Player 2",
             "position": "Black Orc (Blocker, Orc)",
             "rookieSeason": 1,
-            "cost": 90000,
+            "cost": 110000,
             "ma": 4,
             "st": 4,
             "ag": 4,
@@ -964,7 +990,8 @@
             "av": 10,
             "skills": [
               "Brawler",
-              "Grab"
+              "Grab",
+              "Sneaky Git"
             ],
             "primary": [
               "A",
@@ -975,9 +1002,22 @@
               "P",
               "S"
             ],
-            "spp": 4,
-            "sppSpent": 0,
-            "advancements": [],
+            "spp": 1,
+            "sppSpent": 3,
+            "advancements": [
+              {
+                "id": "01KD1XFB4PBN3R88RH2XRWN77T",
+                "at": "2025-12-22T02:16:06.550Z",
+                "sppCost": 3,
+                "valueIncreaseGp": 20000,
+                "kind": "randomPrimary",
+                "outcomeType": "skill",
+                "skillName": "Sneaky Git",
+                "categoryCode": "D",
+                "skillFrom": "primary",
+                "isElite": false
+              }
+            ],
             "injuries": ""
           },
           {
@@ -1282,5 +1322,5 @@
   "assistantCoaches": 2,
   "cheerleaders": 1,
   "dedicatedFans": 2,
-  "teamValue": 1070000
+  "teamValue": 1090000
 }
