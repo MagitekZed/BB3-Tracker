@@ -318,7 +318,7 @@
     "primary": "#00adab",
     "secondary": "#707070"
   },
-  "treasury": 5000,
+  "treasury": 0,
   "rerolls": 1,
   "apothecary": false,
   "assistantCoaches": 2,
