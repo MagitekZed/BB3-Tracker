@@ -3,7 +3,7 @@
   "leagueId": "01KD3ZJH7VY2J6JVCYFW3FMGT9",
   "round": 2,
   "status": "in_progress",
-  "activeTeam": "home",
+  "activeTeam": "away",
   "pregame": {
     "ctv": {
       "home": 495000,
@@ -53,7 +53,7 @@
         ],
         "cost": 45000,
         "live": {
-          "used": true,
+          "used": false,
           "injured": false,
           "sentOff": false,
           "td": 0,
@@ -709,7 +709,7 @@
     "tv": 550000
   },
   "turn": {
-    "home": 0,
+    "home": 1,
     "away": 0
   },
   "log": []
