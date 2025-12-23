@@ -53,7 +53,7 @@
         ],
         "cost": 45000,
         "live": {
-          "used": false,
+          "used": true,
           "injured": false,
           "sentOff": false,
           "td": 0,
