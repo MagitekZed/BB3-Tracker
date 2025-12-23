@@ -673,7 +673,12 @@ function renderRedraftTab({ team, season }) {
           <tr>
             <td data-label="Player">${escapeHtml(p.number ? `#${p.number} ` : '')}${escapeHtml(p.name || '-')}</td>
             <td data-label="Injury">${escapeHtml(code)}</td>
-            <td data-label="Roll"><input type="number" min="1" max="6" value="${escapeHtml(val)}" onchange='window.teamRedraftSetRecoveryRoll(${JSON.stringify(key)}, this.value)' style="width:80px;"></td>
+            <td data-label="Roll">
+              <div class="dice-input dice-input-compact">
+                <input type="number" min="1" max="6" value="${escapeHtml(val)}" onchange='window.teamRedraftSetRecoveryRoll(${JSON.stringify(key)}, this.value)' style="width:80px;">
+                <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">🎲</button>
+              </div>
+            </td>
             <td data-label="Target" class="small" style="color:#666;">4+${mod ? ` (with +${mod})` : ''}</td>
           </tr>
         `;
@@ -703,7 +708,7 @@ function renderRedraftTab({ team, season }) {
             </table>
           </div>
         ` : `<div class="small" style="color:#666;">No TR characteristic reductions to roll for.</div>`}
-        <div class="small" style="color:#666; margin-top:0.5rem;">Enter the D6 results; the app does not roll dice.</div>
+        <div class="small" style="color:#666; margin-top:0.5rem;">Enter the D6 results (or tap 🎲 to fill a roll).</div>
       </div>
 
       <div class="modal-actions" style="margin-top:0.75rem; justify-content:space-between;">
@@ -1665,7 +1670,10 @@ function renderDevelopmentCard({ team, player, race }) {
     <div class="form-grid" style="margin-top:0.5rem;">
       <div class="form-field">
         <label>D8 Roll</label>
-        <input type="number" min="1" max="8" value="${roll}" onchange="window.teamDevUpdate('${player.id}', 'rollD8', (this.value===''?null:parseInt(this.value)))" />
+        <div class="dice-input">
+          <input type="number" min="1" max="8" value="${roll}" onchange="window.teamDevUpdate('${player.id}', 'rollD8', (this.value===''?null:parseInt(this.value)))" />
+          <button type="button" class="dice-btn" title="Roll D8" aria-label="Roll D8" onclick="window.rollDiceIntoInput(this, 8)">🎲</button>
+        </div>
       </div>
       <div class="form-field">
         <label>Outcome</label>

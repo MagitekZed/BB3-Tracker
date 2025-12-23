@@ -5,6 +5,7 @@ import { setStatus, getContrastColor, applyTeamTheme, ulid } from './utils.js';
 import { showSection, updateBreadcrumbs, setActiveNav, goHome, showSkill, confirmModal, showInfoModal, scrollModalBodyTop } from './ui-core.js';
 import { handleOpenLeague } from './ui-league.js';
 import { calculateTeamValue, calculateCurrentTeamValue, isPlayerAvailableForMatch, computeBb2025WinningsGp, computeBb2025DedicatedFansDelta, computeBb2025SppGain, getBb2025AdvancementCost, applyBb2025SkillAdvancement, applyBb2025CharacteristicIncrease, getBb2025ValueIncreaseGp, getAdvancementCount } from './rules.js';
+import { randomIntInclusive, rollDie } from './rng.js';
 
 // --- Scheduling ---
 
@@ -61,7 +62,7 @@ export async function handleScheduleMatch() {
 function shuffleArray(arr) {
   const out = [...arr];
   for (let i = out.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = randomIntInclusive(0, i);
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
@@ -793,7 +794,7 @@ export async function confirmMatchStart() {
     const ok = await confirmModal('Proceed with warnings?', html, 'Proceed Anyway', true, true);
     if (!ok) return;
   }
-  runCoinFlip(state.setupMatch.homeTeam.name, state.setupMatch.awayTeam.name, (winnerSide) => { finalizeMatchStart(winnerSide); });
+  runCoinFlip(state.setupMatch.homeTeam, state.setupMatch.awayTeam, (winnerSide) => { finalizeMatchStart(winnerSide); });
 }
 
 function validatePreMatchSetup() {
@@ -873,23 +874,88 @@ function validatePreMatchSetup() {
   return { warnings, errors };
 }
 
-function runCoinFlip(homeName, awayName, callback) {
-    const winnerSide = Math.random() > 0.5 ? 'home' : 'away';
-    const winnerName = winnerSide === 'home' ? homeName : awayName;
-    const modal = document.createElement('div');
-    modal.className = 'modal'; modal.style.display = 'flex'; modal.style.zIndex = '3000'; 
-    modal.innerHTML = `<div class="modal-content" style="text-align:center;"><h3>Coin Toss</h3><div class="coin-scene"><div class="coin" id="coinEl"><div class="coin-face front">${homeName.charAt(0).toUpperCase()}</div><div class="coin-face back">${awayName.charAt(0).toUpperCase()}</div></div></div><div id="coinResult" style="opacity:0; transition: opacity 1s; font-size:1.2rem; margin-top:1rem;"><strong>${winnerName}</strong> wins the toss!</div><div class="modal-actions" style="justify-content:center; margin-top:2rem;"><button id="coinContinueBtn" class="primary-btn" style="opacity:0; pointer-events:none;">Start Match</button></div></div>`;
-    document.body.appendChild(modal);
+function runCoinFlip(homeTeam, awayTeam, callback) {
+  const homeName = String(homeTeam?.name || 'Home');
+  const awayName = String(awayTeam?.name || 'Away');
+
+  const winnerSide = rollDie(2) === 1 ? 'home' : 'away';
+  const winnerName = winnerSide === 'home' ? homeName : awayName;
+
+  const homeColor = String(homeTeam?.colors?.primary || '#b00020');
+  const awayColor = String(awayTeam?.colors?.primary || '#1d4ed8');
+  const homeText = getContrastColor(homeColor);
+  const awayText = getContrastColor(awayColor);
+  const homeInitial = (homeName.trim().charAt(0) || 'H').toUpperCase();
+  const awayInitial = (awayName.trim().charAt(0) || 'A').toUpperCase();
+
+  const hiddenModals = [];
+  document.querySelectorAll('.modal').forEach(existing => {
+    if (!existing?.isConnected) return;
+    if (existing.classList.contains('hidden')) return;
+    if (getComputedStyle(existing).display === 'none') return;
+    hiddenModals.push({ el: existing, prevDisplay: existing.style.display });
+    existing.style.display = 'none';
+  });
+
+  const restoreHidden = () => {
+    hiddenModals.forEach(({ el, prevDisplay }) => {
+      if (!el?.isConnected) return;
+      el.style.display = prevDisplay || '';
+    });
+  };
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'flex';
+  modal.style.zIndex = '20000';
+
+  modal.innerHTML = `
+    <div class="modal-content coin-toss-modal" style="text-align:center;">
+      <div class="modal-header"><h3>Coin Toss</h3></div>
+      <div class="small coin-toss-sub">The winner goes first.</div>
+      <div class="coin-toss-teams">
+        <span class="team-chip coin-team-chip" style="--team-primary:${homeColor}; --team-text:${homeText};">${escapeHtml(homeName)}</span>
+        <span class="coin-toss-vs">VS</span>
+        <span class="team-chip coin-team-chip" style="--team-primary:${awayColor}; --team-text:${awayText};">${escapeHtml(awayName)}</span>
+      </div>
+      <div class="coin-scene coin-scene-lg">
+        <div class="coin" id="coinEl">
+          <div class="coin-face front" style="--coin-face-color:${homeColor}; --coin-text-color:${homeText};"><div class="coin-glyph">${escapeHtml(homeInitial)}</div></div>
+          <div class="coin-face back" style="--coin-face-color:${awayColor}; --coin-text-color:${awayText};"><div class="coin-glyph">${escapeHtml(awayInitial)}</div></div>
+        </div>
+      </div>
+      <div id="coinResult" class="coin-result" style="opacity:0;"><strong>${escapeHtml(winnerName)}</strong> wins the toss and goes first.</div>
+      <div class="modal-actions coin-actions" style="justify-content:center;">
+        <button id="coinCancelBtn" class="secondary-btn">Back</button>
+        <button id="coinContinueBtn" class="primary-btn" disabled>Start Match</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const close = () => {
+    modal.remove();
+    restoreHidden();
+  };
+
+  const cancelBtn = modal.querySelector('#coinCancelBtn');
+  const continueBtn = modal.querySelector('#coinContinueBtn');
+  cancelBtn.onclick = () => close();
+  continueBtn.onclick = () => {
+    close();
+    callback?.(winnerSide);
+  };
+
+  setTimeout(() => {
+    const coin = modal.querySelector('#coinEl');
+    if (coin) coin.style.transform = `rotateY(${winnerSide === 'home' ? 1800 : 1980}deg)`;
     setTimeout(() => {
-        const coin = modal.querySelector('#coinEl');
-        coin.style.transform = `rotateY(${winnerSide === 'home' ? 1800 : 1980}deg)`;
-        setTimeout(() => {
-            modal.querySelector('#coinResult').style.opacity = '1';
-            const btn = modal.querySelector('#coinContinueBtn');
-            btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
-            btn.onclick = () => { modal.remove(); callback(winnerSide); };
-        }, 3000);
-    }, 100);
+      const result = modal.querySelector('#coinResult');
+      if (result) result.style.opacity = '1';
+      continueBtn.disabled = false;
+    }, 2800);
+  }, 120);
 }
 
 export async function finalizeMatchStart(activeSide) {
@@ -1684,7 +1750,10 @@ function pgRenderMvpPanel({ pg, d, side }) {
     inner: `
       <div class="form-field">
         <label>D6 Roll</label>
-        <input type="number" min="1" max="6" value="${roll}" onchange="window.pgSetMvpRoll('${side}', this.value)">
+        <div class="dice-input">
+          <input type="number" min="1" max="6" value="${roll}" onchange="window.pgSetMvpRoll('${side}', this.value)">
+          <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">🎲</button>
+        </div>
       </div>
       <div class="small" style="margin-top:0.5rem; color:#666;">Selected: ${nominees.length}/6 • Winner: <strong>${winnerName}</strong></div>
       <div class="panel-styled" style="margin-top:0.75rem; max-height:220px; overflow:auto;">${options}</div>
@@ -1720,7 +1789,10 @@ function pgRenderAdvEntry({ pg, side, rosterIdx, adv, advIdx, base, cost }) {
       <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:0.5rem;">
         <div class="form-field">
           <label>D8 Roll</label>
-          <input type="number" min="1" max="8" value="${roll}" onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'rollD8', (this.value===''?null:parseInt(this.value)))">
+          <div class="dice-input">
+            <input type="number" min="1" max="8" value="${roll}" onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'rollD8', (this.value===''?null:parseInt(this.value)))">
+            <button type="button" class="dice-btn" title="Roll D8" aria-label="Roll D8" onclick="window.rollDiceIntoInput(this, 8)">🎲</button>
+          </div>
         </div>
         <div class="form-field">
           <label>Take</label>
@@ -2032,7 +2104,10 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
           <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem;">
             <div class="form-field">
               <label>D6 Roll</label>
-              <input type="number" min="1" max="6" value="${t.dedicatedFansRollD6 ?? ''}" ${rollEnabled ? '' : 'disabled'} onchange="window.pgSetDedicatedFansRoll('${side}', this.value)">
+              <div class="dice-input">
+                <input type="number" min="1" max="6" value="${t.dedicatedFansRollD6 ?? ''}" ${rollEnabled ? '' : 'disabled'} onchange="window.pgSetDedicatedFansRoll('${side}', this.value)">
+                <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" ${rollEnabled ? '' : 'disabled'} onclick="window.rollDiceIntoInput(this, 6)">🎲</button>
+              </div>
               ${!rollEnabled ? '<div class="small" style="color:#777;">Draw: no roll needed.</div>' : ''}
             </div>
             <div class="form-field">
@@ -2125,19 +2200,28 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
         inner: required ? `
           <div class="form-field">
             <label>D6 Roll</label>
-            <input type="number" min="1" max="6" value="${roll}" onchange="window.pgSetExpensiveField('${side}', 'rollD6', this.value)">
+            <div class="dice-input">
+              <input type="number" min="1" max="6" value="${roll}" onchange="window.pgSetExpensiveField('${side}', 'rollD6', this.value)">
+              <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">🎲</button>
+            </div>
           </div>
           <div style="margin-top:0.5rem; font-weight:900;">Result: ${kind || '—'}</div>
           ${kind === 'Minor Incident' ? `
             <div class="form-field" style="margin-top:0.5rem;">
               <label>D3 Roll (1-3)</label>
-              <input type="number" min="1" max="3" value="${t.expensive?.rollD3 ?? ''}" onchange="window.pgSetExpensiveField('${side}', 'rollD3', this.value)">
+              <div class="dice-input">
+                <input type="number" min="1" max="3" value="${t.expensive?.rollD3 ?? ''}" onchange="window.pgSetExpensiveField('${side}', 'rollD3', this.value)">
+                <button type="button" class="dice-btn" title="Roll D3" aria-label="Roll D3" onclick="window.rollDiceIntoInput(this, 3)">🎲</button>
+              </div>
             </div>
           ` : ''}
           ${kind === 'Catastrophe' ? `
             <div class="form-field" style="margin-top:0.5rem;">
               <label>2D6 Total (2-12)</label>
-              <input type="number" min="2" max="12" value="${t.expensive?.roll2d6Total ?? ''}" onchange="window.pgSetExpensiveField('${side}', 'roll2d6Total', this.value)">
+              <div class="dice-input">
+                <input type="number" min="2" max="12" value="${t.expensive?.roll2d6Total ?? ''}" onchange="window.pgSetExpensiveField('${side}', 'roll2d6Total', this.value)">
+                <button type="button" class="dice-btn" title="Roll 2D6 total" aria-label="Roll 2D6 total" onclick="window.rollDiceIntoInput(this, 6, 2)">🎲</button>
+              </div>
             </div>
           ` : ''}
           ${(needs && kind) ? `<div class="small" style="color:#b02a37; margin-top:0.5rem;">Needs: ${needs === 'd3' ? 'D3 roll' : '2D6 total'}.</div>` : ''}
@@ -2658,7 +2742,7 @@ export function randomMvp(side) {
     const roster = state.activeMatchData[side].roster;
     const eligible = roster.map((p,i) => i).filter(i => roster[i].position !== 'Star Player'); 
     if(eligible.length === 0) return;
-    const winnerIdx = eligible[Math.floor(Math.random() * eligible.length)];
+    const winnerIdx = eligible[randomIntInclusive(0, eligible.length - 1)];
     state.postGame[`${side}Mvp`] = winnerIdx;
     document.getElementById(`mvpSelect${side}`).value = winnerIdx;
 }

@@ -6,6 +6,7 @@ import { handleStartMatch, handleOpenScoreboard, enterCoachMode, exitCoachMode, 
 import { handleScanRepo, attachTeam, restoreLeague, deleteOrphanFile, deleteLeagueFolder } from './ui-admin.js';
 import { openGlossary, initGlossary } from './ui-glossary.js';
 import { setStatus } from './utils.js';
+import { rollDiceIntoInput } from './dice.js';
 
 // ============================================
 // 1. EXPOSE FUNCTIONS TO WINDOW (For HTML onclicks)
@@ -114,6 +115,7 @@ window.restoreLeague = restoreLeague;
 window.attachTeam = attachTeam;
 window.deleteOrphanFile = deleteOrphanFile;
 window.deleteLeagueFolder = deleteLeagueFolder;
+window.rollDiceIntoInput = rollDiceIntoInput;
 
 
 // ============================================
