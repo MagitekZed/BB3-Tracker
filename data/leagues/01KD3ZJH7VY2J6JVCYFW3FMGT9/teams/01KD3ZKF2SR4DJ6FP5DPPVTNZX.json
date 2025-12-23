@@ -28,7 +28,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 4,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -55,7 +55,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 3,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -169,7 +169,276 @@
       "injuries": ""
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "season": 1,
+      "round": 2,
+      "matchId": "01KD48GQVKXVP1YZ8AZ0CRWEZ0",
+      "matchType": "regular",
+      "opponentName": "New Team 4",
+      "result": "Win",
+      "score": "1-0",
+      "winningsK": 30,
+      "winningsGp": 30000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": 4,
+      "dedicatedFansDelta": 1,
+      "tv": 495000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KD3ZKMJNP1YPVWFW8HM4ECE3",
+          "name": "Player",
+          "number": 1,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KD3ZKMXJNWRJZ1S0NNE2KCK8",
+          "name": "Player",
+          "number": 2,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 3,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD3ZKN7V07JF2TS71GR2CHYK",
+          "name": "Player",
+          "number": 3,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD3ZKNKK4ACE4VAZC9534W81",
+          "name": "Player",
+          "number": 4,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD3ZKNY1638NS7PDWSE13HR7",
+          "name": "Player",
+          "number": 5,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD3ZKQKGP9RPKHNJ32TY7J1R",
+          "name": "Player",
+          "number": 6,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9M9K8CAM19VJNPFA69",
+          "name": "Journeyman 1",
+          "number": 97,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9ME3T5ZQ9DZ9MYP86T",
+          "name": "Journeyman 2",
+          "number": 98,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9M6QDBFPA851XF1MAZ",
+          "name": "Journeyman 3",
+          "number": 99,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9MFDZ77K2DGXC8D811",
+          "name": "Journeyman 4",
+          "number": 100,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9MM80VRQYYRS2N7DXC",
+          "name": "Journeyman 5",
+          "number": 101,
+          "position": "Imperial Retainer (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 760000,
+        "rollD6": 6,
+        "rollD3": 3,
+        "roll2d6Total": null,
+        "result": "Minor Incident",
+        "deltaGp": -30000
+      }
+    }
+  ],
   "transactions": [],
   "colors": {
     "primary": "#222222",
@@ -180,6 +449,6 @@
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
-  "dedicatedFans": 1,
+  "dedicatedFans": 2,
   "teamValue": 270000
 }
