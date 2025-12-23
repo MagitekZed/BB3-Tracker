@@ -34,7 +34,10 @@
       "spp": 15,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V6YRV12PK2DHHS4WW7Z9N",
@@ -78,7 +81,10 @@
           "isElite": false
         }
       ],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V77DXQJ3MFV4AWC29AVQF",
@@ -121,7 +127,10 @@
           "isElite": false
         }
       ],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V77SJHRY84WT58WSJ1WBX",
@@ -150,7 +159,10 @@
       "spp": 2,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V7839ZQ2B572GN2DKJ2E4",
@@ -178,7 +190,10 @@
       "spp": 1,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V78CGCGN2Q1QV6DQGZ9M2",
@@ -206,7 +221,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V78MZK6TJQNJBA1SM0C1Q",
@@ -233,7 +251,10 @@
       "spp": 4,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V78WG2897BSXAGVB6AR3A",
@@ -260,7 +281,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V794R4PZS7S4DFHYH1GPA",
@@ -287,7 +311,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V79CPY6D3062T6P6X07FA",
@@ -314,7 +341,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V7BPF27AHY926KZFAB98S",
@@ -341,7 +371,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     }
   ],
   "history": [
@@ -1475,18 +1508,385 @@
         "tvGp": null
       },
       "cancelledAt": "2025-12-23T00:11:29.714Z"
+    },
+    {
+      "id": "01KD48RYBJ0D6V9607GGBCK55V",
+      "at": "2025-12-23T00:12:04.338Z",
+      "season": 1,
+      "type": "redraft",
+      "label": "Re-drafted for Season 2",
+      "undoBefore": {
+        "treasury": 195000,
+        "rerolls": 3,
+        "apothecary": true,
+        "assistantCoaches": 1,
+        "cheerleaders": 1,
+        "dedicatedFans": 4,
+        "redraft": null,
+        "players": [
+          {
+            "id": "01KD1V6XCQMH4EQ1X2EAZBY84R",
+            "number": 1,
+            "name": "Player 1",
+            "position": "Python Warrior (Human, Thrower)",
+            "rookieSeason": 1,
+            "cost": 80000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 3,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "On the Ball",
+              "Pass",
+              "Safe Pass"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 15,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V6YRV12PK2DHHS4WW7Z9N",
+            "number": 2,
+            "name": "Player 2",
+            "position": "Python Warrior (Human, Thrower)",
+            "rookieSeason": 1,
+            "cost": 100000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 3,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "On the Ball",
+              "Pass",
+              "Safe Pass",
+              "Steady Footing"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 11,
+            "sppSpent": 6,
+            "advancements": [
+              {
+                "id": "01KD1XAG3RJFX4FZNHY5S1W3A7",
+                "at": "2025-12-22T02:13:27.800Z",
+                "sppCost": 6,
+                "valueIncreaseGp": 20000,
+                "kind": "chosenPrimary",
+                "outcomeType": "skill",
+                "skillName": "Steady Footing",
+                "categoryCode": "G",
+                "skillFrom": "primary",
+                "isElite": false
+              }
+            ],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V77DXQJ3MFV4AWC29AVQF",
+            "number": 3,
+            "name": "Player 3",
+            "position": "Piranha Warrior (Blitzer, Human)",
+            "rookieSeason": 1,
+            "cost": 110000,
+            "ma": 7,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Hit & Run",
+              "Jump Up",
+              "Pro"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 3,
+            "advancements": [
+              {
+                "id": "01KD1XB0MPR8PPQF25AQX77KZ7",
+                "at": "2025-12-22T02:13:44.726Z",
+                "sppCost": 3,
+                "valueIncreaseGp": 20000,
+                "kind": "randomPrimary",
+                "outcomeType": "skill",
+                "skillName": "Pro",
+                "categoryCode": "G",
+                "skillFrom": "primary",
+                "isElite": false
+              }
+            ],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V77SJHRY84WT58WSJ1WBX",
+            "number": 4,
+            "name": "Player 4",
+            "position": "Piranha Warrior (Blitzer, Human)",
+            "rookieSeason": 1,
+            "cost": 90000,
+            "ma": 7,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge",
+              "Hit & Run",
+              "Jump Up"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 2,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V7839ZQ2B572GN2DKJ2E4",
+            "number": 5,
+            "name": "Player 5",
+            "position": "Jaguar Warrior (Blocker, Human)",
+            "rookieSeason": 1,
+            "cost": 110000,
+            "ma": 6,
+            "st": 4,
+            "ag": 3,
+            "pa": 4,
+            "av": 9,
+            "skills": [
+              "Defensive",
+              "Dodge"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 1,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V78CGCGN2Q1QV6DQGZ9M2",
+            "number": 6,
+            "name": "Player 6",
+            "position": "Jaguar Warrior (Blocker, Human)",
+            "rookieSeason": 1,
+            "cost": 110000,
+            "ma": 6,
+            "st": 4,
+            "ag": 3,
+            "pa": 4,
+            "av": 9,
+            "skills": [
+              "Defensive",
+              "Dodge"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V78MZK6TJQNJBA1SM0C1Q",
+            "number": 7,
+            "name": "Player 7",
+            "position": "Eagle Warrior (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 4,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V78WG2897BSXAGVB6AR3A",
+            "number": 8,
+            "name": "Player 8",
+            "position": "Eagle Warrior (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V794R4PZS7S4DFHYH1GPA",
+            "number": 9,
+            "name": "Player 9",
+            "position": "Eagle Warrior (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V79CPY6D3062T6P6X07FA",
+            "number": 10,
+            "name": "Player 20",
+            "position": "Eagle Warrior (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          },
+          {
+            "id": "01KD1V7BPF27AHY926KZFAB98S",
+            "number": 11,
+            "name": "Player 11",
+            "position": "Eagle Warrior (Human, Lineman)",
+            "rookieSeason": 1,
+            "cost": 50000,
+            "ma": 6,
+            "st": 3,
+            "ag": 3,
+            "pa": 4,
+            "av": 8,
+            "skills": [
+              "Dodge"
+            ],
+            "primary": [
+              "G"
+            ],
+            "secondary": [
+              "A",
+              "S"
+            ],
+            "spp": 0,
+            "sppSpent": 0,
+            "advancements": [],
+            "injuries": ""
+          }
+        ]
+      },
+      "delta": {
+        "treasuryGp": -195000,
+        "tvGp": null
+      }
     }
   ],
   "colors": {
     "primary": "#00b81f",
     "secondary": "#c5a059"
   },
-  "treasury": 195000,
+  "treasury": 0,
   "rerolls": 3,
-  "apothecary": true,
-  "assistantCoaches": 1,
-  "cheerleaders": 1,
+  "apothecary": false,
+  "assistantCoaches": 3,
+  "cheerleaders": 2,
   "dedicatedFans": 4,
-  "teamValue": 1100000,
-  "trophyRerollSeason": 2
+  "teamValue": 1080000,
+  "trophyRerollSeason": 2,
+  "redraft": {
+    "fromSeason": 1,
+    "toSeason": 2,
+    "at": "2025-12-23T00:12:04.338Z",
+    "budgetGp": 1300000,
+    "spentGp": 1300000,
+    "capApplied": true
+  }
 }
