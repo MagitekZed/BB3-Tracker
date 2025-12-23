@@ -34,7 +34,10 @@
       "spp": 15,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V6YRV12PK2DHHS4WW7Z9N",
@@ -78,7 +81,10 @@
           "isElite": false
         }
       ],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V77DXQJ3MFV4AWC29AVQF",
@@ -121,7 +127,10 @@
           "isElite": false
         }
       ],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V77SJHRY84WT58WSJ1WBX",
@@ -150,7 +159,10 @@
       "spp": 2,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V7839ZQ2B572GN2DKJ2E4",
@@ -178,7 +190,10 @@
       "spp": 1,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V78CGCGN2Q1QV6DQGZ9M2",
@@ -206,7 +221,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V78MZK6TJQNJBA1SM0C1Q",
@@ -233,7 +251,10 @@
       "spp": 4,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V78WG2897BSXAGVB6AR3A",
@@ -260,7 +281,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V794R4PZS7S4DFHYH1GPA",
@@ -287,7 +311,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V79CPY6D3062T6P6X07FA",
@@ -314,7 +341,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     },
     {
       "id": "01KD1V7BPF27AHY926KZFAB98S",
@@ -341,7 +371,10 @@
       "spp": 0,
       "sppSpent": 0,
       "advancements": [],
-      "injuries": ""
+      "injuries": "",
+      "mng": false,
+      "tr": false,
+      "dead": false
     }
   ],
   "history": [
@@ -1440,13 +1473,55 @@
       "type": "advancement",
       "label": "Advancement: Player 3 +Pro",
       "playerId": "01KD1V77DXQJ3MFV4AWC29AVQF",
+      "delta": {
+        "tvGp": 20000,
+        "sppCost": 3
+      }
+    },
+    {
+      "id": "01KD1ZBZ411A2BW34W7EF48KP4",
+      "at": "2025-12-22T02:49:13.088Z",
+      "type": "league",
+      "label": "Glittering Prize: 1st place (+100k)",
+      "delta": {
+        "treasuryGp": 100000
+      }
+    },
+    {
+      "id": "01KD1ZBZ43PVME959443F47ERG",
+      "at": "2025-12-22T02:49:13.088Z",
+      "type": "league",
+      "label": "League Trophy: +1 Team Re-roll for Season 2",
+      "delta": {
+        "treasuryGp": 0,
+        "tvGp": 60000
+      }
+    },
+    {
+      "id": "01KD476E6X1GFEF340BFNZZTBF",
+      "at": "2025-12-22T23:44:29.405Z",
+      "season": 1,
+      "type": "redraft",
+      "label": "Re-drafted for Season 2",
+      "delta": {
+        "treasuryGp": -185000,
+        "tvGp": null
+      },
+      "cancelledAt": "2025-12-23T00:11:29.714Z"
+    },
+    {
+      "id": "01KD48RYBJ0D6V9607GGBCK55V",
+      "at": "2025-12-23T00:12:04.338Z",
+      "season": 1,
+      "type": "redraft",
+      "label": "Re-drafted for Season 2",
       "undoBefore": {
-        "treasury": 85000,
+        "treasury": 195000,
         "rerolls": 3,
-        "apothecary": false,
+        "apothecary": true,
         "assistantCoaches": 1,
-        "cheerleaders": 0,
-        "dedicatedFans": 3,
+        "cheerleaders": 1,
+        "dedicatedFans": 4,
         "redraft": null,
         "players": [
           {
@@ -1474,7 +1549,7 @@
               "A",
               "S"
             ],
-            "spp": 1,
+            "spp": 15,
             "sppSpent": 0,
             "advancements": [],
             "injuries": ""
@@ -1505,7 +1580,7 @@
               "A",
               "S"
             ],
-            "spp": 8,
+            "spp": 11,
             "sppSpent": 6,
             "advancements": [
               {
@@ -1529,7 +1604,7 @@
             "name": "Player 3",
             "position": "Piranha Warrior (Blitzer, Human)",
             "rookieSeason": 1,
-            "cost": 90000,
+            "cost": 110000,
             "ma": 7,
             "st": 3,
             "ag": 3,
@@ -1538,7 +1613,8 @@
             "skills": [
               "Dodge",
               "Hit & Run",
-              "Jump Up"
+              "Jump Up",
+              "Pro"
             ],
             "primary": [
               "G"
@@ -1547,9 +1623,22 @@
               "A",
               "S"
             ],
-            "spp": 3,
-            "sppSpent": 0,
-            "advancements": [],
+            "spp": 0,
+            "sppSpent": 3,
+            "advancements": [
+              {
+                "id": "01KD1XB0MPR8PPQF25AQX77KZ7",
+                "at": "2025-12-22T02:13:44.726Z",
+                "sppCost": 3,
+                "valueIncreaseGp": 20000,
+                "kind": "randomPrimary",
+                "outcomeType": "skill",
+                "skillName": "Pro",
+                "categoryCode": "G",
+                "skillFrom": "primary",
+                "isElite": false
+              }
+            ],
             "injuries": ""
           },
           {
@@ -1604,7 +1693,7 @@
               "A",
               "S"
             ],
-            "spp": 0,
+            "spp": 1,
             "sppSpent": 0,
             "advancements": [],
             "injuries": ""
@@ -1659,7 +1748,7 @@
               "A",
               "S"
             ],
-            "spp": 3,
+            "spp": 4,
             "sppSpent": 0,
             "advancements": [],
             "injuries": ""
@@ -1775,27 +1864,8 @@
         ]
       },
       "delta": {
-        "tvGp": 20000,
-        "sppCost": 3
-      }
-    },
-    {
-      "id": "01KD1ZBZ411A2BW34W7EF48KP4",
-      "at": "2025-12-22T02:49:13.088Z",
-      "type": "league",
-      "label": "Glittering Prize: 1st place (+100k)",
-      "delta": {
-        "treasuryGp": 100000
-      }
-    },
-    {
-      "id": "01KD1ZBZ43PVME959443F47ERG",
-      "at": "2025-12-22T02:49:13.088Z",
-      "type": "league",
-      "label": "League Trophy: +1 Team Re-roll for Season 2",
-      "delta": {
-        "treasuryGp": 0,
-        "tvGp": 60000
+        "treasuryGp": -195000,
+        "tvGp": null
       }
     }
   ],
@@ -1803,12 +1873,20 @@
     "primary": "#00b81f",
     "secondary": "#c5a059"
   },
-  "treasury": 195000,
+  "treasury": 0,
   "rerolls": 3,
-  "apothecary": true,
-  "assistantCoaches": 1,
-  "cheerleaders": 1,
+  "apothecary": false,
+  "assistantCoaches": 3,
+  "cheerleaders": 2,
   "dedicatedFans": 4,
-  "teamValue": 1100000,
-  "trophyRerollSeason": 2
+  "teamValue": 1080000,
+  "trophyRerollSeason": 2,
+  "redraft": {
+    "fromSeason": 1,
+    "toSeason": 2,
+    "at": "2025-12-23T00:12:04.338Z",
+    "budgetGp": 1300000,
+    "spentGp": 1300000,
+    "capApplied": true
+  }
 }

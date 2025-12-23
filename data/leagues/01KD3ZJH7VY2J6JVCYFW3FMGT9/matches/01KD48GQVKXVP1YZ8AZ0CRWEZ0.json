@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KD48GQVKXVP1YZ8AZ0CRWEZ0",
+  "leagueId": "01KD3ZJH7VY2J6JVCYFW3FMGT9",
+  "round": 2,
+  "home": {
+    "name": "New Team 2",
+    "score": 1,
+    "tv": 495000,
+    "inducements": {},
+    "winnings": 30,
+    "winningsGp": 30000,
+    "fanFactorChange": 1,
+    "dedicatedFansDelta": 1,
+    "mvp": "Player",
+    "stats": [
+      {
+        "name": "Player",
+        "number": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KD3ZKF2SR4DJ6FP5DPPVTNZX",
+      "name": "New Team 2",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      },
+      "race": "Imperial Nobility",
+      "result": "win",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 730000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 30000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 4,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 0,
+        "race": "Imperial Nobility"
+      },
+      "staffDesired": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": 6,
+        "rollD3": 3,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "New Team 4",
+    "score": 0,
+    "tv": 550000,
+    "inducements": {},
+    "winnings": 20,
+    "winningsGp": 20000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Player",
+    "stats": [],
+    "postGame": {
+      "teamId": "01KD3ZM94X4T9K0051JDPD97PX",
+      "name": "New Team 4",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      },
+      "race": "Human",
+      "result": "loss",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 700000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 20000,
+      "winningsGpOverride": null,
+      "dedicatedFansRollD6": 5,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0
+        ],
+        "rollD6": 1
+      },
+      "staffBase": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 0,
+        "race": "Human"
+      },
+      "staffDesired": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": 6,
+        "rollD3": 1,
+        "roll2d6Total": null
+      }
+    }
+  }
+}
