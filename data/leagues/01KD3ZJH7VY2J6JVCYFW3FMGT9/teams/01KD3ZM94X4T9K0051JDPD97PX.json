@@ -26,7 +26,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 4,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -157,13 +157,282 @@
       "injuries": ""
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "season": 1,
+      "round": 2,
+      "matchId": "01KD48GQVKXVP1YZ8AZ0CRWEZ0",
+      "matchType": "regular",
+      "opponentName": "New Team 2",
+      "result": "Loss",
+      "score": "0-1",
+      "winningsK": 20,
+      "winningsGp": 20000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": 5,
+      "dedicatedFansDelta": 0,
+      "tv": 550000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KD3ZMDV26QCCTVZ2WT6P6FC5",
+          "name": "Player",
+          "number": 1,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KD3ZME0M8F5M5CZTQRFAGVWD",
+          "name": "Player",
+          "number": 2,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD3ZME4Q2BPZ0JR9Y30Z31ZC",
+          "name": "Player",
+          "number": 3,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD3ZME9C6RSTG10PZPDYHTCX",
+          "name": "Player",
+          "number": 4,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD3ZMEFC92BAD4R86GQXCDSC",
+          "name": "Player",
+          "number": 5,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD3ZMF08V1NY6HYH6TMWT6SD",
+          "name": "Player",
+          "number": 6,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9N37NZW7J4J01SQQE5",
+          "name": "Journeyman 1",
+          "number": 97,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9NAN4XB2RXX043NMC9",
+          "name": "Journeyman 2",
+          "number": 98,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9NGRPGAFFJR97BA34A",
+          "name": "Journeyman 3",
+          "number": 99,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9NWWHNYR5QVND559ZF",
+          "name": "Journeyman 4",
+          "number": 100,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KD491T9NXC2Z975MR9T014JR",
+          "name": "Journeyman 5",
+          "number": 101,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": true,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 720000,
+        "rollD6": 6,
+        "rollD3": 1,
+        "roll2d6Total": null,
+        "result": "Minor Incident",
+        "deltaGp": -10000
+      }
+    }
+  ],
   "transactions": [],
   "colors": {
     "primary": "#222222",
     "secondary": "#c5a059"
   },
-  "treasury": 700000,
+  "treasury": 710000,
   "rerolls": 0,
   "apothecary": false,
   "assistantCoaches": 0,
