@@ -5,6 +5,7 @@ import { setStatus, normalizeName, getContrastColor, applyTeamTheme, ulid } from
 import { calculateTeamValue, calculateCurrentTeamValue, computeSeasonStats, isPlayerAvailableForMatch, validateTeam, getBb2025AdvancementCost, applyBb2025SkillAdvancement, applyBb2025CharacteristicIncrease } from './rules.js';
 import { showSection, updateBreadcrumbs, goHome, showSkill, showInfoModal, confirmModal } from './ui-core.js';
 import { handleOpenLeague, handleManageLeague, renderManageForm } from './ui-league.js';
+import { rollDie } from './rng.js';
 
 export async function handleOpenTeam(leagueId, teamId) {
   const teamName = state.currentLeague?.teams?.find(t => t.id === teamId)?.name;
@@ -676,7 +677,7 @@ function renderRedraftTab({ team, season }) {
             <td data-label="Roll">
               <div class="dice-input dice-input-compact">
                 <input type="number" min="1" max="6" value="${escapeHtml(val)}" onchange='window.teamRedraftSetRecoveryRoll(${JSON.stringify(key)}, this.value)' style="width:80px;">
-                <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">🎲</button>
+                <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">&#x1F3B2;</button>
               </div>
             </td>
             <td data-label="Target" class="small" style="color:#666;">4+${mod ? ` (with +${mod})` : ''}</td>
@@ -708,7 +709,7 @@ function renderRedraftTab({ team, season }) {
             </table>
           </div>
         ` : `<div class="small" style="color:#666;">No TR characteristic reductions to roll for.</div>`}
-        <div class="small" style="color:#666; margin-top:0.5rem;">Enter the D6 results (or tap 🎲 to fill a roll).</div>
+        <div class="small" style="color:#666; margin-top:0.5rem;">Enter the D6 results (or tap the dice button to fill a roll).</div>
       </div>
 
       <div class="modal-actions" style="margin-top:0.75rem; justify-content:space-between;">
@@ -1554,6 +1555,8 @@ export function teamDevUpdate(playerId, field, value) {
     draft.skillName = '';
     draft.rollD8 = null;
     draft.statKey = '';
+    draft.randomRolls = null;
+    draft.randomChosen = null;
     draft.skillFrom = (kind === 'chosenSecondary') ? 'secondary' : 'primary';
     draft.outcomeType = (kind === 'characteristic') ? 'stat' : 'skill';
     draft.categoryCode = (kind === 'chosenSecondary') ? defaultSecondary : defaultPrimary;
@@ -1571,6 +1574,8 @@ export function teamDevUpdate(playerId, field, value) {
   if (field === 'categoryCode') {
     draft.categoryCode = String(value || '');
     draft.skillName = '';
+    draft.randomRolls = null;
+    draft.randomChosen = null;
   }
 
   if (field === 'rollD8') {
@@ -1602,6 +1607,96 @@ export function teamDevUpdate(playerId, field, value) {
     draft.skillName = String(value || '');
   }
 
+  if (state.teamTab === 'development') renderTeamView();
+}
+
+function normalizeSkillKey(name) {
+  return String(name ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function chunkList(list, chunkSize) {
+  const out = [];
+  const size = Math.max(1, Number(chunkSize) || 1);
+  for (let i = 0; i < list.length; i += size) out.push(list.slice(i, i + size));
+  return out;
+}
+
+function rollRandomSkillCandidate(categoryCode, excludeSkillKeys) {
+  const defs = getSkillDefsForCategoryCode(categoryCode);
+  const names = defs.map(d => d.name).filter(Boolean);
+  if (!names.length) return null;
+
+  const parts = chunkList(names, 6);
+  if (!parts.length) return null;
+
+  for (let attempt = 0; attempt < 250; attempt += 1) {
+    const partRoll = rollDie(6);
+    const partIdx = partRoll - 1;
+    const part = parts[partIdx];
+    if (!part || !part.length) continue;
+
+    const skillRoll = rollDie(6);
+    const skillIdx = skillRoll - 1;
+    const skillName = part[skillIdx];
+    if (!skillName) continue;
+
+    const key = normalizeSkillKey(skillName);
+    if (excludeSkillKeys.has(key)) continue;
+
+    return { partRoll, skillRoll, skillName };
+  }
+
+  return null;
+}
+
+export function teamDevRollRandomSkills(playerId) {
+  const team = state.currentTeam;
+  if (!team) return;
+  const roster = Array.isArray(team.players) ? team.players : [];
+  const player = roster.find(p => p.id === playerId);
+  if (!player) return;
+
+  const race = state.gameData?.races?.find(r => r.name === team.race) || null;
+  const draft = getDevDraft(player, race);
+  if (String(draft.kind || '') !== 'randomPrimary') return;
+
+  const exclude = new Set((player.skills || []).map(normalizeSkillKey).filter(Boolean));
+  const a = rollRandomSkillCandidate(draft.categoryCode, exclude);
+  const b = rollRandomSkillCandidate(draft.categoryCode, exclude);
+
+  if (!a || !b) {
+    setStatus('No eligible random skills found for this category.', 'error');
+    return;
+  }
+
+  draft.randomRolls = { a, b };
+  draft.randomChosen = 'a';
+  draft.skillName = String(a.skillName || '');
+  if (String(a.skillName) === String(b.skillName)) {
+    draft.randomChosen = 'a';
+  }
+
+  if (state.teamTab === 'development') renderTeamView();
+}
+
+export function teamDevChooseRandomSkill(playerId, which) {
+  const team = state.currentTeam;
+  if (!team) return;
+  const roster = Array.isArray(team.players) ? team.players : [];
+  const player = roster.find(p => p.id === playerId);
+  if (!player) return;
+
+  const race = state.gameData?.races?.find(r => r.name === team.race) || null;
+  const draft = getDevDraft(player, race);
+  const rr = draft.randomRolls;
+  if (!rr) return;
+
+  const pick = (String(which || '') === 'b') ? 'b' : 'a';
+  const chosen = rr[pick];
+  if (!chosen?.skillName) return;
+
+  draft.randomChosen = pick;
+  draft.skillName = String(chosen.skillName || '');
   if (state.teamTab === 'development') renderTeamView();
 }
 
@@ -1638,7 +1733,7 @@ function renderDevelopmentCard({ team, player, race }) {
   ].map(o => `<option value="${o.v}" ${kind === o.v ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
 
   const kindHelp = (kind === 'randomPrimary')
-    ? `<div class="small" style="color:#666; margin-top:0.25rem;">Random Primary: roll 2D6 twice on the Skill Table for the chosen category, then select one of the two results.</div>`
+    ? `<div class="small" style="color:#666; margin-top:0.25rem;">Random Primary: roll D6 then D6 (consult the Skill Table), do this twice, then choose one of the two results.</div>`
     : (kind === 'characteristic')
       ? `<div class="small" style="color:#666; margin-top:0.25rem;">Characteristic: spend SPP, roll D8, then choose an allowed characteristic (or choose a skill instead; SPP spent is still the characteristic cost).</div>`
       : '';
@@ -1672,7 +1767,7 @@ function renderDevelopmentCard({ team, player, race }) {
         <label>D8 Roll</label>
         <div class="dice-input">
           <input type="number" min="1" max="8" value="${roll}" onchange="window.teamDevUpdate('${player.id}', 'rollD8', (this.value===''?null:parseInt(this.value)))" />
-          <button type="button" class="dice-btn" title="Roll D8" aria-label="Roll D8" onclick="window.rollDiceIntoInput(this, 8)">🎲</button>
+          <button type="button" class="dice-btn" title="Roll D8" aria-label="Roll D8" onclick="window.rollDiceIntoInput(this, 8)">&#x1F3B2;</button>
         </div>
       </div>
       <div class="form-field">
@@ -1718,6 +1813,52 @@ function renderDevelopmentCard({ team, player, race }) {
     </div>
   ` : '';
 
+  const rr = draft.randomRolls || null;
+  const rrSame = !!(rr?.a?.skillName && rr?.b?.skillName && String(rr.a.skillName) === String(rr.b.skillName));
+  const rrPick = String(draft.randomChosen || '');
+
+  const renderRandCard = (key, label) => {
+    const r = rr?.[key] || null;
+    const skillName = String(r?.skillName || '').trim();
+    const active = rrPick === key;
+    const elite = skillName ? !!getSkillDefByName(skillName)?.isElite : false;
+    const disabled = rrSame && key === 'b';
+
+    const rollText = (r?.partRoll && r?.skillRoll) ? `D6 ${r.partRoll} then D6 ${r.skillRoll}` : 'Not rolled';
+    const pickLabel = active ? 'Selected' : 'Use';
+    const btnClass = active ? 'primary-btn' : 'secondary-btn';
+
+    return `
+      <div class="panel-styled" style="padding:0.6rem; border:1px solid #ccc; background:${active ? '#eef6ee' : '#fff'};">
+        <div class="small" style="color:#666; font-weight:800;">${label} • ${rollText}</div>
+        <div style="margin-top:0.35rem; font-weight:900; display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
+          ${skillName ? `<span style="cursor:pointer;" onclick='window.showSkill(${JSON.stringify(skillName)})'>${escapeHtml(skillName)}</span>` : '<span class="small" style="color:#666;">No result</span>'}
+          ${elite ? `<span class="tag" style="background:#fff3cd; color:#664d03;">ELITE</span>` : ''}
+          ${rrSame ? `<span class="tag" style="background:#f8d7da; color:#842029;">DUPLICATE</span>` : ''}
+        </div>
+        <div style="margin-top:0.5rem; display:flex; justify-content:flex-end;">
+          <button class="${btnClass}" ${disabled ? 'disabled' : ''} onclick="window.teamDevChooseRandomSkill('${player.id}', '${key}')">${pickLabel}</button>
+        </div>
+      </div>
+    `;
+  };
+
+  const randomSkillPanel = (kind === 'randomPrimary') ? `
+    <div class="panel-styled" style="margin-top:0.75rem; background:#f9f7ea;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+        <div style="font-weight:900;">Random Skill Rolls</div>
+        <button class="secondary-btn" onclick="window.teamDevRollRandomSkills('${player.id}')">Roll</button>
+      </div>
+      <div class="small" style="color:#666; margin-top:0.25rem;">Roll results are a helper; you can still pick any skill manually.</div>
+      ${rr ? `
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:0.75rem; margin-top:0.75rem;">
+          ${renderRandCard('a', 'Option A')}
+          ${renderRandCard('b', 'Option B')}
+        </div>
+      ` : `<div class="small" style="color:#666; margin-top:0.5rem;">No rolls yet.</div>`}
+    </div>
+  ` : '';
+
   const past = (player.advancements || []).map(a => {
     const when = a.at ? new Date(a.at).toLocaleDateString() : '';
     const what = a.outcomeType === 'stat'
@@ -1753,6 +1894,7 @@ function renderDevelopmentCard({ team, player, race }) {
 
         ${outcomeControls}
         ${skillControls}
+        ${randomSkillPanel}
 
         <div class="small" style="color:#666; margin-top:0.35rem;">Cost: ${costForCurrent} SPP ${sppAvail - costForCurrent < 0 ? `(after: ${sppAvail - costForCurrent})` : ''}</div>
 
@@ -1859,6 +2001,10 @@ export async function applyTeamAdvancement(playerId) {
     valueIncreaseGp = out.valueIncreaseGp;
     advLabel = `+${skillName}`;
     advRecord = { kind, outcomeType: 'skill', skillName, categoryCode, skillFrom: isSecondary ? 'secondary' : 'primary', isElite: !!def?.isElite };
+    if (kind === 'randomPrimary' && draft.randomRolls) {
+      advRecord.randomRolls = draft.randomRolls;
+      advRecord.randomChosen = draft.randomChosen || null;
+    }
   }
 
   const ok = await confirmProceedWithWarnings({

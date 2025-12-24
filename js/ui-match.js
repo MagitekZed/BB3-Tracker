@@ -882,7 +882,9 @@ function runCoinFlip(homeTeam, awayTeam, callback) {
   const winnerName = winnerSide === 'home' ? homeName : awayName;
 
   const homeColor = String(homeTeam?.colors?.primary || '#b00020');
+  const homeAccent = String(homeTeam?.colors?.secondary || '#c5a059');
   const awayColor = String(awayTeam?.colors?.primary || '#1d4ed8');
+  const awayAccent = String(awayTeam?.colors?.secondary || '#c5a059');
   const homeText = getContrastColor(homeColor);
   const awayText = getContrastColor(awayColor);
   const homeInitial = (homeName.trim().charAt(0) || 'H').toUpperCase();
@@ -920,8 +922,8 @@ function runCoinFlip(homeTeam, awayTeam, callback) {
       </div>
       <div class="coin-scene coin-scene-lg">
         <div class="coin" id="coinEl">
-          <div class="coin-face front" style="--coin-face-color:${homeColor}; --coin-text-color:${homeText};"><div class="coin-glyph">${escapeHtml(homeInitial)}</div></div>
-          <div class="coin-face back" style="--coin-face-color:${awayColor}; --coin-text-color:${awayText};"><div class="coin-glyph">${escapeHtml(awayInitial)}</div></div>
+          <div class="coin-face front" style="--coin-face-color:${homeColor}; --coin-accent-color:${homeAccent}; --coin-text-color:${homeText};"><div class="coin-glyph">${escapeHtml(homeInitial)}</div></div>
+          <div class="coin-face back" style="--coin-face-color:${awayColor}; --coin-accent-color:${awayAccent}; --coin-text-color:${awayText};"><div class="coin-glyph">${escapeHtml(awayInitial)}</div></div>
         </div>
       </div>
       <div id="coinResult" class="coin-result" style="opacity:0;"><strong>${escapeHtml(winnerName)}</strong> wins the toss and goes first.</div>
@@ -1405,6 +1407,52 @@ function pgFindSkillDef(skillName) {
   return null;
 }
 
+function pgNormalizeSkillKey(name) {
+  return String(name ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function pgGetSkillDefsForCategoryCode(code) {
+  const catName = SKILL_CAT_BY_CODE[String(code || '').toUpperCase()] || null;
+  if (!catName) return [];
+  const list = state.gameData?.skillCategories?.[catName] || [];
+  return Array.isArray(list) ? list.filter(s => typeof s === 'object' && s?.name) : [];
+}
+
+function pgChunkList(list, chunkSize) {
+  const out = [];
+  const size = Math.max(1, Number(chunkSize) || 1);
+  for (let i = 0; i < list.length; i += size) out.push(list.slice(i, i + size));
+  return out;
+}
+
+function pgRollRandomSkillCandidate(categoryCode, excludeSkillKeys) {
+  const defs = pgGetSkillDefsForCategoryCode(categoryCode);
+  const names = defs.map(d => d.name).filter(Boolean);
+  if (!names.length) return null;
+
+  const parts = pgChunkList(names, 6);
+  if (!parts.length) return null;
+
+  for (let attempt = 0; attempt < 250; attempt += 1) {
+    const partRoll = rollDie(6);
+    const partIdx = partRoll - 1;
+    const part = parts[partIdx];
+    if (!part || !part.length) continue;
+
+    const skillRoll = rollDie(6);
+    const skillIdx = skillRoll - 1;
+    const skillName = part[skillIdx];
+    if (!skillName) continue;
+
+    const key = pgNormalizeSkillKey(skillName);
+    if (excludeSkillKeys.has(key)) continue;
+
+    return { partRoll, skillRoll, skillName };
+  }
+
+  return null;
+}
+
 function pgGetResultForSide(side) {
   const d = state.activeMatchData;
   if (!d) return 'draw';
@@ -1752,7 +1800,7 @@ function pgRenderMvpPanel({ pg, d, side }) {
         <label>D6 Roll</label>
         <div class="dice-input">
           <input type="number" min="1" max="6" value="${roll}" onchange="window.pgSetMvpRoll('${side}', this.value)">
-          <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">🎲</button>
+          <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">&#x1F3B2;</button>
         </div>
       </div>
       <div class="small" style="margin-top:0.5rem; color:#666;">Selected: ${nominees.length}/6 • Winner: <strong>${winnerName}</strong></div>
@@ -1791,7 +1839,7 @@ function pgRenderAdvEntry({ pg, side, rosterIdx, adv, advIdx, base, cost }) {
           <label>D8 Roll</label>
           <div class="dice-input">
             <input type="number" min="1" max="8" value="${roll}" onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'rollD8', (this.value===''?null:parseInt(this.value)))">
-            <button type="button" class="dice-btn" title="Roll D8" aria-label="Roll D8" onclick="window.rollDiceIntoInput(this, 8)">🎲</button>
+            <button type="button" class="dice-btn" title="Roll D8" aria-label="Roll D8" onclick="window.rollDiceIntoInput(this, 8)">&#x1F3B2;</button>
           </div>
         </div>
         <div class="form-field">
@@ -1833,6 +1881,52 @@ function pgRenderAdvEntry({ pg, side, rosterIdx, adv, advIdx, base, cost }) {
   } else {
     const categoryCode = String(adv.categoryCode || '');
     const catName = SKILL_CAT_BY_CODE[categoryCode] || '';
+
+    const rr = adv.randomRolls || null;
+    const rrSame = !!(rr?.a?.skillName && rr?.b?.skillName && String(rr.a.skillName) === String(rr.b.skillName));
+    const rrPick = String(adv.randomChosen || '');
+
+    const renderRandCard = (key, label) => {
+      const r = rr?.[key] || null;
+      const skillName = String(r?.skillName || '').trim();
+      const active = rrPick === key;
+      const elite = skillName ? !!pgFindSkillDef(skillName)?.isElite : false;
+      const disabled = rrSame && key === 'b';
+
+      const rollText = (r?.partRoll && r?.skillRoll) ? `D6 ${r.partRoll} then D6 ${r.skillRoll}` : 'Not rolled';
+      const pickLabel = active ? 'Selected' : 'Use';
+      const btnClass = active ? 'primary-btn' : 'secondary-btn';
+
+      return `
+        <div class="panel-styled" style="padding:0.6rem; border:1px solid #ccc; background:${active ? '#eef6ee' : '#fff'};">
+          <div class="small" style="color:#666; font-weight:800;">${label} • ${rollText}</div>
+          <div style="margin-top:0.35rem; font-weight:900; display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap;">
+            ${skillName ? `<span style="cursor:pointer;" onclick='event.stopPropagation(); window.showSkill(${JSON.stringify(skillName)})'>${skillName}</span>` : '<span class="small" style="color:#666;">No result</span>'}
+            ${elite ? `<span class="tag" style="background:#fff3cd; color:#664d03;">ELITE</span>` : ''}
+            ${rrSame ? `<span class="tag" style="background:#f8d7da; color:#842029;">DUPLICATE</span>` : ''}
+          </div>
+          <div style="margin-top:0.5rem; display:flex; justify-content:flex-end;">
+            <button class="${btnClass}" ${disabled ? 'disabled' : ''} onclick="window.pgChooseRandomSkill('${side}', ${rosterIdx}, ${advIdx}, '${key}')">${pickLabel}</button>
+          </div>
+        </div>
+      `;
+    };
+
+    const randomSkillPanel = (adv.kind === 'randomPrimary') ? `
+      <div class="panel-styled" style="margin-top:0.75rem; background:#f9f7ea;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+          <div style="font-weight:900;">Random Skill Rolls</div>
+          <button class="secondary-btn" onclick="window.pgRollRandomSkills('${side}', ${rosterIdx}, ${advIdx})">Roll</button>
+        </div>
+        <div class="small" style="color:#666; margin-top:0.25rem;">Roll D6 then D6 (consult the Skill Table), do this twice, then choose one of the two results.</div>
+        ${rr ? `
+          <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:0.6rem; margin-top:0.6rem;">
+            ${renderRandCard('a', 'Option A')}
+            ${renderRandCard('b', 'Option B')}
+          </div>
+        ` : `<div class="small" style="color:#666; margin-top:0.5rem;">No rolls yet.</div>`}
+      </div>
+    ` : '';
     inner = `
       <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:0.5rem;">
         <div class="form-field">
@@ -1844,7 +1938,7 @@ function pgRenderAdvEntry({ pg, side, rosterIdx, adv, advIdx, base, cost }) {
           <input list="skillList" value="${String(adv.skillName || '')}" onchange="window.pgUpdateAdvancement('${side}', ${rosterIdx}, ${advIdx}, 'skillName', this.value)">
         </div>
       </div>
-      ${adv.kind === 'randomPrimary' ? `<div class="small" style="margin-top:0.4rem; color:#666;">Random Primary: roll 2D6 twice on the Skill Table and pick one (enter chosen skill).</div>` : ''}
+      ${randomSkillPanel}
     `;
   }
 
@@ -2106,7 +2200,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
               <label>D6 Roll</label>
               <div class="dice-input">
                 <input type="number" min="1" max="6" value="${t.dedicatedFansRollD6 ?? ''}" ${rollEnabled ? '' : 'disabled'} onchange="window.pgSetDedicatedFansRoll('${side}', this.value)">
-                <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" ${rollEnabled ? '' : 'disabled'} onclick="window.rollDiceIntoInput(this, 6)">🎲</button>
+                <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" ${rollEnabled ? '' : 'disabled'} onclick="window.rollDiceIntoInput(this, 6)">&#x1F3B2;</button>
               </div>
               ${!rollEnabled ? '<div class="small" style="color:#777;">Draw: no roll needed.</div>' : ''}
             </div>
@@ -2202,7 +2296,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
             <label>D6 Roll</label>
             <div class="dice-input">
               <input type="number" min="1" max="6" value="${roll}" onchange="window.pgSetExpensiveField('${side}', 'rollD6', this.value)">
-              <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">🎲</button>
+              <button type="button" class="dice-btn" title="Roll D6" aria-label="Roll D6" onclick="window.rollDiceIntoInput(this, 6)">&#x1F3B2;</button>
             </div>
           </div>
           <div style="margin-top:0.5rem; font-weight:900;">Result: ${kind || '—'}</div>
@@ -2211,7 +2305,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
               <label>D3 Roll (1-3)</label>
               <div class="dice-input">
                 <input type="number" min="1" max="3" value="${t.expensive?.rollD3 ?? ''}" onchange="window.pgSetExpensiveField('${side}', 'rollD3', this.value)">
-                <button type="button" class="dice-btn" title="Roll D3" aria-label="Roll D3" onclick="window.rollDiceIntoInput(this, 3)">🎲</button>
+                <button type="button" class="dice-btn" title="Roll D3" aria-label="Roll D3" onclick="window.rollDiceIntoInput(this, 3)">&#x1F3B2;</button>
               </div>
             </div>
           ` : ''}
@@ -2220,7 +2314,7 @@ function pgBuildPostGameHtml({ pg, d, step, totalSteps }) {
               <label>2D6 Total (2-12)</label>
               <div class="dice-input">
                 <input type="number" min="2" max="12" value="${t.expensive?.roll2d6Total ?? ''}" onchange="window.pgSetExpensiveField('${side}', 'roll2d6Total', this.value)">
-                <button type="button" class="dice-btn" title="Roll 2D6 total" aria-label="Roll 2D6 total" onclick="window.rollDiceIntoInput(this, 6, 2)">🎲</button>
+                <button type="button" class="dice-btn" title="Roll 2D6 total" aria-label="Roll 2D6 total" onclick="window.rollDiceIntoInput(this, 6, 2)">&#x1F3B2;</button>
               </div>
             </div>
           ` : ''}
@@ -2531,6 +2625,61 @@ export function pgUpdateAdvancement(side, rosterIdx, advIdx, field, value) {
   const adv = list[advIdx];
   if (!adv) return;
   adv[field] = value;
+  if (field === 'categoryCode') {
+    adv.skillName = '';
+    adv.randomRolls = null;
+    adv.randomChosen = null;
+  }
+  if (field === 'skillName') {
+    adv.randomChosen = null;
+  }
+  renderPostGameStep();
+}
+
+export function pgRollRandomSkills(side, rosterIdx, advIdx) {
+  const key = pgGetPlayerKey(side, rosterIdx);
+  if (!key) return;
+  const pg = state.postGame;
+  const list = pgGetAdvListForPlayerKey(key);
+  const adv = list[advIdx];
+  if (!adv || String(adv.kind || '') !== 'randomPrimary') return;
+
+  const base = pg?.players?.[key] || null;
+  const rosterPlayer = pgGetRosterPlayer(side, rosterIdx);
+  const existingSkills = Array.isArray(base?.baseSkills) ? base.baseSkills : (rosterPlayer?.skills || []);
+
+  const exclude = new Set((existingSkills || []).map(pgNormalizeSkillKey).filter(Boolean));
+  for (let i = 0; i < list.length; i += 1) {
+    const s = String(list[i]?.skillName || '').trim();
+    if (!s) continue;
+    exclude.add(pgNormalizeSkillKey(s));
+  }
+
+  const a = pgRollRandomSkillCandidate(adv.categoryCode, exclude);
+  const b = pgRollRandomSkillCandidate(adv.categoryCode, exclude);
+  if (!a || !b) return setStatus('No eligible random skills found for this category.', 'error');
+
+  adv.randomRolls = { a, b };
+  adv.randomChosen = 'a';
+  adv.skillName = String(a.skillName || '');
+  renderPostGameStep();
+}
+
+export function pgChooseRandomSkill(side, rosterIdx, advIdx, which) {
+  const key = pgGetPlayerKey(side, rosterIdx);
+  if (!key) return;
+  const list = pgGetAdvListForPlayerKey(key);
+  const adv = list[advIdx];
+  if (!adv) return;
+  const rr = adv.randomRolls;
+  if (!rr) return;
+
+  const pick = (String(which || '') === 'b') ? 'b' : 'a';
+  const chosen = rr[pick];
+  if (!chosen?.skillName) return;
+
+  adv.randomChosen = pick;
+  adv.skillName = String(chosen.skillName || '');
   renderPostGameStep();
 }
 
@@ -2846,7 +2995,7 @@ export async function commitPostGame() {
             const isSecondary = adv.kind === 'chosenSecondary';
             const { player, valueIncreaseGp } = applyBb2025SkillAdvancement(tp, { skillName: adv.skillName, isSecondary, isEliteSkill: !!def?.isElite });
             Object.assign(tp, player);
-            tp.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, skillName: adv.skillName, categoryCode: adv.categoryCode, isElite: !!def?.isElite, sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
+            tp.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, skillName: adv.skillName, categoryCode: adv.categoryCode, isElite: !!def?.isElite, ...(adv.kind === 'randomPrimary' && adv.randomRolls ? { randomRolls: adv.randomRolls, randomChosen: adv.randomChosen || null } : {}), sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
           }
         });
       });
@@ -2949,7 +3098,7 @@ export async function commitPostGame() {
             const isSecondary = adv.kind === 'chosenSecondary';
             const { player, valueIncreaseGp } = applyBb2025SkillAdvancement(newPlayer, { skillName: adv.skillName, isSecondary, isEliteSkill: !!def?.isElite });
             newPlayer = player;
-            newPlayer.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, skillName: adv.skillName, categoryCode: adv.categoryCode, isElite: !!def?.isElite, sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
+            newPlayer.advancements.push({ id: ulid(), matchId: d.matchId, kind: adv.kind, skillName: adv.skillName, categoryCode: adv.categoryCode, isElite: !!def?.isElite, ...(adv.kind === 'randomPrimary' && adv.randomRolls ? { randomRolls: adv.randomRolls, randomChosen: adv.randomChosen || null } : {}), sppCost: costSpp, valueIncreaseGp, at: new Date().toISOString() });
           }
         });
 
