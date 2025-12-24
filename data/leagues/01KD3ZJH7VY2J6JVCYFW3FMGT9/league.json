@@ -28,7 +28,7 @@
     },
     {
       "id": "01KD3ZKF2SR4DJ6FP5DPPVTNZX",
-      "name": "New Team 2",
+      "name": "team 2",
       "race": "Imperial Nobility",
       "coachName": "",
       "colors": {
@@ -64,7 +64,7 @@
       "round": 1,
       "homeTeamId": "01KD3ZJX659D3H0XGRGZBNAQWW",
       "awayTeamId": "01KD3ZKF2SR4DJ6FP5DPPVTNZX",
-      "status": "scheduled",
+      "status": "in_progress",
       "date": "2025-12-23"
     },
     {
