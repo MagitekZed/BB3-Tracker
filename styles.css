@@ -67,6 +67,8 @@ body {
 .breadcrumbs-inner { max-width: 1200px; width: 100%; display: flex; gap: 0.5rem; align-items: center; }
 .crumb-link { color: var(--primary-red); cursor: pointer; text-decoration: underline; font-weight: bold; }
 .crumb-sep { color: #999; }
+.player-link { color: var(--primary-red); cursor: pointer; text-decoration: underline; font-weight: 800; }
+.player-link:hover { filter: brightness(0.9); }
 
 /* Mobile Header */
 #mobileHeader {
@@ -432,6 +434,7 @@ th.sortable:hover { background: #dedede; }
 /* League tables: favor horizontal scroll on mobile */
 .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .standings-table, .team-stats-table, .player-stats-table { width: 100%; }
+.roster-table { width: 100%; }
 
 .league-table td { background: transparent; }
 .league-row {
@@ -460,6 +463,8 @@ th.sortable:hover { background: #dedede; }
   .league-table th { padding: 0.5rem 0.5rem; font-size: 0.75rem; }
   .league-table td { padding: 0.5rem 0.5rem; font-size: 0.85rem; }
   .team-chip { padding: 0.22rem 0.45rem !important; font-size: 0.75rem !important; }
+  .roster-table { width: auto; display: inline-table; }
+  .roster-table th, .roster-table td { white-space: nowrap; }
 }
 
 @media (max-width: 768px) {

@@ -137,6 +137,95 @@ export function showTeamViolations() {
   showInfoModal('Rule violations', html, true);
 }
 
+function renderPlayerInfoHtml({ player, teamName, extraLines = [] }) {
+  const p = player || {};
+  const titleBits = [];
+  if (p.number != null && p.number !== '') titleBits.push(`#${p.number}`);
+  if (p.name) titleBits.push(String(p.name));
+  const headerTitle = escapeHtml(titleBits.join(' ') || 'Player');
+
+  const status = [
+    p.dead ? 'DEAD' : null,
+    p.tr ? 'TR' : null,
+    p.mng ? 'MNG' : null
+  ].filter(Boolean);
+
+  const metaBits = [
+    p.position ? String(p.position) : null,
+    teamName ? String(teamName) : null,
+    status.length ? status.join(' / ') : null
+  ].filter(Boolean);
+
+  const skillsHtml = (Array.isArray(p.skills) ? p.skills : []).map(skill => (
+    `<span class="skill-tag" style="cursor:pointer" onclick='window.showSkill(${JSON.stringify(skill)})'>${escapeHtml(skill)}</span>`
+  )).join(' ');
+
+  const extraRows = extraLines
+    .filter(x => x && x.label)
+    .map(x => `<div><strong>${escapeHtml(x.label)}:</strong> ${escapeHtml(x.value ?? '-')}</div>`)
+    .join('');
+
+  const injuriesText = String(p.injuries || '').trim();
+
+  return `
+    <div class="small" style="color:#666; margin-bottom:0.35rem;">${escapeHtml(metaBits.join(' • ') || '')}</div>
+    <div class="player-card-header" style="margin-top:0.25rem;">
+      <div class="player-card-name" style="margin-bottom:0.15rem;">${headerTitle}</div>
+    </div>
+    <div class="stat-grid" style="margin:0.5rem 0 0.75rem;">
+      <div class="stat-box"><div class="stat-label">MA</div><div class="stat-value">${escapeHtml(p.ma ?? '-')}</div></div>
+      <div class="stat-box"><div class="stat-label">ST</div><div class="stat-value">${escapeHtml(p.st ?? '-')}</div></div>
+      <div class="stat-box"><div class="stat-label">AG</div><div class="stat-value">${escapeHtml(p.ag ?? '-')}</div></div>
+      <div class="stat-box"><div class="stat-label">PA</div><div class="stat-value">${escapeHtml(p.pa ?? '-')}</div></div>
+      <div class="stat-box"><div class="stat-label">AV</div><div class="stat-value">${escapeHtml(p.av ?? '-')}</div></div>
+    </div>
+    <div class="season-stats-grid" style="margin-bottom:0.75rem;">
+      <div><strong>Value:</strong> ${escapeHtml(formatK(p.cost || 0))}</div>
+      <div><strong>SPP:</strong> ${escapeHtml(p.spp ?? 0)}</div>
+      ${extraRows}
+    </div>
+    ${skillsHtml
+      ? `<div style="margin-top:0.5rem;">
+           <div style="font-weight:bold; margin-bottom:0.25rem;">Skills</div>
+           <div class="card-skills" style="justify-content:flex-start;">${skillsHtml}</div>
+         </div>`
+      : `<div class="small" style="color:#666;">No skills.</div>`}
+    ${injuriesText
+      ? `<div style="margin-top:0.75rem;">
+           <div style="font-weight:bold; margin-bottom:0.25rem;">Injuries</div>
+           <div class="small" style="white-space:pre-wrap; color:#444;">${escapeHtml(injuriesText)}</div>
+         </div>`
+      : ''}
+  `;
+}
+
+export function teamRedraftShowPlayerInfo(playerId) {
+  const team = state.currentTeam;
+  const draft = state.teamRedraft;
+  if (!team || !draft) return;
+
+  const roster = Array.isArray(draft.draftPlayers) ? draft.draftPlayers : [];
+  const player = roster.find(p => String(p?.id) === String(playerId));
+  if (!player) return;
+
+  const fromSeason = Number(draft.fromSeason || state.currentLeague?.season || 1);
+  const rookieSeason = Number(player?.rookieSeason || fromSeason);
+  const seasonsPlayed = Math.max(1, fromSeason - rookieSeason + 1);
+
+  const feeGp = getAgentFeeGp(player, fromSeason);
+  const totalGp = Number(player?.cost || 0) + feeGp;
+
+  const extraLines = [
+    { label: 'Agent Fee', value: formatK(feeGp) },
+    { label: 'Rehire Total', value: formatK(totalGp) },
+    { label: 'Seasons Played', value: String(seasonsPlayed) }
+  ];
+
+  const html = renderPlayerInfoHtml({ player, teamName: team.name, extraLines });
+  const title = `${player.number ? `#${player.number} ` : ''}${player.name || 'Player'}`;
+  showInfoModal(title, html, true);
+}
+
 export function setTeamTab(tab) {
   state.teamTab = tab;
   renderTeamView();
@@ -182,8 +271,8 @@ function renderTeamTabContent({ team, season, seasonStats, history, matchLogRows
     }).join('');
 
     const rows = roster.map(p => {
-      const skillsHtml = (p.skills || []).map(s =>
-        `<span class="skill-tag" onclick="window.showSkill('${s}')">${s}</span>`
+      const skillsHtml = (Array.isArray(p.skills) ? p.skills : []).map(s =>
+        `<span class="skill-tag" style="cursor:pointer" onclick='window.showSkill(${JSON.stringify(s)})'>${escapeHtml(s)}</span>`
       ).join(' ');
       const costK = p.cost ? Math.floor(p.cost / 1000) + 'k' : '-';
       const status = [
@@ -213,7 +302,7 @@ function renderTeamTabContent({ team, season, seasonStats, history, matchLogRows
     }).join('');
 
     const rosterTable = roster.length
-      ? `<table class="responsive-table"><thead><tr><th style="width:30px">#</th><th>Name</th><th>Pos</th><th>Status</th><th>Cost</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table>`
+      ? `<div class="table-scroll"><table class="roster-table"><thead><tr><th style="width:30px">#</th><th>Name</th><th>Pos</th><th>Status</th><th>Cost</th><th>MA</th><th>ST</th><th>AG</th><th>PA</th><th>AV</th><th>Skills</th><th>SPP</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`
       : `<div class="small" style="color:#666;">No players yet.</div>`;
 
     return `
@@ -771,7 +860,7 @@ function renderRedraftTab({ team, season }) {
       <tr>
         <td data-label="Rehire"><input type="checkbox" ${checked ? 'checked' : ''} onchange='window.teamRedraftToggleRehire(${JSON.stringify(p.id)}, this.checked)'></td>
         <td data-label="#">${p.number ?? ''}</td>
-        <td data-label="Player">${escapeHtml(p.name || '-')}<div class="small" style="color:#666;">${escapeHtml(p.position || '')}${status ? ` • ${escapeHtml(status)}` : ''}</div></td>
+        <td data-label="Player"><span class="player-link" onclick='window.teamRedraftShowPlayerInfo(${JSON.stringify(p.id)})'>${escapeHtml(p.name || '-')}</span><div class="small" style="color:#666;">${escapeHtml(p.position || '')}${status ? ` • ${escapeHtml(status)}` : ''}</div></td>
         <td data-label="Value">${formatK(p.cost)}</td>
         <td data-label="Agent Fee">${formatK(feeGp)}<div class="small" style="color:#666;">(${seasonsPlayed} season${seasonsPlayed === 1 ? '' : 's'})</div></td>
         <td data-label="Total">${formatK(totalGp)}</td>
