@@ -36,6 +36,34 @@
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
+    },
+    {
+      "id": "01KEJ40X6MTDZB2452J50WGX5P",
+      "number": 2,
+      "name": "Throw",
+      "position": "Human Thrower (Human, Thrower)",
+      "rookieSeason": 1,
+      "cost": 75000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 3,
+      "av": 9,
+      "skills": [
+        "Pass",
+        "Sure Hands"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
     }
   ],
   "history": [],
@@ -50,5 +78,5 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 280000
+  "teamValue": 355000
 }
