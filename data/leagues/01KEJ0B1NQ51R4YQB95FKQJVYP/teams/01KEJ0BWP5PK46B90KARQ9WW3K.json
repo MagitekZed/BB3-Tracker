@@ -64,6 +64,264 @@
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
+    },
+    {
+      "id": "01KEJ432P9GJFD6Q150VGQ2ZPM",
+      "number": 3,
+      "name": "Player",
+      "position": "Human Blitzer (Blitzer, Human)",
+      "rookieSeason": 1,
+      "cost": 85000,
+      "ma": 7,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [
+        "Block",
+        "Tackle"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KEJ442G5H0BD40S9YGC9ZYZ8",
+      "number": 4,
+      "name": "Player",
+      "position": "Human Catcher (Catcher, Human)",
+      "rookieSeason": 1,
+      "cost": 75000,
+      "ma": 8,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 8,
+      "skills": [
+        "Catch",
+        "Dodge"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KEJ444WHP8KC3Q6265A0406A",
+      "number": 5,
+      "name": "Player",
+      "position": "Dwarf Blitzer (Blitzer, Dwarf)",
+      "rookieSeason": 1,
+      "cost": 100000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 4,
+      "av": 10,
+      "skills": [
+        "Block",
+        "Diving Tackle",
+        "Tackle",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KEJ445JRR5ETHPDFPR6J2QNN",
+      "number": 6,
+      "name": "Player",
+      "position": "Troll Slayer (Dwarf, Special)",
+      "rookieSeason": 1,
+      "cost": 95000,
+      "ma": 5,
+      "st": 3,
+      "ag": 4,
+      "pa": 5,
+      "av": 9,
+      "skills": [
+        "Block",
+        "Dauntless",
+        "Frenzy",
+        "Hatred (Troll)",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KEJ4468TP2X83MDFBXP5XX1E",
+      "number": 7,
+      "name": "Player",
+      "position": "Dwarf Lineman (Dwarf, Lineman)",
+      "rookieSeason": 1,
+      "cost": 70000,
+      "ma": 4,
+      "st": 3,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Block",
+        "Defensive",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KEJ446TTF16P6GXZKSYX0FKZ",
+      "number": 8,
+      "name": "Player",
+      "position": "Dwarf Lineman (Dwarf, Lineman)",
+      "rookieSeason": 1,
+      "cost": 70000,
+      "ma": 4,
+      "st": 3,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Block",
+        "Defensive",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KEJ447EBM6K189X2KNNDFZ04",
+      "number": 9,
+      "name": "Player",
+      "position": "Dwarf Lineman (Dwarf, Lineman)",
+      "rookieSeason": 1,
+      "cost": 70000,
+      "ma": 4,
+      "st": 3,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Block",
+        "Defensive",
+        "Thick Skull"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KEJ447ZF5WTSXJFGWPR3RN2S",
+      "number": 10,
+      "name": "Player",
+      "position": "Human Lineman (Human, Lineman)",
+      "rookieSeason": 1,
+      "cost": 50000,
+      "ma": 6,
+      "st": 3,
+      "ag": 3,
+      "pa": 4,
+      "av": 9,
+      "skills": [],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    },
+    {
+      "id": "01KEJ448GDT9H9KQH1WMZE3NRS",
+      "number": 11,
+      "name": "Player",
+      "position": "Halfling Hopeful (Halfling, Lineman)",
+      "rookieSeason": 1,
+      "cost": 30000,
+      "ma": 5,
+      "st": 2,
+      "ag": 3,
+      "pa": 4,
+      "av": 7,
+      "skills": [
+        "Dodge",
+        "Right Stuff",
+        "Stunty"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
     }
   ],
   "history": [],
@@ -78,5 +336,5 @@
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 355000
+  "teamValue": 1000000
 }
