@@ -28,12 +28,12 @@
     },
     {
       "id": "01KEJ0BWP5PK46B90KARQ9WW3K",
-      "name": "Erik's Team",
-      "race": "Amazon",
-      "coachName": "",
+      "name": "Green Bay Brawlers",
+      "race": "Old World Alliance",
+      "coachName": "Erik",
       "colors": {
-        "primary": "#222222",
-        "secondary": "#c5a059"
+        "primary": "#00ff00",
+        "secondary": "#ffff00"
       }
     }
   ],
