@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "01KEJ0B1NQ51R4YQB95FKQJVYP",
+  "slug": "our_first_league",
+  "name": "Our First League",
+  "season": 1,
+  "status": "upcoming",
+  "settings": {
+    "pointsWin": 3,
+    "pointsDraw": 1,
+    "pointsLoss": 0,
+    "maxTeams": 16,
+    "lockTeams": false
+  },
+  "rules": {
+    "startingBudget": 1000000
+  },
+  "teams": [
+    {
+      "id": "01KEJ0BGPS22D90QZF6VV43XDE",
+      "name": "Zach's Team",
+      "race": "Amazon",
+      "coachName": "",
+      "colors": {
+        "primary": "#222222",
+        "secondary": "#c5a059"
+      }
+    }
+  ],
+  "matches": []
+}
