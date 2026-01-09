@@ -10,5 +10,11 @@
     "name": "Test League 2",
     "season": 1,
     "status": "upcoming"
+  },
+  {
+    "id": "01KEJ0B1NQ51R4YQB95FKQJVYP",
+    "name": "Our First League",
+    "season": 1,
+    "status": "upcoming"
   }
 ]
