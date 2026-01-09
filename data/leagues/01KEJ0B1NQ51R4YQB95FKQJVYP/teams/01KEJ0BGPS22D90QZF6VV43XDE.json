@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "01KEJ0BGPS22D90QZF6VV43XDE",
+  "slug": "zach_s_team",
+  "name": "Zach's Team",
+  "race": "Amazon",
+  "coachName": "",
+  "players": [],
+  "history": [],
+  "transactions": [],
+  "colors": {
+    "primary": "#222222",
+    "secondary": "#c5a059"
+  },
+  "treasury": 1000000,
+  "rerolls": 0,
+  "apothecary": false,
+  "assistantCoaches": 0,
+  "cheerleaders": 0,
+  "dedicatedFans": 1,
+  "teamValue": 0
+}
