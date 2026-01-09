@@ -18,12 +18,12 @@
   "teams": [
     {
       "id": "01KEJ0BGPS22D90QZF6VV43XDE",
-      "name": "Zach's Team",
-      "race": "Amazon",
-      "coachName": "",
+      "name": "Ragna Roughnecks",
+      "race": "Norse",
+      "coachName": "Zach",
       "colors": {
-        "primary": "#222222",
-        "secondary": "#c5a059"
+        "primary": "#0400ff",
+        "secondary": "#adadad"
       }
     },
     {
