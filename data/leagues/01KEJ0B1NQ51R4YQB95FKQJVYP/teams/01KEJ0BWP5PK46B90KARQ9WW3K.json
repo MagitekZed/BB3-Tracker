@@ -1,22 +1,54 @@
 {
   "schemaVersion": 1,
   "id": "01KEJ0BWP5PK46B90KARQ9WW3K",
-  "slug": "erik_s_team",
-  "name": "Erik's Team",
-  "race": "Amazon",
-  "coachName": "",
-  "players": [],
+  "slug": "green_bay_brawlers",
+  "name": "Green Bay Brawlers",
+  "race": "Old World Alliance",
+  "coachName": "Erik",
+  "players": [
+    {
+      "id": "01KEJ3XWABHQRRWBZQTSQRY2FE",
+      "number": 1,
+      "name": "Bunker B.",
+      "position": "Ogre (Big Guy, Ogre)",
+      "rookieSeason": 1,
+      "cost": 140000,
+      "ma": 5,
+      "st": 5,
+      "ag": 4,
+      "pa": 5,
+      "av": 10,
+      "skills": [
+        "Bone Head",
+        "Loner (3+)",
+        "Mighty Blow",
+        "Thick Skull",
+        "Throw Team-Mate"
+      ],
+      "primary": [
+        "G"
+      ],
+      "secondary": [
+        "A",
+        "S"
+      ],
+      "spp": 0,
+      "sppSpent": 0,
+      "advancements": [],
+      "injuries": ""
+    }
+  ],
   "history": [],
   "transactions": [],
   "colors": {
-    "primary": "#222222",
-    "secondary": "#c5a059"
+    "primary": "#00ff00",
+    "secondary": "#ffff00"
   },
   "treasury": 1000000,
-  "rerolls": 0,
+  "rerolls": 2,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
   "dedicatedFans": 1,
-  "teamValue": 0
+  "teamValue": 280000
 }
