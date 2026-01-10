@@ -60,7 +60,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 1,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -88,7 +88,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 4,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -116,7 +116,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 3,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -146,7 +146,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 2,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -264,7 +264,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 4,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -289,7 +289,7 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 2,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -318,23 +318,292 @@
         "A",
         "S"
       ],
-      "spp": 0,
+      "spp": 2,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "01KEJPBGGKPWBFD7ZV9523C80R",
+      "matchType": "regular",
+      "opponentName": "Ragna Roughnecks",
+      "result": "Win",
+      "score": "1-0",
+      "winningsK": 55,
+      "winningsGp": 55000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": 2,
+      "dedicatedFansDelta": 1,
+      "tv": 1000000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KEJ3XWABHQRRWBZQTSQRY2FE",
+          "name": "Bunker B.",
+          "number": 1,
+          "position": "Ogre (Big Guy, Ogre)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ40X6MTDZB2452J50WGX5P",
+          "name": "Throw",
+          "number": 2,
+          "position": "Human Thrower (Human, Thrower)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 1,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 1,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ432P9GJFD6Q150VGQ2ZPM",
+          "name": "Player",
+          "number": 3,
+          "position": "Human Blitzer (Blitzer, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KEJ442G5H0BD40S9YGC9ZYZ8",
+          "name": "Player",
+          "number": 4,
+          "position": "Human Catcher (Catcher, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 3,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 1,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ444WHP8KC3Q6265A0406A",
+          "name": "Player",
+          "number": 5,
+          "position": "Dwarf Blitzer (Blitzer, Dwarf)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 1,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ445JRR5ETHPDFPR6J2QNN",
+          "name": "Player",
+          "number": 6,
+          "position": "Troll Slayer (Dwarf, Special)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ4468TP2X83MDFBXP5XX1E",
+          "name": "Player",
+          "number": 14,
+          "position": "Dwarf Lineman (Dwarf, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ446TTF16P6GXZKSYX0FKZ",
+          "name": "Player",
+          "number": 15,
+          "position": "Dwarf Lineman (Dwarf, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ447EBM6K189X2KNNDFZ04",
+          "name": "Player",
+          "number": 16,
+          "position": "Dwarf Lineman (Dwarf, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 2,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ447ZF5WTSXJFGWPR3RN2S",
+          "name": "Player",
+          "number": 13,
+          "position": "Human Lineman (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 1,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ448GDT9H9KQH1WMZE3NRS",
+          "name": "Lucky Sam",
+          "number": 7,
+          "position": "Halfling Hopeful (Halfling, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 2,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 1,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 1055000,
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": null,
+        "deltaGp": 0
+      }
+    }
+  ],
   "transactions": [],
   "colors": {
     "primary": "#00ff00",
     "secondary": "#ffff00"
   },
-  "treasury": 1000000,
+  "treasury": 1055000,
   "rerolls": 2,
   "apothecary": false,
   "assistantCoaches": 0,
   "cheerleaders": 0,
-  "dedicatedFans": 1,
+  "dedicatedFans": 2,
   "teamValue": 1000000
 }
