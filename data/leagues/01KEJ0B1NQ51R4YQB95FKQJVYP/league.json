@@ -37,5 +37,15 @@
       }
     }
   ],
-  "matches": []
+  "matches": [
+    {
+      "id": "01KEJPBGGKPWBFD7ZV9523C80R",
+      "season": 1,
+      "round": 1,
+      "homeTeamId": "01KEJ0BGPS22D90QZF6VV43XDE",
+      "awayTeamId": "01KEJ0BWP5PK46B90KARQ9WW3K",
+      "status": "scheduled",
+      "date": "2026-01-10"
+    }
+  ]
 }
