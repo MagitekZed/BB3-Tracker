@@ -121,7 +121,7 @@
         "P",
         "S"
       ],
-      "spp": 0,
+      "spp": 4,
       "sppSpent": 0,
       "advancements": [],
       "injuries": ""
@@ -374,13 +374,304 @@
       "injuries": ""
     }
   ],
-  "history": [],
+  "history": [
+    {
+      "season": 1,
+      "round": 1,
+      "matchId": "01KEJPBGGKPWBFD7ZV9523C80R",
+      "matchType": "regular",
+      "opponentName": "Green Bay Brawlers",
+      "result": "Loss",
+      "score": "0-1",
+      "winningsK": 45,
+      "winningsGp": 45000,
+      "dedicatedFansBefore": 1,
+      "dedicatedFansRollD6": 2,
+      "dedicatedFansDelta": 0,
+      "tv": 1000000,
+      "inducements": {},
+      "playerRecords": [
+        {
+          "playerId": "01KEJ0GC5SSRQRWBXCW031Z11A",
+          "name": "Astrid Axebloom",
+          "number": 4,
+          "position": "Valkyrie (Catcher, Human, Thrower)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0GSPX43C38HZVX20KA96S",
+          "name": "Brynja Oathsteel",
+          "number": 7,
+          "position": "Valkyrie (Catcher, Human, Thrower)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0GWECB25Y55XGAKETMSTZ",
+          "name": "Ulfgar Red-Mist",
+          "number": 91,
+          "position": "Ulfwerener (Blocker, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0H5CDEQBPX3X8RZ89HRCX",
+          "name": "Svala “Hard Hat” Stormbraid",
+          "number": 99,
+          "position": "Ulfwerener (Blocker, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 4,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": true
+        },
+        {
+          "playerId": "01KEJ0H86ZTXEKF3BA60ASERDY",
+          "name": "Bjorn Bear-Heart",
+          "number": 42,
+          "position": "Norse Berserker (Blitzer, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0HFC7820AS0NXHHF86RDY",
+          "name": "Skardi Wintermaul",
+          "number": 47,
+          "position": "Norse Berserker (Blitzer, Human)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0HNBFJH2R5BQC44WG3RST",
+          "name": "Rolf Mudboots",
+          "number": 81,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0HNSYTJ5TGGAPA9BZ7G0G",
+          "name": "Sten Shieldshove",
+          "number": 82,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0HPBNYNE906RS31DM6A7W",
+          "name": "Haki Splinters",
+          "number": 83,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0HQN53H5GCR8H3KC07TBE",
+          "name": "Jorund Knee-Finder",
+          "number": 84,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0HRWXCS71WYNS5X9ZGMXJ",
+          "name": "Leif Brickshoulder",
+          "number": 85,
+          "position": "Norse Raider (Human, Lineman)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        },
+        {
+          "playerId": "01KEJ0HWZ6BPM4F6QAP9RJFV7Z",
+          "name": "Hogni Kegsnout",
+          "number": 1,
+          "position": "Beer Boar (Animal, Special)",
+          "isJourneyman": false,
+          "isStar": false,
+          "sppGain": 0,
+          "stats": {
+            "used": false,
+            "injured": false,
+            "sentOff": false,
+            "td": 0,
+            "cas": 0,
+            "int": 0,
+            "comp": 0,
+            "ttmThrow": 0,
+            "ttmLand": 0,
+            "foul": 0
+          },
+          "isMvp": false
+        }
+      ],
+      "expensiveMistakes": {
+        "treasuryBeforeGp": 1045000,
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null,
+        "result": null,
+        "deltaGp": 0
+      }
+    }
+  ],
   "transactions": [],
   "colors": {
     "primary": "#0400ff",
     "secondary": "#adadad"
   },
-  "treasury": 1000000,
+  "treasury": 1045000,
   "rerolls": 2,
   "apothecary": false,
   "assistantCoaches": 1,
