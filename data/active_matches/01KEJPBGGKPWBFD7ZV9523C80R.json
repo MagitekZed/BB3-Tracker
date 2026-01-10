@@ -382,7 +382,7 @@
         "cost": 20000,
         "live": {
           "used": false,
-          "injured": false,
+          "injured": true,
           "sentOff": false,
           "td": 0,
           "cas": 0,
@@ -718,7 +718,7 @@
           "injured": false,
           "sentOff": false,
           "td": 0,
-          "cas": 1,
+          "cas": 0,
           "int": 0,
           "comp": 0,
           "ttmThrow": 0,
