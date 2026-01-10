@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 2,
+  "matchId": "01KEJPBGGKPWBFD7ZV9523C80R",
+  "leagueId": "01KEJ0B1NQ51R4YQB95FKQJVYP",
+  "round": 1,
+  "home": {
+    "name": "Ragna Roughnecks",
+    "score": 0,
+    "tv": 1000000,
+    "inducements": {},
+    "winnings": 45,
+    "winningsGp": 45000,
+    "fanFactorChange": 0,
+    "dedicatedFansDelta": 0,
+    "mvp": "Svala “Hard Hat” Stormbraid",
+    "stats": [],
+    "postGame": {
+      "teamId": "01KEJ0BGPS22D90QZF6VV43XDE",
+      "name": "Ragna Roughnecks",
+      "colors": {
+        "primary": "#0400ff",
+        "secondary": "#adadad"
+      },
+      "race": "Norse",
+      "result": "loss",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 1000000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 20000,
+      "winningsGpOverride": 45000,
+      "dedicatedFansRollD6": 2,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "rollD6": 4
+      },
+      "staffBase": {
+        "assistantCoaches": 1,
+        "cheerleaders": 2,
+        "apothecary": false,
+        "rerolls": 2,
+        "race": "Norse"
+      },
+      "staffDesired": {
+        "assistantCoaches": 1,
+        "cheerleaders": 2,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  },
+  "away": {
+    "name": "Green Bay Brawlers",
+    "score": 1,
+    "tv": 1000000,
+    "inducements": {},
+    "winnings": 55,
+    "winningsGp": 55000,
+    "fanFactorChange": 1,
+    "dedicatedFansDelta": 1,
+    "mvp": "Player",
+    "stats": [
+      {
+        "name": "Throw",
+        "number": 2,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 0,
+          "int": 0,
+          "comp": 1,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player",
+        "number": 4,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 1,
+          "cas": 0,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player",
+        "number": 5,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player",
+        "number": 16,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 2,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Player",
+        "number": 13,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      },
+      {
+        "name": "Lucky Sam",
+        "number": 7,
+        "live": {
+          "used": false,
+          "injured": false,
+          "sentOff": false,
+          "td": 0,
+          "cas": 1,
+          "int": 0,
+          "comp": 0,
+          "ttmThrow": 0,
+          "ttmLand": 0,
+          "foul": 0
+        }
+      }
+    ],
+    "postGame": {
+      "teamId": "01KEJ0BWP5PK46B90KARQ9WW3K",
+      "name": "Green Bay Brawlers",
+      "colors": {
+        "primary": "#00ff00",
+        "secondary": "#ffff00"
+      },
+      "race": "Old World Alliance",
+      "result": "win",
+      "dedicatedFansBefore": 1,
+      "treasuryBeforeGp": 1000000,
+      "noStallingBonus": true,
+      "winningsGpAuto": 30000,
+      "winningsGpOverride": 55000,
+      "dedicatedFansRollD6": 2,
+      "dedicatedFansDeltaOverride": null,
+      "mvp": {
+        "nominees": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "rollD6": 3
+      },
+      "staffBase": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "rerolls": 2,
+        "race": "Old World Alliance"
+      },
+      "staffDesired": {
+        "assistantCoaches": 0,
+        "cheerleaders": 0,
+        "apothecary": false,
+        "addRerolls": 0
+      },
+      "otherTreasuryDeltaGp": 0,
+      "expensive": {
+        "rollD6": null,
+        "rollD3": null,
+        "roll2d6Total": null
+      }
+    }
+  }
+}
