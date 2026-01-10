@@ -44,8 +44,18 @@
       "round": 1,
       "homeTeamId": "01KEJ0BGPS22D90QZF6VV43XDE",
       "awayTeamId": "01KEJ0BWP5PK46B90KARQ9WW3K",
-      "status": "in_progress",
-      "date": "2026-01-10"
+      "status": "completed",
+      "date": "2026-01-10",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "casualties": {
+        "homeInflicted": 0,
+        "awayInflicted": 5
+      },
+      "hasReport": true,
+      "reportId": "01KEJPBGGKPWBFD7ZV9523C80R"
     }
   ]
 }
