@@ -184,7 +184,7 @@
     },
     {
       "id": "01KEJ4468TP2X83MDFBXP5XX1E",
-      "number": 7,
+      "number": 14,
       "name": "Player",
       "position": "Dwarf Lineman (Dwarf, Lineman)",
       "rookieSeason": 1,
@@ -213,7 +213,7 @@
     },
     {
       "id": "01KEJ446TTF16P6GXZKSYX0FKZ",
-      "number": 8,
+      "number": 15,
       "name": "Player",
       "position": "Dwarf Lineman (Dwarf, Lineman)",
       "rookieSeason": 1,
@@ -242,7 +242,7 @@
     },
     {
       "id": "01KEJ447EBM6K189X2KNNDFZ04",
-      "number": 9,
+      "number": 16,
       "name": "Player",
       "position": "Dwarf Lineman (Dwarf, Lineman)",
       "rookieSeason": 1,
@@ -271,7 +271,7 @@
     },
     {
       "id": "01KEJ447ZF5WTSXJFGWPR3RN2S",
-      "number": 10,
+      "number": 13,
       "name": "Player",
       "position": "Human Lineman (Human, Lineman)",
       "rookieSeason": 1,
@@ -296,8 +296,8 @@
     },
     {
       "id": "01KEJ448GDT9H9KQH1WMZE3NRS",
-      "number": 11,
-      "name": "Player",
+      "number": 7,
+      "name": "Lucky Sam",
       "position": "Halfling Hopeful (Halfling, Lineman)",
       "rookieSeason": 1,
       "cost": 30000,
