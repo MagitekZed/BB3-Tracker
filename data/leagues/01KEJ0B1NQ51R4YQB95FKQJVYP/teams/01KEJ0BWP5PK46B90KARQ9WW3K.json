@@ -40,7 +40,7 @@
     {
       "id": "01KEJ40X6MTDZB2452J50WGX5P",
       "number": 2,
-      "name": "Throw",
+      "name": "Willis",
       "position": "Human Thrower (Human, Thrower)",
       "rookieSeason": 1,
       "cost": 75000,
@@ -68,7 +68,7 @@
     {
       "id": "01KEJ432P9GJFD6Q150VGQ2ZPM",
       "number": 3,
-      "name": "Player",
+      "name": "Micah",
       "position": "Human Blitzer (Blitzer, Human)",
       "rookieSeason": 1,
       "cost": 85000,
@@ -96,7 +96,7 @@
     {
       "id": "01KEJ442G5H0BD40S9YGC9ZYZ8",
       "number": 4,
-      "name": "Player",
+      "name": "Doubs",
       "position": "Human Catcher (Catcher, Human)",
       "rookieSeason": 1,
       "cost": 75000,
@@ -124,7 +124,7 @@
     {
       "id": "01KEJ444WHP8KC3Q6265A0406A",
       "number": 5,
-      "name": "Player",
+      "name": "Gary",
       "position": "Dwarf Blitzer (Blitzer, Dwarf)",
       "rookieSeason": 1,
       "cost": 100000,
@@ -154,7 +154,7 @@
     {
       "id": "01KEJ445JRR5ETHPDFPR6J2QNN",
       "number": 6,
-      "name": "Player",
+      "name": "Musgrave",
       "position": "Troll Slayer (Dwarf, Special)",
       "rookieSeason": 1,
       "cost": 95000,
@@ -185,7 +185,7 @@
     {
       "id": "01KEJ4468TP2X83MDFBXP5XX1E",
       "number": 14,
-      "name": "Player",
+      "name": "Tom",
       "position": "Dwarf Lineman (Dwarf, Lineman)",
       "rookieSeason": 1,
       "cost": 70000,
@@ -214,7 +214,7 @@
     {
       "id": "01KEJ446TTF16P6GXZKSYX0FKZ",
       "number": 15,
-      "name": "Player",
+      "name": "Chad",
       "position": "Dwarf Lineman (Dwarf, Lineman)",
       "rookieSeason": 1,
       "cost": 70000,
@@ -243,7 +243,7 @@
     {
       "id": "01KEJ447EBM6K189X2KNNDFZ04",
       "number": 16,
-      "name": "Player",
+      "name": "Killer",
       "position": "Dwarf Lineman (Dwarf, Lineman)",
       "rookieSeason": 1,
       "cost": 70000,
@@ -272,7 +272,7 @@
     {
       "id": "01KEJ447ZF5WTSXJFGWPR3RN2S",
       "number": 13,
-      "name": "Player",
+      "name": "Tiny",
       "position": "Human Lineman (Human, Lineman)",
       "rookieSeason": 1,
       "cost": 50000,
