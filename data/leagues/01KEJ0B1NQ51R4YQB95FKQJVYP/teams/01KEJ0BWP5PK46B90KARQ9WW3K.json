@@ -271,7 +271,7 @@
     },
     {
       "id": "01KEJ447ZF5WTSXJFGWPR3RN2S",
-      "number": 13,
+      "number": 7,
       "name": "Tiny",
       "position": "Human Lineman (Human, Lineman)",
       "rookieSeason": 1,
@@ -296,7 +296,7 @@
     },
     {
       "id": "01KEJ448GDT9H9KQH1WMZE3NRS",
-      "number": 7,
+      "number": 13,
       "name": "Lucky Sam",
       "position": "Halfling Hopeful (Halfling, Lineman)",
       "rookieSeason": 1,
@@ -599,7 +599,7 @@
     "primary": "#00ff00",
     "secondary": "#ffff00"
   },
-  "treasury": 1055000,
+  "treasury": 0,
   "rerolls": 2,
   "apothecary": false,
   "assistantCoaches": 0,
