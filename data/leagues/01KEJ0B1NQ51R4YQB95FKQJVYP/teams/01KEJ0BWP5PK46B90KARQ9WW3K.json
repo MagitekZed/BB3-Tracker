@@ -599,7 +599,7 @@
     "primary": "#00ff00",
     "secondary": "#ffff00"
   },
-  "treasury": 0,
+  "treasury": 55,
   "rerolls": 2,
   "apothecary": false,
   "assistantCoaches": 0,
