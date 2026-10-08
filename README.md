@@ -7,6 +7,8 @@ A lightweight web app for tracking **in-person Blood Bowl leagues** using the **
 - **API:** Cloudflare Worker that proxies reads/writes to GitHub
 - **Auth:** shared **Edit Key** required for write operations
 
+> **A personal project, shared as a portfolio piece.** I built this to run my own group's leagues, and it is meant for private use rather than as a supported product. League data is readable by anyone (it lives in this public repo), but every change goes through the Cloudflare Worker, which checks the shared Edit Key server-side before writing, only touches files under `data/`, and keeps the GitHub token as a Worker secret that never reaches the browser or this repo.
+
 ## Features
 
 - **Leagues & seasons**
